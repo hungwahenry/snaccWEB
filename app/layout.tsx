@@ -8,13 +8,30 @@ import { cn } from "@/lib/utils"
 const interTight = Inter_Tight({ subsets: ["latin"], variable: "--font-sans" })
 const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
+const TITLE = "Snacc — What's happening on campus"
+const DESCRIPTION =
+  "Snacc is the social app for your campus. Share a thought, a photo, or a GIF, and see what everyone is talking about right now."
+
 export const metadata: Metadata = {
-  title: {
-    default: "Snacc — What's happening on campus",
-    template: "%s · Snacc",
+  metadataBase: new URL("https://snacc.fyi"),
+  title: { default: TITLE, template: "%s · Snacc" },
+  description: DESCRIPTION,
+  applicationName: "Snacc",
+  keywords: ["Snacc", "campus", "university", "students", "social app", "Nigeria"],
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: "website",
+    siteName: "Snacc",
+    title: TITLE,
+    description: DESCRIPTION,
+    url: "https://snacc.fyi",
+    locale: "en_US",
   },
-  description:
-    "Snacc is the social app for your campus. Share a thought, a photo, or a GIF, and see what everyone is talking about right now.",
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 }
 
 export default function RootLayout({
