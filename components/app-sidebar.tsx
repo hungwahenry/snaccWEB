@@ -14,6 +14,7 @@ import {
   School,
   ScrollText,
   SlidersHorizontal,
+  Tags,
   ToggleRight,
   Users,
 } from "lucide-react"
@@ -40,6 +41,7 @@ const NAV = [
     items: [
       { href: "/snaccs", label: "Snaccs", icon: MessageSquare },
       { href: "/reports", label: "Reports", icon: Flag },
+      { href: "/report-reasons", label: "Report reasons", icon: Tags },
       { href: "/pages", label: "Pages", icon: FileText },
       { href: "/announcements", label: "Announcements", icon: Megaphone },
     ],
