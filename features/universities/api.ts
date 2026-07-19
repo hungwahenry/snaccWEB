@@ -1,8 +1,10 @@
 import { api } from "@/lib/api/client"
+import type { Paginated } from "@/lib/api/types"
 import type { AdminUniversity, CreateUniversityInput, UpdateUniversityInput } from "./types"
 
-export function listUniversities() {
-  return api.get<AdminUniversity[]>("/admin/universities")
+export async function listUniversities() {
+  const page = await api.get<Paginated<AdminUniversity>>("/admin/universities", { perPage: 100 })
+  return page.items
 }
 
 export function createUniversity(input: CreateUniversityInput) {
