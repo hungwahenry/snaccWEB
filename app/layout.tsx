@@ -9,8 +9,12 @@ const interTight = Inter_Tight({ subsets: ["latin"], variable: "--font-sans" })
 const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
 export const metadata: Metadata = {
-  title: "Snacc Admin",
-  description: "Admin panel for Snacc",
+  title: {
+    default: "Snacc — What's happening on campus",
+    template: "%s · Snacc",
+  },
+  description:
+    "Snacc is the social app for your campus. Share a thought, a photo, or a GIF, and see what everyone is talking about right now.",
 }
 
 export default function RootLayout({

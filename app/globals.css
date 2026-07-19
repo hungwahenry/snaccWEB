@@ -170,3 +170,20 @@
 .snacc-prose:focus {
   outline: none;
 }
+@keyframes snacc-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.snacc-bob {
+  animation: snacc-bob 1.8s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .snacc-bob {
+    animation: none;
+  }
+}
