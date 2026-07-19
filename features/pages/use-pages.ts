@@ -40,7 +40,7 @@ export function usePageMutations(id?: string) {
       onSuccess: () => {
         invalidate()
         toast.success("Page created.")
-        router.replace("/pages")
+        router.replace("/admin/pages")
       },
       onError,
     }),

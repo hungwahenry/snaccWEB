@@ -86,7 +86,7 @@ export function useUserMutations(id: string) {
       mutationFn: (confirmEmail: string) => deleteUser(id, confirmEmail),
       onSuccess: () => {
         toast.success("User deleted.")
-        router.replace("/users")
+        router.replace("/admin/users")
       },
       onError,
     }),

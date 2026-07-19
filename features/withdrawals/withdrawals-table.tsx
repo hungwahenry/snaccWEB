@@ -85,7 +85,7 @@ export function WithdrawalsTable({
               <TableRow
                 key={withdrawal.id}
                 className="cursor-pointer"
-                onClick={() => router.push(`/withdrawals/${withdrawal.id}`)}
+                onClick={() => router.push(`/admin/withdrawals/${withdrawal.id}`)}
               >
                 <TableCell className="font-mono text-xs">{withdrawal.reference}</TableCell>
                 <TableCell className="text-sm">

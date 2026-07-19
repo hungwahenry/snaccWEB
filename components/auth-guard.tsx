@@ -11,7 +11,7 @@ export function AuthGuard({ children }: { children: ReactNode }) {
   const denied = me.isError || (!!me.data && me.data.role !== "admin")
 
   useEffect(() => {
-    if (denied) router.replace("/login")
+    if (denied) router.replace("/admin/login")
   }, [denied, router])
 
   if (me.isPending) {

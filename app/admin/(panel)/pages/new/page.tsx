@@ -10,7 +10,7 @@ export default function NewPagePage() {
 
   return (
     <>
-      <Button variant="ghost" size="sm" className="mb-4 w-fit" render={<Link href="/pages" />}>
+      <Button variant="ghost" size="sm" className="mb-4 w-fit" render={<Link href="/admin/pages" />}>
         ← Back to pages
       </Button>
       <PageEditor mutations={mutations} />

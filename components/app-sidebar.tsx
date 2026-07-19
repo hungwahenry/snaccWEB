@@ -34,32 +34,32 @@ import {
 import { useLogout } from "@/features/auth/hooks/use-auth"
 
 const NAV = [
-  { group: "Overview", items: [{ href: "/", label: "Dashboard", icon: LayoutDashboard }] },
-  { group: "People", items: [{ href: "/users", label: "Users", icon: Users }] },
+  { group: "Overview", items: [{ href: "/admin", label: "Dashboard", icon: LayoutDashboard }] },
+  { group: "People", items: [{ href: "/admin/users", label: "Users", icon: Users }] },
   {
     group: "Content",
     items: [
-      { href: "/snaccs", label: "Snaccs", icon: MessageSquare },
-      { href: "/reports", label: "Reports", icon: Flag },
-      { href: "/report-reasons", label: "Report reasons", icon: Tags },
-      { href: "/pages", label: "Pages", icon: FileText },
-      { href: "/announcements", label: "Announcements", icon: Megaphone },
+      { href: "/admin/snaccs", label: "Snaccs", icon: MessageSquare },
+      { href: "/admin/reports", label: "Reports", icon: Flag },
+      { href: "/admin/report-reasons", label: "Report reasons", icon: Tags },
+      { href: "/admin/pages", label: "Pages", icon: FileText },
+      { href: "/admin/announcements", label: "Announcements", icon: Megaphone },
     ],
   },
   {
     group: "Money",
     items: [
-      { href: "/earnings", label: "Earnings", icon: Coins },
-      { href: "/withdrawals", label: "Withdrawals", icon: Banknote },
+      { href: "/admin/earnings", label: "Earnings", icon: Coins },
+      { href: "/admin/withdrawals", label: "Withdrawals", icon: Banknote },
     ],
   },
   {
     group: "Platform",
     items: [
-      { href: "/universities", label: "Universities", icon: School },
-      { href: "/config", label: "Config", icon: SlidersHorizontal },
-      { href: "/flags", label: "Feature flags", icon: ToggleRight },
-      { href: "/audit", label: "Audit log", icon: ScrollText },
+      { href: "/admin/universities", label: "Universities", icon: School },
+      { href: "/admin/config", label: "Config", icon: SlidersHorizontal },
+      { href: "/admin/flags", label: "Feature flags", icon: ToggleRight },
+      { href: "/admin/audit", label: "Audit log", icon: ScrollText },
     ],
   },
 ]
@@ -70,7 +70,7 @@ export function AppSidebar() {
   const logout = useLogout()
 
   function isActive(href: string) {
-    return href === "/" ? pathname === "/" : pathname.startsWith(href)
+    return href === "/admin" ? pathname === "/admin" : pathname.startsWith(href)
   }
 
   return (
@@ -104,7 +104,7 @@ export function AppSidebar() {
           variant="ghost"
           size="sm"
           className="justify-start"
-          onClick={() => logout.mutate(undefined, { onSuccess: () => router.replace("/login") })}
+          onClick={() => logout.mutate(undefined, { onSuccess: () => router.replace("/admin/login") })}
         >
           <LogOut />
           Log out

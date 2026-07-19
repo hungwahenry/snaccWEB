@@ -14,7 +14,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
 
   return (
     <>
-      <Button variant="ghost" size="sm" className="mb-4 w-fit" render={<Link href="/users" />}>
+      <Button variant="ghost" size="sm" className="mb-4 w-fit" render={<Link href="/admin/users" />}>
         ← Back to users
       </Button>
       {query.isPending ? (

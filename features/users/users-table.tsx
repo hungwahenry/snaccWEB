@@ -121,7 +121,7 @@ export function UsersTable({
               <TableRow
                 key={user.id}
                 className="cursor-pointer"
-                onClick={() => router.push(`/users/${user.id}`)}
+                onClick={() => router.push(`/admin/users/${user.id}`)}
               >
                 <TableCell>
                   <div className="flex items-center gap-3">

@@ -32,7 +32,7 @@ export function LoginForm() {
     login.mutate(
       { email, code },
       {
-        onSuccess: () => router.replace("/"),
+        onSuccess: () => router.replace("/admin"),
         onError: (error) => toast.error(getErrorMessage(error)),
       },
     )

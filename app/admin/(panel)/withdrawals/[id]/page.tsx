@@ -18,7 +18,7 @@ export default function WithdrawalDetailPage({ params }: { params: Promise<{ id:
         variant="ghost"
         size="sm"
         className="mb-4 w-fit"
-        render={<Link href="/withdrawals" />}
+        render={<Link href="/admin/withdrawals" />}
       >
         ← Back to withdrawals
       </Button>

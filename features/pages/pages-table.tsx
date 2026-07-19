@@ -25,7 +25,7 @@ export function PagesTable({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-end">
-        <Button size="sm" render={<Link href="/pages/new" />}>
+        <Button size="sm" render={<Link href="/admin/pages/new" />}>
           New page
         </Button>
       </div>
@@ -64,7 +64,7 @@ export function PagesTable({
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
-                    <Button variant="outline" size="sm" render={<Link href={`/pages/${page.id}`} />}>
+                    <Button variant="outline" size="sm" render={<Link href={`/admin/pages/${page.id}`} />}>
                       Edit
                     </Button>
                     <Button
