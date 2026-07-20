@@ -24,3 +24,20 @@ export async function getPublicPage(slug: string): Promise<PublicPage | null> {
     return null
   }
 }
+
+export interface PublicPageSummary {
+  slug: string
+  title: string
+  excerpt: string | null
+}
+
+export async function getPublicPages(): Promise<PublicPageSummary[]> {
+  try {
+    const res = await fetch(`${API_URL}/api/v1/pages`, { next: { revalidate: 3600 } })
+    if (!res.ok) return []
+    const json = (await res.json()) as { data: PublicPageSummary[] }
+    return json.data ?? []
+  } catch {
+    return []
+  }
+}
