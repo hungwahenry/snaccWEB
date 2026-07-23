@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["Q47JK367YP.com.snacc.fyi"],
+        "components": [
+          { "/": "/snacc/*", "comment": "Snacc permalinks" },
+          { "/": "/campus/*", "comment": "Campus feeds" },
+          { "/": "/@*", "comment": "Profiles" }
+        ]
+      }
+    ]
+  }
+}

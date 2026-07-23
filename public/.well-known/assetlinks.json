@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.snacc.fyi",
+      "sha256_cert_fingerprints": [
+        "69:E2:76:AC:DE:94:59:BC:F0:16:87:B2:1F:79:91:96:D1:29:FF:8D:31:4A:68:C9:53:9A:59:3D:BE:0C:A7:4B",
+        "9B:46:04:A9:73:52:44:2E:BE:19:26:C2:DC:24:48:34:77:5F:B2:46:75:13:98:53:A7:1E:5F:FF:AF:49:CE:C6"
+      ]
+    }
+  }
+]
