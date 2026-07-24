@@ -1,8 +1,5 @@
 import type { ReactNode } from "react"
-
-// TODO: replace with the real store listings once published.
-const APP_STORE_URL = "https://apps.apple.com/app/snacc"
-const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.snacc.fyi"
+import { APP_STORE_URL, PLAY_STORE_URL } from "./store-links"
 
 function AppleLogo() {
   return (

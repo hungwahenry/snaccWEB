@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
       },
     ]
   },
+  async rewrites() {
+    return {
+      beforeFiles: [{ source: "/@:username", destination: "/profile/:username" }],
+    }
+  },
 }
 
 export default nextConfig
