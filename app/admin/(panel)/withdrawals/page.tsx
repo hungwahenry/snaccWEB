@@ -3,9 +3,9 @@
 import { useState } from "react"
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { WithdrawalsTable } from "@/features/withdrawals/withdrawals-table"
-import { useWithdrawals } from "@/features/withdrawals/use-withdrawals"
-import type { ListWithdrawalsParams } from "@/features/withdrawals/types"
+import { WithdrawalsTable } from "@/features/admin/withdrawals/withdrawals-table"
+import { useWithdrawals } from "@/features/admin/withdrawals/use-withdrawals"
+import type { ListWithdrawalsParams } from "@/features/admin/withdrawals/types"
 
 export default function WithdrawalsPage() {
   const [params, setParams] = useState<ListWithdrawalsParams>({ page: 1, perPage: 20 })

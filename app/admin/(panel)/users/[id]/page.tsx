@@ -4,8 +4,8 @@ import Link from "next/link"
 import { use } from "react"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
-import { UserDetail } from "@/features/users/user-detail"
-import { useUser, useUserMutations } from "@/features/users/use-users"
+import { UserDetail } from "@/features/admin/users/user-detail"
+import { useUser, useUserMutations } from "@/features/admin/users/use-users"
 
 export default function UserDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)

@@ -33,7 +33,7 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { formatDate } from "@/lib/format"
 import type { Paginated } from "@/lib/api/types"
-import type { AdminUniversity } from "@/features/universities/types"
+import type { AdminUniversity } from "@/features/admin/universities/types"
 import type { useAnnouncementMutations } from "./use-announcements"
 import type { AdminAnnouncement, ListAnnouncementsParams } from "./types"
 

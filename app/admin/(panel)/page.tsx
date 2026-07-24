@@ -2,8 +2,8 @@
 
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { DashboardView } from "@/features/dashboard/dashboard-view"
-import { useDashboard } from "@/features/dashboard/use-dashboard"
+import { DashboardView } from "@/features/admin/dashboard/dashboard-view"
+import { useDashboard } from "@/features/admin/dashboard/use-dashboard"
 
 export default function DashboardPage() {
   const query = useDashboard()

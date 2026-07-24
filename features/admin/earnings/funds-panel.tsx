@@ -30,7 +30,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { formatNaira } from "@/lib/format"
-import type { AdminUniversity } from "@/features/universities/types"
+import type { AdminUniversity } from "@/features/admin/universities/types"
 import type { useFundMutations } from "./use-earnings"
 import type { AdminFund } from "./types"
 

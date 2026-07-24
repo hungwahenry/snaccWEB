@@ -3,9 +3,9 @@
 import { useState } from "react"
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { ReportsTable } from "@/features/reports/reports-table"
-import { useReports, useResolveReport } from "@/features/reports/use-reports"
-import type { ListReportsParams } from "@/features/reports/types"
+import { ReportsTable } from "@/features/admin/reports/reports-table"
+import { useReports, useResolveReport } from "@/features/admin/reports/use-reports"
+import type { ListReportsParams } from "@/features/admin/reports/types"
 
 export default function ReportsPage() {
   const [params, setParams] = useState<ListReportsParams>({ page: 1, perPage: 20, status: "open" })

@@ -3,9 +3,9 @@
 import { useState } from "react"
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { UsersTable } from "@/features/users/users-table"
-import { useUsers } from "@/features/users/use-users"
-import type { ListUsersParams } from "@/features/users/types"
+import { UsersTable } from "@/features/admin/users/users-table"
+import { useUsers } from "@/features/admin/users/use-users"
+import type { ListUsersParams } from "@/features/admin/users/types"
 
 export default function UsersPage() {
   const [params, setParams] = useState<ListUsersParams>({ page: 1, perPage: 20 })

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useEffect, type ReactNode } from "react"
 import { Spinner } from "@/components/ui/spinner"
-import { useMe } from "@/features/auth/hooks/use-auth"
+import { useMe } from "@/features/admin/auth/hooks/use-auth"
 
 export function AuthGuard({ children }: { children: ReactNode }) {
   const router = useRouter()

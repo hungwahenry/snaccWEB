@@ -3,9 +3,9 @@
 import { useState } from "react"
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { SnaccsTable } from "@/features/snaccs/snaccs-table"
-import { useSnaccMutations, useSnaccs } from "@/features/snaccs/use-snaccs"
-import type { ListSnaccsParams } from "@/features/snaccs/types"
+import { SnaccsTable } from "@/features/admin/snaccs/snaccs-table"
+import { useSnaccMutations, useSnaccs } from "@/features/admin/snaccs/use-snaccs"
+import type { ListSnaccsParams } from "@/features/admin/snaccs/types"
 
 export default function SnaccsPage() {
   const [params, setParams] = useState<ListSnaccsParams>({ page: 1, perPage: 20 })

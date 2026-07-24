@@ -4,8 +4,8 @@ import Link from "next/link"
 import { use } from "react"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
-import { WithdrawalDetail } from "@/features/withdrawals/withdrawal-detail"
-import { useWithdrawal, useWithdrawalMutations } from "@/features/withdrawals/use-withdrawals"
+import { WithdrawalDetail } from "@/features/admin/withdrawals/withdrawal-detail"
+import { useWithdrawal, useWithdrawalMutations } from "@/features/admin/withdrawals/use-withdrawals"
 
 export default function WithdrawalDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)

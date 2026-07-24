@@ -31,7 +31,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { useLogout } from "@/features/auth/hooks/use-auth"
+import { useLogout } from "@/features/admin/auth/hooks/use-auth"
 
 const NAV = [
   { group: "Overview", items: [{ href: "/admin", label: "Dashboard", icon: LayoutDashboard }] },

@@ -4,8 +4,8 @@ import Link from "next/link"
 import { use } from "react"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
-import { PageEditor } from "@/features/pages/page-editor"
-import { usePage, usePageMutations } from "@/features/pages/use-pages"
+import { PageEditor } from "@/features/admin/pages/page-editor"
+import { usePage, usePageMutations } from "@/features/admin/pages/use-pages"
 
 export default function EditPagePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)

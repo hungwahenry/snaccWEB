@@ -3,9 +3,9 @@
 import { useState } from "react"
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { AuditTable } from "@/features/audit/audit-table"
-import { useAuditLogs } from "@/features/audit/use-audit"
-import type { ListAuditParams } from "@/features/audit/types"
+import { AuditTable } from "@/features/admin/audit/audit-table"
+import { useAuditLogs } from "@/features/admin/audit/use-audit"
+import type { ListAuditParams } from "@/features/admin/audit/types"
 
 export default function AuditPage() {
   const [params, setParams] = useState<ListAuditParams>({ page: 1, perPage: 30 })

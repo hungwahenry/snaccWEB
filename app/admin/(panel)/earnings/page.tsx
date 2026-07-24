@@ -3,11 +3,11 @@
 import { useState } from "react"
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { EarningsLedger } from "@/features/earnings/earnings-ledger"
-import { FundsPanel } from "@/features/earnings/funds-panel"
-import { useEarnings, useFundMutations, useFunds } from "@/features/earnings/use-earnings"
-import { useUniversities } from "@/features/universities/use-universities"
-import type { ListEarningsParams } from "@/features/earnings/types"
+import { EarningsLedger } from "@/features/admin/earnings/earnings-ledger"
+import { FundsPanel } from "@/features/admin/earnings/funds-panel"
+import { useEarnings, useFundMutations, useFunds } from "@/features/admin/earnings/use-earnings"
+import { useUniversities } from "@/features/admin/universities/use-universities"
+import type { ListEarningsParams } from "@/features/admin/earnings/types"
 
 export default function EarningsPage() {
   const [params, setParams] = useState<ListEarningsParams>({ page: 1, perPage: 20 })

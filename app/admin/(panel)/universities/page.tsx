@@ -2,8 +2,8 @@
 
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { UniversitiesTable } from "@/features/universities/universities-table"
-import { useUniversities, useUniversityMutations } from "@/features/universities/use-universities"
+import { UniversitiesTable } from "@/features/admin/universities/universities-table"
+import { useUniversities, useUniversityMutations } from "@/features/admin/universities/use-universities"
 
 export default function UniversitiesPage() {
   const query = useUniversities()
