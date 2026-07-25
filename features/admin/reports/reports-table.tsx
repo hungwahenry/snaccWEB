@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useState } from "react"
 import { DataPagination } from "@/components/data-pagination"
 import { Badge } from "@/components/ui/badge"
@@ -21,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
 import {
   Table,
   TableBody,
@@ -42,16 +42,33 @@ const STATUS_VARIANT: Record<AdminReport["status"], "secondary" | "default" | "o
   dismissed: "outline",
 }
 
+function handleOf(author: { username: string | null; display_name: string | null }) {
+  return author.username ? `@${author.username}` : (author.display_name ?? "unknown")
+}
+
 function targetLabel(target: AdminReport["target"]) {
   if (!target) return "—"
   if (target.type === "snacc") {
-    const handle = target.snacc.author.username
-      ? `@${target.snacc.author.username}`
-      : target.snacc.author.display_name
-    return `${target.snacc.body?.slice(0, 40) || "media snacc"} · ${handle}`
+    return `${target.snacc.body?.slice(0, 40) || "media snacc"} · ${handleOf(target.snacc.author)}`
   }
-  const handle = target.user.username ? `@${target.user.username}` : target.user.display_name
-  return `User ${handle}`
+  if (target.type === "user") {
+    return `User ${handleOf(target.user)}`
+  }
+  // A DM is de-masked here: the real sender behind the pseudonym.
+  return `${target.message.body?.slice(0, 40) || "message"} · ${handleOf(target.message.sender)}`
+}
+
+const TARGET_NOUN = { snacc: "snacc", user: "user", message: "message" } as const
+
+function actChoicesFor(target: AdminReport["target"]) {
+  if (target?.type === "snacc") return [{ value: "delete_snacc", label: "Remove the snacc" }]
+  if (target?.type === "user") return [{ value: "suspend_user", label: "Suspend the user" }]
+  if (target?.type === "message")
+    return [
+      { value: "delete_message", label: "Remove the message" },
+      { value: "suspend_sender", label: "Suspend the sender" },
+    ]
+  return []
 }
 
 function ResolveDialog({
@@ -64,18 +81,20 @@ function ResolveDialog({
   const [open, setOpen] = useState(false)
   const [status, setStatus] = useState<"actioned" | "dismissed">("actioned")
   const [note, setNote] = useState("")
-  const [act, setAct] = useState(false)
+  const [act, setAct] = useState<string>("none")
 
-  const isSnacc = report.target?.type === "snacc"
-  const isUser = report.target?.type === "user"
-  const actLabel = isSnacc ? "Also remove the snacc" : "Also suspend the user"
+  const target = report.target
+  const noun = target ? TARGET_NOUN[target.type] : "target"
+  const actChoices = actChoicesFor(target)
+  const threadId = target?.type === "message" ? target.message.conversation.id : null
 
   function submit() {
     const input: ResolveReportInput = { status }
-    if (isSnacc && report.target?.type === "snacc") input.snaccId = report.target.snacc.id
-    if (isUser && report.target?.type === "user") input.reportedUserId = report.target.user.id
+    if (target?.type === "snacc") input.snaccId = target.snacc.id
+    else if (target?.type === "user") input.reportedUserId = target.user.id
+    else if (target?.type === "message") input.messageId = target.message.id
     if (note.trim()) input.note = note.trim()
-    if (act) input.act = isSnacc ? "delete_snacc" : "suspend_user"
+    if (act !== "none") input.act = act as ResolveReportInput["act"]
     resolve.mutate(input, { onSuccess: () => setOpen(false) })
   }
 
@@ -93,8 +112,16 @@ function ResolveDialog({
           <DialogTitle>Resolve reports</DialogTitle>
         </DialogHeader>
         <p className="text-muted-foreground text-sm">
-          Resolves every open report on this {isSnacc ? "snacc" : "user"} together.
+          Resolves every open report on this {noun} together.
         </p>
+        {threadId ? (
+          <Link
+            href={`/admin/messages/${threadId}`}
+            className="text-sm font-medium underline underline-offset-4"
+          >
+            View the full thread →
+          </Link>
+        ) : null}
         <Field>
           <FieldLabel>Outcome</FieldLabel>
           <Select value={status} onValueChange={(value) => value && setStatus(value as never)}>
@@ -107,11 +134,23 @@ function ResolveDialog({
             </SelectContent>
           </Select>
         </Field>
-        {report.target && (
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">{actLabel}</span>
-            <Switch checked={act} onCheckedChange={setAct} />
-          </div>
+        {actChoices.length > 0 && (
+          <Field>
+            <FieldLabel>Action (optional)</FieldLabel>
+            <Select value={act} onValueChange={(value) => setAct(value || "none")}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Resolve only</SelectItem>
+                {actChoices.map((choice) => (
+                  <SelectItem key={choice.value} value={choice.value}>
+                    {choice.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
         )}
         <Field>
           <FieldLabel>Note (optional)</FieldLabel>
@@ -179,6 +218,7 @@ export function ReportsTable({
             <SelectItem value="all">All targets</SelectItem>
             <SelectItem value="snacc">Snaccs</SelectItem>
             <SelectItem value="user">Users</SelectItem>
+            <SelectItem value="message">Messages</SelectItem>
           </SelectContent>
         </Select>
       </div>

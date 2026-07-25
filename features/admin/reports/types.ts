@@ -19,6 +19,23 @@ export type ReportTarget =
       }
     }
   | { type: "user"; user: ReportAuthor }
+  | {
+      type: "message"
+      message: {
+        id: string
+        body: string
+        deleted_at: string | null
+        created_at: string
+        sender: ReportAuthor
+        conversation: {
+          id: string
+          pseudonym: string
+          revealed: boolean
+          ghost: ReportAuthor
+          target: ReportAuthor
+        }
+      }
+    }
   | null
 
 export interface AdminReport {
@@ -38,13 +55,14 @@ export interface ListReportsParams {
   page?: number
   perPage?: number
   status?: ReportStatus
-  targetType?: "snacc" | "user"
+  targetType?: "snacc" | "user" | "message"
 }
 
 export interface ResolveReportInput {
   snaccId?: string
   reportedUserId?: string
+  messageId?: string
   status: "actioned" | "dismissed"
   note?: string
-  act?: "delete_snacc" | "suspend_user"
+  act?: "delete_snacc" | "suspend_user" | "delete_message" | "suspend_sender"
 }

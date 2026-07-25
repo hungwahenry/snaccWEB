@@ -7,6 +7,7 @@ import {
   Coins,
   Flag,
   FileText,
+  Ghost,
   LayoutDashboard,
   LogOut,
   Megaphone,
@@ -41,6 +42,7 @@ const NAV = [
     items: [
       { href: "/admin/snaccs", label: "Snaccs", icon: MessageSquare },
       { href: "/admin/reports", label: "Reports", icon: Flag },
+      { href: "/admin/messages", label: "Messages", icon: Ghost },
       { href: "/admin/report-reasons", label: "Report reasons", icon: Tags },
       { href: "/admin/pages", label: "Pages", icon: FileText },
       { href: "/admin/announcements", label: "Announcements", icon: Megaphone },
