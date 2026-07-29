@@ -62,6 +62,8 @@ export function UserDetail({
                 <Badge variant="outline">user</Badge>
               )}
               {user.suspended_at && <Badge variant="destructive">suspended</Badge>}
+              {user.earnings_paused_at && <Badge variant="secondary">earnings paused</Badge>}
+              {user.payouts_blocked_at && <Badge variant="secondary">payouts blocked</Badge>}
             </div>
             <p className="text-muted-foreground text-sm">
               {user.username ? `@${user.username} · ` : ""}
@@ -79,6 +81,20 @@ export function UserDetail({
         <div className="border-destructive/40 bg-destructive/10 text-destructive rounded-xl border px-4 py-3 text-sm">
           Suspended {formatDate(user.suspended_at)}
           {user.suspended_reason ? ` — ${user.suspended_reason}` : ""}
+        </div>
+      )}
+
+      {user.earnings_paused_at && (
+        <div className="border-border bg-muted text-muted-foreground rounded-xl border px-4 py-3 text-sm">
+          Earnings paused {formatDate(user.earnings_paused_at)}
+          {user.earnings_paused_reason ? ` — ${user.earnings_paused_reason}` : ""}
+        </div>
+      )}
+
+      {user.payouts_blocked_at && (
+        <div className="border-border bg-muted text-muted-foreground rounded-xl border px-4 py-3 text-sm">
+          Payouts blocked {formatDate(user.payouts_blocked_at)}
+          {user.payouts_blocked_reason ? ` — ${user.payouts_blocked_reason}` : ""}
         </div>
       )}
 

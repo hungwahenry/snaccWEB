@@ -18,6 +18,7 @@ import {
   Tags,
   ToggleRight,
   Users,
+  VenetianMask,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -61,6 +62,7 @@ const NAV = [
       { href: "/admin/universities", label: "Universities", icon: School },
       { href: "/admin/config", label: "Config", icon: SlidersHorizontal },
       { href: "/admin/flags", label: "Feature flags", icon: ToggleRight },
+      { href: "/admin/ghost-hour", label: "Ghost Hour", icon: VenetianMask },
       { href: "/admin/audit", label: "Audit log", icon: ScrollText },
     ],
   },

@@ -6,12 +6,16 @@ import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/api/errors"
 import {
   adjustBalance,
+  blockPayouts,
   deleteUser,
   getUser,
   listUsers,
+  pauseEarnings,
+  resumeEarnings,
   revokeSessions,
   setRole,
   suspendUser,
+  unblockPayouts,
   unsuspendUser,
 } from "./api"
 import type { ListUsersParams } from "./types"
@@ -54,6 +58,38 @@ export function useUserMutations(id: string) {
       onSuccess: () => {
         invalidate()
         toast.success("User reinstated.")
+      },
+      onError,
+    }),
+    pauseEarnings: useMutation({
+      mutationFn: (reason?: string) => pauseEarnings(id, reason),
+      onSuccess: () => {
+        invalidate()
+        toast.success("Earnings paused.")
+      },
+      onError,
+    }),
+    resumeEarnings: useMutation({
+      mutationFn: () => resumeEarnings(id),
+      onSuccess: () => {
+        invalidate()
+        toast.success("Earnings resumed.")
+      },
+      onError,
+    }),
+    blockPayouts: useMutation({
+      mutationFn: (reason?: string) => blockPayouts(id, reason),
+      onSuccess: () => {
+        invalidate()
+        toast.success("Payouts blocked.")
+      },
+      onError,
+    }),
+    unblockPayouts: useMutation({
+      mutationFn: () => unblockPayouts(id),
+      onSuccess: () => {
+        invalidate()
+        toast.success("Payouts unblocked.")
       },
       onError,
     }),

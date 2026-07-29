@@ -225,6 +225,61 @@ function DeleteDialog({ user, actions }: { user: AdminUserDetail; actions: Mutat
   )
 }
 
+function ReasonDialog({
+  triggerLabel,
+  title,
+  description,
+  confirmLabel,
+  pending,
+  onConfirm,
+}: {
+  triggerLabel: string
+  title: string
+  description: string
+  confirmLabel: string
+  pending: boolean
+  onConfirm: (reason: string | undefined, close: () => void) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const [reason, setReason] = useState("")
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger
+        render={
+          <Button variant="outline" size="sm">
+            {triggerLabel}
+          </Button>
+        }
+      />
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+        </DialogHeader>
+        <p className="text-muted-foreground text-sm">{description}</p>
+        <Field>
+          <FieldLabel>Reason (optional)</FieldLabel>
+          <Textarea
+            value={reason}
+            onChange={(event) => setReason(event.target.value)}
+            rows={3}
+            maxLength={500}
+          />
+        </Field>
+        <DialogFooter>
+          <DialogClose render={<Button variant="ghost">Cancel</Button>} />
+          <Button
+            disabled={pending}
+            onClick={() => onConfirm(reason.trim() || undefined, () => setOpen(false))}
+          >
+            {confirmLabel}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
 export function UserActions({ user, actions }: { user: AdminUserDetail; actions: Mutations }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -242,6 +297,44 @@ export function UserActions({ user, actions }: { user: AdminUserDetail; actions:
       )}
       <RoleDialog user={user} actions={actions} />
       <BalanceDialog user={user} actions={actions} />
+      {user.earnings_paused_at ? (
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={actions.resumeEarnings.isPending}
+          onClick={() => actions.resumeEarnings.mutate()}
+        >
+          Resume earnings
+        </Button>
+      ) : (
+        <ReasonDialog
+          triggerLabel="Pause earnings"
+          title="Pause earnings"
+          description="Stops new earning credits for this user. Their account stays fully active."
+          confirmLabel="Pause earnings"
+          pending={actions.pauseEarnings.isPending}
+          onConfirm={(reason, close) => actions.pauseEarnings.mutate(reason, { onSuccess: close })}
+        />
+      )}
+      {user.payouts_blocked_at ? (
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={actions.unblockPayouts.isPending}
+          onClick={() => actions.unblockPayouts.mutate()}
+        >
+          Unblock payouts
+        </Button>
+      ) : (
+        <ReasonDialog
+          triggerLabel="Block payouts"
+          title="Block payouts"
+          description="Stops this user from withdrawing. Their balance stays intact."
+          confirmLabel="Block payouts"
+          pending={actions.blockPayouts.isPending}
+          onConfirm={(reason, close) => actions.blockPayouts.mutate(reason, { onSuccess: close })}
+        />
+      )}
       <Button
         variant="outline"
         size="sm"

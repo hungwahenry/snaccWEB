@@ -11,6 +11,10 @@ export interface AdminUserRow {
   email_verified_at: string | null
   suspended_at: string | null
   suspended_reason: string | null
+  earnings_paused_at: string | null
+  earnings_paused_reason: string | null
+  payouts_blocked_at: string | null
+  payouts_blocked_reason: string | null
   created_at: string
   username: string | null
   display_name: string | null

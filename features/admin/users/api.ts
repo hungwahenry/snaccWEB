@@ -18,6 +18,22 @@ export function unsuspendUser(id: string) {
   return api.post<AdminUserRow>(`/admin/users/${id}/unsuspend`)
 }
 
+export function pauseEarnings(id: string, reason?: string) {
+  return api.post<AdminUserRow>(`/admin/users/${id}/pause-earnings`, { reason })
+}
+
+export function resumeEarnings(id: string) {
+  return api.post<AdminUserRow>(`/admin/users/${id}/resume-earnings`)
+}
+
+export function blockPayouts(id: string, reason?: string) {
+  return api.post<AdminUserRow>(`/admin/users/${id}/block-payouts`, { reason })
+}
+
+export function unblockPayouts(id: string) {
+  return api.post<AdminUserRow>(`/admin/users/${id}/unblock-payouts`)
+}
+
 export function setRole(id: string, role: string) {
   return api.patch<AdminUserRow>(`/admin/users/${id}/role`, { role })
 }
