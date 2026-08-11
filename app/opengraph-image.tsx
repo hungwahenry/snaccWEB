@@ -7,7 +7,7 @@ export const contentType = "image/png"
 const BG = "#000000"
 const FG = "#ffffff"
 const MUTED = "#8b8b8b"
-const RESNACC = "#24c187" // brand green — resnacc (dark variant, reads on black)
+const RESNACC = "#24c187"
 
 async function loadInterTight(weight: number): Promise<ArrayBuffer> {
   const css = await fetch(
