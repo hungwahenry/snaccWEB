@@ -1,4 +1,4 @@
-export const APP_STORE_URL = "https://apps.apple.com/app/snacc"
+export const APP_STORE_URL = "https://apps.apple.com/us/app/snacc-campus-social-app/id6792540282"
 export const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.snacc.fyi"
 
 export type StoreTarget = { href: string; label: string }
