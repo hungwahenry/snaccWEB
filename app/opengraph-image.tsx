@@ -1,5 +1,7 @@
+import { readFile } from "node:fs/promises"
 import { ImageResponse } from "next/og"
 
+export const runtime = "nodejs"
 export const alt = "Snacc — the social app for your campus"
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
@@ -7,7 +9,6 @@ export const contentType = "image/png"
 const BG = "#000000"
 const FG = "#ffffff"
 const MUTED = "#8b8b8b"
-const RESNACC = "#24c187"
 
 async function loadInterTight(weight: number): Promise<ArrayBuffer> {
   const css = await fetch(
@@ -19,6 +20,9 @@ async function loadInterTight(weight: number): Promise<ArrayBuffer> {
 }
 
 export default async function OpengraphImage() {
+  const markData = await readFile(new URL("./opengraph-mark.png", import.meta.url))
+  const markSrc = `data:image/png;base64,${markData.toString("base64")}`
+
   let fonts: { name: string; data: ArrayBuffer; weight: 500 | 800; style: "normal" }[] = []
   try {
     const [extraBold, medium] = await Promise.all([loadInterTight(800), loadInterTight(500)])
@@ -45,23 +49,27 @@ export default async function OpengraphImage() {
         }}
       >
         <div style={{ display: "flex", fontSize: 30, fontWeight: 500, color: MUTED, letterSpacing: 1 }}>
-          snacc<span style={{ color: RESNACC }}>.</span>fyi
+          snacc.fyi
         </div>
 
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <div
-            style={{
-              display: "flex",
-              fontSize: 184,
-              fontWeight: 800,
-              color: FG,
-              letterSpacing: -9,
-              lineHeight: 1,
-            }}
-          >
-            snacc<span style={{ color: RESNACC }}>.</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={markSrc} width={150} height={150} alt="" />
+            <div
+              style={{
+                display: "flex",
+                fontSize: 184,
+                fontWeight: 800,
+                color: FG,
+                letterSpacing: -9,
+                lineHeight: 1,
+              }}
+            >
+              snacc
+            </div>
           </div>
-          <div style={{ display: "flex", fontSize: 52, fontWeight: 500, color: MUTED, marginTop: 20 }}>
+          <div style={{ display: "flex", fontSize: 52, fontWeight: 500, color: MUTED, marginTop: 24 }}>
             What&apos;s happening on campus?
           </div>
         </div>
@@ -77,7 +85,7 @@ export default async function OpengraphImage() {
           }}
         >
           <span style={{ display: "flex" }}>The social app for your campus</span>
-          <span style={{ display: "flex", color: RESNACC }}>·</span>
+          <span style={{ display: "flex" }}>·</span>
           <span style={{ display: "flex" }}>iOS &amp; Android</span>
         </div>
       </div>
