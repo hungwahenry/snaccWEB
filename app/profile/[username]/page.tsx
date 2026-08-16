@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { LandingShell } from "@/components/marketing/landing-shell"
-import { AnonSendCard } from "@/features/anon/anon-sender"
+import { AnonEntry } from "@/features/anon/anon-entry"
 import { getUserSnaccs } from "@/features/snaccs/public"
 import { SnaccCard } from "@/features/snaccs/snacc-card"
 import { ProfileHeader } from "@/features/users/profile-header"
@@ -46,7 +46,7 @@ export default async function ProfilePage({ params }: Props) {
     <LandingShell cta="See all snaccs in the app">
       <ProfileHeader profile={profile} />
       {profile.username ? (
-        <AnonSendCard
+        <AnonEntry
           username={profile.username}
           name={profile.display_name ?? `@${profile.username}`}
           accepting={profile.accepts_public_messages}
