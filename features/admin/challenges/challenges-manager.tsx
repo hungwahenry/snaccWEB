@@ -1,5 +1,6 @@
 "use client"
 
+import { Plus, X } from "lucide-react"
 import { useState, type ReactElement } from "react"
 import { DataPagination } from "@/components/data-pagination"
 import { Badge } from "@/components/ui/badge"
@@ -53,20 +54,22 @@ function ChallengeDialog({
   const [description, setDescription] = useState("")
   const [tag, setTag] = useState("")
   const [rewardNaira, setRewardNaira] = useState("")
-  const [prompts, setPrompts] = useState("")
+  const [prompts, setPrompts] = useState<string[]>([""])
 
   function reset() {
     setTitle(challenge?.title ?? "")
     setDescription(challenge?.description ?? "")
     setTag(challenge?.tag ?? "")
     setRewardNaira(challenge ? String(challenge.reward_kobo / 100) : "")
-    setPrompts(challenge ? challenge.day_prompts.map((day) => day.prompt).join("\n") : "")
+    setPrompts(challenge && challenge.day_prompts.length > 0 ? challenge.day_prompts.map((day) => day.prompt) : [""])
   }
 
-  const promptLines = prompts
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
+  const setPromptAt = (index: number, value: string) =>
+    setPrompts((prev) => prev.map((prompt, i) => (i === index ? value : prompt)))
+  const addPrompt = () => setPrompts((prev) => [...prev, ""])
+  const removePrompt = (index: number) => setPrompts((prev) => prev.filter((_, i) => i !== index))
+
+  const promptLines = prompts.map((line) => line.trim()).filter(Boolean)
   const rewardKobo = Math.round(Number(rewardNaira) * 100)
   const valid =
     title.trim() !== "" &&
@@ -149,19 +152,47 @@ function ChallengeDialog({
           </Field>
         </div>
         <Field>
-          <FieldLabel>Day prompts — one per line</FieldLabel>
-          <Textarea
-            value={prompts}
-            onChange={(event) => setPrompts(event.target.value)}
-            rows={6}
-            disabled={!daysEditable}
-            placeholder={"Introduce yourself in 3 emojis\nPost your campus's hidden gem\n…"}
-          />
-          <p className="text-muted-foreground text-xs">
-            {daysEditable
-              ? `${promptLines.length} day${promptLines.length === 1 ? "" : "s"}`
-              : "Day prompts can only be edited while the challenge is a draft."}
-          </p>
+          <FieldLabel>Day prompts</FieldLabel>
+          <div className="flex flex-col gap-2">
+            {prompts.map((prompt, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <span className="text-muted-foreground w-12 shrink-0 text-xs">Day {index + 1}</span>
+                <Input
+                  value={prompt}
+                  onChange={(event) => setPromptAt(index, event.target.value)}
+                  disabled={!daysEditable}
+                  maxLength={280}
+                  placeholder={`Prompt for day ${index + 1}`}
+                />
+                {daysEditable && prompts.length > 1 ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removePrompt(index)}
+                    aria-label={`Remove day ${index + 1}`}
+                  >
+                    <X className="size-4" />
+                  </Button>
+                ) : null}
+              </div>
+            ))}
+            {daysEditable ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="self-start"
+                onClick={addPrompt}
+              >
+                <Plus className="size-4" /> Add day
+              </Button>
+            ) : (
+              <p className="text-muted-foreground text-xs">
+                Day prompts can only be edited while the challenge is a draft.
+              </p>
+            )}
+          </div>
         </Field>
         <DialogFooter>
           <DialogClose render={<Button variant="ghost">Cancel</Button>} />
