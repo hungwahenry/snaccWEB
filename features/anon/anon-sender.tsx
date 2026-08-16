@@ -17,7 +17,7 @@ export function AnonSendCard({
   const s = useAnonSender(username)
 
   return (
-    <div className="border-border bg-card mx-6 mb-2 flex flex-col gap-4 rounded-3xl border p-5">
+    <div className="border-border flex flex-col gap-4 border-t px-6 py-5">
       <div>
         <h2 className="text-foreground text-lg font-extrabold tracking-tight">
           Send {name} an anonymous message 👻
