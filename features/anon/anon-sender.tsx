@@ -2,29 +2,35 @@
 
 import { StoreButtons } from "@/components/marketing/store-buttons"
 import { cn } from "@/lib/utils"
-import type { AnonMessage, AnonRecipient } from "./public"
+import type { AnonMessage } from "./public"
 import { useAnonSender } from "./use-anon-sender"
 
-export function AnonSender({ recipient }: { recipient: AnonRecipient }) {
-  const s = useAnonSender(recipient)
-  const name = recipient.display_name ?? `@${recipient.username}`
+export function AnonSendCard({
+  username,
+  name,
+  accepting,
+}: {
+  username: string
+  name: string
+  accepting: boolean
+}) {
+  const s = useAnonSender(username)
 
   return (
-    <div className="flex flex-col gap-6 px-6 py-8">
-      <div className="flex flex-col items-center gap-3 text-center">
-        <img src={recipient.avatar_url} alt="" className="size-24 rounded-full" />
-        <div>
-          <h1 className="text-foreground text-2xl font-extrabold tracking-tight text-balance">
-            Send {name} an anonymous message
-          </h1>
-          <p className="text-muted-foreground mt-1 text-sm">They&rsquo;ll never know it&rsquo;s you 👻</p>
-        </div>
+    <div className="border-border bg-card mx-6 mb-2 flex flex-col gap-4 rounded-3xl border p-5">
+      <div>
+        <h2 className="text-foreground text-lg font-extrabold tracking-tight">
+          Send {name} an anonymous message 👻
+        </h2>
+        <p className="text-muted-foreground text-sm">They&rsquo;ll never know it&rsquo;s you.</p>
       </div>
 
-      {!recipient.accepting ? (
-        <Notice>{name} isn&rsquo;t accepting anonymous messages right now.</Notice>
+      {!accepting ? (
+        <p className="text-muted-foreground text-sm">
+          {name} isn&rsquo;t accepting anonymous messages right now.
+        </p>
       ) : s.restoring ? (
-        <div className="bg-muted h-40 animate-pulse rounded-2xl" />
+        <div className="bg-muted h-28 animate-pulse rounded-2xl" />
       ) : (
         <>
           {s.thread ? <Thread messages={s.thread.messages} /> : null}
@@ -43,7 +49,7 @@ export function AnonSender({ recipient }: { recipient: AnonRecipient }) {
             />
           )}
 
-          {s.error ? <p className="text-destructive text-center text-sm">{s.error}</p> : null}
+          {s.error ? <p className="text-destructive text-sm">{s.error}</p> : null}
         </>
       )}
     </div>
@@ -52,7 +58,7 @@ export function AnonSender({ recipient }: { recipient: AnonRecipient }) {
 
 function Thread({ messages }: { messages: AnonMessage[] }) {
   return (
-    <div className="border-border flex flex-col gap-2 rounded-2xl border p-4">
+    <div className="flex flex-col gap-2">
       {messages.map((message) => (
         <div
           key={message.id}
@@ -94,8 +100,8 @@ function Composer({
         onChange={(event) => onText(event.target.value)}
         placeholder={hasThread ? "Say more…" : "Type something nice (or spicy) 👀"}
         maxLength={2000}
-        rows={hasThread ? 2 : 4}
-        className="border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-foreground w-full resize-none rounded-2xl border p-4 text-base outline-none"
+        rows={hasThread ? 2 : 3}
+        className="border-border bg-background text-foreground placeholder:text-muted-foreground focus:border-foreground w-full resize-none rounded-2xl border p-4 text-base outline-none"
       />
       <button
         type="button"
@@ -119,20 +125,12 @@ function Wall({ name }: { name: string }) {
     <div className="border-border flex flex-col items-center gap-4 rounded-2xl border border-dashed p-6 text-center">
       <p className="text-3xl">👻</p>
       <div>
-        <h2 className="text-foreground text-lg font-extrabold">Keep the conversation going</h2>
+        <h3 className="text-foreground text-lg font-extrabold">Keep the conversation going</h3>
         <p className="text-muted-foreground mt-1 text-sm text-pretty">
           Get Snacc to keep chatting with {name} anonymously — and know the moment they reply.
         </p>
       </div>
       <StoreButtons />
-    </div>
-  )
-}
-
-function Notice({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="border-border text-muted-foreground rounded-2xl border border-dashed p-6 text-center text-sm text-pretty">
-      {children}
     </div>
   )
 }

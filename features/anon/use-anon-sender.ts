@@ -2,12 +2,11 @@
 
 import { useEffect, useState } from "react"
 import { AnonError, readAnonThread, replyAnon, sendAnon } from "./api"
-import type { AnonRecipient, AnonThread } from "./public"
+import type { AnonThread } from "./public"
 
 const storageKey = (username: string) => `snacc_thread:${username}`
 
-export function useAnonSender(recipient: AnonRecipient) {
-  const username = recipient.username ?? ""
+export function useAnonSender(username: string) {
   const [thread, setThread] = useState<AnonThread | null>(null)
   const [text, setText] = useState("")
   const [sending, setSending] = useState(false)
@@ -61,5 +60,5 @@ export function useAnonSender(recipient: AnonRecipient) {
     }
   }
 
-  return { recipient, thread, text, setText, canSend, sending, error, walled, restoring, submit }
+  return { thread, text, setText, canSend, sending, error, walled, restoring, submit }
 }

@@ -13,6 +13,7 @@ export interface PublicProfile {
   followers_count: number
   following_count: number
   total_views_received: number
+  accepts_public_messages: boolean
 }
 
 export function getPublicProfile(username: string) {
