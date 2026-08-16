@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { ChallengesManager } from "@/features/admin/challenges/challenges-manager"
+import { ChallengesTable } from "@/features/admin/challenges/challenges-table"
 import { useChallengeMutations, useChallenges } from "@/features/admin/challenges/use-challenges"
 import type { ListChallengesParams } from "@/features/admin/challenges/types"
 
@@ -29,7 +29,7 @@ export default function ChallengesPage() {
       ) : query.isError || !query.data ? (
         <p className="text-muted-foreground text-sm">Couldn&apos;t load challenges.</p>
       ) : (
-        <ChallengesManager
+        <ChallengesTable
           data={query.data}
           params={params}
           onParams={patch}

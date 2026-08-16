@@ -11,6 +11,8 @@ export interface AdminChallenge {
   tag: string
   days: number
   reward_kobo: number
+  accent_from: string
+  accent_to: string | null
   status: "draft" | "active" | "ended"
   created_at: string
   participant_count: number
@@ -28,6 +30,8 @@ export interface CreateChallengeInput {
   description?: string
   tag: string
   rewardKobo: number
+  accentFrom: string
+  accentTo: string | null
   days: { prompt: string }[]
 }
 
@@ -35,6 +39,8 @@ export interface UpdateChallengeInput {
   title?: string
   description?: string
   rewardKobo?: number
+  accentFrom?: string
+  accentTo?: string | null
   status?: "draft" | "active" | "ended"
   days?: { prompt: string }[]
 }
