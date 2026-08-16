@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   LogOut,
   Megaphone,
+  Trophy,
   MessageSquare,
   School,
   ScrollText,
@@ -47,6 +48,7 @@ const NAV = [
       { href: "/admin/report-reasons", label: "Report reasons", icon: Tags },
       { href: "/admin/pages", label: "Pages", icon: FileText },
       { href: "/admin/announcements", label: "Announcements", icon: Megaphone },
+      { href: "/admin/challenges", label: "Challenges", icon: Trophy },
     ],
   },
   {
