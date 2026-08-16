@@ -1,25 +1,29 @@
 import "server-only"
 import { cookies } from "next/headers"
+import type { NextRequest } from "next/server"
 import { SNACC_API_URL } from "./session"
 
 const GUEST_COOKIE = "snacc_guest"
 
-/**
- * Proxies a public-anon request to the API, translating the httpOnly guest cookie to/from the
- * API's `x-guest-token` header. A freshly minted token is captured into the cookie and hidden
- * from the browser, so the guest's identity never touches client JS.
- */
+function clientIp(request: NextRequest): string | null {
+  const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+  return forwarded || request.headers.get("x-real-ip") || null
+}
+
 export async function forwardAnon(
+  request: NextRequest,
   method: "GET" | "POST",
   apiPath: string,
   body?: string,
 ): Promise<Response> {
   const store = await cookies()
   const token = store.get(GUEST_COOKIE)?.value
+  const ip = clientIp(request)
 
   const headers: Record<string, string> = { Accept: "application/json" }
   if (body !== undefined) headers["Content-Type"] = "application/json"
   if (token) headers["x-guest-token"] = token
+  if (ip) headers["x-guest-ip"] = ip
 
   const upstream = await fetch(`${SNACC_API_URL}/api/v1${apiPath}`, {
     method,
