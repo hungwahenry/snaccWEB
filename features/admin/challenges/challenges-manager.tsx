@@ -115,10 +115,11 @@ function ChallengeDialog({
       }}
     >
       <DialogTrigger render={trigger} />
-      <DialogContent>
-        <DialogHeader>
+      <DialogContent className="flex max-h-[85dvh] flex-col gap-0 p-0">
+        <DialogHeader className="px-6 pt-6">
           <DialogTitle>{editing ? "Edit challenge" : "New challenge"}</DialogTitle>
         </DialogHeader>
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-6 py-4">
         <Field>
           <FieldLabel>Title</FieldLabel>
           <Input value={title} onChange={(event) => setTitle(event.target.value)} maxLength={120} />
@@ -194,7 +195,8 @@ function ChallengeDialog({
             )}
           </div>
         </Field>
-        <DialogFooter>
+        </div>
+        <DialogFooter className="border-border border-t px-6 py-4">
           <DialogClose render={<Button variant="ghost">Cancel</Button>} />
           <Button
             disabled={!valid || mutations.create.isPending || mutations.update.isPending}
