@@ -1,7 +1,14 @@
 import { compactCount } from "@/lib/format"
 import type { PublicProfile } from "./public"
 
+function classOf(profile: PublicProfile): string | null {
+  if (!profile.graduated) return null
+  return profile.graduation_year ? `🎓 Class of ${profile.graduation_year}` : "🎓 Alumni"
+}
+
 export function ProfileHeader({ profile }: { profile: PublicProfile }) {
+  const meta = [profile.university?.acronym, classOf(profile), profile.major].filter(Boolean)
+
   return (
     <div className="flex flex-col gap-3 px-6 pt-6 pb-4">
       <img src={profile.avatar_url} alt="" className="size-20 rounded-full" />
@@ -18,11 +25,8 @@ export function ProfileHeader({ profile }: { profile: PublicProfile }) {
           <p className="text-foreground text-base leading-snug">{profile.bio}</p>
         ) : null}
 
-        {profile.university ? (
-          <p className="text-muted-foreground text-sm font-semibold">
-            {profile.university.acronym}
-            {profile.major ? ` · ${profile.major}` : ""}
-          </p>
+        {meta.length > 0 ? (
+          <p className="text-muted-foreground text-sm font-semibold">{meta.join(" · ")}</p>
         ) : null}
       </div>
 

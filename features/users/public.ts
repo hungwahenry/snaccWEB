@@ -8,6 +8,7 @@ export interface PublicProfile {
   bio: string | null
   major: string | null
   graduation_year: number | null
+  graduated: boolean
   university: { name: string; acronym: string; slug: string } | null
   snaccs_count: number
   followers_count: number

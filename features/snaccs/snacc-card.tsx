@@ -1,4 +1,5 @@
 import {
+  EyeIcon,
   GhostIcon,
   MessageCircleIcon,
   MoreHorizontalIcon,
@@ -9,7 +10,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { compactCount, timeAgo } from "@/lib/format"
-import type { PublicSnacc } from "./public"
+import type { PublicQuotedSnacc, PublicSnacc } from "./public"
 
 export function SnaccCard({ snacc, href }: { snacc: PublicSnacc; href?: string }) {
   const { author } = snacc
@@ -53,6 +54,14 @@ export function SnaccCard({ snacc, href }: { snacc: PublicSnacc; href?: string }
               {snacc.body}
             </p>
           ) : null}
+
+          {snacc.resnacc_of ? (
+            <QuotedSnacc snacc={snacc.resnacc_of} />
+          ) : snacc.quoted_gone ? (
+            <div className="border-border text-muted-foreground rounded-2xl border px-3 py-2.5 text-sm">
+              This snacc is no longer available.
+            </div>
+          ) : null}
         </div>
       </div>
 
@@ -77,6 +86,38 @@ export function SnaccCard({ snacc, href }: { snacc: PublicSnacc; href?: string }
     <Link href={href} className="hover:bg-muted/30 block transition-colors">
       {inner}
     </Link>
+  )
+}
+
+function QuotedSnacc({ snacc }: { snacc: PublicQuotedSnacc }) {
+  const { author } = snacc
+  const ghost = snacc.anonymous
+  const hasMedia = snacc.images.length > 0 || snacc.gif !== null
+
+  return (
+    <div className="border-border flex flex-col gap-1.5 rounded-2xl border px-3 py-2.5">
+      <div className="flex items-center gap-1.5 text-sm">
+        {ghost ? (
+          <GhostIcon className="text-muted-foreground" size={16} />
+        ) : (
+          <img src={author.avatar_url} alt="" className="size-5 rounded-full" />
+        )}
+        <span className="text-foreground truncate font-bold">
+          {ghost ? "Ghost" : (author.display_name ?? author.username)}
+        </span>
+        {!ghost ? (
+          <span className="text-muted-foreground truncate">@{author.username}</span>
+        ) : null}
+      </div>
+
+      {snacc.body ? (
+        <p className="text-foreground line-clamp-3 text-sm leading-snug whitespace-pre-wrap">
+          {snacc.body}
+        </p>
+      ) : null}
+
+      {hasMedia ? <p className="text-muted-foreground text-xs">📎 Attachment</p> : null}
+    </div>
   )
 }
 
@@ -106,6 +147,7 @@ function SnaccActions({ snacc }: { snacc: PublicSnacc }) {
       <div className="flex shrink-0 items-center gap-4">
         <Action icon={MessageCircleIcon} count={snacc.comments_count} />
         <Action icon={RepeatIcon} count={snacc.resnaccs_count} />
+        <Action icon={EyeIcon} count={snacc.views_count} />
         <div className="flex h-9 items-center justify-center">
           <Share2Icon className="text-muted-foreground" size={22} />
         </div>

@@ -8,6 +8,16 @@ export interface PublicSnaccAuthor {
   university: { name: string; acronym: string; slug: string } | null
 }
 
+export interface PublicQuotedSnacc {
+  id: string
+  body: string | null
+  created_at: string
+  anonymous: boolean
+  author: PublicSnaccAuthor
+  images: { url: string; width: number; height: number }[]
+  gif: { url: string; width: number; height: number } | null
+}
+
 export interface PublicSnacc {
   id: string
   body: string | null
@@ -20,6 +30,9 @@ export interface PublicSnacc {
   reactions_count: number
   comments_count: number
   resnaccs_count: number
+  views_count: number
+  resnacc_of: PublicQuotedSnacc | null
+  quoted_gone: "deleted" | "unavailable" | null
 }
 
 export function getPublicSnacc(id: string) {
