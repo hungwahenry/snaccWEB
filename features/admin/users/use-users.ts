@@ -13,7 +13,6 @@ import {
   pauseEarnings,
   resumeEarnings,
   revokeSessions,
-  setRole,
   suspendUser,
   unblockPayouts,
   unsuspendUser,
@@ -90,14 +89,6 @@ export function useUserMutations(id: string) {
       onSuccess: () => {
         invalidate()
         toast.success("Payouts unblocked.")
-      },
-      onError,
-    }),
-    changeRole: useMutation({
-      mutationFn: (role: string) => setRole(id, role),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Role updated.")
       },
       onError,
     }),

@@ -34,10 +34,6 @@ export function unblockPayouts(id: string) {
   return api.post<AdminUserRow>(`/admin/users/${id}/unblock-payouts`)
 }
 
-export function setRole(id: string, role: string) {
-  return api.patch<AdminUserRow>(`/admin/users/${id}/role`, { role })
-}
-
 export function adjustBalance(id: string, delta: number, reason?: string) {
   return api.patch<AdminUserRow>(`/admin/users/${id}/balance`, { delta, reason })
 }

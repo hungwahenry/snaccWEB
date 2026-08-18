@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -20,7 +21,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Spinner } from "@/components/ui/spinner"
 import { Textarea } from "@/components/ui/textarea"
+import { useRoles } from "@/features/admin/roles/use-roles"
+import { useGrantMutations, useUserRoles } from "@/features/admin/roles/use-user-roles"
 import { formatNaira } from "@/lib/format"
 import type { useUserMutations } from "./use-users"
 import type { AdminUserDetail } from "./types"
@@ -74,43 +78,83 @@ function SuspendDialog({ actions }: { actions: Mutations }) {
   )
 }
 
-function RoleDialog({ user, actions }: { user: AdminUserDetail; actions: Mutations }) {
+function RolesDialog({ user }: { user: AdminUserDetail }) {
   const [open, setOpen] = useState(false)
-  const [role, setRole] = useState(user.role)
+  const [selected, setSelected] = useState("")
+  const grants = useUserRoles(user.id)
+  const roles = useRoles()
+  const mutations = useGrantMutations(user.id)
+
+  const held = new Set((grants.data ?? []).map((grant) => grant.role.id))
+  const available = (roles.data ?? []).filter((role) => !held.has(role.id))
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
           <Button variant="outline" size="sm">
-            Change role
+            Roles
           </Button>
         }
       />
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Change role</DialogTitle>
+          <DialogTitle>Roles</DialogTitle>
         </DialogHeader>
-        <Field>
-          <FieldLabel>Role</FieldLabel>
-          <Select value={role} onValueChange={(value) => value && setRole(value)}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="user">User</SelectItem>
-              <SelectItem value="admin">Admin</SelectItem>
-            </SelectContent>
-          </Select>
-        </Field>
+        <p className="text-muted-foreground text-sm">
+          Grant or revoke roles. What a user can do is set by the permissions each role carries.
+        </p>
+        {grants.isPending ? (
+          <div className="flex justify-center py-6">
+            <Spinner />
+          </div>
+        ) : grants.data && grants.data.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {grants.data.map((grant) => (
+              <Badge key={grant.id} variant="secondary" className="gap-1.5">
+                {grant.role.name}
+                <button
+                  type="button"
+                  aria-label={`Revoke ${grant.role.name}`}
+                  className="text-muted-foreground hover:text-foreground disabled:opacity-50"
+                  disabled={mutations.revoke.isPending}
+                  onClick={() => mutations.revoke.mutate(grant.role.id)}
+                >
+                  ×
+                </button>
+              </Badge>
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-sm">No roles granted.</p>
+        )}
+        {available.length > 0 && (
+          <div className="flex items-center gap-2">
+            <Select value={selected} onValueChange={(value) => value && setSelected(value)}>
+              <SelectTrigger className="flex-1">
+                <SelectValue placeholder="Add a role…" />
+              </SelectTrigger>
+              <SelectContent>
+                {available.map((role) => (
+                  <SelectItem key={role.id} value={role.id}>
+                    {role.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              size="sm"
+              disabled={!selected || mutations.grant.isPending}
+              onClick={() =>
+                selected && mutations.grant.mutate(selected, { onSuccess: () => setSelected("") })
+              }
+            >
+              Grant
+            </Button>
+          </div>
+        )}
         <DialogFooter>
-          <DialogClose render={<Button variant="ghost">Cancel</Button>} />
-          <Button
-            disabled={actions.changeRole.isPending || role === user.role}
-            onClick={() => actions.changeRole.mutate(role, { onSuccess: () => setOpen(false) })}
-          >
-            Save
-          </Button>
+          <DialogClose render={<Button variant="ghost">Done</Button>} />
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -295,7 +339,7 @@ export function UserActions({ user, actions }: { user: AdminUserDetail; actions:
       ) : (
         <SuspendDialog actions={actions} />
       )}
-      <RoleDialog user={user} actions={actions} />
+      <RolesDialog user={user} />
       <BalanceDialog user={user} actions={actions} />
       {user.earnings_paused_at ? (
         <Button
