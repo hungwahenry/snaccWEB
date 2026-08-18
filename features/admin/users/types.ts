@@ -29,6 +29,28 @@ export interface AdminUserRow {
 }
 
 export interface AdminUserDetail extends AdminUserRow {
+  engagement: {
+    score: number
+    weekly_score: number
+    campus_rank: number | null
+    global_rank: number
+    reactions_received: number
+    resnaccs_received: number
+    comments_received: number
+  }
+  earnings: {
+    balance: number
+    by_type: { type: string; events: number; kobo: number }[]
+    top_boosters: { username: string | null; email: string; events: number; kobo: number }[]
+  }
+  linked_accounts: {
+    id: string
+    username: string | null
+    email: string
+    suspended: boolean
+    shared_device: boolean
+    shared_ip: boolean
+  }[]
   counts: {
     snaccs: number
     reactions: number
@@ -48,6 +70,10 @@ export interface AdminUserDetail extends AdminUserRow {
   sessions: {
     id: string
     name: string
+    ip: string | null
+    client_info: string | null
+    user_agent: string | null
+    install_id: string | null
     last_used_at: string | null
     expires_at: string | null
     created_at: string

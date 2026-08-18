@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -109,13 +110,154 @@ export function UserDetail({
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
+            <CardTitle className="text-base">Standing</CardTitle>
+          </CardHeader>
+          <CardContent className="divide-y">
+            <Row label="Snacc Score" value={formatNumber(user.engagement.score)} />
+            <Row label="Weekly score" value={formatNumber(user.engagement.weekly_score)} />
+            <Row
+              label="Campus rank"
+              value={user.engagement.campus_rank ? `#${formatNumber(user.engagement.campus_rank)}` : "—"}
+            />
+            <Row label="Global rank" value={`#${formatNumber(user.engagement.global_rank)}`} />
+            <Row label="Reactions received" value={formatNumber(user.engagement.reactions_received)} />
+            <Row label="Resnaccs received" value={formatNumber(user.engagement.resnaccs_received)} />
+            <Row label="Comments received" value={formatNumber(user.engagement.comments_received)} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Earnings</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <div className="divide-y">
+              <Row label="Balance" value={formatNaira(user.earnings.balance)} />
+              {user.earnings.by_type.map((entry) => (
+                <Row
+                  key={entry.type}
+                  label={`${entry.type} · ${formatNumber(entry.events)}`}
+                  value={formatNaira(entry.kobo)}
+                />
+              ))}
+            </div>
+            {user.earnings.top_boosters.length > 0 && (
+              <div>
+                <p className="text-muted-foreground mb-2 text-xs font-medium uppercase tracking-wide">
+                  Top boosters
+                </p>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Account</TableHead>
+                      <TableHead className="text-right">Events</TableHead>
+                      <TableHead className="text-right">Paid</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {user.earnings.top_boosters.map((booster, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="text-sm">
+                          {booster.username ? `@${booster.username}` : booster.email}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {formatNumber(booster.events)}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {formatNaira(booster.kobo)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Sessions &amp; devices</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {user.sessions.length === 0 ? (
+            <p className="text-muted-foreground text-sm">No active sessions.</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Device</TableHead>
+                  <TableHead>IP</TableHead>
+                  <TableHead>Install</TableHead>
+                  <TableHead>Last used</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {user.sessions.map((session) => (
+                  <TableRow key={session.id}>
+                    <TableCell className="text-sm">
+                      {session.client_info ?? session.user_agent ?? "—"}
+                    </TableCell>
+                    <TableCell className="font-mono text-xs">{session.ip ?? "—"}</TableCell>
+                    <TableCell className="font-mono text-xs">
+                      {session.install_id ? session.install_id.slice(0, 8) : "—"}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground text-sm">
+                      {session.last_used_at ? formatDate(session.last_used_at) : "—"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Linked accounts</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {user.linked_accounts.length === 0 ? (
+            <p className="text-muted-foreground text-sm">
+              No other accounts share this user&apos;s IP or device.
+            </p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {user.linked_accounts.map((linked) => (
+                <div
+                  key={linked.id}
+                  className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2"
+                >
+                  <Link
+                    href={`/admin/users/${linked.id}`}
+                    className="text-sm font-medium hover:underline"
+                  >
+                    {linked.username ? `@${linked.username}` : linked.email}
+                  </Link>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {linked.shared_device && <Badge variant="destructive">same device</Badge>}
+                    {linked.shared_ip && <Badge variant="secondary">same IP</Badge>}
+                    {linked.suspended && <Badge variant="outline">suspended</Badge>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
             <CardTitle className="text-base">Account</CardTitle>
           </CardHeader>
           <CardContent className="divide-y">
             <Row label="Email verified" value={user.email_verified_at ? "Yes" : "No"} />
             <Row label="Profile completed" value={formatDate(user.completed_at)} />
             <Row label="Joined" value={formatDate(user.created_at)} />
-            <Row label="Reactions" value={formatNumber(user.counts.reactions)} />
+            <Row label="Reactions made" value={formatNumber(user.counts.reactions)} />
             <Row label="Reports filed" value={formatNumber(user.counts.reports_filed)} />
             <Row label="Reports against" value={formatNumber(user.counts.reports_against)} />
             <Row label="Active sessions" value={formatNumber(user.sessions.length)} />
