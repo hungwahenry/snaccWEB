@@ -2,28 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import {
-  Banknote,
-  Coins,
-  Flag,
-  FileText,
-  Ghost,
-  LayoutDashboard,
-  LogOut,
-  Medal,
-  Megaphone,
-  Trophy,
-  MessageSquare,
-  School,
-  ScrollText,
-  ShieldCheck,
-  Sparkles,
-  SlidersHorizontal,
-  Tags,
-  ToggleRight,
-  Users,
-  VenetianMask,
-} from "lucide-react"
+import { LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Sidebar,
@@ -37,49 +16,20 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { useLogout } from "@/features/admin/auth/hooks/use-auth"
-
-const NAV = [
-  { group: "Overview", items: [{ href: "/admin", label: "Dashboard", icon: LayoutDashboard }] },
-  { group: "People", items: [{ href: "/admin/users", label: "Users", icon: Users }] },
-  {
-    group: "Content",
-    items: [
-      { href: "/admin/snaccs", label: "Snaccs", icon: MessageSquare },
-      { href: "/admin/reports", label: "Reports", icon: Flag },
-      { href: "/admin/messages", label: "Messages", icon: Ghost },
-      { href: "/admin/report-reasons", label: "Report reasons", icon: Tags },
-      { href: "/admin/pages", label: "Pages", icon: FileText },
-      { href: "/admin/announcements", label: "Announcements", icon: Megaphone },
-      { href: "/admin/challenges", label: "Challenges", icon: Trophy },
-    ],
-  },
-  {
-    group: "Money",
-    items: [
-      { href: "/admin/earnings", label: "Earnings", icon: Coins },
-      { href: "/admin/withdrawals", label: "Withdrawals", icon: Banknote },
-    ],
-  },
-  {
-    group: "Platform",
-    items: [
-      { href: "/admin/roles", label: "Roles", icon: ShieldCheck },
-      { href: "/admin/universities", label: "Universities", icon: School },
-      { href: "/admin/tiers", label: "Leaderboard tiers", icon: Medal },
-      { href: "/admin/prompts", label: "Onboarding prompts", icon: Sparkles },
-      { href: "/admin/config", label: "Config", icon: SlidersHorizontal },
-      { href: "/admin/flags", label: "Feature flags", icon: ToggleRight },
-      { href: "/admin/ghost-hour", label: "Ghost Hour", icon: VenetianMask },
-      { href: "/admin/audit", label: "Audit log", icon: ScrollText },
-    ],
-  },
-]
+import { useLogout, useMe } from "@/features/admin/auth/hooks/use-auth"
+import { NAV } from "@/lib/nav"
+import { can } from "@/lib/permissions"
 
 export function AppSidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const logout = useLogout()
+  const me = useMe()
+
+  const sections = NAV.map((section) => ({
+    ...section,
+    items: section.items.filter((item) => can(me.data?.permissions, item.permission)),
+  })).filter((section) => section.items.length > 0)
 
   function isActive(href: string) {
     return href === "/admin" ? pathname === "/admin" : pathname.startsWith(href)
@@ -93,7 +43,7 @@ export function AppSidebar() {
         </span>
       </SidebarHeader>
       <SidebarContent>
-        {NAV.map((section) => (
+        {sections.map((section) => (
           <SidebarGroup key={section.group}>
             <SidebarGroupLabel>{section.group}</SidebarGroupLabel>
             <SidebarGroupContent>

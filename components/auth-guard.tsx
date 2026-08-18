@@ -8,7 +8,7 @@ import { useMe } from "@/features/admin/auth/hooks/use-auth"
 export function AuthGuard({ children }: { children: ReactNode }) {
   const router = useRouter()
   const me = useMe()
-  const denied = me.isError || (!!me.data && me.data.role !== "admin")
+  const denied = me.isError || (!!me.data && !me.data.permissions?.length)
 
   useEffect(() => {
     if (denied) router.replace("/admin/login")

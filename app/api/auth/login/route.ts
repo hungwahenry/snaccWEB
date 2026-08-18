@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     cache: "no-store",
   })
   const json = (await res.json().catch(() => null)) as {
-    data?: { token: string; user: { role: string } }
+    data?: { token: string; user: { role: string; permissions?: string[] } }
     message?: string
     code?: string
   } | null
@@ -21,9 +21,9 @@ export async function POST(request: NextRequest) {
     return Response.json(json ?? { message: "Login failed" }, { status: res.status || 500 })
   }
 
-  if (json.data.user.role !== "admin") {
+  if (!json.data.user.permissions?.length) {
     return Response.json(
-      { status: "error", message: "This account is not an administrator.", code: "not_admin" },
+      { status: "error", message: "This account has no admin access.", code: "not_admin" },
       { status: 403 },
     )
   }
