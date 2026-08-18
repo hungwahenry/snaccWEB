@@ -18,6 +18,7 @@ import {
   ToggleRight,
   Users,
   VenetianMask,
+  Wrench,
   type LucideIcon,
 } from "lucide-react"
 import { can } from "./permissions"
@@ -68,6 +69,7 @@ export const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/admin/flags", label: "Feature flags", icon: ToggleRight, permission: "flags.read" },
       { href: "/admin/ghost-hour", label: "Ghost Hour", icon: VenetianMask, permission: "ghost.manage" },
       { href: "/admin/audit", label: "Audit log", icon: ScrollText, permission: "audit.read" },
+      { href: "/admin/ops", label: "Ops & maintenance", icon: Wrench, permission: "ops.read" },
     ],
   },
 ]
