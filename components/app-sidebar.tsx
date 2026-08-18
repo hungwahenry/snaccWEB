@@ -16,6 +16,7 @@ import {
   MessageSquare,
   School,
   ScrollText,
+  ShieldCheck,
   Sparkles,
   SlidersHorizontal,
   Tags,
@@ -63,6 +64,7 @@ const NAV = [
   {
     group: "Platform",
     items: [
+      { href: "/admin/roles", label: "Roles", icon: ShieldCheck },
       { href: "/admin/universities", label: "Universities", icon: School },
       { href: "/admin/tiers", label: "Leaderboard tiers", icon: Medal },
       { href: "/admin/prompts", label: "Onboarding prompts", icon: Sparkles },
