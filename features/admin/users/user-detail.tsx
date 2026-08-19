@@ -3,7 +3,13 @@
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import {
   Table,
   TableBody,
@@ -175,6 +181,54 @@ export function UserDetail({
           </CardContent>
         </Card>
       </div>
+
+      {user.top_engagers.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Who engages with them</CardTitle>
+            <CardDescription>
+              Resnaccs and replies aimed at this user, counted off the posts themselves. A single
+              account holding a large share is the shape rank farming takes.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Account</TableHead>
+                  <TableHead className="text-right">Resnaccs</TableHead>
+                  <TableHead className="text-right">Replies</TableHead>
+                  <TableHead className="text-right">Share</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {user.top_engagers.map((engager, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="text-sm">
+                      {engager.username ? `@${engager.username}` : engager.email}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {formatNumber(engager.resnaccs)}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {formatNumber(engager.replies)}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {engager.share >= 0.3 ? (
+                        <Badge variant="destructive">
+                          {Math.round(engager.share * 100)}%
+                        </Badge>
+                      ) : (
+                        `${Math.round(engager.share * 100)}%`
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>

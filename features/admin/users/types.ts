@@ -43,6 +43,14 @@ export interface AdminUserDetail extends AdminUserRow {
     by_type: { type: string; events: number; kobo: number }[]
     top_boosters: { username: string | null; email: string; events: number; kobo: number }[]
   }
+  top_engagers: {
+    username: string | null
+    email: string
+    resnaccs: number
+    replies: number
+    total: number
+    share: number
+  }[]
   linked_accounts: {
     id: string
     username: string | null
