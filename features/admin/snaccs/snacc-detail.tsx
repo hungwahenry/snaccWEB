@@ -16,8 +16,8 @@ import {
 } from "@/components/ui/dialog"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Textarea } from "@/components/ui/textarea"
-import { formatDate } from "@/lib/format"
-import { handleOf, SnaccView } from "./snacc-view"
+import { formatDate, handleOf } from "@/lib/format"
+import { SnaccView } from "./snacc-view"
 import type { useSnaccMutations } from "./use-snaccs"
 import type { AdminSnaccDetail } from "./types"
 

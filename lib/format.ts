@@ -38,3 +38,7 @@ export function formatDate(iso: string | null): string {
     minute: "2-digit",
   })
 }
+
+export function handleOf(author: { username: string | null; display_name: string | null }): string {
+  return author.username ? `@${author.username}` : (author.display_name ?? "unknown")
+}

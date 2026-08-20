@@ -16,8 +16,7 @@ import {
 } from "@/components/ui/dialog"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Textarea } from "@/components/ui/textarea"
-import { formatDate, timeAgo } from "@/lib/format"
-import { handleOf } from "./author-inline"
+import { formatDate, timeAgo, handleOf } from "@/lib/format"
 import type { useMessageModeration } from "./use-messages"
 import type { AdminConversationDetail, AdminThreadMessage, MessageAuthor } from "./types"
 

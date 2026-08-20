@@ -1,10 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import type { MessageAuthor } from "./types"
-
-export function handleOf(author: MessageAuthor): string {
-  if (author.username) return `@${author.username}`
-  return author.display_name ?? "unknown"
-}
+import { handleOf } from "@/lib/format"
 
 export function AuthorInline({ author, className }: { author: MessageAuthor; className?: string }) {
   return (

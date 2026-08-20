@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { formatDate } from "@/lib/format"
+import { formatDate, handleOf } from "@/lib/format"
 import type { useResolveReport } from "./use-reports"
 import { ReportedContent } from "./reported-content"
 import { ResolveDialog } from "./resolve-dialog"
@@ -12,10 +12,6 @@ const STATUS_VARIANT: Record<AdminReport["status"], "secondary" | "default" | "o
   open: "secondary",
   actioned: "default",
   dismissed: "outline",
-}
-
-function handleOf(author: { username: string | null; display_name: string | null }) {
-  return author.username ? `@${author.username}` : (author.display_name ?? "unknown")
 }
 
 function Filing({ report }: { report: AdminReport }) {

@@ -3,12 +3,8 @@
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { formatDate } from "@/lib/format"
+import { formatDate, handleOf } from "@/lib/format"
 import type { AdminSnacc, SnaccAuthor } from "./types"
-
-export function handleOf(author: { username: string | null; display_name: string | null }) {
-  return author.username ? `@${author.username}` : (author.display_name ?? "unknown")
-}
 
 export function AuthorInline({ author, note }: { author: SnaccAuthor; note?: string }) {
   return (

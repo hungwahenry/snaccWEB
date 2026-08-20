@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { formatDate } from "@/lib/format"
+import { formatDate, handleOf } from "@/lib/format"
 import type { Paginated } from "@/lib/api/types"
 import { ResolveDialog } from "./resolve-dialog"
 import type { useResolveReport } from "./use-reports"
@@ -28,10 +28,6 @@ const STATUS_VARIANT: Record<AdminReport["status"], "secondary" | "default" | "o
   open: "secondary",
   actioned: "default",
   dismissed: "outline",
-}
-
-function handleOf(author: { username: string | null; display_name: string | null }) {
-  return author.username ? `@${author.username}` : (author.display_name ?? "unknown")
 }
 
 function targetLabel(target: AdminReport["target"]) {
