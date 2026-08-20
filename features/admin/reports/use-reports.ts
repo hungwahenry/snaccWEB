@@ -3,7 +3,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/api/errors"
-import { listReports, resolveReport } from "./api"
+import { getReport, listReports, resolveReport } from "./api"
 import type { ListReportsParams } from "./types"
 
 export function useReports(params: ListReportsParams) {
@@ -11,6 +11,13 @@ export function useReports(params: ListReportsParams) {
     queryKey: ["admin", "reports", params],
     queryFn: () => listReports(params),
     placeholderData: keepPreviousData,
+  })
+}
+
+export function useReport(id: string) {
+  return useQuery({
+    queryKey: ["admin", "reports", "detail", id],
+    queryFn: () => getReport(id),
   })
 }
 

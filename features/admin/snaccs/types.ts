@@ -30,3 +30,15 @@ export interface ListSnaccsParams {
   universityId?: string
   deleted?: boolean
 }
+
+/** Detail adds the filings themselves — the reason a moderator opened this page. */
+export interface AdminSnaccDetail extends AdminSnacc {
+  reports: {
+    id: string
+    status: "open" | "actioned" | "dismissed"
+    detail: string | null
+    reason: { slug: string; label: string }
+    reporter: SnaccAuthor
+    created_at: string
+  }[]
+}

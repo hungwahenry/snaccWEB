@@ -3,7 +3,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/api/errors"
-import { deleteSnacc, listSnaccs, pinSnacc, restoreSnacc, unpinSnacc } from "./api"
+import { deleteSnacc, getSnacc, listSnaccs, pinSnacc, restoreSnacc, unpinSnacc } from "./api"
 import type { ListSnaccsParams } from "./types"
 
 export function useSnaccs(params: ListSnaccsParams) {
@@ -11,6 +11,13 @@ export function useSnaccs(params: ListSnaccsParams) {
     queryKey: ["admin", "snaccs", params],
     queryFn: () => listSnaccs(params),
     placeholderData: keepPreviousData,
+  })
+}
+
+export function useSnacc(id: string) {
+  return useQuery({
+    queryKey: ["admin", "snaccs", "detail", id],
+    queryFn: () => getSnacc(id),
   })
 }
 

@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useState } from "react"
 import { DataPagination } from "@/components/data-pagination"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -214,7 +215,12 @@ export function SnaccsTable({
                   </div>
                 </TableCell>
                 <TableCell className="max-w-xs">
-                  <p className="truncate text-sm">{preview(snacc)}</p>
+                  <Link
+                    href={`/admin/snaccs/${snacc.id}`}
+                    className="block truncate text-sm font-medium underline-offset-4 hover:underline"
+                  >
+                    {preview(snacc)}
+                  </Link>
                   <p className="text-muted-foreground text-xs">{formatDate(snacc.created_at)}</p>
                 </TableCell>
                 <TableCell className="text-muted-foreground text-right text-xs tabular-nums">

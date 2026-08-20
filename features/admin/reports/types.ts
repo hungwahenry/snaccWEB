@@ -1,3 +1,5 @@
+import type { AdminSnacc } from "@/features/admin/snaccs/types"
+
 export type ReportStatus = "open" | "actioned" | "dismissed"
 
 export interface ReportAuthor {
@@ -26,6 +28,7 @@ export type ReportTarget =
         body: string
         deleted_at: string | null
         created_at: string
+        images: { id: string; url: string; width: number; height: number }[]
         sender: ReportAuthor
         conversation: {
           id: string
@@ -65,4 +68,11 @@ export interface ResolveReportInput {
   status: "actioned" | "dismissed"
   note?: string
   act?: "delete_snacc" | "suspend_user" | "delete_message" | "suspend_sender"
+}
+
+/** The full reported snacc, so a moderator can see media rather than a body excerpt. */
+export interface AdminReportDetail extends AdminReport {
+  snacc: AdminSnacc | null
+  /** Other reports on the same target — resolving closes them together. */
+  siblings: AdminReport[]
 }
