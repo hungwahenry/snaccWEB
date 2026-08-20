@@ -18,6 +18,8 @@ export interface OpsQueue {
 export interface OpsDrift {
   profiles: Record<string, number>
   snaccs: Record<string, number>
+  /** Profiles whose score columns disagree with the score ledger. */
+  scores: Record<string, number>
 }
 
 export function getHealth() {

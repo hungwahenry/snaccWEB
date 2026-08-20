@@ -37,6 +37,8 @@ const DRIFT_LABELS: Record<string, string> = {
   followers_count: "Followers",
   following_count: "Following",
   total_views_received: "Views received",
+  score: "Snacc Score vs ledger",
+  weekly_score: "Weekly score vs ledger",
   reactions_received: "Reactions received",
   resnaccs_received: "Resnaccs received",
   comments_received: "Comments received",
@@ -53,9 +55,11 @@ export default function OpsPage() {
   const mutations = useOpsMutations()
 
   const driftRows = drift.data
-    ? [...Object.entries(drift.data.profiles), ...Object.entries(drift.data.snaccs)].filter(
-        ([, off]) => off > 0,
-      )
+    ? [
+        ...Object.entries(drift.data.profiles),
+        ...Object.entries(drift.data.scores),
+        ...Object.entries(drift.data.snaccs),
+      ].filter(([, off]) => off > 0)
     : []
 
   return (
