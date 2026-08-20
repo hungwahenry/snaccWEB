@@ -24,6 +24,7 @@ import {
 import { Spinner } from "@/components/ui/spinner"
 import { Textarea } from "@/components/ui/textarea"
 import { useRoles } from "@/features/admin/roles/use-roles"
+import { UserBadgesDialog } from "@/features/admin/badges/user-badges-dialog"
 import { useGrantMutations, useUserRoles } from "@/features/admin/roles/use-user-roles"
 import { formatNaira } from "@/lib/format"
 import type { useUserMutations } from "./use-users"
@@ -340,6 +341,7 @@ export function UserActions({ user, actions }: { user: AdminUserDetail; actions:
         <SuspendDialog actions={actions} />
       )}
       <RolesDialog user={user} />
+      <UserBadgesDialog user={user} />
       <BalanceDialog user={user} actions={actions} />
       {user.earnings_paused_at ? (
         <Button

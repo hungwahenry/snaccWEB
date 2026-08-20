@@ -1,4 +1,5 @@
 import {
+  Award,
   Banknote,
   Coins,
   Flag,
@@ -64,6 +65,7 @@ export const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/admin/roles", label: "Roles", icon: ShieldCheck, permission: "roles.read" },
       { href: "/admin/universities", label: "Universities", icon: School, permission: "universities.read" },
       { href: "/admin/tiers", label: "Leaderboard tiers", icon: Medal, permission: "tiers.read" },
+      { href: "/admin/badges", label: "Badges", icon: Award, permission: "badges.read" },
       { href: "/admin/prompts", label: "Onboarding prompts", icon: Sparkles, permission: "prompts.read" },
       { href: "/admin/config", label: "Config", icon: SlidersHorizontal, permission: "config.read" },
       { href: "/admin/flags", label: "Feature flags", icon: ToggleRight, permission: "flags.read" },

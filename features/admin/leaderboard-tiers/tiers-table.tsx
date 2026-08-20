@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { TIER_ICON_NAMES, TierIcon } from "./tier-icon"
+import { NAMED_ICON_NAMES, NamedIcon } from "@/lib/icons/named-icon"
 import type { AdminTier } from "./types"
 import type { useTierMutations } from "./use-leaderboard-tiers"
 
@@ -106,7 +106,7 @@ function TierDialog({
             <FieldLabel>Icon</FieldLabel>
             <div className="flex items-center gap-2">
               <Input value={icon} onChange={(event) => setIcon(event.target.value)} placeholder="gem" maxLength={16} />
-              <TierIcon name={icon} color={color} className="size-5 shrink-0" />
+              <NamedIcon name={icon} color={color} className="size-5 shrink-0" />
             </div>
           </Field>
           <Field className="w-28">
@@ -117,7 +117,7 @@ function TierDialog({
         <p className="text-muted-foreground text-xs">
           Cutoff by campus rank. Best tier first (lowest %); the last tier should be 100% — the floor. Label + icon show
           as flair in the app; leave the floor tier&apos;s icon blank so it stays a plain handle. Icon is one of:{" "}
-          {TIER_ICON_NAMES.join(", ")}.
+          {NAMED_ICON_NAMES.join(", ")}.
         </p>
         <DialogFooter>
           <DialogClose render={<Button variant="ghost">Cancel</Button>} />
@@ -153,7 +153,7 @@ export function TiersTable({ tiers, mutations }: { tiers: AdminTier[]; mutations
             <TableRow key={tier.id}>
               <TableCell className="font-medium">
                 <span className="inline-flex items-center gap-2">
-                  <TierIcon name={tier.icon} color={tier.color} className="size-4 shrink-0" />
+                  <NamedIcon name={tier.icon} color={tier.color} className="size-4 shrink-0" />
                   {tier.label || tier.key}
                 </span>
               </TableCell>

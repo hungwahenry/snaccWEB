@@ -29,6 +29,15 @@ export interface AdminUserRow {
 }
 
 export interface AdminUserDetail extends AdminUserRow {
+  badges: {
+    id: string
+    key: string
+    label: string
+    icon: string
+    color: string
+    note: string | null
+    granted_at: string
+  }[]
   engagement: {
     score: number
     weekly_score: number
