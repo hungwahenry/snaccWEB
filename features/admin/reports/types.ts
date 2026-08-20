@@ -67,7 +67,7 @@ export interface ResolveReportInput {
   messageId?: string
   status: "actioned" | "dismissed"
   note?: string
-  act?: "delete_snacc" | "suspend_user" | "delete_message" | "suspend_sender"
+  acts?: ("delete_snacc" | "suspend_author" | "suspend_user" | "delete_message" | "suspend_sender")[]
   suspension?: { reasonId?: string; note?: string; until?: string }
 }
 

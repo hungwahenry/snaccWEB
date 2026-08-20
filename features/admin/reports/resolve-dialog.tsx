@@ -12,6 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Field, FieldLabel } from "@/components/ui/field"
 import {
   Select,
@@ -31,8 +32,13 @@ import type { AdminReport, ResolveReportInput } from "./types"
 
 const TARGET_NOUN = { snacc: "snacc", user: "user", message: "message" } as const
 
+/** Taking the content down and suspending whoever posted it are separate choices, and usually both. */
 function actChoicesFor(target: AdminReport["target"]) {
-  if (target?.type === "snacc") return [{ value: "delete_snacc", label: "Remove the snacc" }]
+  if (target?.type === "snacc")
+    return [
+      { value: "delete_snacc", label: "Remove the snacc" },
+      { value: "suspend_author", label: "Suspend the author" },
+    ]
   if (target?.type === "user") return [{ value: "suspend_user", label: "Suspend the user" }]
   if (target?.type === "message")
     return [
@@ -41,6 +47,8 @@ function actChoicesFor(target: AdminReport["target"]) {
     ]
   return []
 }
+
+const SUSPEND_ACTS = ["suspend_user", "suspend_author", "suspend_sender"]
 
 export function ResolveDialog({
   report,
@@ -52,14 +60,20 @@ export function ResolveDialog({
   const [open, setOpen] = useState(false)
   const [status, setStatus] = useState<"actioned" | "dismissed">("actioned")
   const [note, setNote] = useState("")
-  const [act, setAct] = useState<string>("none")
+  const [acts, setActs] = useState<string[]>([])
   const [draft, setDraft] = useState(EMPTY_SUSPENSION)
 
   const target = report.target
   const noun = target ? TARGET_NOUN[target.type] : "target"
   const actChoices = actChoicesFor(target)
   const threadId = target?.type === "message" ? target.message.conversation.id : null
-  const suspending = act === "suspend_user" || act === "suspend_sender"
+  const suspending = acts.some((act) => SUSPEND_ACTS.includes(act))
+
+  function toggleAct(value: string) {
+    setActs((current) =>
+      current.includes(value) ? current.filter((act) => act !== value) : [...current, value],
+    )
+  }
 
   function submit() {
     const input: ResolveReportInput = { status }
@@ -67,7 +81,7 @@ export function ResolveDialog({
     else if (target?.type === "user") input.reportedUserId = target.user.id
     else if (target?.type === "message") input.messageId = target.message.id
     if (note.trim()) input.note = note.trim()
-    if (act !== "none") input.act = act as ResolveReportInput["act"]
+    if (acts.length > 0) input.acts = acts as ResolveReportInput["acts"]
     if (suspending) input.suspension = toSuspensionInput(draft)
     resolve.mutate(input, { onSuccess: () => setOpen(false) })
   }
@@ -110,20 +124,24 @@ export function ResolveDialog({
         </Field>
         {actChoices.length > 0 && (
           <Field>
-            <FieldLabel>Action (optional)</FieldLabel>
-            <Select value={act} onValueChange={(value) => setAct(value || "none")}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">Resolve only</SelectItem>
-                {actChoices.map((choice) => (
-                  <SelectItem key={choice.value} value={choice.value}>
-                    {choice.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <FieldLabel>Actions (optional)</FieldLabel>
+            <div className="flex flex-col gap-1.5">
+              {actChoices.map((choice) => (
+                <button
+                  key={choice.value}
+                  type="button"
+                  onClick={() => toggleAct(choice.value)}
+                  className="flex items-center gap-2.5 text-left text-sm"
+                >
+                  <Checkbox
+                    checked={acts.includes(choice.value)}
+                    className="pointer-events-none"
+                    tabIndex={-1}
+                  />
+                  {choice.label}
+                </button>
+              ))}
+            </div>
           </Field>
         )}
         {suspending ? <SuspensionFields value={draft} onChange={setDraft} /> : null}
