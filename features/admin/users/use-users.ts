@@ -14,6 +14,7 @@ import {
   resumeEarnings,
   revokeSessions,
   suspendUser,
+  type SuspendInput,
   unblockPayouts,
   unsuspendUser,
 } from "./api"
@@ -45,7 +46,7 @@ export function useUserMutations(id: string) {
 
   return {
     suspend: useMutation({
-      mutationFn: (reason?: string) => suspendUser(id, reason),
+      mutationFn: (input: SuspendInput) => suspendUser(id, input),
       onSuccess: () => {
         invalidate()
         toast.success("User suspended.")

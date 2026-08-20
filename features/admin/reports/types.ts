@@ -68,6 +68,7 @@ export interface ResolveReportInput {
   status: "actioned" | "dismissed"
   note?: string
   act?: "delete_snacc" | "suspend_user" | "delete_message" | "suspend_sender"
+  suspension?: { reasonId?: string; note?: string; until?: string }
 }
 
 /** The full reported snacc, so a moderator can see media rather than a body excerpt. */

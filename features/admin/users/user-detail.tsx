@@ -85,9 +85,15 @@ export function UserDetail({
       </div>
 
       {user.suspended_at && (
-        <div className="border-destructive/40 bg-destructive/10 text-destructive rounded-xl border px-4 py-3 text-sm">
-          Suspended {formatDate(user.suspended_at)}
-          {user.suspended_reason ? ` — ${user.suspended_reason}` : ""}
+        <div className="border-destructive/40 bg-destructive/10 text-destructive space-y-1 rounded-xl border px-4 py-3 text-sm">
+          <p>
+            Suspended {formatDate(user.suspended_at)}
+            {user.suspended_reason ? ` — ${user.suspended_reason.slug}` : ""}
+            {user.suspended_until
+              ? ` · lifts ${formatDate(user.suspended_until)}`
+              : " · indefinitely"}
+          </p>
+          {user.suspended_note ? <p className="opacity-80">{user.suspended_note}</p> : null}
         </div>
       )}
 

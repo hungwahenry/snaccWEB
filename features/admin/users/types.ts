@@ -10,7 +10,9 @@ export interface AdminUserRow {
   role: string
   email_verified_at: string | null
   suspended_at: string | null
-  suspended_reason: string | null
+  suspended_until: string | null
+  suspended_note: string | null
+  suspended_reason: { id: string; slug: string; title: string } | null
   earnings_paused_at: string | null
   earnings_paused_reason: string | null
   payouts_blocked_at: string | null

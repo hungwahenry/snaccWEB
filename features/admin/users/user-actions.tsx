@@ -25,6 +25,11 @@ import { Spinner } from "@/components/ui/spinner"
 import { Textarea } from "@/components/ui/textarea"
 import { useRoles } from "@/features/admin/roles/use-roles"
 import { UserBadgesDialog } from "@/features/admin/badges/user-badges-dialog"
+import {
+  EMPTY_SUSPENSION,
+  SuspensionFields,
+  toSuspensionInput,
+} from "@/features/admin/suspension-reasons/suspension-fields"
 import { useGrantMutations, useUserRoles } from "@/features/admin/roles/use-user-roles"
 import { formatNaira } from "@/lib/format"
 import type { useUserMutations } from "./use-users"
@@ -34,7 +39,14 @@ type Mutations = ReturnType<typeof useUserMutations>
 
 function SuspendDialog({ actions }: { actions: Mutations }) {
   const [open, setOpen] = useState(false)
-  const [reason, setReason] = useState("")
+  const [draft, setDraft] = useState(EMPTY_SUSPENSION)
+  const [note, setNote] = useState("")
+
+  function submit() {
+    actions.suspend.mutate(toSuspensionInput(draft, note), {
+      onSuccess: () => setOpen(false),
+    })
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -50,27 +62,23 @@ function SuspendDialog({ actions }: { actions: Mutations }) {
           <DialogTitle>Suspend user</DialogTitle>
         </DialogHeader>
         <p className="text-muted-foreground text-sm">
-          The account is signed out and blocked from the app until reinstated.
+          They keep their session but can only reach the screen explaining this. A timed suspension
+          lifts itself.
         </p>
+        <SuspensionFields value={draft} onChange={setDraft} />
         <Field>
-          <FieldLabel>Reason (optional)</FieldLabel>
+          <FieldLabel>Internal note (optional)</FieldLabel>
           <Textarea
-            value={reason}
-            onChange={(event) => setReason(event.target.value)}
-            rows={3}
+            value={note}
+            onChange={(event) => setNote(event.target.value)}
+            rows={2}
             maxLength={500}
+            placeholder="Never shown to the user."
           />
         </Field>
         <DialogFooter>
           <DialogClose render={<Button variant="ghost">Cancel</Button>} />
-          <Button
-            disabled={actions.suspend.isPending}
-            onClick={() =>
-              actions.suspend.mutate(reason.trim() || undefined, {
-                onSuccess: () => setOpen(false),
-              })
-            }
-          >
+          <Button disabled={actions.suspend.isPending} onClick={submit}>
             Suspend
           </Button>
         </DialogFooter>

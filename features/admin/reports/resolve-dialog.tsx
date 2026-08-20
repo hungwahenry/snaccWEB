@@ -21,6 +21,11 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import {
+  EMPTY_SUSPENSION,
+  SuspensionFields,
+  toSuspensionInput,
+} from "@/features/admin/suspension-reasons/suspension-fields"
 import type { useResolveReport } from "./use-reports"
 import type { AdminReport, ResolveReportInput } from "./types"
 
@@ -48,11 +53,13 @@ export function ResolveDialog({
   const [status, setStatus] = useState<"actioned" | "dismissed">("actioned")
   const [note, setNote] = useState("")
   const [act, setAct] = useState<string>("none")
+  const [draft, setDraft] = useState(EMPTY_SUSPENSION)
 
   const target = report.target
   const noun = target ? TARGET_NOUN[target.type] : "target"
   const actChoices = actChoicesFor(target)
   const threadId = target?.type === "message" ? target.message.conversation.id : null
+  const suspending = act === "suspend_user" || act === "suspend_sender"
 
   function submit() {
     const input: ResolveReportInput = { status }
@@ -61,6 +68,7 @@ export function ResolveDialog({
     else if (target?.type === "message") input.messageId = target.message.id
     if (note.trim()) input.note = note.trim()
     if (act !== "none") input.act = act as ResolveReportInput["act"]
+    if (suspending) input.suspension = toSuspensionInput(draft)
     resolve.mutate(input, { onSuccess: () => setOpen(false) })
   }
 
@@ -118,6 +126,7 @@ export function ResolveDialog({
             </Select>
           </Field>
         )}
+        {suspending ? <SuspensionFields value={draft} onChange={setDraft} /> : null}
         <Field>
           <FieldLabel>Note (optional)</FieldLabel>
           <Textarea

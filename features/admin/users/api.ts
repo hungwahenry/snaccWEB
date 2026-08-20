@@ -10,8 +10,15 @@ export function getUser(id: string) {
   return api.get<AdminUserDetail>(`/admin/users/${id}`)
 }
 
-export function suspendUser(id: string, reason?: string) {
-  return api.post<AdminUserRow>(`/admin/users/${id}/suspend`, { reason })
+export interface SuspendInput {
+  reasonId?: string
+  note?: string
+  /** ISO 8601. Omit to suspend indefinitely. */
+  until?: string
+}
+
+export function suspendUser(id: string, input: SuspendInput) {
+  return api.post<AdminUserRow>(`/admin/users/${id}/suspend`, input)
 }
 
 export function unsuspendUser(id: string) {
