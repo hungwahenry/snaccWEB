@@ -2,11 +2,12 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { getMe, login, logout, sendOtp } from "../api/auth"
+import { MINUTE_MS } from "@/lib/duration"
 
 export const ME_KEY = ["me"]
 
 export function useMe() {
-  return useQuery({ queryKey: ME_KEY, queryFn: getMe, retry: false, staleTime: 5 * 60_000 })
+  return useQuery({ queryKey: ME_KEY, queryFn: getMe, retry: false, staleTime: 5 * MINUTE_MS })
 }
 
 export function useSendOtp() {

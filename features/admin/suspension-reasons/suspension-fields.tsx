@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useSuspensionReasons } from "./use-suspension-reasons"
+import { DAY_MS } from "@/lib/duration"
 
 const DURATIONS = [
   { value: "0", label: "Indefinitely", days: null as number | null },
@@ -32,7 +33,7 @@ export function toSuspensionInput(draft: SuspensionDraft, note?: string) {
   return {
     reasonId: draft.reasonId || undefined,
     note: note?.trim() || undefined,
-    until: days ? new Date(Date.now() + days * 86_400_000).toISOString() : undefined,
+    until: days ? new Date(Date.now() + days * DAY_MS).toISOString() : undefined,
   }
 }
 

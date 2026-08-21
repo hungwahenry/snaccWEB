@@ -12,6 +12,7 @@ import {
   updateRole,
 } from "./api"
 import type { UpdateRoleInput } from "./types"
+import { MINUTE_MS } from "@/lib/duration"
 
 export function useRoles() {
   return useQuery({ queryKey: ["admin", "roles"], queryFn: listRoles })
@@ -21,7 +22,7 @@ export function usePermissions() {
   return useQuery({
     queryKey: ["admin", "permissions"],
     queryFn: listPermissions,
-    staleTime: 5 * 60_000,
+    staleTime: 5 * MINUTE_MS,
   })
 }
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { SiteFooter } from "@/components/marketing/site-footer"
 import { SiteHeader } from "@/components/marketing/site-header"
+import { longDate } from "@/lib/format"
 import { getPublicPage } from "@/lib/pages"
 
 export async function generateMetadata({
@@ -31,12 +32,7 @@ export default async function DynamicPage({ params }: { params: Promise<{ slug: 
         <h1 className="text-4xl font-extrabold tracking-tight text-balance">{page.title}</h1>
         {page.published_at ? (
           <p className="text-muted-foreground mt-2 text-sm">
-            Updated{" "}
-            {new Date(page.published_at).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
+            Updated {longDate(page.published_at)}
           </p>
         ) : null}
         <article className="snacc-prose mt-8" dangerouslySetInnerHTML={{ __html: page.html }} />
