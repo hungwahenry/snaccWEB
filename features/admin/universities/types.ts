@@ -1,3 +1,9 @@
+export interface ListUniversitiesParams {
+  page?: number
+  perPage?: number
+  q?: string
+}
+
 export interface AdminUniversity {
   id: string
   name: string

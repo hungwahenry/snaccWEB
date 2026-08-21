@@ -1,18 +1,33 @@
 "use client"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/api/errors"
+import { MINUTE_MS } from "@/lib/duration"
 import {
   createUniversity,
   deleteUniversity,
+  listAllUniversities,
   listUniversities,
   updateUniversity,
 } from "./api"
-import type { UpdateUniversityInput } from "./types"
+import type { ListUniversitiesParams, UpdateUniversityInput } from "./types"
 
-export function useUniversities() {
-  return useQuery({ queryKey: ["admin", "universities"], queryFn: listUniversities })
+export function useUniversities(params: ListUniversitiesParams) {
+  return useQuery({
+    queryKey: ["admin", "universities", params],
+    queryFn: () => listUniversities(params),
+    placeholderData: keepPreviousData,
+  })
+}
+
+/** For campus pickers, which need the whole list rather than a page of it. */
+export function useAllUniversities() {
+  return useQuery({
+    queryKey: ["admin", "universities", "all"],
+    queryFn: listAllUniversities,
+    staleTime: 5 * MINUTE_MS,
+  })
 }
 
 export function useUniversityMutations() {

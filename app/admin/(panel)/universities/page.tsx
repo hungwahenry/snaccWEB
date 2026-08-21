@@ -1,13 +1,20 @@
 "use client"
 
+import { useState } from "react"
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
 import { UniversitiesTable } from "@/features/admin/universities/universities-table"
 import { useUniversities, useUniversityMutations } from "@/features/admin/universities/use-universities"
+import type { ListUniversitiesParams } from "@/features/admin/universities/types"
 
 export default function UniversitiesPage() {
-  const query = useUniversities()
+  const [params, setParams] = useState<ListUniversitiesParams>({ page: 1, perPage: 20 })
+  const query = useUniversities(params)
   const mutations = useUniversityMutations()
+
+  function patch(next: Partial<ListUniversitiesParams>) {
+    setParams((prev) => ({ ...prev, ...next }))
+  }
 
   return (
     <>
@@ -19,7 +26,12 @@ export default function UniversitiesPage() {
       ) : query.isError || !query.data ? (
         <p className="text-muted-foreground text-sm">Couldn&apos;t load universities.</p>
       ) : (
-        <UniversitiesTable universities={query.data} mutations={mutations} />
+        <UniversitiesTable
+          data={query.data}
+          params={params}
+          onParams={patch}
+          mutations={mutations}
+        />
       )}
     </>
   )

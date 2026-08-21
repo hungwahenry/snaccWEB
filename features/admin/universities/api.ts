@@ -1,10 +1,29 @@
-import { api } from "@/lib/api/client"
+import { api, type QueryParams } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
-import type { AdminUniversity, CreateUniversityInput, UpdateUniversityInput } from "./types"
+import type {
+  AdminUniversity,
+  CreateUniversityInput,
+  ListUniversitiesParams,
+  UpdateUniversityInput,
+} from "./types"
 
-export async function listUniversities() {
-  const page = await api.get<Paginated<AdminUniversity>>("/admin/universities", { perPage: 100 })
-  return page.items
+const MAX_PER_PAGE = 100
+
+export function listUniversities(params: ListUniversitiesParams) {
+  return api.get<Paginated<AdminUniversity>>("/admin/universities", params as QueryParams)
+}
+
+/** Every campus, for a picker. A page is capped server-side, and there are more campuses than that. */
+export async function listAllUniversities(): Promise<AdminUniversity[]> {
+  const first = await listUniversities({ page: 1, perPage: MAX_PER_PAGE })
+  const items = [...first.items]
+
+  for (let page = 2; page <= first.last_page; page += 1) {
+    const next = await listUniversities({ page, perPage: MAX_PER_PAGE })
+    items.push(...next.items)
+  }
+
+  return items
 }
 
 export function createUniversity(input: CreateUniversityInput) {

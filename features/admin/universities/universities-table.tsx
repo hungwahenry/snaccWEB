@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { DataPagination } from "@/components/data-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -22,9 +23,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import type { Paginated } from "@/lib/api/types"
 import { formatNaira, formatNumber } from "@/lib/format"
 import type { useUniversityMutations } from "./use-universities"
-import type { AdminUniversity } from "./types"
+import type { AdminUniversity, ListUniversitiesParams } from "./types"
 
 type Mutations = ReturnType<typeof useUniversityMutations>
 
@@ -167,15 +169,35 @@ function DeleteDialog({
 }
 
 export function UniversitiesTable({
-  universities,
+  data,
+  params,
+  onParams,
   mutations,
 }: {
-  universities: AdminUniversity[]
+  data: Paginated<AdminUniversity>
+  params: ListUniversitiesParams
+  onParams: (patch: Partial<ListUniversitiesParams>) => void
   mutations: Mutations
 }) {
+  const [search, setSearch] = useState(params.q ?? "")
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-end">
+      <div className="flex flex-wrap items-center gap-2">
+        <form
+          className="flex-1"
+          onSubmit={(event) => {
+            event.preventDefault()
+            onParams({ q: search.trim() || undefined, page: 1 })
+          }}
+        >
+          <Input
+            placeholder="Search name, acronym or slug…"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            className="max-w-xs"
+          />
+        </form>
         <UniversityDialog mutations={mutations} trigger={<Button size="sm">Add university</Button>} />
       </div>
       <Table>
@@ -189,7 +211,7 @@ export function UniversitiesTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {universities.map((university) => (
+          {data.items.map((university) => (
             <TableRow key={university.id}>
               <TableCell>
                 <div className="font-medium">{university.name}</div>
@@ -228,6 +250,13 @@ export function UniversitiesTable({
           ))}
         </TableBody>
       </Table>
+
+      <DataPagination
+        page={data.page}
+        lastPage={data.last_page}
+        total={data.total}
+        onPage={(page) => onParams({ page })}
+      />
     </div>
   )
 }

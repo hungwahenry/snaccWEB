@@ -8,13 +8,13 @@ import {
   useAnnouncementMutations,
   useAnnouncements,
 } from "@/features/admin/announcements/use-announcements"
-import { useUniversities } from "@/features/admin/universities/use-universities"
+import { useAllUniversities } from "@/features/admin/universities/use-universities"
 import type { ListAnnouncementsParams } from "@/features/admin/announcements/types"
 
 export default function AnnouncementsPage() {
   const [params, setParams] = useState<ListAnnouncementsParams>({ page: 1, perPage: 20 })
   const query = useAnnouncements(params)
-  const universities = useUniversities()
+  const universities = useAllUniversities()
   const mutations = useAnnouncementMutations()
 
   function patch(next: Partial<ListAnnouncementsParams>) {
