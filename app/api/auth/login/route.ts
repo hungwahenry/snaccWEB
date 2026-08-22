@@ -1,4 +1,5 @@
 import type { NextRequest } from "next/server"
+import { hasAdminAccess, type AdminPermissions } from "@/lib/permissions"
 import { setSessionToken, SNACC_API_URL } from "@/lib/session"
 
 /** Verifies the OTP against the API, gates on the admin role, and sets the httpOnly session cookie. */
@@ -12,7 +13,10 @@ export async function POST(request: NextRequest) {
     cache: "no-store",
   })
   const json = (await res.json().catch(() => null)) as {
-    data?: { token: string; user: { role: string; permissions?: string[] } }
+    data?: {
+      token: string
+      user: { role: string; permissions?: AdminPermissions }
+    }
     message?: string
     code?: string
   } | null
@@ -21,7 +25,7 @@ export async function POST(request: NextRequest) {
     return Response.json(json ?? { message: "Login failed" }, { status: res.status || 500 })
   }
 
-  if (!json.data.user.permissions?.length) {
+  if (!hasAdminAccess(json.data.user.permissions)) {
     return Response.json(
       { status: "error", message: "This account has no admin access.", code: "not_admin" },
       { status: 403 },

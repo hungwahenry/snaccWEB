@@ -1,8 +1,10 @@
+import type { AdminPermissions } from "@/lib/permissions"
+
 export interface AuthUser {
   id: string
   email: string
   role: string
-  permissions: string[]
+  permissions: AdminPermissions
   profile: {
     username: string | null
     display_name: string | null

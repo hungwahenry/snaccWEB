@@ -4,11 +4,12 @@ import { useRouter } from "next/navigation"
 import { useEffect, type ReactNode } from "react"
 import { Spinner } from "@/components/ui/spinner"
 import { useMe } from "@/features/admin/auth/hooks/use-auth"
+import { hasAdminAccess } from "@/lib/permissions"
 
 export function AuthGuard({ children }: { children: ReactNode }) {
   const router = useRouter()
   const me = useMe()
-  const denied = me.isError || (!!me.data && !me.data.permissions?.length)
+  const denied = me.isError || (!!me.data && !hasAdminAccess(me.data.permissions))
 
   useEffect(() => {
     if (denied) router.replace("/admin/login")

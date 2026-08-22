@@ -23,7 +23,7 @@ import {
   Wrench,
   type LucideIcon,
 } from "lucide-react"
-import { can } from "./permissions"
+import { can, type AdminPermissions } from "./permissions"
 
 export interface NavItem {
   href: string
@@ -78,7 +78,7 @@ export const NAV: { group: string; items: NavItem[] }[] = [
   },
 ]
 
-export function firstAllowedHref(permissions: string[] | undefined): string | null {
+export function firstAllowedHref(permissions: AdminPermissions | undefined): string | null {
   for (const group of NAV) {
     for (const item of group.items) {
       if (can(permissions, item.permission)) return item.href
