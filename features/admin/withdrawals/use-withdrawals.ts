@@ -3,7 +3,15 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/api/errors"
-import { getWithdrawal, listWithdrawals, retryWithdrawal, settleWithdrawal } from "./api"
+import {
+  claimWithdrawal,
+  getWithdrawal,
+  getWithdrawalSummary,
+  listWithdrawals,
+  releaseWithdrawal,
+  retryWithdrawal,
+  settleWithdrawal,
+} from "./api"
 import type { ListWithdrawalsParams, SettleWithdrawalInput } from "./types"
 
 export function useWithdrawals(params: ListWithdrawalsParams) {
@@ -11,6 +19,13 @@ export function useWithdrawals(params: ListWithdrawalsParams) {
     queryKey: ["admin", "withdrawals", params],
     queryFn: () => listWithdrawals(params),
     placeholderData: keepPreviousData,
+  })
+}
+
+export function useWithdrawalSummary() {
+  return useQuery({
+    queryKey: ["admin", "withdrawals", "summary"],
+    queryFn: getWithdrawalSummary,
   })
 }
 
@@ -39,6 +54,22 @@ export function useWithdrawalMutations(id: string) {
       onSuccess: () => {
         invalidate()
         toast.success("Withdrawal settled.")
+      },
+      onError,
+    }),
+    claim: useMutation({
+      mutationFn: () => claimWithdrawal(id),
+      onSuccess: () => {
+        invalidate()
+        toast.success("Claimed — it is yours to pay.")
+      },
+      onError,
+    }),
+    release: useMutation({
+      mutationFn: () => releaseWithdrawal(id),
+      onSuccess: () => {
+        invalidate()
+        toast.success("Released back to the queue.")
       },
       onError,
     }),

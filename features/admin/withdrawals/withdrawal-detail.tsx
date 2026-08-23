@@ -124,12 +124,32 @@ export function WithdrawalDetail({
         </div>
         <div className="flex flex-wrap gap-2">
           {withdrawal.status === "pending" && (
+            <>
+              <Button
+                size="sm"
+                disabled={actions.claim.isPending}
+                onClick={() => actions.claim.mutate()}
+              >
+                Claim to pay
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={actions.retry.isPending}
+                onClick={() => actions.retry.mutate()}
+              >
+                Retry transfer
+              </Button>
+            </>
+          )}
+          {withdrawal.status === "processing" && (
             <Button
               size="sm"
-              disabled={actions.retry.isPending}
-              onClick={() => actions.retry.mutate()}
+              variant="outline"
+              disabled={actions.release.isPending}
+              onClick={() => actions.release.mutate()}
             >
-              Retry transfer
+              Release
             </Button>
           )}
           <SettleDialog actions={actions} />
@@ -145,6 +165,16 @@ export function WithdrawalDetail({
             <Row label="Bank" value={withdrawal.bank_name} />
             <Row label="Account name" value={withdrawal.account_name} />
             <Row label="Account" value={`•••• ${withdrawal.account_last4}`} />
+            {/* The handle for finding this payee in Paystack, which is how a manual payout is made. */}
+            <Row label="Recipient code" value={withdrawal.recipient_code ?? "—"} />
+            <Row
+              label="Claimed by"
+              value={
+                withdrawal.claimed_by
+                  ? `${withdrawal.claimed_by.username ? `@${withdrawal.claimed_by.username}` : withdrawal.claimed_by.display_name} · ${formatDate(withdrawal.claimed_at)}`
+                  : "—"
+              }
+            />
             <Row label="Balance before" value={formatNaira(withdrawal.balance_before)} />
             <Row label="Balance after" value={formatNaira(withdrawal.balance_after)} />
             <Row label="Transfer code" value={withdrawal.transfer_code ?? "—"} />

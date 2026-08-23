@@ -1,8 +1,10 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import { useState } from "react"
 import { DataPagination } from "@/components/data-pagination"
 import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -27,6 +29,7 @@ export const STATUS_VARIANT: Record<
   "secondary" | "default" | "destructive" | "outline"
 > = {
   pending: "secondary",
+  processing: "outline",
   success: "default",
   failed: "destructive",
   reversed: "outline",
@@ -42,26 +45,44 @@ export function WithdrawalsTable({
   onParams: (patch: Partial<ListWithdrawalsParams>) => void
 }) {
   const router = useRouter()
+  const [search, setSearch] = useState(params.q ?? "")
 
   return (
     <div className="flex flex-col gap-4">
-      <Select
-        value={params.status ?? "all"}
-        onValueChange={(value) =>
-          onParams({ status: !value || value === "all" ? undefined : (value as never), page: 1 })
-        }
-      >
-        <SelectTrigger className="w-40">
-          <SelectValue placeholder="Status" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All status</SelectItem>
-          <SelectItem value="pending">Pending</SelectItem>
-          <SelectItem value="success">Success</SelectItem>
-          <SelectItem value="failed">Failed</SelectItem>
-          <SelectItem value="reversed">Reversed</SelectItem>
-        </SelectContent>
-      </Select>
+      <div className="flex flex-wrap items-center gap-2">
+        <form
+          className="flex-1"
+          onSubmit={(event) => {
+            event.preventDefault()
+            onParams({ q: search.trim() || undefined, page: 1 })
+          }}
+        >
+          <Input
+            placeholder="Search name, handle or email…"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            className="max-w-xs"
+          />
+        </form>
+        <Select
+          value={params.status ?? "all"}
+          onValueChange={(value) =>
+            onParams({ status: !value || value === "all" ? undefined : (value as never), page: 1 })
+          }
+        >
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All status</SelectItem>
+            <SelectItem value="pending">Pending</SelectItem>
+            <SelectItem value="processing">Being paid</SelectItem>
+            <SelectItem value="success">Success</SelectItem>
+            <SelectItem value="failed">Failed</SelectItem>
+            <SelectItem value="reversed">Reversed</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
       <Table>
         <TableHeader>
