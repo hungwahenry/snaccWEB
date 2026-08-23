@@ -27,6 +27,7 @@ export interface AdminWithdrawal {
   bank_name: string
   account_last4: string
   account_name: string
+  account_number?: string | null
   recipient_code: string | null
   balance_before: number
   balance_after: number

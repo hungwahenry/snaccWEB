@@ -164,7 +164,10 @@ export function WithdrawalDetail({
           <CardContent className="divide-y">
             <Row label="Bank" value={withdrawal.bank_name} />
             <Row label="Account name" value={withdrawal.account_name} />
-            <Row label="Account" value={`•••• ${withdrawal.account_last4}`} />
+            <Row
+              label="Account"
+              value={withdrawal.account_number ?? `•••• ${withdrawal.account_last4}`}
+            />
             {/* The handle for finding this payee in Paystack, which is how a manual payout is made. */}
             <Row label="Recipient code" value={withdrawal.recipient_code ?? "—"} />
             <Row
