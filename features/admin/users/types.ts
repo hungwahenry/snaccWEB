@@ -13,6 +13,7 @@ export interface AdminUserRow {
   suspended_until: string | null
   suspended_note: string | null
   suspended_reason: { id: string; slug: string; title: string } | null
+  posts_globally: boolean
   earnings_paused_at: string | null
   earnings_paused_reason: string | null
   payouts_blocked_at: string | null

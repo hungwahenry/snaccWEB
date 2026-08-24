@@ -21,6 +21,8 @@ import {
   UserX,
   VenetianMask,
   Wrench,
+  Scale,
+  AtSign,
   type LucideIcon,
 } from "lucide-react"
 import { can, type AdminPermissions } from "./permissions"
@@ -67,10 +69,12 @@ export const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/admin/roles", label: "Roles", icon: ShieldCheck, permission: "roles.read" },
       { href: "/admin/universities", label: "Universities", icon: School, permission: "universities.read" },
       { href: "/admin/tiers", label: "Leaderboard tiers", icon: Medal, permission: "tiers.read" },
+      { href: "/admin/engagement", label: "Engagement weights", icon: Scale, permission: "engagement.read" },
       { href: "/admin/badges", label: "Badges", icon: Award, permission: "badges.read" },
       { href: "/admin/prompts", label: "Onboarding prompts", icon: Sparkles, permission: "prompts.read" },
       { href: "/admin/config", label: "Config", icon: SlidersHorizontal, permission: "config.read" },
       { href: "/admin/flags", label: "Feature flags", icon: ToggleRight, permission: "flags.read" },
+      { href: "/admin/reserved-usernames", label: "Reserved usernames", icon: AtSign, permission: "reserved_usernames.read" },
       { href: "/admin/ghost-hour", label: "Ghost Hour", icon: VenetianMask, permission: "ghost.manage" },
       { href: "/admin/audit", label: "Audit log", icon: ScrollText, permission: "audit.read" },
       { href: "/admin/ops", label: "Ops & maintenance", icon: Wrench, permission: "ops.read" },

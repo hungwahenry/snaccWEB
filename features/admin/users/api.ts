@@ -33,6 +33,14 @@ export function resumeEarnings(id: string) {
   return api.post<AdminUserRow>(`/admin/users/${id}/resume-earnings`)
 }
 
+export function makeGlobal(id: string) {
+  return api.post<AdminUserRow>(`/admin/users/${id}/reach/global`)
+}
+
+export function makeCampusBound(id: string) {
+  return api.post<AdminUserRow>(`/admin/users/${id}/reach/campus`)
+}
+
 export function blockPayouts(id: string, reason?: string) {
   return api.post<AdminUserRow>(`/admin/users/${id}/block-payouts`, { reason })
 }

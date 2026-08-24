@@ -10,6 +10,8 @@ import {
   deleteUser,
   getUser,
   listUsers,
+  makeCampusBound,
+  makeGlobal,
   pauseEarnings,
   resumeEarnings,
   revokeSessions,
@@ -74,6 +76,22 @@ export function useUserMutations(id: string) {
       onSuccess: () => {
         invalidate()
         toast.success("Earnings resumed.")
+      },
+      onError,
+    }),
+    makeGlobal: useMutation({
+      mutationFn: () => makeGlobal(id),
+      onSuccess: () => {
+        invalidate()
+        toast.success("Posts now reach every campus.")
+      },
+      onError,
+    }),
+    makeCampusBound: useMutation({
+      mutationFn: () => makeCampusBound(id),
+      onSuccess: () => {
+        invalidate()
+        toast.success("Posts now reach this campus only.")
       },
       onError,
     }),

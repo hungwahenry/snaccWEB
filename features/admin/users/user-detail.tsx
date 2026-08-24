@@ -69,6 +69,7 @@ export function UserDetail({
                 <Badge variant="outline">user</Badge>
               )}
               {user.suspended_at && <Badge variant="destructive">suspended</Badge>}
+              {user.posts_globally && <Badge>posts everywhere</Badge>}
               {user.earnings_paused_at && <Badge variant="secondary">earnings paused</Badge>}
               {user.payouts_blocked_at && <Badge variant="secondary">payouts blocked</Badge>}
             </div>

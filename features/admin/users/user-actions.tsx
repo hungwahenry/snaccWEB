@@ -333,6 +333,49 @@ function ReasonDialog({
   )
 }
 
+/** Same shape as ReasonDialog, without a reason field the endpoint would only discard. */
+function ConfirmDialog({
+  triggerLabel,
+  title,
+  description,
+  confirmLabel,
+  pending,
+  onConfirm,
+}: {
+  triggerLabel: string
+  title: string
+  description: string
+  confirmLabel: string
+  pending: boolean
+  onConfirm: (close: () => void) => void
+}) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger
+        render={
+          <Button variant="outline" size="sm">
+            {triggerLabel}
+          </Button>
+        }
+      />
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+        </DialogHeader>
+        <p className="text-muted-foreground text-sm">{description}</p>
+        <DialogFooter>
+          <DialogClose render={<Button variant="ghost">Cancel</Button>} />
+          <Button disabled={pending} onClick={() => onConfirm(() => setOpen(false))}>
+            {confirmLabel}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
 export function UserActions({ user, actions }: { user: AdminUserDetail; actions: Mutations }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -351,6 +394,25 @@ export function UserActions({ user, actions }: { user: AdminUserDetail; actions:
       <RolesDialog user={user} />
       <UserBadgesDialog user={user} />
       <BalanceDialog user={user} actions={actions} />
+      {user.posts_globally ? (
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={actions.makeCampusBound.isPending}
+          onClick={() => actions.makeCampusBound.mutate()}
+        >
+          Stop posting everywhere
+        </Button>
+      ) : (
+        <ConfirmDialog
+          triggerLabel="Post to every campus"
+          title="Post to every campus?"
+          description="This account's snaccs will appear on every campus feed, not just its own. It stops earning and comes off the leaderboards, because an account that posts everywhere would otherwise win everything. Snaccs it has already posted move with it."
+          confirmLabel="Post everywhere"
+          pending={actions.makeGlobal.isPending}
+          onConfirm={(close: () => void) => actions.makeGlobal.mutate(undefined, { onSuccess: close })}
+        />
+      )}
       {user.earnings_paused_at ? (
         <Button
           variant="outline"
