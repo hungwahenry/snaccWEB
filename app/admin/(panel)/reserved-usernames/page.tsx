@@ -18,7 +18,7 @@ export default function ReservedUsernamesPage() {
     <>
       <PageHeader
         title="Reserved usernames"
-        description="Names nobody may take. A username is also a profile URL and the way somebody is believed, so routes and Snacc's own names are held back."
+        description="Names nobody may take. A username is also a profile URL and the way somebody is believed, so routes and Snacc's own names are held back. This table is what is enforced."
       />
       {query.isPending ? (
         <div className="flex justify-center py-24">

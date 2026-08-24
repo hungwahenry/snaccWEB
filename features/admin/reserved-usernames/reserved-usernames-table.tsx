@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -67,11 +68,55 @@ function HoldDialog({
           />
         </Field>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
+          <DialogClose render={<Button variant="ghost">Cancel</Button>} />
           <Button onClick={save} disabled={pending || !name.trim() || !reason.trim()}>
             Hold it
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function ReleaseDialog({
+  held,
+  onRelease,
+  pending,
+}: {
+  held: AdminReservedUsername
+  onRelease: (name: string) => void
+  pending: boolean
+}) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger render={<Button variant="ghost" size="sm">Release</Button>} />
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="font-mono text-base">{held.name}</DialogTitle>
+        </DialogHeader>
+        <p className="text-muted-foreground text-sm">
+          Held because: {held.reason}. Releasing it lets anyone register it, and it will not come
+          back on the next deploy — this table is what is enforced.
+        </p>
+        {held.reason.toLowerCase().includes("route") || held.reason.toLowerCase().includes("path") ? (
+          <p className="text-sm">
+            This one collides with a URL. Whoever takes it gets a profile page nobody can open,
+            because the route wins.
+          </p>
+        ) : null}
+        <DialogFooter>
+          <DialogClose render={<Button variant="ghost">Keep it held</Button>} />
+          <Button
+            variant="destructive"
+            disabled={pending}
+            onClick={() => {
+              onRelease(held.name)
+              setOpen(false)
+            }}
+          >
+            Release
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -90,70 +135,59 @@ export function ReservedUsernamesTable({
   onRelease: (name: string) => void
   pending: boolean
 }) {
-  const added = names.filter((held) => !held.seeded)
-  const shipped = names.filter((held) => held.seeded)
+  const [filter, setFilter] = useState("")
+
+  const shown = useMemo(() => {
+    const needle = filter.trim().toLowerCase()
+    if (!needle) return names
+    return names.filter(
+      (held) =>
+        held.name.includes(needle) || held.reason.toLowerCase().includes(needle),
+    )
+  }, [names, filter])
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader className="flex-row items-center justify-between gap-4">
-          <div>
-            <CardTitle className="text-base">Held by hand</CardTitle>
-            <p className="text-muted-foreground text-sm">
-              Added here, and kept through every deploy.
-            </p>
-          </div>
-          <HoldDialog onHold={onHold} pending={pending} />
-        </CardHeader>
-        <CardContent>
-          {added.length === 0 ? (
-            <p className="text-muted-foreground text-sm">
-              None yet. Everything below ships with Snacc.
-            </p>
-          ) : (
-            <Table>
-              <TableBody>
-                {added.map((held) => (
-                  <TableRow key={held.name}>
-                    <TableCell className="font-mono text-sm">{held.name}</TableCell>
-                    <TableCell className="text-muted-foreground text-sm">{held.reason}</TableCell>
-                    <TableCell className="w-28 text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        disabled={pending}
-                        onClick={() => onRelease(held.name)}
-                      >
-                        Release
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Ships with Snacc</CardTitle>
+    <Card>
+      <CardHeader className="flex-row items-center justify-between gap-4">
+        <div>
+          <CardTitle className="text-base">{names.length} names held</CardTitle>
           <p className="text-muted-foreground text-sm">
-            Routes a profile URL would collide with, names Snacc would speak under, and
-            infrastructure paths. Releasing one here would only free it until the next deploy put it
-            back, so they are changed in the manifest instead.
+            Every one can be released. Snacc seeds this list on a fresh install and never overrides
+            it again.
           </p>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-1.5">
-            {shipped.map((held) => (
-              <Badge key={held.name} variant="secondary" className="font-mono font-normal">
-                {held.name}
-              </Badge>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Input
+            value={filter}
+            onChange={(event) => setFilter(event.target.value)}
+            placeholder="Filter"
+            className="w-44"
+          />
+          <HoldDialog onHold={onHold} pending={pending} />
+        </div>
+      </CardHeader>
+      <CardContent>
+        {shown.length === 0 ? (
+          <p className="text-muted-foreground text-sm">Nothing matches that.</p>
+        ) : (
+          <Table>
+            <TableBody>
+              {shown.map((held) => (
+                <TableRow key={held.name}>
+                  <TableCell className="w-56 font-mono text-sm">{held.name}</TableCell>
+                  <TableCell className="text-muted-foreground text-sm">{held.reason}</TableCell>
+                  <TableCell className="w-32">
+                    {held.seeded ? null : <Badge variant="outline">added here</Badge>}
+                  </TableCell>
+                  <TableCell className="w-28 text-right">
+                    <ReleaseDialog held={held} onRelease={onRelease} pending={pending} />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent>
+    </Card>
   )
 }
