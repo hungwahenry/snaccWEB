@@ -22,6 +22,20 @@ export type ReportTarget =
     }
   | { type: "user"; user: ReportAuthor }
   | {
+      type: "moment"
+      moment: {
+        id: string
+        body: string | null
+        background: string | null
+        deleted_at: string | null
+        expires_at: string
+        /** Held open by this report; without it the purge would already have taken it. */
+        held: boolean
+        author: ReportAuthor
+        images: { id: string; url: string; width: number; height: number }[]
+      }
+    }
+  | {
       type: "message"
       message: {
         id: string
@@ -58,16 +72,25 @@ export interface ListReportsParams {
   page?: number
   perPage?: number
   status?: ReportStatus
-  targetType?: "snacc" | "user" | "message"
+  targetType?: "snacc" | "user" | "message" | "moment"
 }
 
 export interface ResolveReportInput {
   snaccId?: string
   reportedUserId?: string
   messageId?: string
+  momentId?: string
   status: "actioned" | "dismissed"
   note?: string
-  acts?: ("delete_snacc" | "suspend_author" | "suspend_user" | "delete_message" | "suspend_sender")[]
+  acts?: (
+    | "delete_snacc"
+    | "suspend_author"
+    | "suspend_user"
+    | "delete_message"
+    | "suspend_sender"
+    | "delete_moment"
+    | "suspend_moment_author"
+  )[]
   suspension?: { reasonId?: string; note?: string; until?: string }
 }
 

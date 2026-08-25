@@ -38,6 +38,9 @@ function targetLabel(target: AdminReport["target"]) {
   if (target.type === "user") {
     return `User ${handleOf(target.user)}`
   }
+  if (target.type === "moment") {
+    return `${target.moment.body?.slice(0, 40) || "photo moment"} · ${handleOf(target.moment.author)}`
+  }
   return `${target.message.body?.slice(0, 40) || "message"} · ${handleOf(target.message.sender)}`
 }
 
@@ -88,6 +91,7 @@ export function ReportsTable({
             <SelectItem value="snacc">Snaccs</SelectItem>
             <SelectItem value="user">Users</SelectItem>
             <SelectItem value="message">Messages</SelectItem>
+            <SelectItem value="moment">Moments</SelectItem>
           </SelectContent>
         </Select>
       </div>

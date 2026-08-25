@@ -30,7 +30,12 @@ import {
 import type { useResolveReport } from "./use-reports"
 import type { AdminReport, ResolveReportInput } from "./types"
 
-const TARGET_NOUN = { snacc: "snacc", user: "user", message: "message" } as const
+const TARGET_NOUN = {
+  snacc: "snacc",
+  user: "user",
+  message: "message",
+  moment: "moment",
+} as const
 
 /** Taking the content down and suspending whoever posted it are separate choices, and usually both. */
 function actChoicesFor(target: AdminReport["target"]) {
@@ -45,10 +50,20 @@ function actChoicesFor(target: AdminReport["target"]) {
       { value: "delete_message", label: "Remove the message" },
       { value: "suspend_sender", label: "Suspend the sender" },
     ]
+  if (target?.type === "moment")
+    return [
+      { value: "delete_moment", label: "Remove the moment" },
+      { value: "suspend_moment_author", label: "Suspend whoever posted it" },
+    ]
   return []
 }
 
-const SUSPEND_ACTS = ["suspend_user", "suspend_author", "suspend_sender"]
+const SUSPEND_ACTS = [
+  "suspend_user",
+  "suspend_author",
+  "suspend_sender",
+  "suspend_moment_author",
+]
 
 export function ResolveDialog({
   report,
@@ -80,6 +95,7 @@ export function ResolveDialog({
     if (target?.type === "snacc") input.snaccId = target.snacc.id
     else if (target?.type === "user") input.reportedUserId = target.user.id
     else if (target?.type === "message") input.messageId = target.message.id
+    else if (target?.type === "moment") input.momentId = target.moment.id
     if (note.trim()) input.note = note.trim()
     if (acts.length > 0) input.acts = acts as ResolveReportInput["acts"]
     if (suspending) input.suspension = toSuspensionInput(draft)
