@@ -72,6 +72,13 @@ export function SnaccCard({ snacc, href }: { snacc: PublicSnacc; href?: string }
           className="border-border ml-14 rounded-2xl border"
           style={{ aspectRatio: `${media.width} / ${media.height}` }}
         />
+      ) : snacc.sticker ? (
+        <img
+          src={snacc.sticker.url}
+          alt=""
+          className="ml-14 max-h-40 self-start object-contain"
+          style={{ aspectRatio: `${snacc.sticker.width} / ${snacc.sticker.height}` }}
+        />
       ) : null}
 
       <div className="ml-14">
@@ -92,7 +99,7 @@ export function SnaccCard({ snacc, href }: { snacc: PublicSnacc; href?: string }
 function QuotedSnacc({ snacc }: { snacc: PublicQuotedSnacc }) {
   const { author } = snacc
   const ghost = snacc.anonymous
-  const hasMedia = snacc.images.length > 0 || snacc.gif !== null
+  const hasMedia = snacc.images.length > 0 || snacc.gif !== null || snacc.sticker !== null
 
   return (
     <div className="border-border flex flex-col gap-1.5 rounded-2xl border px-3 py-2.5">

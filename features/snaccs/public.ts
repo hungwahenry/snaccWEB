@@ -8,6 +8,12 @@ export interface PublicSnaccAuthor {
   university: { name: string; acronym: string; slug: string } | null
 }
 
+export interface PublicSticker {
+  url: string
+  width: number
+  height: number
+}
+
 export interface PublicQuotedSnacc {
   id: string
   body: string | null
@@ -16,6 +22,7 @@ export interface PublicQuotedSnacc {
   author: PublicSnaccAuthor
   images: { url: string; width: number; height: number }[]
   gif: { url: string; width: number; height: number } | null
+  sticker: PublicSticker | null
 }
 
 export interface PublicSnacc {
@@ -26,6 +33,7 @@ export interface PublicSnacc {
   author: PublicSnaccAuthor
   images: { url: string; width: number; height: number }[]
   gif: { url: string; width: number; height: number } | null
+  sticker: PublicSticker | null
   reactions: { emoji: string; count: number }[]
   reactions_count: number
   comments_count: number
