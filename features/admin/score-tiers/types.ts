@@ -1,7 +1,7 @@
 export interface AdminTier {
   id: string
   key: string
-  max_percentile: number
+  min_score: number
   position: number
   label: string
   icon: string
@@ -11,7 +11,7 @@ export interface AdminTier {
 
 export interface CreateTierInput {
   key: string
-  maxPercentile: number
+  minScore: number
   position: number
   label?: string
   icon?: string
@@ -20,7 +20,7 @@ export interface CreateTierInput {
 
 export interface UpdateTierInput {
   key?: string
-  maxPercentile?: number
+  minScore?: number
   position?: number
   label?: string
   icon?: string

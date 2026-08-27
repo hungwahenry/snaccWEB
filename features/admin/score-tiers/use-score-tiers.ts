@@ -7,7 +7,7 @@ import { createTier, deleteTier, listTiers, updateTier } from "./api"
 import type { UpdateTierInput } from "./types"
 
 export function useTiers() {
-  return useQuery({ queryKey: ["admin", "leaderboard-tiers"], queryFn: listTiers })
+  return useQuery({ queryKey: ["admin", "score-tiers"], queryFn: listTiers })
 }
 
 export function useTierMutations() {
@@ -15,7 +15,7 @@ export function useTierMutations() {
 
   function onSuccess(message: string) {
     return () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "leaderboard-tiers"] })
+      queryClient.invalidateQueries({ queryKey: ["admin", "score-tiers"] })
       toast.success(message)
     }
   }
@@ -24,9 +24,14 @@ export function useTierMutations() {
   }
 
   return {
-    create: useMutation({ mutationFn: createTier, onSuccess: onSuccess("Tier created."), onError }),
+    create: useMutation({
+      mutationFn: createTier,
+      onSuccess: onSuccess("Tier created."),
+      onError,
+    }),
     update: useMutation({
-      mutationFn: ({ id, input }: { id: string; input: UpdateTierInput }) => updateTier(id, input),
+      mutationFn: ({ id, input }: { id: string; input: UpdateTierInput }) =>
+        updateTier(id, input),
       onSuccess: onSuccess("Tier updated."),
       onError,
     }),

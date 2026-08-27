@@ -34,8 +34,12 @@ function EditDialog({
   pending: boolean
 }) {
   const [open, setOpen] = useState(false)
-  const [score, setScore] = useState(kind.score_weight === null ? "" : String(kind.score_weight))
-  const [feed, setFeed] = useState(kind.feed_weight === null ? "" : String(kind.feed_weight))
+  const [score, setScore] = useState(
+    kind.score_weight === null ? "" : String(kind.score_weight)
+  )
+  const [feed, setFeed] = useState(
+    kind.feed_weight === null ? "" : String(kind.feed_weight)
+  )
 
   function save() {
     onUpdate({
@@ -59,10 +63,10 @@ function EditDialog({
         <DialogHeader>
           <DialogTitle className="font-mono text-sm">{kind.key}</DialogTitle>
         </DialogHeader>
-        <p className="text-muted-foreground text-sm">{kind.description}</p>
+        <p className="text-sm text-muted-foreground">{kind.description}</p>
         <Field>
           <FieldLabel htmlFor={`score-${kind.key}`}>
-            Points on the board — shipped as {weight(kind.default_score_weight)}
+            Snacc Score points — shipped as {weight(kind.default_score_weight)}
           </FieldLabel>
           <Input
             id={`score-${kind.key}`}
@@ -84,9 +88,10 @@ function EditDialog({
             inputMode="decimal"
           />
         </Field>
-        <p className="text-muted-foreground text-xs">
-          Points are frozen into each credit when it is earned, so a change here prices new
-          engagement only and never restates anyone&apos;s score. The feed weight is read live.
+        <p className="text-xs text-muted-foreground">
+          Points are frozen into each credit when it is earned, so a change here
+          prices new engagement only and never restates anyone&apos;s score. The
+          feed weight is read live.
         </p>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
@@ -124,9 +129,11 @@ export function EngagementTable({
           <Card key={source}>
             <CardHeader>
               <CardTitle className="text-base">
-                {source === "server" ? "Recorded by Snacc" : "Reported by the app"}
+                {source === "server"
+                  ? "Recorded by Snacc"
+                  : "Reported by the app"}
               </CardTitle>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-sm text-muted-foreground">
                 {source === "server"
                   ? "Rows we wrote ourselves, so the counts can be trusted."
                   : "The app says these happened, so each is capped at one per person per snacc."}
@@ -140,21 +147,37 @@ export function EngagementTable({
                       <TableCell className="align-top">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="font-medium">{kind.label}</span>
-                          <span className="text-muted-foreground font-mono text-xs">{kind.key}</span>
+                          <span className="font-mono text-xs text-muted-foreground">
+                            {kind.key}
+                          </span>
                           {kind.is_default ? null : (
-                            <Badge variant="outline">Changed from shipped</Badge>
+                            <Badge variant="outline">
+                              Changed from shipped
+                            </Badge>
                           )}
-                          {kind.enabled ? null : <Badge variant="secondary">Off</Badge>}
+                          {kind.enabled ? null : (
+                            <Badge variant="secondary">Off</Badge>
+                          )}
                         </div>
-                        <p className="text-muted-foreground mt-1 text-sm">{kind.description}</p>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          {kind.description}
+                        </p>
                       </TableCell>
                       <TableCell className="w-28 text-right align-top tabular-nums">
-                        <div className="text-sm">{weight(kind.score_weight)}</div>
-                        <div className="text-muted-foreground text-xs">board</div>
+                        <div className="text-sm">
+                          {weight(kind.score_weight)}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          board
+                        </div>
                       </TableCell>
                       <TableCell className="w-28 text-right align-top tabular-nums">
-                        <div className="text-sm">{weight(kind.feed_weight)}</div>
-                        <div className="text-muted-foreground text-xs">feed</div>
+                        <div className="text-sm">
+                          {weight(kind.feed_weight)}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          feed
+                        </div>
                       </TableCell>
                       <TableCell className="w-44 text-right align-top">
                         <div className="flex justify-end gap-2">
@@ -168,11 +191,17 @@ export function EngagementTable({
                               Reset
                             </Button>
                           )}
-                          <EditDialog kind={kind} onUpdate={onUpdate} pending={pending} />
+                          <EditDialog
+                            kind={kind}
+                            onUpdate={onUpdate}
+                            pending={pending}
+                          />
                           <Switch
                             checked={kind.enabled}
                             disabled={pending}
-                            onCheckedChange={(enabled) => onUpdate({ key: kind.key, enabled })}
+                            onCheckedChange={(enabled) =>
+                              onUpdate({ key: kind.key, enabled })
+                            }
                           />
                         </div>
                       </TableCell>

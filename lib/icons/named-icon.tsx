@@ -23,6 +23,10 @@ import {
   Users,
   WandSparkles,
   Zap,
+  Sprout,
+  TrendingUp,
+  Mountain,
+  Infinity,
   type LucideIcon,
 } from "lucide-react"
 
@@ -52,6 +56,10 @@ const NAMED_ICONS: Record<string, LucideIcon> = {
   users: Users,
   wand: WandSparkles,
   zap: Zap,
+  sprout: Sprout,
+  "trending-up": TrendingUp,
+  mountain: Mountain,
+  infinity: Infinity,
 }
 
 export const NAMED_ICON_NAMES = Object.keys(NAMED_ICONS)
@@ -74,5 +82,8 @@ export function NamedIcon({
   if (!icon) return null
 
   // createElement, not JSX: a capitalised local in JSX position reads as a component made in render.
-  return createElement(icon, { className, style: color ? { color } : undefined })
+  return createElement(icon, {
+    className,
+    style: color ? { color } : undefined,
+  })
 }

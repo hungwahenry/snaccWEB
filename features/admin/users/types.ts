@@ -32,20 +32,9 @@ export interface AdminUserRow {
 }
 
 export interface AdminUserDetail extends AdminUserRow {
-  badges: {
-    id: string
-    key: string
-    label: string
-    icon: string
-    color: string
-    note: string | null
-    granted_at: string
-  }[]
   engagement: {
     score: number
-    weekly_score: number
-    campus_rank: number | null
-    global_rank: number
+    tier: string | null
     reactions_received: number
     resnaccs_received: number
     comments_received: number
@@ -53,7 +42,12 @@ export interface AdminUserDetail extends AdminUserRow {
   earnings: {
     balance: number
     by_type: { type: string; events: number; kobo: number }[]
-    top_boosters: { username: string | null; email: string; events: number; kobo: number }[]
+    top_boosters: {
+      username: string | null
+      email: string
+      events: number
+      kobo: number
+    }[]
   }
   top_engagers: {
     username: string | null
@@ -98,8 +92,16 @@ export interface AdminUserDetail extends AdminUserRow {
     expires_at: string | null
     created_at: string
   }[]
-  device_tokens: { platform: string; disabled_at: string | null; last_used_at: string | null }[]
-  notification_preferences: { category: string; push_enabled: boolean; email_enabled: boolean }[]
+  device_tokens: {
+    platform: string
+    disabled_at: string | null
+    last_used_at: string | null
+  }[]
+  notification_preferences: {
+    category: string
+    push_enabled: boolean
+    email_enabled: boolean
+  }[]
   recent_withdrawals: {
     id: string
     amount: number

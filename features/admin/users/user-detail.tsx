@@ -27,7 +27,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   return (
     <Card>
       <CardContent className="py-4">
-        <div className="text-muted-foreground text-xs">{label}</div>
+        <div className="text-xs text-muted-foreground">{label}</div>
         <div className="mt-1 text-xl font-semibold tabular-nums">{value}</div>
       </CardContent>
     </Card>
@@ -57,28 +57,40 @@ export function UserDetail({
           <Avatar className="size-16">
             <AvatarImage src={user.avatar_url} alt="" />
             <AvatarFallback>
-              {(user.display_name || user.username || user.email).slice(0, 2).toUpperCase()}
+              {(user.display_name || user.username || user.email)
+                .slice(0, 2)
+                .toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-semibold">{user.display_name ?? "—"}</h2>
+              <h2 className="text-xl font-semibold">
+                {user.display_name ?? "—"}
+              </h2>
               {user.role === "admin" ? (
                 <Badge>admin</Badge>
               ) : (
                 <Badge variant="outline">user</Badge>
               )}
-              {user.suspended_at && <Badge variant="destructive">suspended</Badge>}
+              {user.suspended_at && (
+                <Badge variant="destructive">suspended</Badge>
+              )}
               {user.posts_globally && <Badge>posts everywhere</Badge>}
-              {user.earnings_paused_at && <Badge variant="secondary">earnings paused</Badge>}
-              {user.payouts_blocked_at && <Badge variant="secondary">payouts blocked</Badge>}
+              {user.earnings_paused_at && (
+                <Badge variant="secondary">earnings paused</Badge>
+              )}
+              {user.payouts_blocked_at && (
+                <Badge variant="secondary">payouts blocked</Badge>
+              )}
             </div>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               {user.username ? `@${user.username} · ` : ""}
               {user.email}
             </p>
             {user.university && (
-              <p className="text-muted-foreground text-sm">{user.university.name}</p>
+              <p className="text-sm text-muted-foreground">
+                {user.university.name}
+              </p>
             )}
           </div>
         </div>
@@ -86,7 +98,7 @@ export function UserDetail({
       </div>
 
       {user.suspended_at && (
-        <div className="border-destructive/40 bg-destructive/10 text-destructive space-y-1 rounded-xl border px-4 py-3 text-sm">
+        <div className="space-y-1 rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           <p>
             Suspended {formatDate(user.suspended_at)}
             {user.suspended_reason ? ` — ${user.suspended_reason.slug}` : ""}
@@ -94,21 +106,27 @@ export function UserDetail({
               ? ` · lifts ${formatDate(user.suspended_until)}`
               : " · indefinitely"}
           </p>
-          {user.suspended_note ? <p className="opacity-80">{user.suspended_note}</p> : null}
+          {user.suspended_note ? (
+            <p className="opacity-80">{user.suspended_note}</p>
+          ) : null}
         </div>
       )}
 
       {user.earnings_paused_at && (
-        <div className="border-border bg-muted text-muted-foreground rounded-xl border px-4 py-3 text-sm">
+        <div className="rounded-xl border border-border bg-muted px-4 py-3 text-sm text-muted-foreground">
           Earnings paused {formatDate(user.earnings_paused_at)}
-          {user.earnings_paused_reason ? ` — ${user.earnings_paused_reason}` : ""}
+          {user.earnings_paused_reason
+            ? ` — ${user.earnings_paused_reason}`
+            : ""}
         </div>
       )}
 
       {user.payouts_blocked_at && (
-        <div className="border-border bg-muted text-muted-foreground rounded-xl border px-4 py-3 text-sm">
+        <div className="rounded-xl border border-border bg-muted px-4 py-3 text-sm text-muted-foreground">
           Payouts blocked {formatDate(user.payouts_blocked_at)}
-          {user.payouts_blocked_reason ? ` — ${user.payouts_blocked_reason}` : ""}
+          {user.payouts_blocked_reason
+            ? ` — ${user.payouts_blocked_reason}`
+            : ""}
         </div>
       )}
 
@@ -126,16 +144,23 @@ export function UserDetail({
             <CardTitle className="text-base">Standing</CardTitle>
           </CardHeader>
           <CardContent className="divide-y">
-            <Row label="Snacc Score" value={formatNumber(user.engagement.score)} />
-            <Row label="Weekly score" value={formatNumber(user.engagement.weekly_score)} />
             <Row
-              label="Campus rank"
-              value={user.engagement.campus_rank ? `#${formatNumber(user.engagement.campus_rank)}` : "—"}
+              label="Snacc Score"
+              value={formatNumber(user.engagement.score)}
             />
-            <Row label="Global rank" value={`#${formatNumber(user.engagement.global_rank)}`} />
-            <Row label="Reactions received" value={formatNumber(user.engagement.reactions_received)} />
-            <Row label="Resnaccs received" value={formatNumber(user.engagement.resnaccs_received)} />
-            <Row label="Comments received" value={formatNumber(user.engagement.comments_received)} />
+            <Row label="Tier" value={user.engagement.tier ?? "—"} />
+            <Row
+              label="Reactions received"
+              value={formatNumber(user.engagement.reactions_received)}
+            />
+            <Row
+              label="Resnaccs received"
+              value={formatNumber(user.engagement.resnaccs_received)}
+            />
+            <Row
+              label="Comments received"
+              value={formatNumber(user.engagement.comments_received)}
+            />
           </CardContent>
         </Card>
 
@@ -156,7 +181,7 @@ export function UserDetail({
             </div>
             {user.earnings.top_boosters.length > 0 && (
               <div>
-                <p className="text-muted-foreground mb-2 text-xs font-medium uppercase tracking-wide">
+                <p className="mb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
                   Top boosters
                 </p>
                 <Table>
@@ -171,7 +196,9 @@ export function UserDetail({
                     {user.earnings.top_boosters.map((booster, index) => (
                       <TableRow key={index}>
                         <TableCell className="text-sm">
-                          {booster.username ? `@${booster.username}` : booster.email}
+                          {booster.username
+                            ? `@${booster.username}`
+                            : booster.email}
                         </TableCell>
                         <TableCell className="text-right tabular-nums">
                           {formatNumber(booster.events)}
@@ -194,8 +221,9 @@ export function UserDetail({
           <CardHeader>
             <CardTitle className="text-base">Who engages with them</CardTitle>
             <CardDescription>
-              Resnaccs and replies aimed at this user, counted off the posts themselves. A single
-              account holding a large share is the shape rank farming takes.
+              Resnaccs and replies aimed at this user, counted off the posts
+              themselves. A single account holding a large share is the shape
+              rank farming takes.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -212,7 +240,9 @@ export function UserDetail({
                 {user.top_engagers.map((engager, index) => (
                   <TableRow key={index}>
                     <TableCell className="text-sm">
-                      {engager.username ? `@${engager.username}` : engager.email}
+                      {engager.username
+                        ? `@${engager.username}`
+                        : engager.email}
                     </TableCell>
                     <TableCell className="text-right tabular-nums">
                       {formatNumber(engager.resnaccs)}
@@ -243,7 +273,7 @@ export function UserDetail({
         </CardHeader>
         <CardContent>
           {user.sessions.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No active sessions.</p>
+            <p className="text-sm text-muted-foreground">No active sessions.</p>
           ) : (
             <Table>
               <TableHeader>
@@ -260,12 +290,18 @@ export function UserDetail({
                     <TableCell className="text-sm">
                       {session.client_info ?? session.user_agent ?? "—"}
                     </TableCell>
-                    <TableCell className="font-mono text-xs">{session.ip ?? "—"}</TableCell>
                     <TableCell className="font-mono text-xs">
-                      {session.install_id ? session.install_id.slice(0, 8) : "—"}
+                      {session.ip ?? "—"}
                     </TableCell>
-                    <TableCell className="text-muted-foreground text-sm">
-                      {session.last_used_at ? formatDate(session.last_used_at) : "—"}
+                    <TableCell className="font-mono text-xs">
+                      {session.install_id
+                        ? session.install_id.slice(0, 8)
+                        : "—"}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {session.last_used_at
+                        ? formatDate(session.last_used_at)
+                        : "—"}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -281,7 +317,7 @@ export function UserDetail({
         </CardHeader>
         <CardContent>
           {user.linked_accounts.length === 0 ? (
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               No other accounts share this user&apos;s IP or device.
             </p>
           ) : (
@@ -298,9 +334,15 @@ export function UserDetail({
                     {linked.username ? `@${linked.username}` : linked.email}
                   </Link>
                   <div className="flex flex-wrap items-center gap-1.5">
-                    {linked.shared_device && <Badge variant="destructive">same device</Badge>}
-                    {linked.shared_ip && <Badge variant="secondary">same IP</Badge>}
-                    {linked.suspended && <Badge variant="outline">suspended</Badge>}
+                    {linked.shared_device && (
+                      <Badge variant="destructive">same device</Badge>
+                    )}
+                    {linked.shared_ip && (
+                      <Badge variant="secondary">same IP</Badge>
+                    )}
+                    {linked.suspended && (
+                      <Badge variant="outline">suspended</Badge>
+                    )}
                   </div>
                 </div>
               ))}
@@ -315,14 +357,35 @@ export function UserDetail({
             <CardTitle className="text-base">Account</CardTitle>
           </CardHeader>
           <CardContent className="divide-y">
-            <Row label="Email verified" value={user.email_verified_at ? "Yes" : "No"} />
-            <Row label="Profile completed" value={formatDate(user.completed_at)} />
+            <Row
+              label="Email verified"
+              value={user.email_verified_at ? "Yes" : "No"}
+            />
+            <Row
+              label="Profile completed"
+              value={formatDate(user.completed_at)}
+            />
             <Row label="Joined" value={formatDate(user.created_at)} />
-            <Row label="Reactions made" value={formatNumber(user.counts.reactions)} />
-            <Row label="Reports filed" value={formatNumber(user.counts.reports_filed)} />
-            <Row label="Reports against" value={formatNumber(user.counts.reports_against)} />
-            <Row label="Active sessions" value={formatNumber(user.sessions.length)} />
-            <Row label="Device tokens" value={formatNumber(user.counts.device_tokens)} />
+            <Row
+              label="Reactions made"
+              value={formatNumber(user.counts.reactions)}
+            />
+            <Row
+              label="Reports filed"
+              value={formatNumber(user.counts.reports_filed)}
+            />
+            <Row
+              label="Reports against"
+              value={formatNumber(user.counts.reports_against)}
+            />
+            <Row
+              label="Active sessions"
+              value={formatNumber(user.sessions.length)}
+            />
+            <Row
+              label="Device tokens"
+              value={formatNumber(user.counts.device_tokens)}
+            />
           </CardContent>
         </Card>
 
@@ -334,12 +397,23 @@ export function UserDetail({
             {user.payout_account ? (
               <div className="divide-y">
                 <Row label="Bank" value={user.payout_account.bank_name} />
-                <Row label="Account name" value={user.payout_account.account_name} />
-                <Row label="Account" value={`•••• ${user.payout_account.account_last4}`} />
-                <Row label="Linked" value={formatDate(user.payout_account.created_at)} />
+                <Row
+                  label="Account name"
+                  value={user.payout_account.account_name}
+                />
+                <Row
+                  label="Account"
+                  value={`•••• ${user.payout_account.account_last4}`}
+                />
+                <Row
+                  label="Linked"
+                  value={formatDate(user.payout_account.created_at)}
+                />
               </div>
             ) : (
-              <p className="text-muted-foreground text-sm">No payout account linked.</p>
+              <p className="text-sm text-muted-foreground">
+                No payout account linked.
+              </p>
             )}
           </CardContent>
         </Card>
@@ -351,7 +425,7 @@ export function UserDetail({
         </CardHeader>
         <CardContent>
           {user.recent_withdrawals.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No withdrawals.</p>
+            <p className="text-sm text-muted-foreground">No withdrawals.</p>
           ) : (
             <Table>
               <TableHeader>
@@ -365,14 +439,16 @@ export function UserDetail({
               <TableBody>
                 {user.recent_withdrawals.map((withdrawal) => (
                   <TableRow key={withdrawal.id}>
-                    <TableCell className="font-mono text-xs">{withdrawal.reference}</TableCell>
+                    <TableCell className="font-mono text-xs">
+                      {withdrawal.reference}
+                    </TableCell>
                     <TableCell className="text-right tabular-nums">
                       {formatNaira(withdrawal.amount)}
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">{withdrawal.status}</Badge>
                     </TableCell>
-                    <TableCell className="text-muted-foreground text-sm">
+                    <TableCell className="text-sm text-muted-foreground">
                       {formatDate(withdrawal.created_at)}
                     </TableCell>
                   </TableRow>
@@ -389,7 +465,7 @@ export function UserDetail({
         </CardHeader>
         <CardContent>
           {user.reports_against.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No reports.</p>
+            <p className="text-sm text-muted-foreground">No reports.</p>
           ) : (
             <Table>
               <TableHeader>
@@ -403,10 +479,10 @@ export function UserDetail({
                 {user.reports_against.map((report) => (
                   <TableRow key={report.id}>
                     <TableCell>{report.reason.label}</TableCell>
-                    <TableCell className="text-muted-foreground text-sm">
+                    <TableCell className="text-sm text-muted-foreground">
                       {report.detail ?? "—"}
                     </TableCell>
-                    <TableCell className="text-muted-foreground text-sm">
+                    <TableCell className="text-sm text-muted-foreground">
                       {formatDate(report.created_at)}
                     </TableCell>
                   </TableRow>

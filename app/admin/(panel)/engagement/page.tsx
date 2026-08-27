@@ -18,14 +18,16 @@ export default function EngagementPage() {
     <>
       <PageHeader
         title="Engagement weights"
-        description="What each act on a snacc is worth — to the leaderboard, and to the feed. One catalog, so the two can never disagree. Changes apply within ~30s."
+        description="What each act on a snacc is worth — to Snacc Score, and to the feed. One catalog, so the two can never disagree. Changes apply within ~30s."
       />
       {query.isPending ? (
         <div className="flex justify-center py-24">
           <Spinner />
         </div>
       ) : query.isError || !query.data ? (
-        <p className="text-muted-foreground text-sm">Couldn&apos;t load the catalog.</p>
+        <p className="text-sm text-muted-foreground">
+          Couldn&apos;t load the catalog.
+        </p>
       ) : (
         <EngagementTable
           kinds={query.data}

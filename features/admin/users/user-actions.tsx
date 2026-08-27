@@ -24,13 +24,15 @@ import {
 import { Spinner } from "@/components/ui/spinner"
 import { Textarea } from "@/components/ui/textarea"
 import { useRoles } from "@/features/admin/roles/use-roles"
-import { UserBadgesDialog } from "@/features/admin/badges/user-badges-dialog"
 import {
   EMPTY_SUSPENSION,
   SuspensionFields,
   toSuspensionInput,
 } from "@/features/admin/suspension-reasons/suspension-fields"
-import { useGrantMutations, useUserRoles } from "@/features/admin/roles/use-user-roles"
+import {
+  useGrantMutations,
+  useUserRoles,
+} from "@/features/admin/roles/use-user-roles"
 import { formatNaira } from "@/lib/format"
 import type { useUserMutations } from "./use-users"
 import type { AdminUserDetail } from "./types"
@@ -61,9 +63,9 @@ function SuspendDialog({ actions }: { actions: Mutations }) {
         <DialogHeader>
           <DialogTitle>Suspend user</DialogTitle>
         </DialogHeader>
-        <p className="text-muted-foreground text-sm">
-          They keep their session but can only reach the screen explaining this. A timed suspension
-          lifts itself.
+        <p className="text-sm text-muted-foreground">
+          They keep their session but can only reach the screen explaining this.
+          A timed suspension lifts itself.
         </p>
         <SuspensionFields value={draft} onChange={setDraft} />
         <Field>
@@ -110,8 +112,9 @@ function RolesDialog({ user }: { user: AdminUserDetail }) {
         <DialogHeader>
           <DialogTitle>Roles</DialogTitle>
         </DialogHeader>
-        <p className="text-muted-foreground text-sm">
-          Grant or revoke roles. What a user can do is set by the permissions each role carries.
+        <p className="text-sm text-muted-foreground">
+          Grant or revoke roles. What a user can do is set by the permissions
+          each role carries.
         </p>
         {grants.isPending ? (
           <div className="flex justify-center py-6">
@@ -135,11 +138,14 @@ function RolesDialog({ user }: { user: AdminUserDetail }) {
             ))}
           </div>
         ) : (
-          <p className="text-muted-foreground text-sm">No roles granted.</p>
+          <p className="text-sm text-muted-foreground">No roles granted.</p>
         )}
         {available.length > 0 && (
           <div className="flex items-center gap-2">
-            <Select value={selected} onValueChange={(value) => value && setSelected(value)}>
+            <Select
+              value={selected}
+              onValueChange={(value) => value && setSelected(value)}
+            >
               <SelectTrigger className="flex-1">
                 <SelectValue placeholder="Add a role…" />
               </SelectTrigger>
@@ -155,7 +161,10 @@ function RolesDialog({ user }: { user: AdminUserDetail }) {
               size="sm"
               disabled={!selected || mutations.grant.isPending}
               onClick={() =>
-                selected && mutations.grant.mutate(selected, { onSuccess: () => setSelected("") })
+                selected &&
+                mutations.grant.mutate(selected, {
+                  onSuccess: () => setSelected(""),
+                })
               }
             >
               Grant
@@ -170,7 +179,13 @@ function RolesDialog({ user }: { user: AdminUserDetail }) {
   )
 }
 
-function BalanceDialog({ user, actions }: { user: AdminUserDetail; actions: Mutations }) {
+function BalanceDialog({
+  user,
+  actions,
+}: {
+  user: AdminUserDetail
+  actions: Mutations
+}) {
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState("")
   const [reason, setReason] = useState("")
@@ -193,9 +208,9 @@ function BalanceDialog({ user, actions }: { user: AdminUserDetail; actions: Muta
         <DialogHeader>
           <DialogTitle>Adjust balance</DialogTitle>
         </DialogHeader>
-        <p className="text-muted-foreground text-sm">
-          Off-ledger credit or debit. Use a negative amount to debit. Current balance{" "}
-          {formatNaira(user.balance)}.
+        <p className="text-sm text-muted-foreground">
+          Off-ledger credit or debit. Use a negative amount to debit. Current
+          balance {formatNaira(user.balance)}.
         </p>
         <Field>
           <FieldLabel>Amount (₦, negative to debit)</FieldLabel>
@@ -216,7 +231,10 @@ function BalanceDialog({ user, actions }: { user: AdminUserDetail; actions: Muta
         </Field>
         {valid && (
           <p className="text-sm">
-            New balance: <span className="font-medium tabular-nums">{formatNaira(preview)}</span>
+            New balance:{" "}
+            <span className="font-medium tabular-nums">
+              {formatNaira(preview)}
+            </span>
           </p>
         )}
         <DialogFooter>
@@ -226,7 +244,7 @@ function BalanceDialog({ user, actions }: { user: AdminUserDetail; actions: Muta
             onClick={() =>
               actions.balance.mutate(
                 { delta, reason: reason.trim() || undefined },
-                { onSuccess: () => setOpen(false) },
+                { onSuccess: () => setOpen(false) }
               )
             }
           >
@@ -238,7 +256,13 @@ function BalanceDialog({ user, actions }: { user: AdminUserDetail; actions: Muta
   )
 }
 
-function DeleteDialog({ user, actions }: { user: AdminUserDetail; actions: Mutations }) {
+function DeleteDialog({
+  user,
+  actions,
+}: {
+  user: AdminUserDetail
+  actions: Mutations
+}) {
   const [open, setOpen] = useState(false)
   const [confirm, setConfirm] = useState("")
 
@@ -255,13 +279,17 @@ function DeleteDialog({ user, actions }: { user: AdminUserDetail; actions: Mutat
         <DialogHeader>
           <DialogTitle>Delete user</DialogTitle>
         </DialogHeader>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           This permanently removes the account and all its content. Type{" "}
-          <span className="text-foreground font-medium">{user.email}</span> to confirm.
+          <span className="font-medium text-foreground">{user.email}</span> to
+          confirm.
         </p>
         <Field>
           <FieldLabel>Confirm email</FieldLabel>
-          <Input value={confirm} onChange={(event) => setConfirm(event.target.value)} />
+          <Input
+            value={confirm}
+            onChange={(event) => setConfirm(event.target.value)}
+          />
         </Field>
         <DialogFooter>
           <DialogClose render={<Button variant="ghost">Cancel</Button>} />
@@ -309,7 +337,7 @@ function ReasonDialog({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <p className="text-muted-foreground text-sm">{description}</p>
+        <p className="text-sm text-muted-foreground">{description}</p>
         <Field>
           <FieldLabel>Reason (optional)</FieldLabel>
           <Textarea
@@ -323,7 +351,9 @@ function ReasonDialog({
           <DialogClose render={<Button variant="ghost">Cancel</Button>} />
           <Button
             disabled={pending}
-            onClick={() => onConfirm(reason.trim() || undefined, () => setOpen(false))}
+            onClick={() =>
+              onConfirm(reason.trim() || undefined, () => setOpen(false))
+            }
           >
             {confirmLabel}
           </Button>
@@ -364,10 +394,13 @@ function ConfirmDialog({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <p className="text-muted-foreground text-sm">{description}</p>
+        <p className="text-sm text-muted-foreground">{description}</p>
         <DialogFooter>
           <DialogClose render={<Button variant="ghost">Cancel</Button>} />
-          <Button disabled={pending} onClick={() => onConfirm(() => setOpen(false))}>
+          <Button
+            disabled={pending}
+            onClick={() => onConfirm(() => setOpen(false))}
+          >
             {confirmLabel}
           </Button>
         </DialogFooter>
@@ -376,7 +409,13 @@ function ConfirmDialog({
   )
 }
 
-export function UserActions({ user, actions }: { user: AdminUserDetail; actions: Mutations }) {
+export function UserActions({
+  user,
+  actions,
+}: {
+  user: AdminUserDetail
+  actions: Mutations
+}) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       {user.suspended_at ? (
@@ -392,7 +431,6 @@ export function UserActions({ user, actions }: { user: AdminUserDetail; actions:
         <SuspendDialog actions={actions} />
       )}
       <RolesDialog user={user} />
-      <UserBadgesDialog user={user} />
       <BalanceDialog user={user} actions={actions} />
       {user.posts_globally ? (
         <Button
@@ -407,10 +445,12 @@ export function UserActions({ user, actions }: { user: AdminUserDetail; actions:
         <ConfirmDialog
           triggerLabel="Post to every campus"
           title="Post to every campus?"
-          description="This account's snaccs will appear on every campus feed, not just its own. It stops earning and comes off the leaderboards, because an account that posts everywhere would otherwise win everything. Snaccs it has already posted move with it."
+          description="This account's snaccs will appear on every campus feed, not just its own. It stops earning, because an account that posts everywhere would otherwise out-earn every campus. Snaccs it has already posted move with it."
           confirmLabel="Post everywhere"
           pending={actions.makeGlobal.isPending}
-          onConfirm={(close: () => void) => actions.makeGlobal.mutate(undefined, { onSuccess: close })}
+          onConfirm={(close: () => void) =>
+            actions.makeGlobal.mutate(undefined, { onSuccess: close })
+          }
         />
       )}
       {user.earnings_paused_at ? (
@@ -429,7 +469,9 @@ export function UserActions({ user, actions }: { user: AdminUserDetail; actions:
           description="Stops new earning credits for this user. Their account stays fully active."
           confirmLabel="Pause earnings"
           pending={actions.pauseEarnings.isPending}
-          onConfirm={(reason, close) => actions.pauseEarnings.mutate(reason, { onSuccess: close })}
+          onConfirm={(reason, close) =>
+            actions.pauseEarnings.mutate(reason, { onSuccess: close })
+          }
         />
       )}
       {user.payouts_blocked_at ? (
@@ -448,7 +490,9 @@ export function UserActions({ user, actions }: { user: AdminUserDetail; actions:
           description="Stops this user from withdrawing. Their balance stays intact."
           confirmLabel="Block payouts"
           pending={actions.blockPayouts.isPending}
-          onConfirm={(reason, close) => actions.blockPayouts.mutate(reason, { onSuccess: close })}
+          onConfirm={(reason, close) =>
+            actions.blockPayouts.mutate(reason, { onSuccess: close })
+          }
         />
       )}
       <Button

@@ -14,7 +14,12 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { formatNumber } from "@/lib/format"
-import { useDrift, useHealth, useOpsMutations, useQueues } from "@/features/admin/ops/use-ops"
+import {
+  useDrift,
+  useHealth,
+  useOpsMutations,
+  useQueues,
+} from "@/features/admin/ops/use-ops"
 
 function uptime(seconds: number): string {
   const d = Math.floor(seconds / 86400)
@@ -38,7 +43,7 @@ const DRIFT_LABELS: Record<string, string> = {
   following_count: "Following",
   total_views_received: "Views received",
   score: "Snacc Score vs ledger",
-  weekly_score: "Weekly score vs ledger",
+  tier: "Tier vs ladder",
   reactions_received: "Reactions received",
   resnaccs_received: "Resnaccs received",
   comments_received: "Comments received",
@@ -73,7 +78,11 @@ export default function OpsPage() {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-base">System health</CardTitle>
             {health.data && (
-              <Badge variant={health.data.status === "ok" ? "secondary" : "destructive"}>
+              <Badge
+                variant={
+                  health.data.status === "ok" ? "secondary" : "destructive"
+                }
+              >
                 {health.data.status}
               </Badge>
             )}
@@ -94,13 +103,24 @@ export default function OpsPage() {
                   }
                 />
                 <Row label="Queue driver" value={health.data.queue_driver} />
-                <Row label="Memory (RSS)" value={`${formatNumber(health.data.memory.rss_mb)} MB`} />
-                <Row label="Heap used" value={`${formatNumber(health.data.memory.heap_used_mb)} MB`} />
-                <Row label="Uptime" value={uptime(health.data.uptime_seconds)} />
+                <Row
+                  label="Memory (RSS)"
+                  value={`${formatNumber(health.data.memory.rss_mb)} MB`}
+                />
+                <Row
+                  label="Heap used"
+                  value={`${formatNumber(health.data.memory.heap_used_mb)} MB`}
+                />
+                <Row
+                  label="Uptime"
+                  value={uptime(health.data.uptime_seconds)}
+                />
                 <Row label="Node" value={health.data.node_version} />
               </div>
             ) : (
-              <p className="text-muted-foreground text-sm">Couldn&apos;t load health.</p>
+              <p className="text-sm text-muted-foreground">
+                Couldn&apos;t load health.
+              </p>
             )}
           </CardContent>
         </Card>
@@ -132,12 +152,20 @@ export default function OpsPage() {
                       <TableCell className="font-medium">{q.name}</TableCell>
                       {q.counts ? (
                         <>
-                          <TableCell className="text-right tabular-nums">{q.counts.waiting}</TableCell>
-                          <TableCell className="text-right tabular-nums">{q.counts.active}</TableCell>
-                          <TableCell className="text-right tabular-nums">{q.counts.delayed}</TableCell>
+                          <TableCell className="text-right tabular-nums">
+                            {q.counts.waiting}
+                          </TableCell>
+                          <TableCell className="text-right tabular-nums">
+                            {q.counts.active}
+                          </TableCell>
+                          <TableCell className="text-right tabular-nums">
+                            {q.counts.delayed}
+                          </TableCell>
                           <TableCell className="text-right tabular-nums">
                             {q.counts.failed > 0 ? (
-                              <span className="text-destructive font-medium">{q.counts.failed}</span>
+                              <span className="font-medium text-destructive">
+                                {q.counts.failed}
+                              </span>
                             ) : (
                               0
                             )}
@@ -156,7 +184,10 @@ export default function OpsPage() {
                           </TableCell>
                         </>
                       ) : (
-                        <TableCell colSpan={5} className="text-muted-foreground text-sm">
+                        <TableCell
+                          colSpan={5}
+                          className="text-sm text-muted-foreground"
+                        >
                           inline (no redis)
                         </TableCell>
                       )}
@@ -165,7 +196,9 @@ export default function OpsPage() {
                 </TableBody>
               </Table>
             ) : (
-              <p className="text-muted-foreground text-sm">Couldn&apos;t load queues.</p>
+              <p className="text-sm text-muted-foreground">
+                Couldn&apos;t load queues.
+              </p>
             )}
           </CardContent>
         </Card>
@@ -182,9 +215,9 @@ export default function OpsPage() {
             </Button>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            <p className="text-muted-foreground text-sm">
-              Denormalized counts self-heal nightly (04:00 WAT) and write only rows that have
-              drifted. Run manually if something looks off.
+            <p className="text-sm text-muted-foreground">
+              Denormalized counts self-heal nightly (04:00 WAT) and write only
+              rows that have drifted. Run manually if something looks off.
             </p>
             {drift.isPending ? (
               <div className="flex justify-center py-6">
@@ -193,7 +226,9 @@ export default function OpsPage() {
             ) : driftRows.length === 0 ? (
               <p className="text-sm">
                 <Badge variant="secondary">in sync</Badge>{" "}
-                <span className="text-muted-foreground">Every counter matches its source.</span>
+                <span className="text-muted-foreground">
+                  Every counter matches its source.
+                </span>
               </p>
             ) : (
               <Table>
@@ -207,7 +242,7 @@ export default function OpsPage() {
                   {driftRows.map(([key, off]) => (
                     <TableRow key={key}>
                       <TableCell>{DRIFT_LABELS[key] ?? key}</TableCell>
-                      <TableCell className="text-destructive text-right font-medium tabular-nums">
+                      <TableCell className="text-right font-medium text-destructive tabular-nums">
                         {formatNumber(off)}
                       </TableCell>
                     </TableRow>
