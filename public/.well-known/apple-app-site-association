@@ -6,7 +6,8 @@
         "components": [
           { "/": "/snacc/*", "comment": "Snacc permalinks" },
           { "/": "/campus/*", "comment": "Campus feeds" },
-          { "/": "/@*", "comment": "Profiles" }
+          { "/": "/@*", "comment": "Profiles" },
+          { "/": "/pay/*", "comment": "Pay links" }
         ]
       }
     ]
