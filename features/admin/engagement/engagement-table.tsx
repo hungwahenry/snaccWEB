@@ -40,12 +40,16 @@ function EditDialog({
   const [feed, setFeed] = useState(
     kind.feed_weight === null ? "" : String(kind.feed_weight)
   )
+  const [kobo, setKobo] = useState(
+    kind.earn_kobo === null ? "" : String(kind.earn_kobo)
+  )
 
   function save() {
     onUpdate({
       key: kind.key,
       scoreWeight: score.trim() === "" ? null : Number(score),
       feedWeight: feed.trim() === "" ? null : Number(feed),
+      earnKobo: kobo.trim() === "" ? null : Number(kobo),
     })
     setOpen(false)
   }
@@ -88,10 +92,23 @@ function EditDialog({
             inputMode="decimal"
           />
         </Field>
+        <Field>
+          <FieldLabel htmlFor={`kobo-${kind.key}`}>
+            Kobo paid to the author — shipped as{" "}
+            {weight(kind.default_earn_kobo)}
+          </FieldLabel>
+          <Input
+            id={`kobo-${kind.key}`}
+            value={kobo}
+            onChange={(event) => setKobo(event.target.value)}
+            placeholder="Empty earns no money"
+            inputMode="numeric"
+          />
+        </Field>
         <p className="text-xs text-muted-foreground">
-          Points are frozen into each credit when it is earned, so a change here
-          prices new engagement only and never restates anyone&apos;s score. The
-          feed weight is read live.
+          Points and kobo are frozen into each credit when it is earned, so a
+          change here prices new engagement only and never restates
+          anyone&apos;s score or balance. The feed weight is read live.
         </p>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
@@ -177,6 +194,12 @@ export function EngagementTable({
                         </div>
                         <div className="text-xs text-muted-foreground">
                           feed
+                        </div>
+                      </TableCell>
+                      <TableCell className="w-28 text-right align-top tabular-nums">
+                        <div className="text-sm">{weight(kind.earn_kobo)}</div>
+                        <div className="text-xs text-muted-foreground">
+                          kobo
                         </div>
                       </TableCell>
                       <TableCell className="w-44 text-right align-top">

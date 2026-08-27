@@ -149,18 +149,13 @@ export function UserDetail({
               value={formatNumber(user.engagement.score)}
             />
             <Row label="Tier" value={user.engagement.tier ?? "—"} />
-            <Row
-              label="Reactions received"
-              value={formatNumber(user.engagement.reactions_received)}
-            />
-            <Row
-              label="Resnaccs received"
-              value={formatNumber(user.engagement.resnaccs_received)}
-            />
-            <Row
-              label="Comments received"
-              value={formatNumber(user.engagement.comments_received)}
-            />
+            {Object.entries(user.engagement.received).map(([kind, count]) => (
+              <Row
+                key={kind}
+                label={`${kind} received`}
+                value={formatNumber(count)}
+              />
+            ))}
           </CardContent>
         </Card>
 
