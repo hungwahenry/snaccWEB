@@ -27,6 +27,7 @@ export function useOpsMutations() {
       mutationFn: async () => {
         await runTask("reconcile-counters")
         await runTask("reconcile-scores")
+        await runTask("reconcile-wallets")
       },
       onSuccess: () => {
         qc.invalidateQueries({ queryKey: KEY })
