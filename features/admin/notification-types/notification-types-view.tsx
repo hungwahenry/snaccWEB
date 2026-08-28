@@ -249,16 +249,20 @@ function EditDialog({
           )}
           <div className="flex flex-col gap-3">
             <Toggle label="Push by default" checked={push} onChange={setPush} />
-            <Toggle
-              label="Email by default"
-              checked={email}
-              onChange={setEmail}
-            />
-            <Toggle
-              label="Email the moment it happens"
-              checked={instant}
-              onChange={setInstant}
-            />
+            {row?.emailable && (
+              <>
+                <Toggle
+                  label="Email by default"
+                  checked={email}
+                  onChange={setEmail}
+                />
+                <Toggle
+                  label="Email the moment it happens"
+                  checked={instant}
+                  onChange={setInstant}
+                />
+              </>
+            )}
           </div>
         </div>
         <DialogFooter>

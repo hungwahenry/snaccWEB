@@ -13,6 +13,7 @@ export type NotificationTypeRow = {
   aggregates: boolean
   group_window_minutes: number | null
   locked: boolean
+  emailable: boolean
   push_debounce_seconds: number | null
   position: number
 }
