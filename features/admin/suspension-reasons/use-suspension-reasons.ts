@@ -22,7 +22,9 @@ export function useSuspensionReasonMutations() {
 
   function onSuccess(message: string) {
     return () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "suspension-reasons"] })
+      queryClient.invalidateQueries({
+        queryKey: ["admin", "suspension-reasons"],
+      })
       toast.success(message)
     }
   }
@@ -37,8 +39,13 @@ export function useSuspensionReasonMutations() {
       onError,
     }),
     update: useMutation({
-      mutationFn: ({ id, input }: { id: string; input: UpdateSuspensionReasonInput }) =>
-        updateSuspensionReason(id, input),
+      mutationFn: ({
+        id,
+        input,
+      }: {
+        id: string
+        input: UpdateSuspensionReasonInput
+      }) => updateSuspensionReason(id, input),
       onSuccess: onSuccess("Reason updated."),
       onError,
     }),

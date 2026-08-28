@@ -3,7 +3,10 @@ import type { Paginated } from "@/lib/api/types"
 import type { AdminEarning, AdminFund, ListEarningsParams } from "./types"
 
 export function listEarnings(params: ListEarningsParams) {
-  return api.get<Paginated<AdminEarning>>("/admin/earnings", params as QueryParams)
+  return api.get<Paginated<AdminEarning>>(
+    "/admin/earnings",
+    params as QueryParams
+  )
 }
 
 export function listFunds() {

@@ -61,9 +61,15 @@ function UniversityDialog({
       logoUrl: logoUrl.trim() || undefined,
     }
     if (editing && university) {
-      mutations.update.mutate({ id: university.id, input: shared }, { onSuccess: () => setOpen(false) })
+      mutations.update.mutate(
+        { id: university.id, input: shared },
+        { onSuccess: () => setOpen(false) }
+      )
     } else {
-      mutations.create.mutate({ ...shared, slug: slug.trim() }, { onSuccess: () => setOpen(false) })
+      mutations.create.mutate(
+        { ...shared, slug: slug.trim() },
+        { onSuccess: () => setOpen(false) }
+      )
     }
   }
 
@@ -72,17 +78,27 @@ function UniversityDialog({
       <DialogTrigger render={trigger} />
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{editing ? "Edit university" : "New university"}</DialogTitle>
+          <DialogTitle>
+            {editing ? "Edit university" : "New university"}
+          </DialogTitle>
         </DialogHeader>
         <Field>
           <FieldLabel>Name</FieldLabel>
-          <Input value={name} onChange={(event) => setName(event.target.value)} maxLength={200} />
+          <Input
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            maxLength={200}
+          />
         </Field>
         <div className="flex gap-3">
           {!editing && (
             <Field className="flex-1">
               <FieldLabel>Slug</FieldLabel>
-              <Input value={slug} onChange={(event) => setSlug(event.target.value)} maxLength={100} />
+              <Input
+                value={slug}
+                onChange={(event) => setSlug(event.target.value)}
+                maxLength={100}
+              />
             </Field>
           )}
           <Field className="flex-1">
@@ -96,7 +112,11 @@ function UniversityDialog({
         </div>
         <Field>
           <FieldLabel>Motto (optional)</FieldLabel>
-          <Input value={motto} onChange={(event) => setMotto(event.target.value)} maxLength={200} />
+          <Input
+            value={motto}
+            onChange={(event) => setMotto(event.target.value)}
+            maxLength={200}
+          />
         </Field>
         <Field>
           <FieldLabel>Website (optional)</FieldLabel>
@@ -117,7 +137,9 @@ function UniversityDialog({
         <DialogFooter>
           <DialogClose render={<Button variant="ghost">Cancel</Button>} />
           <Button
-            disabled={!valid || mutations.create.isPending || mutations.update.isPending}
+            disabled={
+              !valid || mutations.create.isPending || mutations.update.isPending
+            }
             onClick={save}
           >
             Save
@@ -150,7 +172,7 @@ function DeleteDialog({
         <DialogHeader>
           <DialogTitle>Delete {university.name}?</DialogTitle>
         </DialogHeader>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Only possible when no members or snaccs are attached to the campus.
         </p>
         <DialogFooter>
@@ -158,7 +180,11 @@ function DeleteDialog({
           <Button
             variant="destructive"
             disabled={mutations.remove.isPending}
-            onClick={() => mutations.remove.mutate(university.id, { onSuccess: () => setOpen(false) })}
+            onClick={() =>
+              mutations.remove.mutate(university.id, {
+                onSuccess: () => setOpen(false),
+              })
+            }
           >
             Delete
           </Button>
@@ -198,7 +224,10 @@ export function UniversitiesTable({
             className="max-w-xs"
           />
         </form>
-        <UniversityDialog mutations={mutations} trigger={<Button size="sm">Add university</Button>} />
+        <UniversityDialog
+          mutations={mutations}
+          trigger={<Button size="sm">Add university</Button>}
+        />
       </div>
       <Table>
         <TableHeader>
@@ -215,7 +244,7 @@ export function UniversitiesTable({
             <TableRow key={university.id}>
               <TableCell>
                 <div className="font-medium">{university.name}</div>
-                <div className="text-muted-foreground text-xs">
+                <div className="text-xs text-muted-foreground">
                   {university.acronym} · {university.slug}
                 </div>
               </TableCell>
@@ -227,7 +256,9 @@ export function UniversitiesTable({
               </TableCell>
               <TableCell>
                 {university.fund ? (
-                  <Badge variant="secondary">{formatNaira(university.fund.cap)} cap</Badge>
+                  <Badge variant="secondary">
+                    {formatNaira(university.fund.cap)} cap
+                  </Badge>
                 ) : (
                   <Badge variant="outline">free</Badge>
                 )}

@@ -100,33 +100,46 @@ function SnaccMock({
     <div className="flex flex-col gap-2.5">
       <div className="flex gap-2.5">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={avatar(seed)} alt="" className="bg-muted size-9 shrink-0 rounded-full" />
+        <img
+          src={avatar(seed)}
+          alt=""
+          className="size-9 shrink-0 rounded-full bg-muted"
+        />
 
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <div className="flex items-center gap-1">
-            <span className="text-foreground shrink truncate text-sm font-extrabold">{name}</span>
-            <span className="text-muted-foreground truncate text-xs">@{handle}</span>
-            <span className="text-muted-foreground text-xs">·</span>
-            <span className="text-muted-foreground text-xs font-bold">{campus}</span>
-            <span className="text-muted-foreground text-xs">·</span>
-            <span className="text-muted-foreground text-xs">{time}</span>
+            <span className="shrink truncate text-sm font-extrabold text-foreground">
+              {name}
+            </span>
+            <span className="truncate text-xs text-muted-foreground">
+              @{handle}
+            </span>
+            <span className="text-xs text-muted-foreground">·</span>
+            <span className="text-xs font-bold text-muted-foreground">
+              {campus}
+            </span>
+            <span className="text-xs text-muted-foreground">·</span>
+            <span className="text-xs text-muted-foreground">{time}</span>
           </div>
 
-          <p className="text-foreground text-sm leading-5" style={clamp}>
+          <p className="text-sm leading-5 text-foreground" style={clamp}>
             {body}
           </p>
         </div>
       </div>
 
       {media ? (
-        <div className="bg-muted overflow-hidden rounded-xl" style={{ aspectRatio: "16 / 10" }}>
+        <div
+          className="overflow-hidden rounded-xl bg-muted"
+          style={{ aspectRatio: "16 / 10" }}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={media} alt="" className="size-full object-cover" />
         </div>
       ) : null}
 
       <div className="flex items-center">
-        <div className="bg-muted flex h-8 items-center gap-1.5 rounded-full px-2.5">
+        <div className="flex h-8 items-center gap-1.5 rounded-full bg-muted px-2.5">
           <div className="flex items-center gap-0.5">
             {reactions.map((emoji) => (
               <span key={emoji} className="text-sm">
@@ -134,7 +147,9 @@ function SnaccMock({
               </span>
             ))}
           </div>
-          <span className="text-muted-foreground text-xs font-extrabold">{total}</span>
+          <span className="text-xs font-extrabold text-muted-foreground">
+            {total}
+          </span>
         </div>
 
         <div className="flex-1" />
@@ -148,11 +163,17 @@ function SnaccMock({
   )
 }
 
-function ActionCount({ icon: Icon, count }: { icon: LucideIcon; count: number }) {
+function ActionCount({
+  icon: Icon,
+  count,
+}: {
+  icon: LucideIcon
+  count: number
+}) {
   return (
     <div className="flex items-center gap-1">
-      <Icon className="text-muted-foreground size-4" />
-      <span className="text-muted-foreground text-xs font-bold">{count}</span>
+      <Icon className="size-4 text-muted-foreground" />
+      <span className="text-xs font-bold text-muted-foreground">{count}</span>
     </div>
   )
 }
@@ -176,7 +197,7 @@ function FloatingCard({
       style={{ transform: `rotate(${rotate}deg) translateY(${baseY}px)` }}
     >
       <div
-        className="snacc-bob bg-card w-56 rounded-2xl p-3 shadow-[0_6px_14px_rgba(0,0,0,0.12)]"
+        className="snacc-bob w-56 rounded-2xl bg-card p-3 shadow-[0_6px_14px_rgba(0,0,0,0.12)]"
         style={{ animationDelay: delay }}
       >
         {children}

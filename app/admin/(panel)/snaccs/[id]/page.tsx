@@ -7,7 +7,11 @@ import { Spinner } from "@/components/ui/spinner"
 import { SnaccDetail } from "@/features/admin/snaccs/snacc-detail"
 import { useSnacc, useSnaccMutations } from "@/features/admin/snaccs/use-snaccs"
 
-export default function SnaccDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function SnaccDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
   const { id } = use(params)
   const query = useSnacc(id)
   const actions = useSnaccMutations()
@@ -27,7 +31,9 @@ export default function SnaccDetailPage({ params }: { params: Promise<{ id: stri
           <Spinner />
         </div>
       ) : query.isError || !query.data ? (
-        <p className="text-muted-foreground text-sm">Couldn&apos;t load this snacc.</p>
+        <p className="text-sm text-muted-foreground">
+          Couldn&apos;t load this snacc.
+        </p>
       ) : (
         <SnaccDetail snacc={query.data} actions={actions} />
       )}

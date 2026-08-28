@@ -31,7 +31,9 @@ export function ReportedContent({ report }: { report: AdminReportDetail }) {
             </Link>
           </div>
         ) : target?.type === "snacc" ? (
-          <p className="text-muted-foreground text-sm">This snacc is no longer available.</p>
+          <p className="text-sm text-muted-foreground">
+            This snacc is no longer available.
+          </p>
         ) : target?.type === "message" ? (
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between gap-2">
@@ -44,7 +46,9 @@ export function ReportedContent({ report }: { report: AdminReportDetail }) {
               ) : null}
             </div>
             {target.message.body ? (
-              <p className="whitespace-pre-wrap text-sm">{target.message.body}</p>
+              <p className="text-sm whitespace-pre-wrap">
+                {target.message.body}
+              </p>
             ) : null}
             <SnaccMedia images={target.message.images} gif={null} />
             <Link
@@ -62,7 +66,9 @@ export function ReportedContent({ report }: { report: AdminReportDetail }) {
                 note={`Moment · ran out ${formatDate(target.moment.expires_at)}`}
               />
               <div className="flex gap-2">
-                {target.moment.held ? <Badge variant="secondary">Held for review</Badge> : null}
+                {target.moment.held ? (
+                  <Badge variant="secondary">Held for review</Badge>
+                ) : null}
                 {target.moment.deleted_at ? (
                   <Badge variant="destructive">Already removed</Badge>
                 ) : null}
@@ -72,25 +78,35 @@ export function ReportedContent({ report }: { report: AdminReportDetail }) {
               target.moment.images.length === 0 ? (
                 <div
                   className="flex min-h-32 items-center justify-center rounded-lg px-6 py-8"
-                  style={{ backgroundColor: target.moment.background ?? "#000000" }}
+                  style={{
+                    backgroundColor: target.moment.background ?? "#000000",
+                  }}
                 >
                   <p className="text-center text-lg font-semibold text-white">
                     {target.moment.body}
                   </p>
                 </div>
               ) : (
-                <p className="whitespace-pre-wrap text-sm">{target.moment.body}</p>
+                <p className="text-sm whitespace-pre-wrap">
+                  {target.moment.body}
+                </p>
               )
             ) : null}
             <SnaccMedia images={target.moment.images} gif={null} />
-            <p className="text-muted-foreground text-xs">
-              A moment is deleted for good once released, so decide from what is shown here.
+            <p className="text-xs text-muted-foreground">
+              A moment is deleted for good once released, so decide from what is
+              shown here.
             </p>
           </div>
         ) : target?.type === "user" ? (
-          <AuthorInline author={target.user} note="The account itself was reported." />
+          <AuthorInline
+            author={target.user}
+            note="The account itself was reported."
+          />
         ) : (
-          <p className="text-muted-foreground text-sm">The reported target no longer exists.</p>
+          <p className="text-sm text-muted-foreground">
+            The reported target no longer exists.
+          </p>
         )}
       </CardContent>
     </Card>

@@ -9,7 +9,10 @@ import { useWithdrawals } from "@/features/admin/withdrawals/use-withdrawals"
 import type { ListWithdrawalsParams } from "@/features/admin/withdrawals/types"
 
 export default function WithdrawalsPage() {
-  const [params, setParams] = useState<ListWithdrawalsParams>({ page: 1, perPage: 20 })
+  const [params, setParams] = useState<ListWithdrawalsParams>({
+    page: 1,
+    perPage: 20,
+  })
   const query = useWithdrawals(params)
 
   function patch(next: Partial<ListWithdrawalsParams>) {
@@ -18,7 +21,10 @@ export default function WithdrawalsPage() {
 
   return (
     <>
-      <PageHeader title="Withdrawals" description="Review and settle creator payouts." />
+      <PageHeader
+        title="Withdrawals"
+        description="Review and settle creator payouts."
+      />
       <div className="flex flex-col gap-6">
         <WithdrawalsSummary />
         {query.isPending ? (
@@ -26,9 +32,15 @@ export default function WithdrawalsPage() {
             <Spinner />
           </div>
         ) : query.isError || !query.data ? (
-          <p className="text-muted-foreground text-sm">Couldn&apos;t load withdrawals.</p>
+          <p className="text-sm text-muted-foreground">
+            Couldn&apos;t load withdrawals.
+          </p>
         ) : (
-          <WithdrawalsTable data={query.data} params={params} onParams={patch} />
+          <WithdrawalsTable
+            data={query.data}
+            params={params}
+            onParams={patch}
+          />
         )}
       </div>
     </>

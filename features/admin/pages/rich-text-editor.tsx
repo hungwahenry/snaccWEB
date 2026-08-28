@@ -69,7 +69,7 @@ function Toolbar({ editor }: { editor: Editor }) {
   ]
 
   return (
-    <div className="border-b flex flex-wrap items-center gap-1 p-2">
+    <div className="flex flex-wrap items-center gap-1 border-b p-2">
       {items.map((item) => (
         <Toggle
           key={item.label}
@@ -81,7 +81,7 @@ function Toolbar({ editor }: { editor: Editor }) {
           <item.icon className="size-4" />
         </Toggle>
       ))}
-      <div className="bg-border mx-1 h-5 w-px" />
+      <div className="mx-1 h-5 w-px bg-border" />
       <Toggle
         size="sm"
         pressed={false}
@@ -114,17 +114,19 @@ export function RichTextEditor({
     content: (content as object) ?? "",
     immediatelyRender: false,
     editorProps: {
-      attributes: { class: "snacc-prose min-h-[320px] px-4 py-3 focus:outline-none" },
+      attributes: {
+        class: "snacc-prose min-h-[320px] px-4 py-3 focus:outline-none",
+      },
     },
     onUpdate: ({ editor }) => onChange(editor.getJSON(), editor.getHTML()),
   })
 
   if (!editor) {
-    return <div className="border-input h-96 rounded-xl border" />
+    return <div className="h-96 rounded-xl border border-input" />
   }
 
   return (
-    <div className="border-input overflow-hidden rounded-xl border">
+    <div className="overflow-hidden rounded-xl border border-input">
       <Toolbar editor={editor} />
       <EditorContent editor={editor} />
     </div>

@@ -1,9 +1,5 @@
 export type WithdrawalStatus =
-  | "pending"
-  | "processing"
-  | "success"
-  | "failed"
-  | "reversed"
+  "pending" | "processing" | "success" | "failed" | "reversed"
 
 export interface WithdrawalUser {
   id: string

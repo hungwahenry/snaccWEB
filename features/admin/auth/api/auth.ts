@@ -10,7 +10,10 @@ export function getMe() {
   return api.get<AuthUser>("/auth/me")
 }
 
-export async function login(input: { email: string; code: string }): Promise<{ user: AuthUser }> {
+export async function login(input: {
+  email: string
+  code: string
+}): Promise<{ user: AuthUser }> {
   const res = await fetch("/api/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -23,11 +26,18 @@ export async function login(input: { email: string; code: string }): Promise<{ u
     code?: string
   } | null
   if (!res.ok || !json?.data) {
-    throw new ApiError(res.status, json?.message ?? "Login failed", json?.code ?? null)
+    throw new ApiError(
+      res.status,
+      json?.message ?? "Login failed",
+      json?.code ?? null
+    )
   }
   return json.data
 }
 
 export async function logout(): Promise<void> {
-  await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" })
+  await fetch("/api/auth/logout", {
+    method: "POST",
+    credentials: "same-origin",
+  })
 }

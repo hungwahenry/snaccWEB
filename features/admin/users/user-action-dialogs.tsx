@@ -39,7 +39,7 @@ import type { AdminUserDetail } from "./types"
 
 type Mutations = ReturnType<typeof useUserMutations>
 
-function SuspendDialog({ actions }: { actions: Mutations }) {
+export function SuspendDialog({ actions }: { actions: Mutations }) {
   const [open, setOpen] = useState(false)
   const [draft, setDraft] = useState(EMPTY_SUSPENSION)
   const [note, setNote] = useState("")
@@ -89,7 +89,7 @@ function SuspendDialog({ actions }: { actions: Mutations }) {
   )
 }
 
-function RolesDialog({ user }: { user: AdminUserDetail }) {
+export function RolesDialog({ user }: { user: AdminUserDetail }) {
   const [open, setOpen] = useState(false)
   const [selected, setSelected] = useState("")
   const grants = useUserRoles(user.id)
@@ -179,7 +179,7 @@ function RolesDialog({ user }: { user: AdminUserDetail }) {
   )
 }
 
-function BalanceDialog({
+export function BalanceDialog({
   user,
   actions,
 }: {
@@ -256,7 +256,7 @@ function BalanceDialog({
   )
 }
 
-function DeleteDialog({
+export function DeleteDialog({
   user,
   actions,
 }: {
@@ -306,7 +306,7 @@ function DeleteDialog({
   )
 }
 
-function ReasonDialog({
+export function ReasonDialog({
   triggerLabel,
   title,
   description,
@@ -364,7 +364,7 @@ function ReasonDialog({
 }
 
 /** Same shape as ReasonDialog, without a reason field the endpoint would only discard. */
-function ConfirmDialog({
+export function ConfirmDialog({
   triggerLabel,
   title,
   description,
@@ -406,104 +406,5 @@ function ConfirmDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
-}
-
-export function UserActions({
-  user,
-  actions,
-}: {
-  user: AdminUserDetail
-  actions: Mutations
-}) {
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      {user.suspended_at ? (
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={actions.unsuspend.isPending}
-          onClick={() => actions.unsuspend.mutate()}
-        >
-          Reinstate
-        </Button>
-      ) : (
-        <SuspendDialog actions={actions} />
-      )}
-      <RolesDialog user={user} />
-      <BalanceDialog user={user} actions={actions} />
-      {user.posts_globally ? (
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={actions.makeCampusBound.isPending}
-          onClick={() => actions.makeCampusBound.mutate()}
-        >
-          Stop posting everywhere
-        </Button>
-      ) : (
-        <ConfirmDialog
-          triggerLabel="Post to every campus"
-          title="Post to every campus?"
-          description="This account's snaccs will appear on every campus feed, not just its own. It stops earning, because an account that posts everywhere would otherwise out-earn every campus. Snaccs it has already posted move with it."
-          confirmLabel="Post everywhere"
-          pending={actions.makeGlobal.isPending}
-          onConfirm={(close: () => void) =>
-            actions.makeGlobal.mutate(undefined, { onSuccess: close })
-          }
-        />
-      )}
-      {user.earnings_paused_at ? (
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={actions.resumeEarnings.isPending}
-          onClick={() => actions.resumeEarnings.mutate()}
-        >
-          Resume earnings
-        </Button>
-      ) : (
-        <ReasonDialog
-          triggerLabel="Pause earnings"
-          title="Pause earnings"
-          description="Stops new earning credits for this user. Their account stays fully active."
-          confirmLabel="Pause earnings"
-          pending={actions.pauseEarnings.isPending}
-          onConfirm={(reason, close) =>
-            actions.pauseEarnings.mutate(reason, { onSuccess: close })
-          }
-        />
-      )}
-      {user.payouts_blocked_at ? (
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={actions.unblockPayouts.isPending}
-          onClick={() => actions.unblockPayouts.mutate()}
-        >
-          Unblock payouts
-        </Button>
-      ) : (
-        <ReasonDialog
-          triggerLabel="Block payouts"
-          title="Block payouts"
-          description="Stops this user from withdrawing. Their balance stays intact."
-          confirmLabel="Block payouts"
-          pending={actions.blockPayouts.isPending}
-          onConfirm={(reason, close) =>
-            actions.blockPayouts.mutate(reason, { onSuccess: close })
-          }
-        />
-      )}
-      <Button
-        variant="outline"
-        size="sm"
-        disabled={actions.revoke.isPending}
-        onClick={() => actions.revoke.mutate()}
-      >
-        Revoke sessions
-      </Button>
-      <DeleteDialog user={user} actions={actions} />
-    </div>
   )
 }

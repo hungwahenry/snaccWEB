@@ -12,14 +12,14 @@ export async function SiteFooter() {
 
   return (
     <footer className="border-t">
-      <div className="text-muted-foreground mx-auto flex max-w-5xl flex-col gap-3 px-6 py-6 text-xs sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+      <div className="mx-auto flex max-w-5xl flex-col gap-3 px-6 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <span>© {new Date().getFullYear()} Snacc</span>
         <nav className="flex flex-wrap items-center gap-x-5 gap-y-2">
           {links.map((page) => (
             <Link
               key={page.slug}
               href={`/${page.slug}`}
-              className="hover:text-foreground transition-colors"
+              className="transition-colors hover:text-foreground"
             >
               {page.title}
             </Link>

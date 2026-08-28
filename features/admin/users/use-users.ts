@@ -1,6 +1,11 @@
 "use client"
 
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/api/errors"
@@ -31,7 +36,11 @@ export function useUsers(params: ListUsersParams) {
 }
 
 export function useUser(id: string) {
-  return useQuery({ queryKey: ["admin", "user", id], queryFn: () => getUser(id), enabled: !!id })
+  return useQuery({
+    queryKey: ["admin", "user", id],
+    queryFn: () => getUser(id),
+    enabled: !!id,
+  })
 }
 
 export function useUserMutations(id: string) {

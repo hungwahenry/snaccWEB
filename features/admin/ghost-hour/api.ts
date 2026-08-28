@@ -6,7 +6,10 @@ export function getGhostWindow() {
 }
 
 export function openGhostHour(minutes?: number) {
-  return api.post<GhostWindowState>("/admin/ghost/open", minutes ? { minutes } : {})
+  return api.post<GhostWindowState>(
+    "/admin/ghost/open",
+    minutes ? { minutes } : {}
+  )
 }
 
 export function closeGhostHour() {

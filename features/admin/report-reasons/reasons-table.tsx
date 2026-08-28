@@ -48,8 +48,12 @@ function ReasonDialog({
   const [slug, setSlug] = useState(reason?.slug ?? "")
   const [label, setLabel] = useState(reason?.label ?? "")
   const [hint, setHint] = useState(reason?.hint ?? "")
-  const [appliesTo, setAppliesTo] = useState<"snacc" | "user">(reason?.applies_to ?? "snacc")
-  const [requiresDetail, setRequiresDetail] = useState(reason?.requires_detail ?? false)
+  const [appliesTo, setAppliesTo] = useState<"snacc" | "user">(
+    reason?.applies_to ?? "snacc"
+  )
+  const [requiresDetail, setRequiresDetail] = useState(
+    reason?.requires_detail ?? false
+  )
   const [position, setPosition] = useState(String(reason?.position ?? 0))
 
   const editing = Boolean(reason)
@@ -66,9 +70,15 @@ function ReasonDialog({
       position: Number(position) || 0,
     }
     if (editing && reason) {
-      mutations.update.mutate({ id: reason.id, input: base }, { onSuccess: () => setOpen(false) })
+      mutations.update.mutate(
+        { id: reason.id, input: base },
+        { onSuccess: () => setOpen(false) }
+      )
     } else {
-      mutations.create.mutate({ slug: slug.trim(), ...base }, { onSuccess: () => setOpen(false) })
+      mutations.create.mutate(
+        { slug: slug.trim(), ...base },
+        { onSuccess: () => setOpen(false) }
+      )
     }
   }
 
@@ -77,7 +87,9 @@ function ReasonDialog({
       <DialogTrigger render={trigger} />
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{editing ? "Edit reason" : "New report reason"}</DialogTitle>
+          <DialogTitle>
+            {editing ? "Edit reason" : "New report reason"}
+          </DialogTitle>
         </DialogHeader>
         {!editing && (
           <Field>
@@ -92,16 +104,27 @@ function ReasonDialog({
         )}
         <Field>
           <FieldLabel>Label</FieldLabel>
-          <Input value={label} onChange={(event) => setLabel(event.target.value)} maxLength={100} />
+          <Input
+            value={label}
+            onChange={(event) => setLabel(event.target.value)}
+            maxLength={100}
+          />
         </Field>
         <Field>
           <FieldLabel>Hint (optional)</FieldLabel>
-          <Input value={hint} onChange={(event) => setHint(event.target.value)} maxLength={200} />
+          <Input
+            value={hint}
+            onChange={(event) => setHint(event.target.value)}
+            maxLength={200}
+          />
         </Field>
         <div className="flex gap-3">
           <Field className="flex-1">
             <FieldLabel>Applies to</FieldLabel>
-            <Select value={appliesTo} onValueChange={(value) => value && setAppliesTo(value as never)}>
+            <Select
+              value={appliesTo}
+              onValueChange={(value) => value && setAppliesTo(value as never)}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -122,12 +145,17 @@ function ReasonDialog({
         </div>
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium">Requires a written detail</span>
-          <Switch checked={requiresDetail} onCheckedChange={setRequiresDetail} />
+          <Switch
+            checked={requiresDetail}
+            onCheckedChange={setRequiresDetail}
+          />
         </div>
         <DialogFooter>
           <DialogClose render={<Button variant="ghost">Cancel</Button>} />
           <Button
-            disabled={!valid || mutations.create.isPending || mutations.update.isPending}
+            disabled={
+              !valid || mutations.create.isPending || mutations.update.isPending
+            }
             onClick={save}
           >
             Save
@@ -148,7 +176,10 @@ export function ReasonsTable({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-end">
-        <ReasonDialog mutations={mutations} trigger={<Button size="sm">Add reason</Button>} />
+        <ReasonDialog
+          mutations={mutations}
+          trigger={<Button size="sm">Add reason</Button>}
+        />
       </div>
       <Table>
         <TableHeader>
@@ -166,13 +197,19 @@ export function ReasonsTable({
             <TableRow key={reason.id}>
               <TableCell>
                 <div className="font-medium">{reason.label}</div>
-                <div className="text-muted-foreground font-mono text-xs">{reason.slug}</div>
+                <div className="font-mono text-xs text-muted-foreground">
+                  {reason.slug}
+                </div>
               </TableCell>
-              <TableCell className="text-sm capitalize">{reason.applies_to}</TableCell>
-              <TableCell className="text-muted-foreground text-sm">
+              <TableCell className="text-sm capitalize">
+                {reason.applies_to}
+              </TableCell>
+              <TableCell className="text-sm text-muted-foreground">
                 {reason.requires_detail ? "Required" : "Optional"}
               </TableCell>
-              <TableCell className="text-right tabular-nums">{reason.position}</TableCell>
+              <TableCell className="text-right tabular-nums">
+                {reason.position}
+              </TableCell>
               <TableCell>
                 {reason.retired_at ? (
                   <Badge variant="outline">retired</Badge>

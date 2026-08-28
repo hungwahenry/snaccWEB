@@ -8,6 +8,8 @@ export interface DashboardSeriesPoint {
 }
 
 export interface DashboardMetrics {
+  /** False when the reader is confined: every number covers their campuses only. */
+  platform: boolean
   users: {
     total: number
     verified: number
@@ -30,6 +32,7 @@ export interface DashboardMetrics {
     dismissed: number
     reports_7d: number
   }
+  /** Null for a campus-confined reader: platform money has no campus to filter on. */
   money: {
     total_distributed: number
     wallet_liability: number
@@ -38,10 +41,20 @@ export interface DashboardMetrics {
       count: number
       amount: number
     }[]
-    earnings_by_type: { type: "reaction" | "resnacc"; count: number; amount: number }[]
-  }
+    earnings_by_type: {
+      type: "reaction" | "resnacc"
+      count: number
+      amount: number
+    }[]
+  } | null
   campuses: { total: number; funded: number }
-  top_campuses: { id: string; name: string; acronym: string; members: number; snaccs: number }[]
+  top_campuses: {
+    id: string
+    name: string
+    acronym: string
+    members: number
+    snaccs: number
+  }[]
   top_reactions: { emoji: string; count: number }[]
   series: DashboardSeriesPoint[]
 }

@@ -7,7 +7,12 @@ import { MINUTE_MS } from "@/lib/duration"
 export const ME_KEY = ["me"]
 
 export function useMe() {
-  return useQuery({ queryKey: ME_KEY, queryFn: getMe, retry: false, staleTime: 5 * MINUTE_MS })
+  return useQuery({
+    queryKey: ME_KEY,
+    queryFn: getMe,
+    retry: false,
+    staleTime: 5 * MINUTE_MS,
+  })
 }
 
 export function useSendOtp() {
@@ -24,5 +29,8 @@ export function useLogin() {
 
 export function useLogout() {
   const queryClient = useQueryClient()
-  return useMutation({ mutationFn: logout, onSuccess: () => queryClient.clear() })
+  return useMutation({
+    mutationFn: logout,
+    onSuccess: () => queryClient.clear(),
+  })
 }

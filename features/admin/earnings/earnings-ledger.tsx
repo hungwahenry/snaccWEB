@@ -37,12 +37,15 @@ export function EarningsLedger({
 }) {
   return (
     <Card>
-      <CardHeader className="flex-row items-center justify-between">
+      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <CardTitle className="text-base">Earning events</CardTitle>
         <Select
           value={params.type ?? "all"}
           onValueChange={(value) =>
-            onParams({ type: !value || value === "all" ? undefined : (value as never), page: 1 })
+            onParams({
+              type: !value || value === "all" ? undefined : (value as never),
+              page: 1,
+            })
           }
         >
           <SelectTrigger className="w-36">
@@ -69,7 +72,10 @@ export function EarningsLedger({
           <TableBody>
             {data.items.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-muted-foreground py-10 text-center text-sm">
+                <TableCell
+                  colSpan={5}
+                  className="py-10 text-center text-sm text-muted-foreground"
+                >
                   No earning events.
                 </TableCell>
               </TableRow>
@@ -82,11 +88,13 @@ export function EarningsLedger({
                   <TableCell className="text-right tabular-nums">
                     {formatNaira(event.amount)}
                   </TableCell>
-                  <TableCell className="text-sm">{handle(event.beneficiary)}</TableCell>
-                  <TableCell className="text-muted-foreground text-sm">
+                  <TableCell className="text-sm">
+                    {handle(event.beneficiary)}
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
                     {handle(event.actor)}
                   </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">
+                  <TableCell className="text-sm text-muted-foreground">
                     {formatDate(event.created_at)}
                   </TableCell>
                 </TableRow>

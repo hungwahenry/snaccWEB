@@ -20,7 +20,10 @@ import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table"
 import { Textarea } from "@/components/ui/textarea"
 import type { AdminConfigSetting } from "./index"
 
-type UpdateInput = { key: string; body: { value?: unknown; isPublic?: boolean } }
+type UpdateInput = {
+  key: string
+  body: { value?: unknown; isPublic?: boolean }
+}
 
 function display(value: unknown): string {
   return typeof value === "string" ? value : JSON.stringify(value)
@@ -40,7 +43,7 @@ function EditDialog({
   const isNum = typeof setting.value === "number"
   const isComplex = typeof setting.value === "object" && setting.value !== null
   const [text, setText] = useState(
-    isComplex ? JSON.stringify(setting.value, null, 2) : String(setting.value),
+    isComplex ? JSON.stringify(setting.value, null, 2) : String(setting.value)
   )
   const [bool, setBool] = useState(Boolean(setting.value))
   const [isPublic, setIsPublic] = useState(setting.is_public)
@@ -74,7 +77,7 @@ function EditDialog({
         <DialogHeader>
           <DialogTitle className="font-mono text-sm">{setting.key}</DialogTitle>
         </DialogHeader>
-        <p className="text-muted-foreground text-sm">{setting.description}</p>
+        <p className="text-sm text-muted-foreground">{setting.description}</p>
         <Field>
           <FieldLabel>Value</FieldLabel>
           {isBool ? (
@@ -95,7 +98,9 @@ function EditDialog({
           )}
         </Field>
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">Public (served to clients)</span>
+          <span className="text-sm font-medium">
+            Public (served to clients)
+          </span>
           <Switch checked={isPublic} onCheckedChange={setIsPublic} />
         </div>
         <DialogFooter>
@@ -135,10 +140,14 @@ export function ConfigTable({
                     <TableRow key={setting.key}>
                       <TableCell className="align-top">
                         <div className="font-mono text-xs">{setting.key}</div>
-                        <div className="text-muted-foreground mt-1 text-xs">{setting.description}</div>
+                        <div className="mt-1 text-xs text-muted-foreground">
+                          {setting.description}
+                        </div>
                       </TableCell>
                       <TableCell className="align-top">
-                        <code className="text-xs">{display(setting.value)}</code>
+                        <code className="text-xs">
+                          {display(setting.value)}
+                        </code>
                       </TableCell>
                       <TableCell className="align-top">
                         {setting.is_public ? (
@@ -148,7 +157,11 @@ export function ConfigTable({
                         )}
                       </TableCell>
                       <TableCell className="text-right align-top">
-                        <EditDialog setting={setting} onUpdate={onUpdate} pending={pending} />
+                        <EditDialog
+                          setting={setting}
+                          onUpdate={onUpdate}
+                          pending={pending}
+                        />
                       </TableCell>
                     </TableRow>
                   ))}

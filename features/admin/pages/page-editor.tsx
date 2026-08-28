@@ -20,12 +20,18 @@ export function PageEditor({
   const [slug, setSlug] = useState(page?.slug ?? "")
   const [excerpt, setExcerpt] = useState(page?.excerpt ?? "")
   const [seoTitle, setSeoTitle] = useState(page?.seo_title ?? "")
-  const [seoDescription, setSeoDescription] = useState(page?.seo_description ?? "")
+  const [seoDescription, setSeoDescription] = useState(
+    page?.seo_description ?? ""
+  )
   const [doc, setDoc] = useState<unknown>(page?.content ?? null)
   const [html, setHtml] = useState(page?.html ?? "")
 
   const editing = Boolean(page)
-  const valid = title.trim() !== "" && slug.trim() !== "" && html.trim() !== "" && html !== "<p></p>"
+  const valid =
+    title.trim() !== "" &&
+    slug.trim() !== "" &&
+    html.trim() !== "" &&
+    html !== "<p></p>"
 
   function save() {
     const shared = {
@@ -74,7 +80,11 @@ export function PageEditor({
       <div className="grid gap-4 sm:grid-cols-2">
         <Field>
           <FieldLabel>Title</FieldLabel>
-          <Input value={title} onChange={(event) => setTitle(event.target.value)} maxLength={200} />
+          <Input
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            maxLength={200}
+          />
         </Field>
         <Field>
           <FieldLabel>Slug</FieldLabel>

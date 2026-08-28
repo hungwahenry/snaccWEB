@@ -7,7 +7,10 @@ import { createPrompt, deletePrompt, listPrompts, updatePrompt } from "./api"
 import type { UpdatePromptInput } from "./types"
 
 export function usePrompts() {
-  return useQuery({ queryKey: ["admin", "onboarding-prompts"], queryFn: listPrompts })
+  return useQuery({
+    queryKey: ["admin", "onboarding-prompts"],
+    queryFn: listPrompts,
+  })
 }
 
 export function usePromptMutations() {
@@ -15,7 +18,9 @@ export function usePromptMutations() {
 
   function onSuccess(message: string) {
     return () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "onboarding-prompts"] })
+      queryClient.invalidateQueries({
+        queryKey: ["admin", "onboarding-prompts"],
+      })
       toast.success(message)
     }
   }
@@ -24,9 +29,14 @@ export function usePromptMutations() {
   }
 
   return {
-    create: useMutation({ mutationFn: createPrompt, onSuccess: onSuccess("Prompt created."), onError }),
+    create: useMutation({
+      mutationFn: createPrompt,
+      onSuccess: onSuccess("Prompt created."),
+      onError,
+    }),
     update: useMutation({
-      mutationFn: ({ id, input }: { id: string; input: UpdatePromptInput }) => updatePrompt(id, input),
+      mutationFn: ({ id, input }: { id: string; input: UpdatePromptInput }) =>
+        updatePrompt(id, input),
       onSuccess: onSuccess("Prompt updated."),
       onError,
     }),

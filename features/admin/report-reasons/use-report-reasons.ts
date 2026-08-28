@@ -13,7 +13,10 @@ import {
 import type { UpdateReasonInput } from "./types"
 
 export function useReasons() {
-  return useQuery({ queryKey: ["admin", "report-reasons"], queryFn: listReasons })
+  return useQuery({
+    queryKey: ["admin", "report-reasons"],
+    queryFn: listReasons,
+  })
 }
 
 export function useReasonMutations() {

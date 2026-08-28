@@ -33,11 +33,13 @@ function StoreButton({
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="bg-foreground text-background flex items-center gap-3 rounded-2xl px-5 py-3 transition-transform hover:scale-[1.02]"
+      className="flex items-center gap-3 rounded-2xl bg-foreground px-5 py-3 text-background transition-transform hover:scale-[1.02]"
     >
       {logo}
       <span className="flex flex-col text-left leading-tight">
-        <span className="text-[10px] tracking-wide uppercase opacity-80">{top}</span>
+        <span className="text-[10px] tracking-wide uppercase opacity-80">
+          {top}
+        </span>
         <span className="text-base font-semibold">{bottom}</span>
       </span>
     </a>
@@ -47,8 +49,18 @@ function StoreButton({
 export function StoreButtons() {
   return (
     <div className="flex flex-col gap-3 sm:flex-row">
-      <StoreButton href={APP_STORE_URL} top="Download on the" bottom="App Store" logo={<AppleLogo />} />
-      <StoreButton href={PLAY_STORE_URL} top="Get it on" bottom="Google Play" logo={<PlayLogo />} />
+      <StoreButton
+        href={APP_STORE_URL}
+        top="Download on the"
+        bottom="App Store"
+        logo={<AppleLogo />}
+      />
+      <StoreButton
+        href={PLAY_STORE_URL}
+        top="Get it on"
+        bottom="Google Play"
+        logo={<PlayLogo />}
+      />
     </div>
   )
 }

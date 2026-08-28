@@ -19,7 +19,11 @@ export function usePages() {
 }
 
 export function usePage(id: string) {
-  return useQuery({ queryKey: ["admin", "page", id], queryFn: () => getPage(id), enabled: !!id })
+  return useQuery({
+    queryKey: ["admin", "page", id],
+    queryFn: () => getPage(id),
+    enabled: !!id,
+  })
 }
 
 export function usePageMutations(id?: string) {
@@ -53,8 +57,13 @@ export function usePageMutations(id?: string) {
       onError,
     }),
     setStatus: useMutation({
-      mutationFn: ({ pageId, status }: { pageId: string; status: PageStatus }) =>
-        setPageStatus(pageId, status),
+      mutationFn: ({
+        pageId,
+        status,
+      }: {
+        pageId: string
+        status: PageStatus
+      }) => setPageStatus(pageId, status),
       onSuccess: () => {
         invalidate()
         toast.success("Page status updated.")

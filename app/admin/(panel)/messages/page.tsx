@@ -8,7 +8,10 @@ import { useConversations } from "@/features/admin/messages/use-messages"
 import type { ListConversationsParams } from "@/features/admin/messages/types"
 
 export default function MessagesPage() {
-  const [params, setParams] = useState<ListConversationsParams>({ page: 1, perPage: 20 })
+  const [params, setParams] = useState<ListConversationsParams>({
+    page: 1,
+    perPage: 20,
+  })
   const query = useConversations(params)
 
   function patch(next: Partial<ListConversationsParams>) {
@@ -26,7 +29,9 @@ export default function MessagesPage() {
           <Spinner />
         </div>
       ) : query.isError || !query.data ? (
-        <p className="text-muted-foreground text-sm">Couldn&apos;t load conversations.</p>
+        <p className="text-sm text-muted-foreground">
+          Couldn&apos;t load conversations.
+        </p>
       ) : (
         <ConversationsTable data={query.data} onParams={patch} />
       )}

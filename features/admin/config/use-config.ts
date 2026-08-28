@@ -14,8 +14,10 @@ export function useConfig() {
 export function useUpdateConfig() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (input: { key: string; body: { value?: unknown; isPublic?: boolean } }) =>
-      updateConfig(input.key, input.body),
+    mutationFn: (input: {
+      key: string
+      body: { value?: unknown; isPublic?: boolean }
+    }) => updateConfig(input.key, input.body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: KEY })
       toast.success("Config updated.")

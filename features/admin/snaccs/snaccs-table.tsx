@@ -5,6 +5,7 @@ import { useState } from "react"
 import { DataPagination } from "@/components/data-pagination"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { CanAct } from "@/components/rbac/can"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -40,7 +41,13 @@ import type { AdminSnacc, ListSnaccsParams } from "./types"
 
 type Mutations = ReturnType<typeof useSnaccMutations>
 
-function DeleteDialog({ snacc, actions }: { snacc: AdminSnacc; actions: Mutations }) {
+function DeleteDialog({
+  snacc,
+  actions,
+}: {
+  snacc: AdminSnacc
+  actions: Mutations
+}) {
   const [open, setOpen] = useState(false)
   const [reason, setReason] = useState("")
 
@@ -57,8 +64,10 @@ function DeleteDialog({ snacc, actions }: { snacc: AdminSnacc; actions: Mutation
         <DialogHeader>
           <DialogTitle>Remove snacc</DialogTitle>
         </DialogHeader>
-        <p className="text-muted-foreground text-sm">
-          Soft-deletes the snacc so it disappears from every feed. It can be restored later.
+        <p className="text-sm text-muted-foreground">
+          This is permanent. Replies go with it, the author&apos;s counts
+          unwind, and what it earned is retracted. To take it out of sight
+          reversibly, hold it instead.
         </p>
         <Field>
           <FieldLabel>Reason (optional)</FieldLabel>
@@ -77,7 +86,7 @@ function DeleteDialog({ snacc, actions }: { snacc: AdminSnacc; actions: Mutation
             onClick={() =>
               actions.remove.mutate(
                 { id: snacc.id, reason: reason.trim() || undefined },
-                { onSuccess: () => setOpen(false) },
+                { onSuccess: () => setOpen(false) }
               )
             }
           >
@@ -89,27 +98,50 @@ function DeleteDialog({ snacc, actions }: { snacc: AdminSnacc; actions: Mutation
   )
 }
 
-function SnaccActions({ snacc, actions }: { snacc: AdminSnacc; actions: Mutations }) {
+function SnaccActions({
+  snacc,
+  actions,
+}: {
+  snacc: AdminSnacc
+  actions: Mutations
+}) {
   if (snacc.deleted_at) {
+    return <span className="text-sm text-muted-foreground">Removed</span>
+  }
+  if (snacc.held_at) {
     return (
-      <Button
-        variant="outline"
-        size="sm"
-        disabled={actions.restore.isPending}
-        onClick={() => actions.restore.mutate(snacc.id)}
-      >
-        Restore
-      </Button>
+      <CanAct permission="snaccs.hold">
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={actions.release.isPending}
+          onClick={() => actions.release.mutate(snacc.id)}
+        >
+          Release
+        </Button>
+      </CanAct>
     )
   }
   return (
     <div className="flex justify-end gap-2">
+      <CanAct permission="snaccs.hold">
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={actions.hold.isPending}
+          onClick={() => actions.hold.mutate({ id: snacc.id })}
+        >
+          Hold
+        </Button>
+      </CanAct>
       <Button
         variant="ghost"
         size="sm"
         disabled={actions.pin.isPending || actions.unpin.isPending}
         onClick={() =>
-          snacc.pinned ? actions.unpin.mutate(snacc.id) : actions.pin.mutate(snacc.id)
+          snacc.pinned
+            ? actions.unpin.mutate(snacc.id)
+            : actions.pin.mutate(snacc.id)
         }
       >
         {snacc.pinned ? "Unpin" : "Pin"}
@@ -139,7 +171,11 @@ export function SnaccsTable({
 }) {
   const [search, setSearch] = useState(params.q ?? "")
   const deletedValue =
-    params.deleted === true ? "deleted" : params.deleted === false ? "live" : "all"
+    params.deleted === true
+      ? "deleted"
+      : params.deleted === false
+        ? "live"
+        : "all"
 
   return (
     <div className="flex flex-col gap-4">
@@ -162,7 +198,8 @@ export function SnaccsTable({
           value={deletedValue}
           onValueChange={(value) =>
             onParams({
-              deleted: !value || value === "all" ? undefined : value === "deleted",
+              deleted:
+                !value || value === "all" ? undefined : value === "deleted",
               page: 1,
             })
           }
@@ -192,7 +229,10 @@ export function SnaccsTable({
         <TableBody>
           {data.items.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className="text-muted-foreground py-10 text-center text-sm">
+              <TableCell
+                colSpan={6}
+                className="py-10 text-center text-sm text-muted-foreground"
+              >
                 No snaccs match these filters.
               </TableCell>
             </TableRow>
@@ -204,13 +244,19 @@ export function SnaccsTable({
                     <Avatar className="size-7">
                       <AvatarImage src={snacc.author.avatar_url} alt="" />
                       <AvatarFallback>
-                        {(snacc.author.display_name || snacc.author.username || "?")
+                        {(
+                          snacc.author.display_name ||
+                          snacc.author.username ||
+                          "?"
+                        )
                           .slice(0, 2)
                           .toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <span className="text-sm">
-                      {snacc.author.username ? `@${snacc.author.username}` : snacc.author.display_name}
+                      {snacc.author.username
+                        ? `@${snacc.author.username}`
+                        : snacc.author.display_name}
                     </span>
                   </div>
                 </TableCell>
@@ -221,10 +267,13 @@ export function SnaccsTable({
                   >
                     {preview(snacc)}
                   </Link>
-                  <p className="text-muted-foreground text-xs">{formatDate(snacc.created_at)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {formatDate(snacc.created_at)}
+                  </p>
                 </TableCell>
-                <TableCell className="text-muted-foreground text-right text-xs tabular-nums">
-                  {formatNumber(snacc.reactions_count)} rx · {formatNumber(snacc.comments_count)} co ·{" "}
+                <TableCell className="text-right text-xs text-muted-foreground tabular-nums">
+                  {formatNumber(snacc.reactions_count)} rx ·{" "}
+                  {formatNumber(snacc.comments_count)} co ·{" "}
                   {formatNumber(snacc.views_count)} vw
                 </TableCell>
                 <TableCell className="text-right tabular-nums">

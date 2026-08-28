@@ -6,7 +6,10 @@ import { SNACC_API_URL } from "./session"
 const GUEST_COOKIE = "snacc_guest"
 
 function clientIp(request: NextRequest): string | null {
-  const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+  const forwarded = request.headers
+    .get("x-forwarded-for")
+    ?.split(",")[0]
+    ?.trim()
   return forwarded || request.headers.get("x-real-ip") || null
 }
 
@@ -14,7 +17,7 @@ export async function forwardAnon(
   request: NextRequest,
   method: "GET" | "POST",
   apiPath: string,
-  body?: string,
+  body?: string
 ): Promise<Response> {
   const store = await cookies()
   const token = store.get(GUEST_COOKIE)?.value

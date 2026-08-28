@@ -1,9 +1,22 @@
 "use client"
 
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/api/errors"
-import { deleteSnacc, getSnacc, listSnaccs, pinSnacc, restoreSnacc, unpinSnacc } from "./api"
+import {
+  deleteSnacc,
+  getSnacc,
+  holdSnacc,
+  listSnaccs,
+  pinSnacc,
+  releaseSnacc,
+  unpinSnacc,
+} from "./api"
 import type { ListSnaccsParams } from "./types"
 
 export function useSnaccs(params: ListSnaccsParams) {
@@ -36,13 +49,20 @@ export function useSnaccMutations() {
 
   return {
     remove: useMutation({
-      mutationFn: ({ id, reason }: { id: string; reason?: string }) => deleteSnacc(id, reason),
-      onSuccess: onSuccess("Snacc removed."),
+      mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
+        deleteSnacc(id, reason),
+      onSuccess: onSuccess("Snacc removed for good."),
       onError,
     }),
-    restore: useMutation({
-      mutationFn: (id: string) => restoreSnacc(id),
-      onSuccess: onSuccess("Snacc restored."),
+    hold: useMutation({
+      mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
+        holdSnacc(id, reason),
+      onSuccess: onSuccess("Snacc held."),
+      onError,
+    }),
+    release: useMutation({
+      mutationFn: (id: string) => releaseSnacc(id),
+      onSuccess: onSuccess("Snacc released."),
       onError,
     }),
     pin: useMutation({

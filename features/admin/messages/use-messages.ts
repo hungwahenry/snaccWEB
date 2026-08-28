@@ -1,9 +1,19 @@
 "use client"
 
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/api/errors"
-import { deleteMessage, getConversation, listConversations, restoreMessage } from "./api"
+import {
+  deleteMessage,
+  getConversation,
+  listConversations,
+  restoreMessage,
+} from "./api"
 import type { ListConversationsParams } from "./types"
 
 export function useConversations(params: ListConversationsParams) {
@@ -26,7 +36,9 @@ export function useMessageModeration(conversationId: string) {
   const queryClient = useQueryClient()
 
   function invalidate() {
-    queryClient.invalidateQueries({ queryKey: ["admin", "conversation", conversationId] })
+    queryClient.invalidateQueries({
+      queryKey: ["admin", "conversation", conversationId],
+    })
     queryClient.invalidateQueries({ queryKey: ["admin", "reports"] })
   }
   function onError(error: unknown) {
@@ -35,7 +47,8 @@ export function useMessageModeration(conversationId: string) {
 
   return {
     remove: useMutation({
-      mutationFn: (input: { id: string; reason?: string }) => deleteMessage(input.id, input.reason),
+      mutationFn: (input: { id: string; reason?: string }) =>
+        deleteMessage(input.id, input.reason),
       onSuccess: () => {
         invalidate()
         toast.success("Message removed.")

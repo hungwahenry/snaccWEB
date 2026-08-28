@@ -41,7 +41,10 @@ export function PagesTable({
         <TableBody>
           {pages.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={4} className="text-muted-foreground py-10 text-center text-sm">
+              <TableCell
+                colSpan={4}
+                className="py-10 text-center text-sm text-muted-foreground"
+              >
                 No pages yet.
               </TableCell>
             </TableRow>
@@ -50,7 +53,9 @@ export function PagesTable({
               <TableRow key={page.id}>
                 <TableCell>
                   <div className="font-medium">{page.title}</div>
-                  <div className="text-muted-foreground font-mono text-xs">/{page.slug}</div>
+                  <div className="font-mono text-xs text-muted-foreground">
+                    /{page.slug}
+                  </div>
                 </TableCell>
                 <TableCell>
                   {page.status === "published" ? (
@@ -59,12 +64,16 @@ export function PagesTable({
                     <Badge variant="outline">draft</Badge>
                   )}
                 </TableCell>
-                <TableCell className="text-muted-foreground text-sm">
+                <TableCell className="text-sm text-muted-foreground">
                   {formatDate(page.updated_at)}
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
-                    <Button variant="outline" size="sm" render={<Link href={`/admin/pages/${page.id}`} />}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      render={<Link href={`/admin/pages/${page.id}`} />}
+                    >
                       Edit
                     </Button>
                     <Button

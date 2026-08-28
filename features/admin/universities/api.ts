@@ -10,7 +10,10 @@ import type {
 const MAX_PER_PAGE = 100
 
 export function listUniversities(params: ListUniversitiesParams) {
-  return api.get<Paginated<AdminUniversity>>("/admin/universities", params as QueryParams)
+  return api.get<Paginated<AdminUniversity>>(
+    "/admin/universities",
+    params as QueryParams
+  )
 }
 
 /** Every campus, for a picker. A page is capped server-side, and there are more campuses than that. */

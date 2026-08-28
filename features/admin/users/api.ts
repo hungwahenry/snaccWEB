@@ -50,7 +50,10 @@ export function unblockPayouts(id: string) {
 }
 
 export function adjustBalance(id: string, delta: number, reason?: string) {
-  return api.patch<AdminUserRow>(`/admin/users/${id}/balance`, { delta, reason })
+  return api.patch<AdminUserRow>(`/admin/users/${id}/balance`, {
+    delta,
+    reason,
+  })
 }
 
 export function revokeSessions(id: string) {

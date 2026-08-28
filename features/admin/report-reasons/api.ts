@@ -1,5 +1,9 @@
 import { api } from "@/lib/api/client"
-import type { AdminReportReason, CreateReasonInput, UpdateReasonInput } from "./types"
+import type {
+  AdminReportReason,
+  CreateReasonInput,
+  UpdateReasonInput,
+} from "./types"
 
 export function listReasons() {
   return api.get<AdminReportReason[]>("/admin/report-reasons")

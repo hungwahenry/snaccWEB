@@ -1,26 +1,44 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { formatNaira, formatNumber } from "@/lib/format"
 import { useWithdrawalSummary } from "./use-withdrawals"
 
 function waitingSince(oldestAt: string | null): string {
   if (!oldestAt) return "nothing waiting"
 
-  const days = Math.floor((Date.now() - new Date(oldestAt).getTime()) / 86_400_000)
+  const days = Math.floor(
+    (Date.now() - new Date(oldestAt).getTime()) / 86_400_000
+  )
   if (days < 1) return "oldest today"
 
   return `oldest ${days} day${days === 1 ? "" : "s"} ago`
 }
 
-function Tile({ label, value, hint }: { label: string; value: string; hint: string }) {
+function Tile({
+  label,
+  value,
+  hint,
+}: {
+  label: string
+  value: string
+  hint: string
+}) {
   return (
     <Card>
       <CardHeader>
         <CardDescription>{label}</CardDescription>
         <CardTitle className="text-3xl tabular-nums">{value}</CardTitle>
       </CardHeader>
-      <CardContent className="text-muted-foreground text-xs">{hint}</CardContent>
+      <CardContent className="text-xs text-muted-foreground">
+        {hint}
+      </CardContent>
     </Card>
   )
 }

@@ -6,12 +6,20 @@ import { Badge } from "@/components/ui/badge"
 import { formatDate, handleOf } from "@/lib/format"
 import type { AdminSnacc, SnaccAuthor } from "./types"
 
-export function AuthorInline({ author, note }: { author: SnaccAuthor; note?: string }) {
+export function AuthorInline({
+  author,
+  note,
+}: {
+  author: SnaccAuthor
+  note?: string
+}) {
   return (
     <div className="flex items-center gap-2">
       <Avatar className="size-8">
         <AvatarImage src={author.avatar_url} alt="" />
-        <AvatarFallback>{(author.username ?? "?").slice(0, 1).toUpperCase()}</AvatarFallback>
+        <AvatarFallback>
+          {(author.username ?? "?").slice(0, 1).toUpperCase()}
+        </AvatarFallback>
       </Avatar>
       <div className="min-w-0">
         <Link
@@ -20,7 +28,7 @@ export function AuthorInline({ author, note }: { author: SnaccAuthor; note?: str
         >
           {handleOf(author)}
         </Link>
-        {note ? <p className="text-muted-foreground text-xs">{note}</p> : null}
+        {note ? <p className="text-xs text-muted-foreground">{note}</p> : null}
       </div>
     </div>
   )
@@ -45,7 +53,7 @@ export function SnaccMedia({
           key={url}
           src={url}
           alt="Snacc media"
-          className="border-border max-h-72 rounded-lg border object-contain"
+          className="max-h-72 rounded-lg border border-border object-contain"
         />
       ))}
     </div>
@@ -57,17 +65,24 @@ export function SnaccView({ snacc }: { snacc: AdminSnacc }) {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
-        <AuthorInline author={snacc.author} note={formatDate(snacc.created_at)} />
+        <AuthorInline
+          author={snacc.author}
+          note={formatDate(snacc.created_at)}
+        />
         <div className="flex gap-2">
           {snacc.pinned ? <Badge variant="outline">Pinned</Badge> : null}
-          {snacc.deleted_at ? <Badge variant="destructive">Removed</Badge> : null}
+          {snacc.deleted_at ? (
+            <Badge variant="destructive">Removed</Badge>
+          ) : null}
         </div>
       </div>
 
-      {snacc.body ? <p className="whitespace-pre-wrap text-sm">{snacc.body}</p> : null}
+      {snacc.body ? (
+        <p className="text-sm whitespace-pre-wrap">{snacc.body}</p>
+      ) : null}
       <SnaccMedia images={snacc.images} gif={snacc.gif} />
 
-      <div className="text-muted-foreground flex flex-wrap gap-4 text-xs">
+      <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
         <span>{snacc.reactions_count} reactions</span>
         <span>{snacc.comments_count} replies</span>
         <span>{snacc.resnaccs_count} resnaccs</span>

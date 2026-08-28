@@ -1,5 +1,10 @@
 import { api } from "@/lib/api/client"
-import type { AdminPage, CreatePageInput, PageStatus, UpdatePageInput } from "./types"
+import type {
+  AdminPage,
+  CreatePageInput,
+  PageStatus,
+  UpdatePageInput,
+} from "./types"
 
 export function listPages() {
   return api.get<AdminPage[]>("/admin/pages")

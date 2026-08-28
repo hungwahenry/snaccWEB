@@ -40,14 +40,20 @@ export function useRoleMutations() {
   }
 
   return {
-    create: useMutation({ mutationFn: createRole, onSuccess: onSuccess("Role created."), onError }),
+    create: useMutation({
+      mutationFn: createRole,
+      onSuccess: onSuccess("Role created."),
+      onError,
+    }),
     update: useMutation({
-      mutationFn: ({ id, input }: { id: string; input: UpdateRoleInput }) => updateRole(id, input),
+      mutationFn: ({ id, input }: { id: string; input: UpdateRoleInput }) =>
+        updateRole(id, input),
       onSuccess: onSuccess("Role updated."),
       onError,
     }),
     setPermissions: useMutation({
-      mutationFn: ({ id, keys }: { id: string; keys: string[] }) => setRolePermissions(id, keys),
+      mutationFn: ({ id, keys }: { id: string; keys: string[] }) =>
+        setRolePermissions(id, keys),
       onSuccess: onSuccess("Permissions updated."),
       onError,
     }),

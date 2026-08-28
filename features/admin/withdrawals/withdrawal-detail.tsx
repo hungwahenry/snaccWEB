@@ -40,7 +40,8 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 
 function SettleDialog({ actions }: { actions: Mutations }) {
   const [open, setOpen] = useState(false)
-  const [status, setStatus] = useState<SettleWithdrawalInput["status"]>("success")
+  const [status, setStatus] =
+    useState<SettleWithdrawalInput["status"]>("success")
   const [reason, setReason] = useState("")
 
   return (
@@ -56,12 +57,16 @@ function SettleDialog({ actions }: { actions: Mutations }) {
         <DialogHeader>
           <DialogTitle>Settle withdrawal</DialogTitle>
         </DialogHeader>
-        <p className="text-muted-foreground text-sm">
-          Manually record the outcome. Reversing a successful transfer refunds the balance once.
+        <p className="text-sm text-muted-foreground">
+          Manually record the outcome. Reversing a successful transfer refunds
+          the balance once.
         </p>
         <Field>
           <FieldLabel>Outcome</FieldLabel>
-          <Select value={status} onValueChange={(value) => value && setStatus(value as never)}>
+          <Select
+            value={status}
+            onValueChange={(value) => value && setStatus(value as never)}
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -88,7 +93,7 @@ function SettleDialog({ actions }: { actions: Mutations }) {
             onClick={() =>
               actions.settle.mutate(
                 { status, reason: reason.trim() || undefined },
-                { onSuccess: () => setOpen(false) },
+                { onSuccess: () => setOpen(false) }
               )
             }
           >
@@ -112,11 +117,17 @@ export function WithdrawalDetail({
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-xl font-semibold tabular-nums">{formatNaira(withdrawal.amount)}</h2>
-            <Badge variant={STATUS_VARIANT[withdrawal.status]}>{withdrawal.status}</Badge>
+            <h2 className="text-xl font-semibold tabular-nums">
+              {formatNaira(withdrawal.amount)}
+            </h2>
+            <Badge variant={STATUS_VARIANT[withdrawal.status]}>
+              {withdrawal.status}
+            </Badge>
           </div>
-          <p className="text-muted-foreground font-mono text-xs">{withdrawal.reference}</p>
-          <p className="text-muted-foreground text-sm">
+          <p className="font-mono text-xs text-muted-foreground">
+            {withdrawal.reference}
+          </p>
+          <p className="text-sm text-muted-foreground">
             {withdrawal.user.username
               ? `@${withdrawal.user.username}`
               : withdrawal.user.display_name}
@@ -166,10 +177,15 @@ export function WithdrawalDetail({
             <Row label="Account name" value={withdrawal.account_name} />
             <Row
               label="Account"
-              value={withdrawal.account_number ?? `•••• ${withdrawal.account_last4}`}
+              value={
+                withdrawal.account_number ?? `•••• ${withdrawal.account_last4}`
+              }
             />
             {/* The handle for finding this payee in Paystack, which is how a manual payout is made. */}
-            <Row label="Recipient code" value={withdrawal.recipient_code ?? "—"} />
+            <Row
+              label="Recipient code"
+              value={withdrawal.recipient_code ?? "—"}
+            />
             <Row
               label="Claimed by"
               value={
@@ -178,12 +194,27 @@ export function WithdrawalDetail({
                   : "—"
               }
             />
-            <Row label="Balance before" value={formatNaira(withdrawal.balance_before)} />
-            <Row label="Balance after" value={formatNaira(withdrawal.balance_after)} />
-            <Row label="Transfer code" value={withdrawal.transfer_code ?? "—"} />
-            <Row label="Failure reason" value={withdrawal.failure_reason ?? "—"} />
+            <Row
+              label="Balance before"
+              value={formatNaira(withdrawal.balance_before)}
+            />
+            <Row
+              label="Balance after"
+              value={formatNaira(withdrawal.balance_after)}
+            />
+            <Row
+              label="Transfer code"
+              value={withdrawal.transfer_code ?? "—"}
+            />
+            <Row
+              label="Failure reason"
+              value={withdrawal.failure_reason ?? "—"}
+            />
             <Row label="Requested" value={formatDate(withdrawal.created_at)} />
-            <Row label="Completed" value={formatDate(withdrawal.completed_at)} />
+            <Row
+              label="Completed"
+              value={formatDate(withdrawal.completed_at)}
+            />
           </CardContent>
         </Card>
 
@@ -193,13 +224,18 @@ export function WithdrawalDetail({
           </CardHeader>
           <CardContent>
             {withdrawal.events.length === 0 ? (
-              <p className="text-muted-foreground text-sm">No events recorded.</p>
+              <p className="text-sm text-muted-foreground">
+                No events recorded.
+              </p>
             ) : (
               <ol className="flex flex-col gap-3">
                 {withdrawal.events.map((event, index) => (
-                  <li key={index} className="flex items-center justify-between gap-4 text-sm">
+                  <li
+                    key={index}
+                    className="flex items-center justify-between gap-4 text-sm"
+                  >
                     <Badge variant="outline">{event.status}</Badge>
-                    <span className="text-muted-foreground text-xs">
+                    <span className="text-xs text-muted-foreground">
                       {formatDate(event.created_at)}
                     </span>
                   </li>

@@ -8,7 +8,10 @@ import type {
 } from "./types"
 
 export function listWithdrawals(params: ListWithdrawalsParams) {
-  return api.get<Paginated<AdminWithdrawal>>("/admin/withdrawals", params as QueryParams)
+  return api.get<Paginated<AdminWithdrawal>>(
+    "/admin/withdrawals",
+    params as QueryParams
+  )
 }
 
 export function getWithdrawalSummary() {

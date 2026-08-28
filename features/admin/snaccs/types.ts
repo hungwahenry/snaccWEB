@@ -19,6 +19,7 @@ export interface AdminSnacc {
   views_count: number
   pinned: boolean
   deleted_at: string | null
+  held_at: string | null
   reports_count: number
 }
 
@@ -29,6 +30,7 @@ export interface ListSnaccsParams {
   authorId?: string
   universityId?: string
   deleted?: boolean
+  held?: boolean
 }
 
 /** Detail adds the filings themselves — the reason a moderator opened this page. */

@@ -21,7 +21,8 @@ import type { AdminFeatureFlag, FlagChanges } from "./index"
 type UpdateInput = { key: string } & FlagChanges
 
 export function windowLabel(flag: AdminFeatureFlag): string | null {
-  if (flag.min_version && flag.max_version) return `${flag.min_version} – ${flag.max_version}`
+  if (flag.min_version && flag.max_version)
+    return `${flag.min_version} – ${flag.max_version}`
   if (flag.min_version) return `${flag.min_version}+`
   if (flag.max_version) return `up to ${flag.max_version}`
   return null
@@ -53,9 +54,10 @@ function VersionDialog({
         <DialogHeader>
           <DialogTitle className="font-mono text-sm">{flag.key}</DialogTitle>
         </DialogHeader>
-        <p className="text-muted-foreground text-sm">
-          Which app builds this reaches. A build only changes when someone installs from a store, so
-          an over-the-air update never moves anyone past these. Leave a field empty for no limit.
+        <p className="text-sm text-muted-foreground">
+          Which app builds this reaches. A build only changes when someone
+          installs from a store, so an over-the-air update never moves anyone
+          past these. Leave a field empty for no limit.
         </p>
         <Field>
           <FieldLabel>Oldest build</FieldLabel>
@@ -73,16 +75,20 @@ function VersionDialog({
             onChange={(event) => setMax(event.target.value)}
           />
         </Field>
-        <p className="text-muted-foreground text-xs">
-          Anything that doesn&apos;t say which build it is gets treated as too old and won&apos;t see
-          the feature.
+        <p className="text-xs text-muted-foreground">
+          Anything that doesn&apos;t say which build it is gets treated as too
+          old and won&apos;t see the feature.
         </p>
         <DialogFooter>
           <DialogClose render={<Button variant="ghost">Cancel</Button>} />
           <Button
             disabled={pending}
             onClick={() => {
-              onUpdate({ key: flag.key, minVersion: min.trim(), maxVersion: max.trim() })
+              onUpdate({
+                key: flag.key,
+                minVersion: min.trim(),
+                maxVersion: max.trim(),
+              })
               setOpen(false)
             }}
           >
@@ -119,7 +125,10 @@ export function FlagsTable({
                 const gated = windowLabel(flag)
 
                 return (
-                  <div key={flag.key} className="flex items-center justify-between gap-4 py-3">
+                  <div
+                    key={flag.key}
+                    className="flex items-center justify-between gap-4 py-3"
+                  >
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-mono text-xs">{flag.key}</span>
@@ -129,14 +138,22 @@ export function FlagsTable({
                           </Badge>
                         ) : null}
                       </div>
-                      <div className="text-muted-foreground mt-0.5 text-xs">{flag.description}</div>
+                      <div className="mt-0.5 text-xs text-muted-foreground">
+                        {flag.description}
+                      </div>
                     </div>
                     <div className="flex shrink-0 items-center gap-3">
-                      <VersionDialog flag={flag} onUpdate={onToggle} pending={pending} />
+                      <VersionDialog
+                        flag={flag}
+                        onUpdate={onToggle}
+                        pending={pending}
+                      />
                       <Switch
                         checked={flag.enabled}
                         disabled={pending}
-                        onCheckedChange={(enabled) => onToggle({ key: flag.key, enabled })}
+                        onCheckedChange={(enabled) =>
+                          onToggle({ key: flag.key, enabled })
+                        }
                       />
                     </div>
                   </div>

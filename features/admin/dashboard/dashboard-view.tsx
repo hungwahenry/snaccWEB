@@ -2,7 +2,13 @@
 
 import { Area, AreaChart } from "recharts"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import {
   ChartContainer,
   ChartTooltip,
@@ -20,14 +26,26 @@ import {
 import { formatNaira, formatNumber } from "@/lib/format"
 import type { DashboardMetrics, DashboardSeriesPoint } from "./index"
 
-function Kpi({ label, value, hint }: { label: string; value: string; hint?: string }) {
+function Kpi({
+  label,
+  value,
+  hint,
+}: {
+  label: string
+  value: string
+  hint?: string
+}) {
   return (
     <Card>
       <CardHeader>
         <CardDescription>{label}</CardDescription>
         <CardTitle className="text-3xl tabular-nums">{value}</CardTitle>
       </CardHeader>
-      {hint ? <CardContent className="text-muted-foreground text-xs">{hint}</CardContent> : null}
+      {hint ? (
+        <CardContent className="text-xs text-muted-foreground">
+          {hint}
+        </CardContent>
+      ) : null}
     </Card>
   )
 }
@@ -55,8 +73,14 @@ function Trend({
       </CardHeader>
       <CardContent>
         <ChartContainer config={config} className="h-20 w-full">
-          <AreaChart data={data} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
-            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+          <AreaChart
+            data={data}
+            margin={{ top: 4, right: 0, bottom: 0, left: 0 }}
+          >
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel />}
+            />
             <Area
               dataKey={dataKey as string}
               type="monotone"
@@ -73,7 +97,13 @@ function Trend({
   )
 }
 
-function Row({ label, value }: { label: React.ReactNode; value: React.ReactNode }) {
+function Row({
+  label,
+  value,
+}: {
+  label: React.ReactNode
+  value: React.ReactNode
+}) {
   return (
     <div className="flex items-center justify-between py-2 text-sm">
       <span className="text-muted-foreground">{label}</span>
@@ -86,10 +116,16 @@ export function DashboardView({ metrics }: { metrics: DashboardMetrics }) {
   const sum = (key: keyof DashboardSeriesPoint) =>
     metrics.series.reduce((total, point) => total + (point[key] as number), 0)
   const activeToday = metrics.series.at(-1)?.active ?? 0
+  const money = metrics.money
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      {!metrics.platform && (
+        <p className="text-sm text-muted-foreground">
+          These numbers cover your campuses. Platform money is not included.
+        </p>
+      )}
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
         <Kpi
           label="Users"
           value={formatNumber(metrics.users.total)}
@@ -100,13 +136,18 @@ export function DashboardView({ metrics }: { metrics: DashboardMetrics }) {
           value={formatNumber(metrics.content.snaccs)}
           hint={`${formatNumber(metrics.content.comments)} comments · ${formatNumber(metrics.content.resnaccs)} resnaccs`}
         />
-        <Kpi label="Reactions" value={formatNumber(metrics.engagement.reactions)} />
-        <Kpi label="Views" value={formatNumber(metrics.engagement.views)} />
         <Kpi
-          label="Wallet liability"
-          value={formatNaira(metrics.money.wallet_liability)}
-          hint="unpaid balances"
+          label="Reactions"
+          value={formatNumber(metrics.engagement.reactions)}
         />
+        <Kpi label="Views" value={formatNumber(metrics.engagement.views)} />
+        {money && (
+          <Kpi
+            label="Wallet liability"
+            value={formatNaira(money.wallet_liability)}
+            hint="unpaid balances"
+          />
+        )}
         <Kpi
           label="Open reports"
           value={formatNumber(metrics.moderation.open_reports)}
@@ -138,57 +179,58 @@ export function DashboardView({ metrics }: { metrics: DashboardMetrics }) {
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Withdrawals</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Count</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {metrics.money.withdrawals_by_status.map((row) => (
-                  <TableRow key={row.status}>
-                    <TableCell className="capitalize">{row.status}</TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      {formatNumber(row.count)}
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      {formatNaira(row.amount)}
-                    </TableCell>
+      {money && (
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Withdrawals</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Count</TableHead>
+                    <TableHead className="text-right">Amount</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                </TableHeader>
+                <TableBody>
+                  {money.withdrawals_by_status.map((row) => (
+                    <TableRow key={row.status}>
+                      <TableCell className="capitalize">{row.status}</TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {formatNumber(row.count)}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {formatNaira(row.amount)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Earnings</CardTitle>
-          </CardHeader>
-          <CardContent className="divide-y">
-            <Row label="Total distributed" value={formatNaira(metrics.money.total_distributed)} />
-            {metrics.money.earnings_by_type.map((row) => (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Earnings</CardTitle>
+            </CardHeader>
+            <CardContent className="divide-y">
               <Row
-                key={row.type}
-                label={<span className="capitalize">From {row.type}s</span>}
-                value={formatNaira(row.amount)}
+                label="Total distributed"
+                value={formatNaira(money.total_distributed)}
               />
-            ))}
-            <Row
-              label="Funded campuses"
-              value={`${formatNumber(metrics.campuses.funded)} / ${formatNumber(metrics.campuses.total)}`}
-            />
-          </CardContent>
-        </Card>
-      </div>
+              {money.earnings_by_type.map((row) => (
+                <Row
+                  key={row.type}
+                  label={<span className="capitalize">From {row.type}s</span>}
+                  value={formatNaira(row.amount)}
+                />
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
@@ -197,11 +239,26 @@ export function DashboardView({ metrics }: { metrics: DashboardMetrics }) {
           </CardHeader>
           <CardContent className="divide-y">
             <Row label="Posts" value={formatNumber(metrics.content.snaccs)} />
-            <Row label="Comments" value={formatNumber(metrics.content.comments)} />
-            <Row label="Resnaccs" value={formatNumber(metrics.content.resnaccs)} />
-            <Row label="With image" value={formatNumber(metrics.content.with_image)} />
-            <Row label="With GIF" value={formatNumber(metrics.content.with_gif)} />
-            <Row label="Removed" value={formatNumber(metrics.content.deleted_snaccs)} />
+            <Row
+              label="Comments"
+              value={formatNumber(metrics.content.comments)}
+            />
+            <Row
+              label="Resnaccs"
+              value={formatNumber(metrics.content.resnaccs)}
+            />
+            <Row
+              label="With image"
+              value={formatNumber(metrics.content.with_image)}
+            />
+            <Row
+              label="With GIF"
+              value={formatNumber(metrics.content.with_gif)}
+            />
+            <Row
+              label="Removed"
+              value={formatNumber(metrics.content.deleted_snaccs)}
+            />
           </CardContent>
         </Card>
 
@@ -210,11 +267,26 @@ export function DashboardView({ metrics }: { metrics: DashboardMetrics }) {
             <CardTitle className="text-base">Moderation</CardTitle>
           </CardHeader>
           <CardContent className="divide-y">
-            <Row label="Open reports" value={formatNumber(metrics.moderation.open_reports)} />
-            <Row label="Actioned" value={formatNumber(metrics.moderation.actioned)} />
-            <Row label="Dismissed" value={formatNumber(metrics.moderation.dismissed)} />
-            <Row label="Filed in last 7 days" value={formatNumber(metrics.moderation.reports_7d)} />
-            <Row label="Follows" value={formatNumber(metrics.engagement.follows)} />
+            <Row
+              label="Open reports"
+              value={formatNumber(metrics.moderation.open_reports)}
+            />
+            <Row
+              label="Actioned"
+              value={formatNumber(metrics.moderation.actioned)}
+            />
+            <Row
+              label="Dismissed"
+              value={formatNumber(metrics.moderation.dismissed)}
+            />
+            <Row
+              label="Filed in last 7 days"
+              value={formatNumber(metrics.moderation.reports_7d)}
+            />
+            <Row
+              label="Follows"
+              value={formatNumber(metrics.engagement.follows)}
+            />
           </CardContent>
         </Card>
       </div>
@@ -223,10 +295,16 @@ export function DashboardView({ metrics }: { metrics: DashboardMetrics }) {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Top campuses</CardTitle>
+            <CardDescription>
+              {formatNumber(metrics.campuses.funded)} of{" "}
+              {formatNumber(metrics.campuses.total)} funded
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {metrics.top_campuses.length === 0 ? (
-              <p className="text-muted-foreground text-sm">No campuses with members yet.</p>
+              <p className="text-sm text-muted-foreground">
+                No campuses with members yet.
+              </p>
             ) : (
               <Table>
                 <TableHeader>
@@ -241,7 +319,9 @@ export function DashboardView({ metrics }: { metrics: DashboardMetrics }) {
                     <TableRow key={campus.id}>
                       <TableCell>
                         <span className="font-medium">{campus.acronym}</span>
-                        <span className="text-muted-foreground ml-2 text-xs">{campus.name}</span>
+                        <span className="ml-2 text-xs text-muted-foreground">
+                          {campus.name}
+                        </span>
                       </TableCell>
                       <TableCell className="text-right tabular-nums">
                         {formatNumber(campus.members)}
@@ -263,13 +343,19 @@ export function DashboardView({ metrics }: { metrics: DashboardMetrics }) {
           </CardHeader>
           <CardContent>
             {metrics.top_reactions.length === 0 ? (
-              <p className="text-muted-foreground text-sm">No reactions yet.</p>
+              <p className="text-sm text-muted-foreground">No reactions yet.</p>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {metrics.top_reactions.map((reaction) => (
-                  <Badge key={reaction.emoji} variant="secondary" className="gap-1.5 text-sm">
+                  <Badge
+                    key={reaction.emoji}
+                    variant="secondary"
+                    className="gap-1.5 text-sm"
+                  >
                     <span>{reaction.emoji}</span>
-                    <span className="tabular-nums">{formatNumber(reaction.count)}</span>
+                    <span className="tabular-nums">
+                      {formatNumber(reaction.count)}
+                    </span>
                   </Badge>
                 ))}
               </div>

@@ -43,7 +43,8 @@ function PromptDialog({
   const [position, setPosition] = useState(String(prompt?.position ?? 0))
 
   const editing = Boolean(prompt)
-  const valid = emoji.trim() !== "" && label.trim() !== "" && placeholder.trim() !== ""
+  const valid =
+    emoji.trim() !== "" && label.trim() !== "" && placeholder.trim() !== ""
 
   function save() {
     const base = {
@@ -53,7 +54,10 @@ function PromptDialog({
       position: Number(position) || 0,
     }
     if (editing && prompt) {
-      mutations.update.mutate({ id: prompt.id, input: base }, { onSuccess: () => setOpen(false) })
+      mutations.update.mutate(
+        { id: prompt.id, input: base },
+        { onSuccess: () => setOpen(false) }
+      )
     } else {
       mutations.create.mutate(base, { onSuccess: () => setOpen(false) })
     }
@@ -103,13 +107,15 @@ function PromptDialog({
             onChange={(event) => setPosition(event.target.value)}
           />
         </Field>
-        <p className="text-muted-foreground text-xs">
+        <p className="text-xs text-muted-foreground">
           {"{campus}"} is replaced with the user&apos;s campus acronym.
         </p>
         <DialogFooter>
           <DialogClose render={<Button variant="ghost">Cancel</Button>} />
           <Button
-            disabled={!valid || mutations.create.isPending || mutations.update.isPending}
+            disabled={
+              !valid || mutations.create.isPending || mutations.update.isPending
+            }
             onClick={save}
           >
             Save
@@ -130,7 +136,10 @@ export function PromptsTable({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-end">
-        <PromptDialog mutations={mutations} trigger={<Button size="sm">Add prompt</Button>} />
+        <PromptDialog
+          mutations={mutations}
+          trigger={<Button size="sm">Add prompt</Button>}
+        />
       </div>
       <Table>
         <TableHeader>
@@ -148,10 +157,12 @@ export function PromptsTable({
                 <span className="mr-1.5">{prompt.emoji}</span>
                 {prompt.label}
               </TableCell>
-              <TableCell className="text-muted-foreground max-w-sm truncate text-sm">
+              <TableCell className="max-w-sm truncate text-sm text-muted-foreground">
                 {prompt.placeholder}
               </TableCell>
-              <TableCell className="text-right tabular-nums">{prompt.position}</TableCell>
+              <TableCell className="text-right tabular-nums">
+                {prompt.position}
+              </TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end gap-2">
                   <PromptDialog

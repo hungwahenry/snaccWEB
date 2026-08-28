@@ -11,13 +11,18 @@ export default function PagesPage() {
 
   return (
     <>
-      <PageHeader title="Pages" description="Custom pages like Terms and Privacy." />
+      <PageHeader
+        title="Pages"
+        description="Custom pages like Terms and Privacy."
+      />
       {query.isPending ? (
         <div className="flex justify-center py-24">
           <Spinner />
         </div>
       ) : query.isError || !query.data ? (
-        <p className="text-muted-foreground text-sm">Couldn&apos;t load pages.</p>
+        <p className="text-sm text-muted-foreground">
+          Couldn&apos;t load pages.
+        </p>
       ) : (
         <PagesTable pages={query.data} mutations={mutations} />
       )}

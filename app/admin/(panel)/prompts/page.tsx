@@ -23,7 +23,9 @@ export default function PromptsPage() {
           <Spinner />
         </div>
       ) : query.isError || !query.data ? (
-        <p className="text-muted-foreground text-sm">Couldn&apos;t load prompts.</p>
+        <p className="text-sm text-muted-foreground">
+          Couldn&apos;t load prompts.
+        </p>
       ) : (
         <PromptsTable prompts={query.data} mutations={mutations} />
       )}

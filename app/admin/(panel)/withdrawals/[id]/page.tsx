@@ -5,9 +5,16 @@ import { use } from "react"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { WithdrawalDetail } from "@/features/admin/withdrawals/withdrawal-detail"
-import { useWithdrawal, useWithdrawalMutations } from "@/features/admin/withdrawals/use-withdrawals"
+import {
+  useWithdrawal,
+  useWithdrawalMutations,
+} from "@/features/admin/withdrawals/use-withdrawals"
 
-export default function WithdrawalDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function WithdrawalDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
   const { id } = use(params)
   const query = useWithdrawal(id)
   const actions = useWithdrawalMutations(id)
@@ -27,7 +34,9 @@ export default function WithdrawalDetailPage({ params }: { params: Promise<{ id:
           <Spinner />
         </div>
       ) : query.isError || !query.data ? (
-        <p className="text-muted-foreground text-sm">Couldn&apos;t load this withdrawal.</p>
+        <p className="text-sm text-muted-foreground">
+          Couldn&apos;t load this withdrawal.
+        </p>
       ) : (
         <WithdrawalDetail withdrawal={query.data} actions={actions} />
       )}

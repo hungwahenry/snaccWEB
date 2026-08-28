@@ -41,7 +41,10 @@ export function ConversationsTable({
         <TableBody>
           {data.items.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className="text-muted-foreground py-10 text-center text-sm">
+              <TableCell
+                colSpan={6}
+                className="py-10 text-center text-sm text-muted-foreground"
+              >
                 No conversations yet.
               </TableCell>
             </TableRow>
@@ -51,11 +54,11 @@ export function ConversationsTable({
                 <TableCell>
                   <span className="flex flex-wrap items-center gap-1.5">
                     <AuthorInline author={conversation.ghost} />
-                    <ArrowRight className="text-muted-foreground size-3.5" />
+                    <ArrowRight className="size-3.5 text-muted-foreground" />
                     <AuthorInline author={conversation.target} />
                   </span>
                 </TableCell>
-                <TableCell className="text-muted-foreground text-sm">
+                <TableCell className="text-sm text-muted-foreground">
                   “{conversation.pseudonym}”
                 </TableCell>
                 <TableCell>
@@ -68,14 +71,16 @@ export function ConversationsTable({
                 <TableCell className="text-right text-sm tabular-nums">
                   {formatNumber(conversation.message_count)}
                 </TableCell>
-                <TableCell className="text-muted-foreground text-sm">
+                <TableCell className="text-sm text-muted-foreground">
                   {timeAgo(conversation.last_message_at)}
                 </TableCell>
                 <TableCell className="text-right">
                   <Button
                     variant="outline"
                     size="sm"
-                    render={<Link href={`/admin/messages/${conversation.id}`} />}
+                    render={
+                      <Link href={`/admin/messages/${conversation.id}`} />
+                    }
                   >
                     Open thread
                   </Button>

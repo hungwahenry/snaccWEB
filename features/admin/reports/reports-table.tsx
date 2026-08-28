@@ -24,7 +24,10 @@ import { ResolveDialog } from "./resolve-dialog"
 import type { useResolveReport } from "./use-reports"
 import type { AdminReport, ListReportsParams } from "./types"
 
-const STATUS_VARIANT: Record<AdminReport["status"], "secondary" | "default" | "outline"> = {
+const STATUS_VARIANT: Record<
+  AdminReport["status"],
+  "secondary" | "default" | "outline"
+> = {
   open: "secondary",
   actioned: "default",
   dismissed: "outline",
@@ -61,7 +64,10 @@ export function ReportsTable({
         <Select
           value={params.status ?? "all"}
           onValueChange={(value) =>
-            onParams({ status: !value || value === "all" ? undefined : (value as never), page: 1 })
+            onParams({
+              status: !value || value === "all" ? undefined : (value as never),
+              page: 1,
+            })
           }
         >
           <SelectTrigger className="w-36">
@@ -78,7 +84,8 @@ export function ReportsTable({
           value={params.targetType ?? "all"}
           onValueChange={(value) =>
             onParams({
-              targetType: !value || value === "all" ? undefined : (value as never),
+              targetType:
+                !value || value === "all" ? undefined : (value as never),
               page: 1,
             })
           }
@@ -110,7 +117,10 @@ export function ReportsTable({
         <TableBody>
           {data.items.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className="text-muted-foreground py-10 text-center text-sm">
+              <TableCell
+                colSpan={6}
+                className="py-10 text-center text-sm text-muted-foreground"
+              >
                 No reports match these filters.
               </TableCell>
             </TableRow>
@@ -125,25 +135,33 @@ export function ReportsTable({
                     {targetLabel(report.target)}
                   </Link>
                   {report.detail && (
-                    <p className="text-muted-foreground truncate text-xs">“{report.detail}”</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      “{report.detail}”
+                    </p>
                   )}
                 </TableCell>
                 <TableCell className="text-sm">{report.reason.label}</TableCell>
-                <TableCell className="text-muted-foreground text-sm">
-                  {report.reporter.username ? `@${report.reporter.username}` : report.reporter.display_name}
+                <TableCell className="text-sm text-muted-foreground">
+                  {report.reporter.username
+                    ? `@${report.reporter.username}`
+                    : report.reporter.display_name}
                 </TableCell>
                 <TableCell>
-                  <Badge variant={STATUS_VARIANT[report.status]}>{report.status}</Badge>
+                  <Badge variant={STATUS_VARIANT[report.status]}>
+                    {report.status}
+                  </Badge>
                 </TableCell>
-                <TableCell className="text-muted-foreground text-sm">
+                <TableCell className="text-sm text-muted-foreground">
                   {formatDate(report.created_at)}
                 </TableCell>
                 <TableCell className="text-right">
                   {report.status === "open" ? (
                     <ResolveDialog report={report} resolve={resolve} />
                   ) : (
-                    <span className="text-muted-foreground text-xs">
-                      {report.reviewed_by?.username ? `@${report.reviewed_by.username}` : "resolved"}
+                    <span className="text-xs text-muted-foreground">
+                      {report.reviewed_by?.username
+                        ? `@${report.reviewed_by.username}`
+                        : "resolved"}
                     </span>
                   )}
                 </TableCell>

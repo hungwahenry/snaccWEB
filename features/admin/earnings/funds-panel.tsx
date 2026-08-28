@@ -55,7 +55,11 @@ function ProvisionDialog({
   }, [universities, funds])
 
   const naira = Number(cap)
-  const valid = universityId !== "" && Number.isFinite(naira) && naira >= 0 && cap.trim() !== ""
+  const valid =
+    universityId !== "" &&
+    Number.isFinite(naira) &&
+    naira >= 0 &&
+    cap.trim() !== ""
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -64,12 +68,15 @@ function ProvisionDialog({
         <DialogHeader>
           <DialogTitle>Provision campus fund</DialogTitle>
         </DialogHeader>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Creating a fund switches the campus into paid mode.
         </p>
         <Field>
           <FieldLabel>Campus</FieldLabel>
-          <Select value={universityId} onValueChange={(value) => value && setUniversityId(value)}>
+          <Select
+            value={universityId}
+            onValueChange={(value) => value && setUniversityId(value)}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select a campus" />
             </SelectTrigger>
@@ -84,7 +91,11 @@ function ProvisionDialog({
         </Field>
         <Field>
           <FieldLabel>Cap (₦)</FieldLabel>
-          <Input type="number" value={cap} onChange={(event) => setCap(event.target.value)} />
+          <Input
+            type="number"
+            value={cap}
+            onChange={(event) => setCap(event.target.value)}
+          />
         </Field>
         <DialogFooter>
           <DialogClose render={<Button variant="ghost">Cancel</Button>} />
@@ -93,7 +104,7 @@ function ProvisionDialog({
             onClick={() =>
               mutations.provision.mutate(
                 { universityId, cap: Math.round(naira * 100) },
-                { onSuccess: () => setOpen(false) },
+                { onSuccess: () => setOpen(false) }
               )
             }
           >
@@ -105,7 +116,13 @@ function ProvisionDialog({
   )
 }
 
-function AdjustDialog({ fund, mutations }: { fund: AdminFund; mutations: Mutations }) {
+function AdjustDialog({
+  fund,
+  mutations,
+}: {
+  fund: AdminFund
+  mutations: Mutations
+}) {
   const [open, setOpen] = useState(false)
   const [cap, setCap] = useState(String(fund.cap / 100))
 
@@ -125,12 +142,16 @@ function AdjustDialog({ fund, mutations }: { fund: AdminFund; mutations: Mutatio
         <DialogHeader>
           <DialogTitle>{fund.university.name}</DialogTitle>
         </DialogHeader>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Distributed so far {formatNaira(fund.distributed)}.
         </p>
         <Field>
           <FieldLabel>Cap (₦)</FieldLabel>
-          <Input type="number" value={cap} onChange={(event) => setCap(event.target.value)} />
+          <Input
+            type="number"
+            value={cap}
+            onChange={(event) => setCap(event.target.value)}
+          />
         </Field>
         <DialogFooter>
           <DialogClose render={<Button variant="ghost">Cancel</Button>} />
@@ -138,8 +159,11 @@ function AdjustDialog({ fund, mutations }: { fund: AdminFund; mutations: Mutatio
             disabled={!valid || mutations.adjust.isPending}
             onClick={() =>
               mutations.adjust.mutate(
-                { universityId: fund.university_id, cap: Math.round(naira * 100) },
-                { onSuccess: () => setOpen(false) },
+                {
+                  universityId: fund.university_id,
+                  cap: Math.round(naira * 100),
+                },
+                { onSuccess: () => setOpen(false) }
               )
             }
           >
@@ -162,13 +186,19 @@ export function FundsPanel({
 }) {
   return (
     <Card>
-      <CardHeader className="flex-row items-center justify-between">
+      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <CardTitle className="text-base">Campus funds</CardTitle>
-        <ProvisionDialog universities={universities} funds={funds} mutations={mutations} />
+        <ProvisionDialog
+          universities={universities}
+          funds={funds}
+          mutations={mutations}
+        />
       </CardHeader>
       <CardContent>
         {funds.length === 0 ? (
-          <p className="text-muted-foreground text-sm">No campus is in paid mode yet.</p>
+          <p className="text-sm text-muted-foreground">
+            No campus is in paid mode yet.
+          </p>
         ) : (
           <Table>
             <TableHeader>
@@ -183,8 +213,12 @@ export function FundsPanel({
             <TableBody>
               {funds.map((fund) => (
                 <TableRow key={fund.university_id}>
-                  <TableCell className="font-medium">{fund.university.name}</TableCell>
-                  <TableCell className="text-right tabular-nums">{formatNaira(fund.cap)}</TableCell>
+                  <TableCell className="font-medium">
+                    {fund.university.name}
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {formatNaira(fund.cap)}
+                  </TableCell>
                   <TableCell className="text-right tabular-nums">
                     {formatNaira(fund.distributed)}
                   </TableCell>

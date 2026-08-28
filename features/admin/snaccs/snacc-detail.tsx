@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
+import { CanAct } from "@/components/rbac/can"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -50,7 +51,7 @@ function RemoveDialog({
         <DialogHeader>
           <DialogTitle>Remove this snacc?</DialogTitle>
         </DialogHeader>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           It disappears from the app but stays here, and its replies go with it.
         </p>
         <Field>
@@ -70,7 +71,7 @@ function RemoveDialog({
             onClick={() =>
               actions.remove.mutate(
                 { id: snacc.id, reason: reason.trim() || undefined },
-                { onSuccess: () => setOpen(false) },
+                { onSuccess: () => setOpen(false) }
               )
             }
           >
@@ -89,32 +90,47 @@ export function SnaccDetail({
   snacc: AdminSnaccDetail
   actions: ReturnType<typeof useSnaccMutations>
 }) {
-  const openReports = snacc.reports.filter((report) => report.status === "open").length
+  const openReports = snacc.reports.filter(
+    (report) => report.status === "open"
+  ).length
 
   return (
     <div className="flex flex-col gap-4">
       <Card>
-        <CardHeader className="flex-row items-center justify-between gap-2">
+        <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <CardTitle className="text-base">Snacc</CardTitle>
           <div className="flex gap-2">
             {snacc.deleted_at ? (
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={actions.restore.isPending}
-                onClick={() => actions.restore.mutate(snacc.id)}
-              >
-                Restore
-              </Button>
+              <span className="text-sm text-muted-foreground">Removed</span>
             ) : (
-              <RemoveDialog snacc={snacc} actions={actions} />
+              <>
+                <CanAct permission="snaccs.hold">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={
+                      actions.hold.isPending || actions.release.isPending
+                    }
+                    onClick={() =>
+                      snacc.held_at
+                        ? actions.release.mutate(snacc.id)
+                        : actions.hold.mutate({ id: snacc.id })
+                    }
+                  >
+                    {snacc.held_at ? "Release" : "Hold"}
+                  </Button>
+                </CanAct>
+                <RemoveDialog snacc={snacc} actions={actions} />
+              </>
             )}
             <Button
               variant="outline"
               size="sm"
               disabled={actions.pin.isPending || actions.unpin.isPending}
               onClick={() =>
-                snacc.pinned ? actions.unpin.mutate(snacc.id) : actions.pin.mutate(snacc.id)
+                snacc.pinned
+                  ? actions.unpin.mutate(snacc.id)
+                  : actions.pin.mutate(snacc.id)
               }
             >
               {snacc.pinned ? "Unpin" : "Pin"}
@@ -138,12 +154,14 @@ export function SnaccDetail({
         </CardHeader>
         <CardContent>
           {snacc.reports.length === 0 ? (
-            <p className="text-muted-foreground text-sm">Nobody has flagged this snacc.</p>
+            <p className="text-sm text-muted-foreground">
+              Nobody has flagged this snacc.
+            </p>
           ) : (
             snacc.reports.map((report) => (
               <div
                 key={report.id}
-                className="border-border flex flex-col gap-1 border-b py-3 last:border-b-0"
+                className="flex flex-col gap-1 border-b border-border py-3 last:border-b-0"
               >
                 <div className="flex flex-wrap items-center gap-2">
                   <Link
@@ -152,13 +170,18 @@ export function SnaccDetail({
                   >
                     {report.reason.label}
                   </Link>
-                  <Badge variant={STATUS_VARIANT[report.status]}>{report.status}</Badge>
-                  <span className="text-muted-foreground text-xs">
-                    {handleOf(report.reporter)} · {formatDate(report.created_at)}
+                  <Badge variant={STATUS_VARIANT[report.status]}>
+                    {report.status}
+                  </Badge>
+                  <span className="text-xs text-muted-foreground">
+                    {handleOf(report.reporter)} ·{" "}
+                    {formatDate(report.created_at)}
                   </span>
                 </div>
                 {report.detail ? (
-                  <p className="text-muted-foreground text-sm">“{report.detail}”</p>
+                  <p className="text-sm text-muted-foreground">
+                    “{report.detail}”
+                  </p>
                 ) : null}
               </div>
             ))

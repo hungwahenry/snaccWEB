@@ -40,14 +40,18 @@ function DiffDialog({ log }: { log: AuditLog }) {
         </DialogHeader>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <div className="text-muted-foreground mb-1 text-xs font-medium">Before</div>
-            <pre className="bg-muted max-h-80 overflow-auto rounded-lg p-3 text-xs">
+            <div className="mb-1 text-xs font-medium text-muted-foreground">
+              Before
+            </div>
+            <pre className="max-h-80 overflow-auto rounded-lg bg-muted p-3 text-xs">
               {JSON.stringify(log.before, null, 2)}
             </pre>
           </div>
           <div>
-            <div className="text-muted-foreground mb-1 text-xs font-medium">After</div>
-            <pre className="bg-muted max-h-80 overflow-auto rounded-lg p-3 text-xs">
+            <div className="mb-1 text-xs font-medium text-muted-foreground">
+              After
+            </div>
+            <pre className="max-h-80 overflow-auto rounded-lg bg-muted p-3 text-xs">
               {JSON.stringify(log.after, null, 2)}
             </pre>
           </div>
@@ -96,26 +100,33 @@ export function AuditTable({
         <TableBody>
           {data.items.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className="text-muted-foreground py-10 text-center text-sm">
+              <TableCell
+                colSpan={5}
+                className="py-10 text-center text-sm text-muted-foreground"
+              >
                 No audit entries.
               </TableCell>
             </TableRow>
           ) : (
             data.items.map((log) => (
               <TableRow key={log.id}>
-                <TableCell className="font-mono text-xs">{log.action}</TableCell>
+                <TableCell className="font-mono text-xs">
+                  {log.action}
+                </TableCell>
                 <TableCell className="text-sm">
-                  {log.admin_username ? `@${log.admin_username}` : log.admin_email}
+                  {log.admin_username
+                    ? `@${log.admin_username}`
+                    : log.admin_email}
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline">{log.target_type}</Badge>
                   {log.target_id && (
-                    <span className="text-muted-foreground ml-2 font-mono text-xs">
+                    <span className="ml-2 font-mono text-xs text-muted-foreground">
                       {log.target_id.slice(0, 8)}…
                     </span>
                   )}
                 </TableCell>
-                <TableCell className="text-muted-foreground text-sm">
+                <TableCell className="text-sm text-muted-foreground">
                   {formatDate(log.created_at)}
                 </TableCell>
                 <TableCell className="text-right">

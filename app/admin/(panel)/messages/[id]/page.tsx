@@ -5,9 +5,16 @@ import { use } from "react"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { ConversationThread } from "@/features/admin/messages/conversation-thread"
-import { useConversation, useMessageModeration } from "@/features/admin/messages/use-messages"
+import {
+  useConversation,
+  useMessageModeration,
+} from "@/features/admin/messages/use-messages"
 
-export default function MessageThreadPage({ params }: { params: Promise<{ id: string }> }) {
+export default function MessageThreadPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
   const { id } = use(params)
   const query = useConversation(id)
   const actions = useMessageModeration(id)
@@ -27,7 +34,9 @@ export default function MessageThreadPage({ params }: { params: Promise<{ id: st
           <Spinner />
         </div>
       ) : query.isError || !query.data ? (
-        <p className="text-muted-foreground text-sm">Couldn&apos;t load this thread.</p>
+        <p className="text-sm text-muted-foreground">
+          Couldn&apos;t load this thread.
+        </p>
       ) : (
         <ConversationThread conversation={query.data} actions={actions} />
       )}

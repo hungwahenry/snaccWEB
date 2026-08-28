@@ -13,9 +13,14 @@ export function DataPagination({
 }) {
   return (
     <div className="flex items-center justify-between pt-4">
-      <span className="text-muted-foreground text-sm">{total} total</span>
+      <span className="text-sm text-muted-foreground">{total} total</span>
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => onPage(page - 1)}>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={page <= 1}
+          onClick={() => onPage(page - 1)}
+        >
           Previous
         </Button>
         <span className="text-sm">

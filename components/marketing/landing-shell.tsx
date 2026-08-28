@@ -4,10 +4,16 @@ import { SiteFooter } from "./site-footer"
 import { SiteHeader } from "./site-header"
 import { StoreBanner } from "./store-banner"
 
-export function LandingShell({ children, cta }: { children: ReactNode; cta: string }) {
+export function LandingShell({
+  children,
+  cta,
+}: {
+  children: ReactNode
+  cta: string
+}) {
   return (
     <div className="flex min-h-dvh justify-center">
-      <div className="border-border flex min-h-dvh w-full max-w-lg flex-col border-x">
+      <div className="flex min-h-dvh w-full max-w-lg flex-col border-x border-border">
         <SiteHeader />
         <main className="flex-1">
           {children}

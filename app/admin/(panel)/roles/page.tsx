@@ -11,13 +11,18 @@ export default function RolesPage() {
 
   return (
     <>
-      <PageHeader title="Roles" description="Bundles of permissions you can grant to admins." />
+      <PageHeader
+        title="Roles"
+        description="Bundles of permissions you can grant to admins."
+      />
       {query.isPending ? (
         <div className="flex justify-center py-24">
           <Spinner />
         </div>
       ) : query.isError || !query.data ? (
-        <p className="text-muted-foreground text-sm">Couldn&apos;t load roles.</p>
+        <p className="text-sm text-muted-foreground">
+          Couldn&apos;t load roles.
+        </p>
       ) : (
         <RolesTable roles={query.data} mutations={mutations} />
       )}

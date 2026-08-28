@@ -73,7 +73,7 @@ function BroadcastDialog({
           setAudience("all")
           setUniversityId("")
         },
-      },
+      }
     )
   }
 
@@ -86,7 +86,11 @@ function BroadcastDialog({
         </DialogHeader>
         <Field>
           <FieldLabel>Title</FieldLabel>
-          <Input value={title} onChange={(event) => setTitle(event.target.value)} maxLength={200} />
+          <Input
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            maxLength={200}
+          />
         </Field>
         <Field>
           <FieldLabel>Message</FieldLabel>
@@ -100,7 +104,10 @@ function BroadcastDialog({
         <div className="flex gap-3">
           <Field className="flex-1">
             <FieldLabel>Audience</FieldLabel>
-            <Select value={audience} onValueChange={(value) => value && setAudience(value as never)}>
+            <Select
+              value={audience}
+              onValueChange={(value) => value && setAudience(value as never)}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -113,7 +120,10 @@ function BroadcastDialog({
           {audience === "campus" && (
             <Field className="flex-1">
               <FieldLabel>Campus</FieldLabel>
-              <Select value={universityId} onValueChange={(value) => value && setUniversityId(value)}>
+              <Select
+                value={universityId}
+                onValueChange={(value) => value && setUniversityId(value)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
@@ -130,7 +140,10 @@ function BroadcastDialog({
         </div>
         <DialogFooter>
           <DialogClose render={<Button variant="ghost">Cancel</Button>} />
-          <Button disabled={!valid || mutations.create.isPending} onClick={submit}>
+          <Button
+            disabled={!valid || mutations.create.isPending}
+            onClick={submit}
+          >
             Broadcast
           </Button>
         </DialogFooter>
@@ -141,19 +154,20 @@ function BroadcastDialog({
 
 export function AnnouncementsTable({
   data,
-  params,
   onParams,
   universities,
   mutations,
 }: {
   data: Paginated<AdminAnnouncement>
-  params: ListAnnouncementsParams
   onParams: (patch: Partial<ListAnnouncementsParams>) => void
   universities: AdminUniversity[]
   mutations: Mutations
 }) {
   const campusName = (id: string | null) =>
-    id ? (universities.find((university) => university.id === id)?.acronym ?? "campus") : "Everyone"
+    id
+      ? (universities.find((university) => university.id === id)?.acronym ??
+        "campus")
+      : "Everyone"
 
   return (
     <div className="flex flex-col gap-4">
@@ -172,7 +186,10 @@ export function AnnouncementsTable({
         <TableBody>
           {data.items.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={4} className="text-muted-foreground py-10 text-center text-sm">
+              <TableCell
+                colSpan={4}
+                className="py-10 text-center text-sm text-muted-foreground"
+              >
                 No announcements yet.
               </TableCell>
             </TableRow>
@@ -181,16 +198,20 @@ export function AnnouncementsTable({
               <TableRow key={announcement.id}>
                 <TableCell className="max-w-md">
                   <div className="font-medium">{announcement.title}</div>
-                  <div className="text-muted-foreground truncate text-xs">
+                  <div className="truncate text-xs text-muted-foreground">
                     {announcement.message}
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={announcement.university_id ? "secondary" : "outline"}>
+                  <Badge
+                    variant={
+                      announcement.university_id ? "secondary" : "outline"
+                    }
+                  >
                     {campusName(announcement.university_id)}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-muted-foreground text-sm">
+                <TableCell className="text-sm text-muted-foreground">
                   {formatDate(announcement.created_at)}
                 </TableCell>
                 <TableCell className="text-right">

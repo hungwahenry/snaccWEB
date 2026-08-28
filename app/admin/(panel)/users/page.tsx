@@ -8,7 +8,10 @@ import { useUsers } from "@/features/admin/users/use-users"
 import type { ListUsersParams } from "@/features/admin/users/types"
 
 export default function UsersPage() {
-  const [params, setParams] = useState<ListUsersParams>({ page: 1, perPage: 20 })
+  const [params, setParams] = useState<ListUsersParams>({
+    page: 1,
+    perPage: 20,
+  })
   const query = useUsers(params)
 
   function patch(next: Partial<ListUsersParams>) {
@@ -17,13 +20,18 @@ export default function UsersPage() {
 
   return (
     <>
-      <PageHeader title="Users" description="Search, inspect and moderate accounts." />
+      <PageHeader
+        title="Users"
+        description="Search, inspect and moderate accounts."
+      />
       {query.isPending ? (
         <div className="flex justify-center py-24">
           <Spinner />
         </div>
       ) : query.isError || !query.data ? (
-        <p className="text-muted-foreground text-sm">Couldn&apos;t load users.</p>
+        <p className="text-sm text-muted-foreground">
+          Couldn&apos;t load users.
+        </p>
       ) : (
         <UsersTable data={query.data} params={params} onParams={patch} />
       )}

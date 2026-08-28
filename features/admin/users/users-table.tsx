@@ -44,7 +44,11 @@ export function UsersTable({
 
   const roleValue = params.role ?? "all"
   const statusValue =
-    params.suspended === true ? "suspended" : params.suspended === false ? "active" : "all"
+    params.suspended === true
+      ? "suspended"
+      : params.suspended === false
+        ? "active"
+        : "all"
 
   return (
     <div className="flex flex-col gap-4">
@@ -66,7 +70,10 @@ export function UsersTable({
         <Select
           value={roleValue}
           onValueChange={(value) =>
-            onParams({ role: value && value !== "all" ? value : undefined, page: 1 })
+            onParams({
+              role: value && value !== "all" ? value : undefined,
+              page: 1,
+            })
           }
         >
           <SelectTrigger className="w-36">
@@ -82,7 +89,8 @@ export function UsersTable({
           value={statusValue}
           onValueChange={(value) =>
             onParams({
-              suspended: !value || value === "all" ? undefined : value === "suspended",
+              suspended:
+                !value || value === "all" ? undefined : value === "suspended",
               page: 1,
             })
           }
@@ -112,7 +120,10 @@ export function UsersTable({
         <TableBody>
           {data.items.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className="text-muted-foreground py-10 text-center text-sm">
+              <TableCell
+                colSpan={6}
+                className="py-10 text-center text-sm text-muted-foreground"
+              >
                 No users match these filters.
               </TableCell>
             </TableRow>
@@ -133,13 +144,13 @@ export function UsersTable({
                       <div className="truncate font-medium">
                         {user.display_name ?? "—"}
                       </div>
-                      <div className="text-muted-foreground truncate text-xs">
+                      <div className="truncate text-xs text-muted-foreground">
                         {user.username ? `@${user.username}` : user.email}
                       </div>
                     </div>
                   </div>
                 </TableCell>
-                <TableCell className="text-muted-foreground text-sm">
+                <TableCell className="text-sm text-muted-foreground">
                   {user.university?.acronym ?? "—"}
                 </TableCell>
                 <TableCell className="text-right tabular-nums">
@@ -159,7 +170,7 @@ export function UsersTable({
                     <Badge variant="secondary">active</Badge>
                   )}
                 </TableCell>
-                <TableCell className="text-muted-foreground text-sm">
+                <TableCell className="text-sm text-muted-foreground">
                   {formatDate(user.created_at)}
                 </TableCell>
               </TableRow>

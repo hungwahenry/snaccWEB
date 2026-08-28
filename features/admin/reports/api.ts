@@ -8,7 +8,10 @@ import type {
 } from "./types"
 
 export function listReports(params: ListReportsParams) {
-  return api.get<Paginated<AdminReport>>("/admin/reports", params as QueryParams)
+  return api.get<Paginated<AdminReport>>(
+    "/admin/reports",
+    params as QueryParams
+  )
 }
 
 export function getReport(id: string) {

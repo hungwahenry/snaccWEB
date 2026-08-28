@@ -22,7 +22,11 @@ import {
 } from "@/components/ui/table"
 import { formatDate, formatNaira } from "@/lib/format"
 import type { Paginated } from "@/lib/api/types"
-import type { AdminWithdrawal, ListWithdrawalsParams, WithdrawalStatus } from "./types"
+import type {
+  AdminWithdrawal,
+  ListWithdrawalsParams,
+  WithdrawalStatus,
+} from "./types"
 
 export const STATUS_VARIANT: Record<
   WithdrawalStatus,
@@ -67,7 +71,10 @@ export function WithdrawalsTable({
         <Select
           value={params.status ?? "all"}
           onValueChange={(value) =>
-            onParams({ status: !value || value === "all" ? undefined : (value as never), page: 1 })
+            onParams({
+              status: !value || value === "all" ? undefined : (value as never),
+              page: 1,
+            })
           }
         >
           <SelectTrigger className="w-40">
@@ -97,7 +104,10 @@ export function WithdrawalsTable({
         <TableBody>
           {data.items.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className="text-muted-foreground py-10 text-center text-sm">
+              <TableCell
+                colSpan={5}
+                className="py-10 text-center text-sm text-muted-foreground"
+              >
                 No withdrawals match these filters.
               </TableCell>
             </TableRow>
@@ -106,9 +116,13 @@ export function WithdrawalsTable({
               <TableRow
                 key={withdrawal.id}
                 className="cursor-pointer"
-                onClick={() => router.push(`/admin/withdrawals/${withdrawal.id}`)}
+                onClick={() =>
+                  router.push(`/admin/withdrawals/${withdrawal.id}`)
+                }
               >
-                <TableCell className="font-mono text-xs">{withdrawal.reference}</TableCell>
+                <TableCell className="font-mono text-xs">
+                  {withdrawal.reference}
+                </TableCell>
                 <TableCell className="text-sm">
                   {withdrawal.user.username
                     ? `@${withdrawal.user.username}`
@@ -118,9 +132,11 @@ export function WithdrawalsTable({
                   {formatNaira(withdrawal.amount)}
                 </TableCell>
                 <TableCell>
-                  <Badge variant={STATUS_VARIANT[withdrawal.status]}>{withdrawal.status}</Badge>
+                  <Badge variant={STATUS_VARIANT[withdrawal.status]}>
+                    {withdrawal.status}
+                  </Badge>
                 </TableCell>
-                <TableCell className="text-muted-foreground text-sm">
+                <TableCell className="text-sm text-muted-foreground">
                   {formatDate(withdrawal.created_at)}
                 </TableCell>
               </TableRow>

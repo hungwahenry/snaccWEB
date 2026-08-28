@@ -4,10 +4,20 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp"
 import { getErrorMessage } from "@/lib/api/errors"
 import { useLogin, useSendOtp } from "../hooks/use-auth"
 
@@ -34,16 +44,20 @@ export function LoginForm() {
       {
         onSuccess: () => router.replace("/admin"),
         onError: (error) => toast.error(getErrorMessage(error)),
-      },
+      }
     )
   }
 
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
-        <CardTitle className="text-2xl font-semibold tracking-tight">Snacc Admin</CardTitle>
+        <CardTitle className="text-2xl font-semibold tracking-tight">
+          Snacc Admin
+        </CardTitle>
         <CardDescription>
-          {sent ? `Enter the 6-digit code sent to ${email}` : "Sign in with your administrator email"}
+          {sent
+            ? `Enter the 6-digit code sent to ${email}`
+            : "Sign in with your administrator email"}
         </CardDescription>
       </CardHeader>
       <CardContent>

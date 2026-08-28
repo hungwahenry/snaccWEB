@@ -9,7 +9,8 @@ import { hasAdminAccess } from "@/lib/permissions"
 export function AuthGuard({ children }: { children: ReactNode }) {
   const router = useRouter()
   const me = useMe()
-  const denied = me.isError || (!!me.data && !hasAdminAccess(me.data.permissions))
+  const denied =
+    me.isError || (!!me.data && !hasAdminAccess(me.data.permissions))
 
   useEffect(() => {
     if (denied) router.replace("/admin/login")

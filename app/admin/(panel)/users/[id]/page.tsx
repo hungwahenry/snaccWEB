@@ -7,14 +7,23 @@ import { Spinner } from "@/components/ui/spinner"
 import { UserDetail } from "@/features/admin/users/user-detail"
 import { useUser, useUserMutations } from "@/features/admin/users/use-users"
 
-export default function UserDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function UserDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
   const { id } = use(params)
   const query = useUser(id)
   const actions = useUserMutations(id)
 
   return (
     <>
-      <Button variant="ghost" size="sm" className="mb-4 w-fit" render={<Link href="/admin/users" />}>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="mb-4 w-fit"
+        render={<Link href="/admin/users" />}
+      >
         ← Back to users
       </Button>
       {query.isPending ? (
@@ -22,7 +31,9 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
           <Spinner />
         </div>
       ) : query.isError || !query.data ? (
-        <p className="text-muted-foreground text-sm">Couldn&apos;t load this user.</p>
+        <p className="text-sm text-muted-foreground">
+          Couldn&apos;t load this user.
+        </p>
       ) : (
         <UserDetail user={query.data} actions={actions} />
       )}

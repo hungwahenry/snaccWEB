@@ -1,5 +1,11 @@
 import { api } from "@/lib/api/client"
-import type { AdminGrant, AdminPermission, AdminRole, CreateRoleInput, UpdateRoleInput } from "./types"
+import type {
+  AdminGrant,
+  AdminPermission,
+  AdminRole,
+  CreateRoleInput,
+  UpdateRoleInput,
+} from "./types"
 
 export function listRoles() {
   return api.get<AdminRole[]>("/admin/roles")

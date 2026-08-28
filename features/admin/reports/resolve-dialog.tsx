@@ -44,7 +44,8 @@ function actChoicesFor(target: AdminReport["target"]) {
       { value: "delete_snacc", label: "Remove the snacc" },
       { value: "suspend_author", label: "Suspend the author" },
     ]
-  if (target?.type === "user") return [{ value: "suspend_user", label: "Suspend the user" }]
+  if (target?.type === "user")
+    return [{ value: "suspend_user", label: "Suspend the user" }]
   if (target?.type === "message")
     return [
       { value: "delete_message", label: "Remove the message" },
@@ -81,12 +82,15 @@ export function ResolveDialog({
   const target = report.target
   const noun = target ? TARGET_NOUN[target.type] : "target"
   const actChoices = actChoicesFor(target)
-  const threadId = target?.type === "message" ? target.message.conversation.id : null
+  const threadId =
+    target?.type === "message" ? target.message.conversation.id : null
   const suspending = acts.some((act) => SUSPEND_ACTS.includes(act))
 
   function toggleAct(value: string) {
     setActs((current) =>
-      current.includes(value) ? current.filter((act) => act !== value) : [...current, value],
+      current.includes(value)
+        ? current.filter((act) => act !== value)
+        : [...current, value]
     )
   }
 
@@ -115,7 +119,7 @@ export function ResolveDialog({
         <DialogHeader>
           <DialogTitle>Resolve reports</DialogTitle>
         </DialogHeader>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Resolves every open report on this {noun} together.
         </p>
         {threadId ? (
@@ -128,7 +132,10 @@ export function ResolveDialog({
         ) : null}
         <Field>
           <FieldLabel>Outcome</FieldLabel>
-          <Select value={status} onValueChange={(value) => value && setStatus(value as never)}>
+          <Select
+            value={status}
+            onValueChange={(value) => value && setStatus(value as never)}
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -160,7 +167,9 @@ export function ResolveDialog({
             </div>
           </Field>
         )}
-        {suspending ? <SuspensionFields value={draft} onChange={setDraft} /> : null}
+        {suspending ? (
+          <SuspensionFields value={draft} onChange={setDraft} />
+        ) : null}
         <Field>
           <FieldLabel>Note (optional)</FieldLabel>
           <Textarea

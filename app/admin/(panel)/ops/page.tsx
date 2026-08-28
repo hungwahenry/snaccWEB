@@ -51,6 +51,15 @@ const DRIFT_LABELS: Record<string, string> = {
   resnaccs_count: "Resnaccs per snacc",
   views_count: "Views per snacc",
   comments_count: "Comments per snacc",
+  quotes_count: "Quotes per snacc",
+  bookmarks_count: "Bookmarks per snacc",
+  hides_count: "Hides per snacc",
+  reports_count: "Reports per snacc",
+  opens_count: "Opens per snacc",
+  dwell_ms_total: "Dwell time per snacc",
+  shares_count: "Shares per snacc",
+  author_taps_count: "Author taps per snacc",
+  wallet_balances: "Wallet balances vs ledger",
 }
 
 export default function OpsPage() {
@@ -64,6 +73,7 @@ export default function OpsPage() {
         ...Object.entries(drift.data.profiles),
         ...Object.entries(drift.data.scores),
         ...Object.entries(drift.data.snaccs),
+        ["wallet_balances", drift.data.wallets.accounts] as [string, number],
       ].filter(([, off]) => off > 0)
     : []
 
@@ -71,7 +81,7 @@ export default function OpsPage() {
     <>
       <PageHeader
         title="Ops & maintenance"
-        description="System health, background jobs, and data reconciliation."
+        description="System health, background jobs, and whether the data still adds up."
       />
       <div className="flex flex-col gap-6">
         <Card>
@@ -205,19 +215,22 @@ export default function OpsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-base">Counter reconciliation</CardTitle>
+            <CardTitle className="text-base">Drift</CardTitle>
             <Button
               size="sm"
-              disabled={mutations.reconcile.isPending}
-              onClick={() => mutations.reconcile.mutate()}
+              variant="outline"
+              disabled={mutations.repair.isPending}
+              onClick={() => mutations.repair.mutate()}
             >
-              {mutations.reconcile.isPending ? "Reconciling…" : "Run reconcile"}
+              {mutations.repair.isPending ? "Repairing…" : "Repair now"}
             </Button>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <p className="text-sm text-muted-foreground">
-              Denormalized counts self-heal nightly (04:00 WAT) and write only
-              rows that have drifted. Run manually if something looks off.
+              A nightly check (04:00 WAT) reads these and raises an alarm if any
+              is non-zero. Nothing repairs them on a schedule — a counter that
+              heals itself overnight hides the bug that moved it. Repair by hand
+              once you know what did.
             </p>
             {drift.isPending ? (
               <div className="flex justify-center py-6">
@@ -227,7 +240,7 @@ export default function OpsPage() {
               <p className="text-sm">
                 <Badge variant="secondary">in sync</Badge>{" "}
                 <span className="text-muted-foreground">
-                  Every counter matches its source.
+                  Every counter, score and balance matches its source.
                 </span>
               </p>
             ) : (

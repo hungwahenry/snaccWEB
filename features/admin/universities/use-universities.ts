@@ -1,6 +1,11 @@
 "use client"
 
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/api/errors"
 import { MINUTE_MS } from "@/lib/duration"
@@ -50,8 +55,13 @@ export function useUniversityMutations() {
       onError,
     }),
     update: useMutation({
-      mutationFn: ({ id, input }: { id: string; input: UpdateUniversityInput }) =>
-        updateUniversity(id, input),
+      mutationFn: ({
+        id,
+        input,
+      }: {
+        id: string
+        input: UpdateUniversityInput
+      }) => updateUniversity(id, input),
       onSuccess: onSuccess("University updated."),
       onError,
     }),

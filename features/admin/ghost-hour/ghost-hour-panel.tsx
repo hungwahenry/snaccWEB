@@ -33,7 +33,9 @@ function OpenDialog({
 
   const parsed = Number(minutes)
   const value =
-    minutes.trim() !== "" && Number.isFinite(parsed) && parsed > 0 ? Math.round(parsed) : undefined
+    minutes.trim() !== "" && Number.isFinite(parsed) && parsed > 0
+      ? Math.round(parsed)
+      : undefined
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -42,9 +44,10 @@ function OpenDialog({
         <DialogHeader>
           <DialogTitle>Open Ghost Hour</DialogTitle>
         </DialogHeader>
-        <p className="text-muted-foreground text-sm">
-          This broadcasts a push to <span className="text-foreground font-medium">every device</span>{" "}
-          and turns on anonymous posting for the window.
+        <p className="text-sm text-muted-foreground">
+          This broadcasts a push to{" "}
+          <span className="font-medium text-foreground">every device</span> and
+          turns on anonymous posting for the window.
         </p>
         <Field>
           <FieldLabel>Window length (minutes, optional)</FieldLabel>
@@ -57,7 +60,10 @@ function OpenDialog({
         </Field>
         <DialogFooter>
           <DialogClose render={<Button variant="ghost">Cancel</Button>} />
-          <Button disabled={pending} onClick={() => onOpen(value, () => setOpen(false))}>
+          <Button
+            disabled={pending}
+            onClick={() => onOpen(value, () => setOpen(false))}
+          >
             Open now
           </Button>
         </DialogFooter>
@@ -79,7 +85,11 @@ export function GhostHourPanel() {
   }
 
   if (query.isError || !query.data) {
-    return <p className="text-muted-foreground text-sm">Couldn&apos;t load Ghost Hour state.</p>
+    return (
+      <p className="text-sm text-muted-foreground">
+        Couldn&apos;t load Ghost Hour state.
+      </p>
+    )
   }
 
   const state = query.data
@@ -89,12 +99,17 @@ export function GhostHourPanel() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           Ghost Hour
-          {state.active ? <Badge>live</Badge> : <Badge variant="outline">idle</Badge>}
+          {state.active ? (
+            <Badge>live</Badge>
+          ) : (
+            <Badge variant="outline">idle</Badge>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <p className="text-muted-foreground text-sm">
-          Open an anonymous window on demand. Default length {state.window_minutes} min.
+        <p className="text-sm text-muted-foreground">
+          Open an anonymous window on demand. Default length{" "}
+          {state.window_minutes} min.
         </p>
 
         <div className="text-sm">
@@ -121,7 +136,9 @@ export function GhostHourPanel() {
             <OpenDialog
               defaultMinutes={state.window_minutes}
               pending={actions.open.isPending}
-              onOpen={(minutes, close) => actions.open.mutate(minutes, { onSuccess: close })}
+              onOpen={(minutes, close) =>
+                actions.open.mutate(minutes, { onSuccess: close })
+              }
             />
           </div>
         )}

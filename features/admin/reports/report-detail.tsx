@@ -8,7 +8,10 @@ import { ReportedContent } from "./reported-content"
 import { ResolveDialog } from "./resolve-dialog"
 import type { AdminReport, AdminReportDetail } from "./types"
 
-const STATUS_VARIANT: Record<AdminReport["status"], "secondary" | "default" | "outline"> = {
+const STATUS_VARIANT: Record<
+  AdminReport["status"],
+  "secondary" | "default" | "outline"
+> = {
   open: "secondary",
   actioned: "default",
   dismissed: "outline",
@@ -16,19 +19,21 @@ const STATUS_VARIANT: Record<AdminReport["status"], "secondary" | "default" | "o
 
 function Filing({ report }: { report: AdminReport }) {
   return (
-    <div className="border-border flex flex-col gap-1 border-b py-3 last:border-b-0">
+    <div className="flex flex-col gap-1 border-b border-border py-3 last:border-b-0">
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-sm font-medium">{report.reason.label}</span>
         <Badge variant={STATUS_VARIANT[report.status]}>{report.status}</Badge>
-        <span className="text-muted-foreground text-xs">
+        <span className="text-xs text-muted-foreground">
           {handleOf(report.reporter)} · {formatDate(report.created_at)}
         </span>
       </div>
       {report.detail ? (
-        <p className="text-muted-foreground text-sm">“{report.detail}”</p>
+        <p className="text-sm text-muted-foreground">“{report.detail}”</p>
       ) : null}
       {report.resolution_note ? (
-        <p className="text-muted-foreground text-xs">Note: {report.resolution_note}</p>
+        <p className="text-xs text-muted-foreground">
+          Note: {report.resolution_note}
+        </p>
       ) : null}
     </div>
   )
@@ -41,20 +46,24 @@ export function ReportDetail({
   report: AdminReportDetail
   resolve: ReturnType<typeof useResolveReport>
 }) {
-  const open = [report, ...report.siblings].filter((each) => each.status === "open").length
+  const open = [report, ...report.siblings].filter(
+    (each) => each.status === "open"
+  ).length
 
   return (
     <div className="flex flex-col gap-4">
       <ReportedContent report={report} />
 
       <Card>
-        <CardHeader className="flex-row items-center justify-between gap-2">
+        <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <CardTitle className="text-base">
             {report.siblings.length > 0
               ? `${report.siblings.length + 1} reports on this target`
               : "The report"}
           </CardTitle>
-          {open > 0 ? <ResolveDialog report={report} resolve={resolve} /> : null}
+          {open > 0 ? (
+            <ResolveDialog report={report} resolve={resolve} />
+          ) : null}
         </CardHeader>
         <CardContent>
           <Filing report={report} />
@@ -62,7 +71,7 @@ export function ReportDetail({
             <Filing key={sibling.id} report={sibling} />
           ))}
           {open > 0 ? (
-            <p className="text-muted-foreground pt-3 text-xs">
+            <p className="pt-3 text-xs text-muted-foreground">
               Resolving acts on the target and closes all {open} open{" "}
               {open === 1 ? "report" : "reports"} at once.
             </p>
@@ -75,7 +84,7 @@ export function ReportDetail({
           <CardHeader>
             <CardTitle className="text-base">Review</CardTitle>
           </CardHeader>
-          <CardContent className="text-muted-foreground text-sm">
+          <CardContent className="text-sm text-muted-foreground">
             Resolved by {handleOf(report.reviewed_by)}
             {report.reviewed_at ? ` on ${formatDate(report.reviewed_at)}` : ""}.
           </CardContent>

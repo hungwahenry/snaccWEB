@@ -14,9 +14,12 @@ export interface PublicPage {
 
 export async function getPublicPage(slug: string): Promise<PublicPage | null> {
   try {
-    const res = await fetch(`${API_URL}/api/v1/pages/${encodeURIComponent(slug)}`, {
-      next: { revalidate: 300 },
-    })
+    const res = await fetch(
+      `${API_URL}/api/v1/pages/${encodeURIComponent(slug)}`,
+      {
+        next: { revalidate: 300 },
+      }
+    )
     if (!res.ok) return null
     const json = (await res.json()) as { data: PublicPage }
     return json.data
@@ -33,7 +36,9 @@ export interface PublicPageSummary {
 
 export async function getPublicPages(): Promise<PublicPageSummary[]> {
   try {
-    const res = await fetch(`${API_URL}/api/v1/pages`, { next: { revalidate: 3600 } })
+    const res = await fetch(`${API_URL}/api/v1/pages`, {
+      next: { revalidate: 3600 },
+    })
     if (!res.ok) return []
     const json = (await res.json()) as { data: PublicPageSummary[] }
     return json.data ?? []

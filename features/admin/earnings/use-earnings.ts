@@ -1,6 +1,11 @@
 "use client"
 
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/api/errors"
 import { adjustFund, listEarnings, listFunds, provisionFund } from "./api"
@@ -38,8 +43,13 @@ export function useFundMutations() {
       onError,
     }),
     adjust: useMutation({
-      mutationFn: ({ universityId, cap }: { universityId: string; cap: number }) =>
-        adjustFund(universityId, cap),
+      mutationFn: ({
+        universityId,
+        cap,
+      }: {
+        universityId: string
+        cap: number
+      }) => adjustFund(universityId, cap),
       onSuccess: onSuccess("Cap adjusted."),
       onError,
     }),

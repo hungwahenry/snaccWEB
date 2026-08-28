@@ -40,7 +40,10 @@ export function longDate(iso: string): string {
 }
 
 export function timeAgo(iso: string): string {
-  const secs = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 1000))
+  const secs = Math.max(
+    0,
+    Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
+  )
   if (secs < 60) return `${secs}s`
   const mins = Math.floor(secs / 60)
   if (mins < 60) return `${mins}m`
@@ -62,10 +65,15 @@ export function formatDate(iso: string | null): string {
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
-    }),
+    })
   )
 }
 
-export function handleOf(author: { username: string | null; display_name: string | null }): string {
-  return author.username ? `@${author.username}` : (author.display_name ?? "unknown")
+export function handleOf(author: {
+  username: string | null
+  display_name: string | null
+}): string {
+  return author.username
+    ? `@${author.username}`
+    : (author.display_name ?? "unknown")
 }

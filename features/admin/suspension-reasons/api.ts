@@ -13,6 +13,9 @@ export function createSuspensionReason(input: CreateSuspensionReasonInput) {
   return api.post<SuspensionReason>("/admin/suspension-reasons", input)
 }
 
-export function updateSuspensionReason(id: string, input: UpdateSuspensionReasonInput) {
+export function updateSuspensionReason(
+  id: string,
+  input: UpdateSuspensionReasonInput
+) {
   return api.patch<SuspensionReason>(`/admin/suspension-reasons/${id}`, input)
 }

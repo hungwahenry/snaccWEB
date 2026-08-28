@@ -10,7 +10,7 @@ import type {
 export function listConversations(params: ListConversationsParams) {
   return api.get<Paginated<AdminConversationRow>>(
     "/admin/messages/conversations",
-    params as QueryParams,
+    params as QueryParams
   )
 }
 
@@ -19,7 +19,10 @@ export function getConversation(id: string) {
 }
 
 export function deleteMessage(id: string, reason?: string) {
-  return api.del<AdminThreadMessage>(`/admin/messages/${id}`, reason ? { reason } : undefined)
+  return api.del<AdminThreadMessage>(
+    `/admin/messages/${id}`,
+    reason ? { reason } : undefined
+  )
 }
 
 export function restoreMessage(id: string) {

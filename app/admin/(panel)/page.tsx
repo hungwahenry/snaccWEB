@@ -38,7 +38,9 @@ export default function DashboardPage() {
           <Spinner />
         </div>
       ) : query.isError || !query.data ? (
-        <p className="text-muted-foreground text-sm">Couldn&apos;t load metrics.</p>
+        <p className="text-sm text-muted-foreground">
+          Couldn&apos;t load metrics.
+        </p>
       ) : (
         <DashboardView metrics={query.data} />
       )}

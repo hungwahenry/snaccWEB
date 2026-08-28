@@ -27,8 +27,10 @@ export function StoreBanner() {
   return (
     <a
       href={store.href}
-      className={`bg-foreground text-background fixed inset-x-4 bottom-4 z-50 mx-auto flex max-w-md items-center justify-center rounded-2xl px-5 py-3.5 text-sm font-semibold shadow-lg transition-all duration-300 ${
-        shown ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
+      className={`fixed inset-x-4 bottom-4 z-50 mx-auto flex max-w-md items-center justify-center rounded-2xl bg-foreground px-5 py-3.5 text-sm font-semibold text-background shadow-lg transition-all duration-300 ${
+        shown
+          ? "translate-y-0 opacity-100"
+          : "pointer-events-none translate-y-4 opacity-0"
       }`}
     >
       {store.label}

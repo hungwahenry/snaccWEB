@@ -17,8 +17,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useLogout, useMe } from "@/features/admin/auth/hooks/use-auth"
-import { NAV } from "@/lib/nav"
-import { can } from "@/lib/permissions"
+import { visibleNav } from "@/lib/nav"
 
 export function AppSidebar() {
   const pathname = usePathname()
@@ -26,10 +25,7 @@ export function AppSidebar() {
   const logout = useLogout()
   const me = useMe()
 
-  const sections = NAV.map((section) => ({
-    ...section,
-    items: section.items.filter((item) => can(me.data?.permissions, item.permission)),
-  })).filter((section) => section.items.length > 0)
+  const sections = visibleNav(me.data?.permissions)
 
   function isActive(href: string) {
     return href === "/admin" ? pathname === "/admin" : pathname.startsWith(href)
@@ -50,7 +46,10 @@ export function AppSidebar() {
               <SidebarMenu>
                 {section.items.map((item) => (
                   <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton isActive={isActive(item.href)} render={<Link href={item.href} />}>
+                    <SidebarMenuButton
+                      isActive={isActive(item.href)}
+                      render={<Link href={item.href} />}
+                    >
                       <item.icon />
                       <span>{item.label}</span>
                     </SidebarMenuButton>
@@ -66,7 +65,11 @@ export function AppSidebar() {
           variant="ghost"
           size="sm"
           className="justify-start"
-          onClick={() => logout.mutate(undefined, { onSuccess: () => router.replace("/admin/login") })}
+          onClick={() =>
+            logout.mutate(undefined, {
+              onSuccess: () => router.replace("/admin/login"),
+            })
+          }
         >
           <LogOut />
           Log out

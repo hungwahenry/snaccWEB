@@ -7,14 +7,23 @@ import { Spinner } from "@/components/ui/spinner"
 import { PageEditor } from "@/features/admin/pages/page-editor"
 import { usePage, usePageMutations } from "@/features/admin/pages/use-pages"
 
-export default function EditPagePage({ params }: { params: Promise<{ id: string }> }) {
+export default function EditPagePage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
   const { id } = use(params)
   const query = usePage(id)
   const mutations = usePageMutations(id)
 
   return (
     <>
-      <Button variant="ghost" size="sm" className="mb-4 w-fit" render={<Link href="/admin/pages" />}>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="mb-4 w-fit"
+        render={<Link href="/admin/pages" />}
+      >
         ← Back to pages
       </Button>
       {query.isPending ? (
@@ -22,7 +31,9 @@ export default function EditPagePage({ params }: { params: Promise<{ id: string 
           <Spinner />
         </div>
       ) : query.isError || !query.data ? (
-        <p className="text-muted-foreground text-sm">Couldn&apos;t load this page.</p>
+        <p className="text-sm text-muted-foreground">
+          Couldn&apos;t load this page.
+        </p>
       ) : (
         <PageEditor page={query.data} mutations={mutations} />
       )}

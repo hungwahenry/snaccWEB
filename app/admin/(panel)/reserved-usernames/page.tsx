@@ -25,7 +25,9 @@ export default function ReservedUsernamesPage() {
           <Spinner />
         </div>
       ) : query.isError || !query.data ? (
-        <p className="text-muted-foreground text-sm">Couldn&apos;t load held names.</p>
+        <p className="text-sm text-muted-foreground">
+          Couldn&apos;t load held names.
+        </p>
       ) : (
         <ReservedUsernamesTable
           names={query.data}

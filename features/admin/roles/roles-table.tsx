@@ -43,14 +43,25 @@ function RoleDialog({
   const [description, setDescription] = useState(role?.description ?? "")
 
   const editing = Boolean(role)
-  const valid = editing ? name.trim() !== "" : slug.trim() !== "" && name.trim() !== ""
+  const valid = editing
+    ? name.trim() !== ""
+    : slug.trim() !== "" && name.trim() !== ""
 
   function save() {
-    const meta = { name: name.trim(), description: description.trim() || undefined }
+    const meta = {
+      name: name.trim(),
+      description: description.trim() || undefined,
+    }
     if (editing && role) {
-      mutations.update.mutate({ id: role.id, input: meta }, { onSuccess: () => setOpen(false) })
+      mutations.update.mutate(
+        { id: role.id, input: meta },
+        { onSuccess: () => setOpen(false) }
+      )
     } else {
-      mutations.create.mutate({ slug: slug.trim(), ...meta }, { onSuccess: () => setOpen(false) })
+      mutations.create.mutate(
+        { slug: slug.trim(), ...meta },
+        { onSuccess: () => setOpen(false) }
+      )
     }
   }
 
@@ -92,7 +103,9 @@ function RoleDialog({
         <DialogFooter>
           <DialogClose render={<Button variant="ghost">Cancel</Button>} />
           <Button
-            disabled={!valid || mutations.create.isPending || mutations.update.isPending}
+            disabled={
+              !valid || mutations.create.isPending || mutations.update.isPending
+            }
             onClick={save}
           >
             Save
@@ -115,7 +128,9 @@ function PermissionsDialog({
   trigger: React.ReactElement
 }) {
   const [open, setOpen] = useState(false)
-  const [checked, setChecked] = useState<Set<string>>(new Set(role.permission_keys))
+  const [checked, setChecked] = useState<Set<string>>(
+    new Set(role.permission_keys)
+  )
 
   function onOpenChange(next: boolean) {
     // Re-seed the checklist from the role's current permissions each time it opens.
@@ -145,7 +160,7 @@ function PermissionsDialog({
   function save() {
     mutations.setPermissions.mutate(
       { id: role.id, keys: [...checked] },
-      { onSuccess: () => setOpen(false) },
+      { onSuccess: () => setOpen(false) }
     )
   }
 
@@ -159,7 +174,9 @@ function PermissionsDialog({
         <div className="flex flex-col gap-4">
           {grouped.map(([resource, permissions]) => (
             <div key={resource} className="flex flex-col gap-2">
-              <div className="text-muted-foreground text-xs font-semibold uppercase">{resource}</div>
+              <div className="text-xs font-semibold text-muted-foreground uppercase">
+                {resource}
+              </div>
               <div className="flex flex-col gap-1.5">
                 {permissions.map((permission) => (
                   <button
@@ -168,9 +185,17 @@ function PermissionsDialog({
                     onClick={() => toggle(permission.key)}
                     className="flex items-center gap-2.5 text-left text-sm"
                   >
-                    <Checkbox checked={checked.has(permission.key)} className="pointer-events-none" tabIndex={-1} />
-                    <span className="font-mono text-xs">{permission.action}</span>
-                    <span className="text-muted-foreground">{permission.description}</span>
+                    <Checkbox
+                      checked={checked.has(permission.key)}
+                      className="pointer-events-none"
+                      tabIndex={-1}
+                    />
+                    <span className="font-mono text-xs">
+                      {permission.action}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {permission.description}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -188,14 +213,23 @@ function PermissionsDialog({
   )
 }
 
-export function RolesTable({ roles, mutations }: { roles: AdminRole[]; mutations: Mutations }) {
+export function RolesTable({
+  roles,
+  mutations,
+}: {
+  roles: AdminRole[]
+  mutations: Mutations
+}) {
   const permissions = usePermissions()
   const catalog = permissions.data ?? []
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-end">
-        <RoleDialog mutations={mutations} trigger={<Button size="sm">New role</Button>} />
+        <RoleDialog
+          mutations={mutations}
+          trigger={<Button size="sm">New role</Button>}
+        />
       </div>
       <Table>
         <TableHeader>
@@ -211,9 +245,13 @@ export function RolesTable({ roles, mutations }: { roles: AdminRole[]; mutations
               <TableCell>
                 <div className="flex items-center gap-2 font-medium">
                   {role.name}
-                  {role.is_system ? <Badge variant="outline">system</Badge> : null}
+                  {role.is_system ? (
+                    <Badge variant="outline">system</Badge>
+                  ) : null}
                 </div>
-                <div className="text-muted-foreground font-mono text-xs">{role.slug}</div>
+                <div className="font-mono text-xs text-muted-foreground">
+                  {role.slug}
+                </div>
               </TableCell>
               <TableCell className="text-sm">
                 {role.allow_all

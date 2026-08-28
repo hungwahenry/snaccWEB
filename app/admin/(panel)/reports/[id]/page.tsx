@@ -5,9 +5,16 @@ import { use } from "react"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { ReportDetail } from "@/features/admin/reports/report-detail"
-import { useReport, useResolveReport } from "@/features/admin/reports/use-reports"
+import {
+  useReport,
+  useResolveReport,
+} from "@/features/admin/reports/use-reports"
 
-export default function ReportDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function ReportDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
   const { id } = use(params)
   const query = useReport(id)
   const resolve = useResolveReport()
@@ -27,7 +34,9 @@ export default function ReportDetailPage({ params }: { params: Promise<{ id: str
           <Spinner />
         </div>
       ) : query.isError || !query.data ? (
-        <p className="text-muted-foreground text-sm">Couldn&apos;t load this report.</p>
+        <p className="text-sm text-muted-foreground">
+          Couldn&apos;t load this report.
+        </p>
       ) : (
         <ReportDetail report={query.data} resolve={resolve} />
       )}

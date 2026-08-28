@@ -39,12 +39,15 @@ function ReasonDialog({
 }) {
   const [open, setOpen] = useState(false)
   const [slug, setSlug] = useState(reason?.slug ?? "")
-  const [title, setTitle] = useState(reason?.title ?? "Your account is suspended")
+  const [title, setTitle] = useState(
+    reason?.title ?? "Your account is suspended"
+  )
   const [description, setDescription] = useState(reason?.description ?? "")
   const [position, setPosition] = useState(String(reason?.position ?? 0))
 
   const editing = Boolean(reason)
-  const valid = slug.trim() !== "" && title.trim() !== "" && description.trim() !== ""
+  const valid =
+    slug.trim() !== "" && title.trim() !== "" && description.trim() !== ""
 
   function save() {
     const base = {
@@ -54,7 +57,10 @@ function ReasonDialog({
       position: Number(position) || 0,
     }
     if (editing && reason) {
-      mutations.update.mutate({ id: reason.id, input: base }, { onSuccess: () => setOpen(false) })
+      mutations.update.mutate(
+        { id: reason.id, input: base },
+        { onSuccess: () => setOpen(false) }
+      )
     } else {
       mutations.create.mutate(base, { onSuccess: () => setOpen(false) })
     }
@@ -103,14 +109,16 @@ function ReasonDialog({
             maxLength={500}
           />
         </Field>
-        <p className="text-muted-foreground text-xs">
-          Write it to them, not about them. This is the only screen a suspended user can reach, so
-          say what happened and what they can do next.
+        <p className="text-xs text-muted-foreground">
+          Write it to them, not about them. This is the only screen a suspended
+          user can reach, so say what happened and what they can do next.
         </p>
         <DialogFooter>
           <DialogClose render={<Button variant="ghost">Cancel</Button>} />
           <Button
-            disabled={!valid || mutations.create.isPending || mutations.update.isPending}
+            disabled={
+              !valid || mutations.create.isPending || mutations.update.isPending
+            }
             onClick={save}
           >
             Save
@@ -131,7 +139,10 @@ export function SuspensionReasonsTable({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-end">
-        <ReasonDialog mutations={mutations} trigger={<Button size="sm">Add reason</Button>} />
+        <ReasonDialog
+          mutations={mutations}
+          trigger={<Button size="sm">Add reason</Button>}
+        />
       </div>
       <Table>
         <TableHeader>
@@ -147,10 +158,12 @@ export function SuspensionReasonsTable({
               <TableCell className="font-medium">
                 <span className="inline-flex items-center gap-2">
                   {reason.slug}
-                  {reason.retired ? <Badge variant="outline">retired</Badge> : null}
+                  {reason.retired ? (
+                    <Badge variant="outline">retired</Badge>
+                  ) : null}
                 </span>
               </TableCell>
-              <TableCell className="text-muted-foreground max-w-lg text-sm">
+              <TableCell className="max-w-lg text-sm text-muted-foreground">
                 {reason.description}
               </TableCell>
               <TableCell className="text-right">

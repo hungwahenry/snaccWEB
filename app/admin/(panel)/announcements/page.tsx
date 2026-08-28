@@ -12,7 +12,10 @@ import { useAllUniversities } from "@/features/admin/universities/use-universiti
 import type { ListAnnouncementsParams } from "@/features/admin/announcements/types"
 
 export default function AnnouncementsPage() {
-  const [params, setParams] = useState<ListAnnouncementsParams>({ page: 1, perPage: 20 })
+  const [params, setParams] = useState<ListAnnouncementsParams>({
+    page: 1,
+    perPage: 20,
+  })
   const query = useAnnouncements(params)
   const universities = useAllUniversities()
   const mutations = useAnnouncementMutations()
@@ -23,17 +26,21 @@ export default function AnnouncementsPage() {
 
   return (
     <>
-      <PageHeader title="Announcements" description="Broadcast a notice to every campus or one." />
+      <PageHeader
+        title="Announcements"
+        description="Broadcast a notice to every campus or one."
+      />
       {query.isPending ? (
         <div className="flex justify-center py-24">
           <Spinner />
         </div>
       ) : query.isError || !query.data ? (
-        <p className="text-muted-foreground text-sm">Couldn&apos;t load announcements.</p>
+        <p className="text-sm text-muted-foreground">
+          Couldn&apos;t load announcements.
+        </p>
       ) : (
         <AnnouncementsTable
           data={query.data}
-          params={params}
           onParams={patch}
           universities={universities.data ?? []}
           mutations={mutations}

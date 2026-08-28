@@ -18,21 +18,39 @@ import { Field, FieldLabel } from "@/components/ui/field"
 import { Textarea } from "@/components/ui/textarea"
 import { formatDate, timeAgo, handleOf } from "@/lib/format"
 import type { useMessageModeration } from "./use-messages"
-import type { AdminConversationDetail, AdminThreadMessage, MessageAuthor } from "./types"
+import type {
+  AdminConversationDetail,
+  AdminThreadMessage,
+  MessageAuthor,
+} from "./types"
 
-function Party({ label, author, note }: { label: string; author: MessageAuthor; note?: string }) {
+function Party({
+  label,
+  author,
+  note,
+}: {
+  label: string
+  author: MessageAuthor
+  note?: string
+}) {
   return (
     <div className="flex items-center gap-3">
       <Avatar className="size-9">
         <AvatarImage src={author.avatar_url} alt="" />
         <AvatarFallback>
-          {(author.username ?? author.display_name ?? "?").charAt(0).toUpperCase()}
+          {(author.username ?? author.display_name ?? "?")
+            .charAt(0)
+            .toUpperCase()}
         </AvatarFallback>
       </Avatar>
       <div className="min-w-0">
-        <p className="text-muted-foreground text-xs uppercase tracking-wide">{label}</p>
+        <p className="text-xs tracking-wide text-muted-foreground uppercase">
+          {label}
+        </p>
         <p className="truncate text-sm font-semibold">{handleOf(author)}</p>
-        {note ? <p className="text-muted-foreground truncate text-xs">{note}</p> : null}
+        {note ? (
+          <p className="truncate text-xs text-muted-foreground">{note}</p>
+        ) : null}
       </div>
     </div>
   )
@@ -61,8 +79,9 @@ function DeleteMessageDialog({
         <DialogHeader>
           <DialogTitle>Remove this message?</DialogTitle>
         </DialogHeader>
-        <p className="text-muted-foreground text-sm">
-          It stays in the thread as a tombstone — both people see “This message was removed.”
+        <p className="text-sm text-muted-foreground">
+          It stays in the thread as a tombstone — both people see “This message
+          was removed.”
         </p>
         <Field>
           <FieldLabel>Reason (optional)</FieldLabel>
@@ -81,7 +100,7 @@ function DeleteMessageDialog({
             onClick={() =>
               actions.remove.mutate(
                 { id: message.id, reason: reason.trim() || undefined },
-                { onSuccess: () => setOpen(false) },
+                { onSuccess: () => setOpen(false) }
               )
             }
           >
@@ -106,7 +125,7 @@ function MessageRow({
   const isGhost = message.sender.id === ghostId
 
   return (
-    <div className="border-border/60 flex gap-3 border-b py-3 last:border-b-0">
+    <div className="flex gap-3 border-b border-border/60 py-3 last:border-b-0">
       <Avatar className="mt-0.5 size-8">
         <AvatarImage src={message.sender.avatar_url} alt="" />
         <AvatarFallback>
@@ -115,11 +134,15 @@ function MessageRow({
       </Avatar>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold">{handleOf(message.sender)}</span>
+          <span className="text-sm font-semibold">
+            {handleOf(message.sender)}
+          </span>
           <Badge variant="outline" className="text-[10px]">
             {isGhost ? "ghost" : "target"}
           </Badge>
-          <span className="text-muted-foreground text-xs">{timeAgo(message.created_at)}</span>
+          <span className="text-xs text-muted-foreground">
+            {timeAgo(message.created_at)}
+          </span>
           {removed ? (
             <Badge variant="secondary" className="text-[10px]">
               removed
@@ -128,12 +151,16 @@ function MessageRow({
         </div>
 
         {message.reply_to ? (
-          <p className="text-muted-foreground border-border mt-1 border-l-2 pl-2 text-xs italic">
-            {message.reply_to.removed ? "Removed message" : message.reply_to.body}
+          <p className="mt-1 border-l-2 border-border pl-2 text-xs text-muted-foreground italic">
+            {message.reply_to.removed
+              ? "Removed message"
+              : message.reply_to.body}
           </p>
         ) : null}
 
-        <p className={`mt-1 whitespace-pre-wrap text-sm ${removed ? "text-muted-foreground line-through" : ""}`}>
+        <p
+          className={`mt-1 text-sm whitespace-pre-wrap ${removed ? "text-muted-foreground line-through" : ""}`}
+        >
           {message.body}
         </p>
       </div>
@@ -171,10 +198,14 @@ export function ConversationThread({
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <div className="grid gap-4 sm:grid-cols-2">
-            <Party label="Ghost (initiator)" author={conversation.ghost} note={`Shown as “${conversation.pseudonym}”`} />
+            <Party
+              label="Ghost (initiator)"
+              author={conversation.ghost}
+              note={`Shown as “${conversation.pseudonym}”`}
+            />
             <Party label="Target" author={conversation.target} />
           </div>
-          <div className="text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 text-xs">
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
             <span>
               {conversation.revealed
                 ? `Revealed ${formatDate(conversation.revealed_at)}`
@@ -189,7 +220,9 @@ export function ConversationThread({
       <Card>
         <CardContent className="pt-6">
           {conversation.messages.length === 0 ? (
-            <p className="text-muted-foreground py-8 text-center text-sm">No messages.</p>
+            <p className="py-8 text-center text-sm text-muted-foreground">
+              No messages.
+            </p>
           ) : (
             conversation.messages.map((message) => (
               <MessageRow

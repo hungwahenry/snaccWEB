@@ -28,7 +28,9 @@ export function useGhostMutations() {
       mutationFn: (minutes?: number) => openGhostHour(minutes),
       onSuccess: (state) => {
         invalidate()
-        toast.success(`Ghost Hour opened — pushed to ${state.pushed ?? 0} device(s).`)
+        toast.success(
+          `Ghost Hour opened — pushed to ${state.pushed ?? 0} device(s).`
+        )
       },
       onError,
     }),
