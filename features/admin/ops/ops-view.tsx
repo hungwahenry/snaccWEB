@@ -50,6 +50,10 @@ export function OpsView() {
         ...Object.entries(drift.data.scores),
         ...Object.entries(drift.data.snaccs),
         ["wallet_balances", drift.data.wallets.accounts] as [string, number],
+        ["earnings_balances", drift.data.earnings?.profiles ?? 0] as [
+          string,
+          number,
+        ],
       ].filter(([, off]) => off > 0)
     : []
 

@@ -23,4 +23,5 @@ export const DRIFT_LABELS: Record<string, string> = {
   shares_count: "Shares per snacc",
   author_taps_count: "Author taps per snacc",
   wallet_balances: "Wallet balances vs ledger",
+  earnings_balances: "Earnings balances vs ledger",
 }

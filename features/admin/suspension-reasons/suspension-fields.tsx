@@ -8,28 +8,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useConfigValue } from "@/features/config/use-config-value"
 import { useSuspensionReasons } from "./use-suspension-reasons"
 import { DAY_MS } from "@/lib/duration"
 
-const DURATIONS = [
-  { value: "0", label: "Indefinitely", days: null as number | null },
-  { value: "1", label: "1 day", days: 1 },
-  { value: "3", label: "3 days", days: 3 },
-  { value: "7", label: "7 days", days: 7 },
-  { value: "30", label: "30 days", days: 30 },
-]
+const DURATIONS_KEY = "moderation.suspension.durations_days"
+const DURATIONS_FALLBACK = ["1", "3", "7", "30"]
+const INDEFINITE = "0"
+
+function spanLabel(days: number): string {
+  return days === 1 ? "1 day" : `${days} days`
+}
 
 export interface SuspensionDraft {
   reasonId: string
   duration: string
 }
 
-export const EMPTY_SUSPENSION: SuspensionDraft = { reasonId: "", duration: "0" }
+export const EMPTY_SUSPENSION: SuspensionDraft = {
+  reasonId: "",
+  duration: INDEFINITE,
+}
 
 /** The draft as the API wants it: an end date rather than a number of days. */
 export function toSuspensionInput(draft: SuspensionDraft, note?: string) {
-  const days =
-    DURATIONS.find((option) => option.value === draft.duration)?.days ?? null
+  const days = Number(draft.duration)
 
   return {
     reasonId: draft.reasonId || undefined,
@@ -48,6 +51,13 @@ export function SuspensionFields({
   value: SuspensionDraft
   onChange: (next: SuspensionDraft) => void
 }) {
+  // The lengths on offer are policy, held once in config and read by the app as well.
+  const offered = useConfigValue<string[]>(DURATIONS_KEY, DURATIONS_FALLBACK)
+  const durations = [
+    { value: INDEFINITE, label: "Indefinitely" },
+    ...offered.map((days) => ({ value: days, label: spanLabel(Number(days)) })),
+  ]
+
   const reasons = useSuspensionReasons()
   const available = (reasons.data ?? []).filter((reason) => !reason.retired)
   const chosen = available.find((reason) => reason.id === value.reasonId)
@@ -87,7 +97,7 @@ export function SuspensionFields({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {DURATIONS.map((option) => (
+              {durations.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
                 </SelectItem>

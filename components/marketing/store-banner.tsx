@@ -1,16 +1,23 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useSyncExternalStore } from "react"
 import { detectStore, type StoreTarget } from "./store-links"
 
+let detected: StoreTarget | null | undefined
+
+function readStore(): StoreTarget | null {
+  if (detected === undefined) detected = detectStore(navigator.userAgent)
+  return detected
+}
+
+const noChanges = () => () => {}
+
 export function StoreBanner() {
-  const [store, setStore] = useState<StoreTarget | null>(null)
+  const store = useSyncExternalStore(noChanges, readStore, () => null)
   const [shown, setShown] = useState(false)
 
   useEffect(() => {
-    const target = detectStore(navigator.userAgent)
-    if (!target) return
-    setStore(target)
+    if (!store) return
 
     const onScroll = () => {
       if (window.scrollY > 350) {
@@ -20,7 +27,7 @@ export function StoreBanner() {
     }
     window.addEventListener("scroll", onScroll, { passive: true })
     return () => window.removeEventListener("scroll", onScroll)
-  }, [])
+  }, [store])
 
   if (!store) return null
 

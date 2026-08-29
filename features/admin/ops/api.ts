@@ -22,6 +22,8 @@ export interface OpsDrift {
   scores: Record<string, number>
   /** Wallet balances that disagree with their entries. A trigger owns this, so always zero. */
   wallets: { accounts: number }
+  /** Absent until the backend that owns the earnings ledger is deployed. */
+  earnings?: { profiles: number }
 }
 
 export function getHealth() {
