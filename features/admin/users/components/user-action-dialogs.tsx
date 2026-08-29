@@ -118,7 +118,7 @@ export function RolesDialog({ user }: { user: AdminUserDetail }) {
           Grant or revoke roles. What a user can do is set by the permissions
           each role carries.
         </p>
-        {grants.isPending ? (
+        {grants.isLoading ? (
           <div className="flex justify-center py-6">
             <Spinner />
           </div>

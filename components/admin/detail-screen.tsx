@@ -29,7 +29,7 @@ export function DetailScreen<T>({
       >
         ← {backLabel}
       </Button>
-      {query.isPending ? (
+      {query.isLoading ? (
         <div className="flex justify-center py-24">
           <Spinner />
         </div>
