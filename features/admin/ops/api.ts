@@ -36,6 +36,20 @@ export function getDrift() {
   return api.get<OpsDrift>("/admin/ops/drift")
 }
 
+export interface OpsReconcile {
+  withdrawals: {
+    checked: number
+    settled: number
+    failed: number
+    waiting: number
+  }
+  deposits: { checked: number; credited: number }
+}
+
+export function reconcilePaystack() {
+  return api.post<OpsReconcile>("/admin/ops/reconcile")
+}
+
 export function runTask(task: string) {
   return api.post<Record<string, number>>(`/admin/ops/run/${task}`)
 }

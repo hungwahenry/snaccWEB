@@ -215,6 +215,28 @@ export default function OpsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-base">Paystack settlement</CardTitle>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={mutations.reconcile.isPending}
+              onClick={() => mutations.reconcile.mutate()}
+            >
+              {mutations.reconcile.isPending ? "Reconciling…" : "Reconcile now"}
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Withdrawals and top-ups normally settle the moment Paystack calls
+              our webhook. Every ten minutes this asks Paystack directly about
+              anything still unsettled, so money lands even when the webhook
+              never arrives. Press this to bring that pass forward.
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-base">Drift</CardTitle>
             <Button
               size="sm"

@@ -3,7 +3,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/api/errors"
-import { getDrift, getHealth, getQueues, retryQueue, runTask } from "./api"
+import {
+  getDrift,
+  getHealth,
+  getQueues,
+  reconcilePaystack,
+  retryQueue,
+  runTask,
+} from "./api"
 
 const KEY = ["admin", "ops"]
 
@@ -43,6 +50,22 @@ export function useOpsMutations() {
         qc.invalidateQueries({ queryKey: KEY })
         toast.success(
           "Repaired. Anything that drifted will drift again until the cause is fixed."
+        )
+      },
+      onError,
+    }),
+    reconcile: useMutation({
+      mutationFn: reconcilePaystack,
+      onSuccess: (result) => {
+        qc.invalidateQueries({ queryKey: KEY })
+        const moved =
+          result.withdrawals.settled +
+          result.withdrawals.failed +
+          result.deposits.credited
+        toast.success(
+          moved > 0
+            ? `Settled ${result.withdrawals.settled} withdrawal(s), returned ${result.withdrawals.failed}, credited ${result.deposits.credited} deposit(s).`
+            : "Nothing to settle — Paystack agrees with us."
         )
       },
       onError,
