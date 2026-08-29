@@ -3,8 +3,8 @@
 import { useState } from "react"
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { AuditTable } from "@/features/admin/audit/audit-table"
-import { useAuditLogs } from "@/features/admin/audit/use-audit"
+import { AuditTable } from "@/features/admin/audit/components/audit-table"
+import { useAuditLogs } from "@/features/admin/audit/hooks/use-audit"
 import type { ListAuditParams } from "@/features/admin/audit/types"
 
 export default function AuditPage() {

@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { LandingShell } from "@/components/marketing/landing-shell"
-import { getCampusSnaccs } from "@/features/snaccs/public"
-import { SnaccCard } from "@/features/snaccs/snacc-card"
-import { CampusHeader } from "@/features/universities/campus-header"
-import { getPublicCampus } from "@/features/universities/public"
+import { getCampusSnaccs } from "@/features/snaccs/api/public"
+import { SnaccCard } from "@/features/snaccs/components/snacc-card"
+import { CampusHeader } from "@/features/universities/components/campus-header"
+import { getPublicCampus } from "@/features/universities/api/public"
 
 type Props = { params: Promise<{ slug: string }> }
 

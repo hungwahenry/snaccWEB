@@ -2,11 +2,11 @@
 
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { TiersTable } from "@/features/admin/score-tiers/tiers-table"
+import { TiersTable } from "@/features/admin/score-tiers/components/tiers-table"
 import {
   useTierMutations,
   useTiers,
-} from "@/features/admin/score-tiers/use-score-tiers"
+} from "@/features/admin/score-tiers/hooks/use-score-tiers"
 
 export default function TiersPage() {
   const query = useTiers()

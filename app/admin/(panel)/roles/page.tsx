@@ -2,8 +2,11 @@
 
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { RolesTable } from "@/features/admin/roles/roles-table"
-import { useRoleMutations, useRoles } from "@/features/admin/roles/use-roles"
+import { RolesTable } from "@/features/admin/roles/components/roles-table"
+import {
+  useRoleMutations,
+  useRoles,
+} from "@/features/admin/roles/hooks/use-roles"
 
 export default function RolesPage() {
   const query = useRoles()

@@ -2,12 +2,12 @@
 
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { EngagementTable } from "@/features/admin/engagement/engagement-table"
+import { EngagementTable } from "@/features/admin/engagement/components/engagement-table"
 import {
   useEngagement,
   useResetEngagement,
   useUpdateEngagement,
-} from "@/features/admin/engagement/use-engagement"
+} from "@/features/admin/engagement/hooks/use-engagement"
 
 export default function EngagementPage() {
   const query = useEngagement()

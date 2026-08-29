@@ -2,12 +2,12 @@
 
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { ReservedUsernamesTable } from "@/features/admin/reserved-usernames/reserved-usernames-table"
+import { ReservedUsernamesTable } from "@/features/admin/reserved-usernames/components/reserved-usernames-table"
 import {
   useHoldUsername,
   useReleaseUsername,
   useReservedUsernames,
-} from "@/features/admin/reserved-usernames/use-reserved-usernames"
+} from "@/features/admin/reserved-usernames/hooks/use-reserved-usernames"
 
 export default function ReservedUsernamesPage() {
   const query = useReservedUsernames()

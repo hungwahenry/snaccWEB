@@ -2,8 +2,11 @@
 
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { PagesTable } from "@/features/admin/pages/pages-table"
-import { usePageMutations, usePages } from "@/features/admin/pages/use-pages"
+import { PagesTable } from "@/features/admin/pages/components/pages-table"
+import {
+  usePageMutations,
+  usePages,
+} from "@/features/admin/pages/hooks/use-pages"
 
 export default function PagesPage() {
   const query = usePages()

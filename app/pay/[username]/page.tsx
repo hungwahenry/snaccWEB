@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { LandingShell } from "@/components/marketing/landing-shell"
-import { PayEntry } from "@/features/pay/pay-entry"
-import { getPublicProfile } from "@/features/users/public"
+import { PayEntry } from "@/features/pay/components/pay-entry"
+import { getPublicProfile } from "@/features/users/api/public"
 
 type Props = { params: Promise<{ username: string }> }
 

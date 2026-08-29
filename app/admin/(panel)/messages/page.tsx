@@ -3,8 +3,8 @@
 import { useState } from "react"
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { ConversationsTable } from "@/features/admin/messages/conversations-table"
-import { useConversations } from "@/features/admin/messages/use-messages"
+import { ConversationsTable } from "@/features/admin/messages/components/conversations-table"
+import { useConversations } from "@/features/admin/messages/hooks/use-messages"
 import type { ListConversationsParams } from "@/features/admin/messages/types"
 
 export default function MessagesPage() {

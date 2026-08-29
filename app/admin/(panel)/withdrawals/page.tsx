@@ -3,9 +3,9 @@
 import { useState } from "react"
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { WithdrawalsSummary } from "@/features/admin/withdrawals/withdrawals-summary"
-import { WithdrawalsTable } from "@/features/admin/withdrawals/withdrawals-table"
-import { useWithdrawals } from "@/features/admin/withdrawals/use-withdrawals"
+import { WithdrawalsSummary } from "@/features/admin/withdrawals/components/withdrawals-summary"
+import { WithdrawalsTable } from "@/features/admin/withdrawals/components/withdrawals-table"
+import { useWithdrawals } from "@/features/admin/withdrawals/hooks/use-withdrawals"
 import type { ListWithdrawalsParams } from "@/features/admin/withdrawals/types"
 
 export default function WithdrawalsPage() {

@@ -2,11 +2,11 @@
 
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { ReasonsTable } from "@/features/admin/report-reasons/reasons-table"
+import { ReasonsTable } from "@/features/admin/report-reasons/components/reasons-table"
 import {
   useReasonMutations,
   useReasons,
-} from "@/features/admin/report-reasons/use-report-reasons"
+} from "@/features/admin/report-reasons/hooks/use-report-reasons"
 
 export default function ReportReasonsPage() {
   const query = useReasons()

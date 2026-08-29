@@ -2,8 +2,11 @@
 
 import { use } from "react"
 import { DetailScreen } from "@/components/admin/detail-screen"
-import { UserDetail } from "@/features/admin/users/user-detail"
-import { useUser, useUserMutations } from "@/features/admin/users/use-users"
+import { UserDetail } from "@/features/admin/users/components/user-detail"
+import {
+  useUser,
+  useUserMutations,
+} from "@/features/admin/users/hooks/use-users"
 
 export default function UserDetailPage({
   params,

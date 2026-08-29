@@ -3,11 +3,11 @@
 import { useState } from "react"
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { SnaccsTable } from "@/features/admin/snaccs/snaccs-table"
+import { SnaccsTable } from "@/features/admin/snaccs/components/snaccs-table"
 import {
   useSnaccMutations,
   useSnaccs,
-} from "@/features/admin/snaccs/use-snaccs"
+} from "@/features/admin/snaccs/hooks/use-snaccs"
 import type { ListSnaccsParams } from "@/features/admin/snaccs/types"
 
 export default function SnaccsPage() {

@@ -1,7 +1,7 @@
 "use client"
 
 import { PageHeader } from "@/components/page-header"
-import { GhostHourPanel } from "@/features/admin/ghost-hour/ghost-hour-panel"
+import { GhostHourPanel } from "@/features/admin/ghost-hour/components/ghost-hour-panel"
 
 export default function GhostHourPage() {
   return (

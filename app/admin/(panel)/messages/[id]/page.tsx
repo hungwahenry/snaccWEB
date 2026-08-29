@@ -2,11 +2,11 @@
 
 import { use } from "react"
 import { DetailScreen } from "@/components/admin/detail-screen"
-import { ConversationThread } from "@/features/admin/messages/conversation-thread"
+import { ConversationThread } from "@/features/admin/messages/components/conversation-thread"
 import {
   useConversation,
   useMessageModeration,
-} from "@/features/admin/messages/use-messages"
+} from "@/features/admin/messages/hooks/use-messages"
 
 export default function MessageThreadPage({
   params,

@@ -2,13 +2,9 @@ import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { handleOf } from "@/lib/format"
 import { cn } from "@/lib/utils"
+import type { UserRef } from "@/lib/api/types"
 
-export interface InlineUser {
-  id: string
-  username: string | null
-  display_name: string | null
-  avatar_url: string
-}
+export type InlineUser = UserRef
 
 const SIZES = {
   sm: { avatar: "size-5", initial: "text-[10px]" },

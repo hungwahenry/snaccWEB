@@ -3,11 +3,11 @@
 import { useState } from "react"
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { UniversitiesTable } from "@/features/admin/universities/universities-table"
+import { UniversitiesTable } from "@/features/admin/universities/components/universities-table"
 import {
   useUniversities,
   useUniversityMutations,
-} from "@/features/admin/universities/use-universities"
+} from "@/features/admin/universities/hooks/use-universities"
 import type { ListUniversitiesParams } from "@/features/admin/universities/types"
 
 export default function UniversitiesPage() {

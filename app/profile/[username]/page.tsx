@@ -1,12 +1,12 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { LandingShell } from "@/components/marketing/landing-shell"
-import { AnonEntry } from "@/features/anon/anon-entry"
-import { getUserSnaccs } from "@/features/snaccs/public"
-import { SnaccCard } from "@/features/snaccs/snacc-card"
-import { ProfileHeader } from "@/features/users/profile-header"
-import { ProfileTabs } from "@/features/users/profile-tabs"
-import { getPublicProfile } from "@/features/users/public"
+import { AnonEntry } from "@/features/anon/components/anon-entry"
+import { getUserSnaccs } from "@/features/snaccs/api/public"
+import { SnaccCard } from "@/features/snaccs/components/snacc-card"
+import { ProfileHeader } from "@/features/users/components/profile-header"
+import { ProfileTabs } from "@/features/users/components/profile-tabs"
+import { getPublicProfile } from "@/features/users/api/public"
 
 type Props = { params: Promise<{ username: string }> }
 

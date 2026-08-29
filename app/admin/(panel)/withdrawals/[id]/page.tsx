@@ -2,11 +2,11 @@
 
 import { use } from "react"
 import { DetailScreen } from "@/components/admin/detail-screen"
-import { WithdrawalDetail } from "@/features/admin/withdrawals/withdrawal-detail"
+import { WithdrawalDetail } from "@/features/admin/withdrawals/components/withdrawal-detail"
 import {
   useWithdrawal,
   useWithdrawalMutations,
-} from "@/features/admin/withdrawals/use-withdrawals"
+} from "@/features/admin/withdrawals/hooks/use-withdrawals"
 
 export default function WithdrawalDetailPage({
   params,

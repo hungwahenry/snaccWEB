@@ -2,11 +2,11 @@
 
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { FlagsTable } from "@/features/admin/feature-flags/flags-table"
+import { FlagsTable } from "@/features/admin/feature-flags/components/flags-table"
 import {
   useFlags,
   useUpdateFlag,
-} from "@/features/admin/feature-flags/use-flags"
+} from "@/features/admin/feature-flags/hooks/use-flags"
 
 export default function FlagsPage() {
   const query = useFlags()

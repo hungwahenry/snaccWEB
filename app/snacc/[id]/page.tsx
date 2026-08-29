@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { LandingShell } from "@/components/marketing/landing-shell"
-import { getPublicSnacc } from "@/features/snaccs/public"
-import { SnaccCard } from "@/features/snaccs/snacc-card"
+import { getPublicSnacc } from "@/features/snaccs/api/public"
+import { SnaccCard } from "@/features/snaccs/components/snacc-card"
 
 type Props = { params: Promise<{ id: string }> }
 

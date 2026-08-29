@@ -2,11 +2,11 @@
 
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { SuspensionReasonsTable } from "@/features/admin/suspension-reasons/reasons-table"
+import { SuspensionReasonsTable } from "@/features/admin/suspension-reasons/components/reasons-table"
 import {
   useSuspensionReasonMutations,
   useSuspensionReasons,
-} from "@/features/admin/suspension-reasons/use-suspension-reasons"
+} from "@/features/admin/suspension-reasons/hooks/use-suspension-reasons"
 
 export default function SuspensionReasonsPage() {
   const query = useSuspensionReasons()

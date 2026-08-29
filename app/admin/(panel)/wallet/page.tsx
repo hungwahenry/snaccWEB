@@ -1,8 +1,8 @@
 "use client"
 
 import { PageHeader } from "@/components/page-header"
-import { WalletAccountsView } from "@/features/admin/wallet/wallet-accounts-view"
-import { WalletSummaryCards } from "@/features/admin/wallet/wallet-summary-cards"
+import { WalletAccountsView } from "@/features/admin/wallet/components/wallet-accounts-view"
+import { WalletSummaryCards } from "@/features/admin/wallet/components/wallet-summary-cards"
 
 export default function WalletPage() {
   return (

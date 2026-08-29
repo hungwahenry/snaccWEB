@@ -3,14 +3,14 @@
 import { useState } from "react"
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { EarningsLedger } from "@/features/admin/earnings/earnings-ledger"
-import { FundsPanel } from "@/features/admin/earnings/funds-panel"
+import { EarningsLedger } from "@/features/admin/earnings/components/earnings-ledger"
+import { FundsPanel } from "@/features/admin/earnings/components/funds-panel"
 import {
   useEarnings,
   useFundMutations,
   useFunds,
-} from "@/features/admin/earnings/use-earnings"
-import { useAllUniversities } from "@/features/admin/universities/use-universities"
+} from "@/features/admin/earnings/hooks/use-earnings"
+import { useAllUniversities } from "@/features/admin/universities/hooks/use-universities"
 import type { ListEarningsParams } from "@/features/admin/earnings/types"
 
 export default function EarningsPage() {

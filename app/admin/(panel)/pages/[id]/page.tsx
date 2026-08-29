@@ -4,8 +4,11 @@ import Link from "next/link"
 import { use } from "react"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
-import { PageEditor } from "@/features/admin/pages/page-editor"
-import { usePage, usePageMutations } from "@/features/admin/pages/use-pages"
+import { PageEditor } from "@/features/admin/pages/components/page-editor"
+import {
+  usePage,
+  usePageMutations,
+} from "@/features/admin/pages/hooks/use-pages"
 
 export default function EditPagePage({
   params,

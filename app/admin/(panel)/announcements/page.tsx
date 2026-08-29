@@ -3,12 +3,12 @@
 import { useState } from "react"
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { AnnouncementsTable } from "@/features/admin/announcements/announcements-table"
+import { AnnouncementsTable } from "@/features/admin/announcements/components/announcements-table"
 import {
   useAnnouncementMutations,
   useAnnouncements,
-} from "@/features/admin/announcements/use-announcements"
-import { useAllUniversities } from "@/features/admin/universities/use-universities"
+} from "@/features/admin/announcements/hooks/use-announcements"
+import { useAllUniversities } from "@/features/admin/universities/hooks/use-universities"
 import type { ListAnnouncementsParams } from "@/features/admin/announcements/types"
 
 export default function AnnouncementsPage() {

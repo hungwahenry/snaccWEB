@@ -2,8 +2,11 @@
 
 import { use } from "react"
 import { DetailScreen } from "@/components/admin/detail-screen"
-import { SnaccDetail } from "@/features/admin/snaccs/snacc-detail"
-import { useSnacc, useSnaccMutations } from "@/features/admin/snaccs/use-snaccs"
+import { SnaccDetail } from "@/features/admin/snaccs/components/snacc-detail"
+import {
+  useSnacc,
+  useSnaccMutations,
+} from "@/features/admin/snaccs/hooks/use-snaccs"
 
 export default function SnaccDetailPage({
   params,

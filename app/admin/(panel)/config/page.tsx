@@ -2,8 +2,11 @@
 
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { ConfigTable } from "@/features/admin/config/config-table"
-import { useConfig, useUpdateConfig } from "@/features/admin/config/use-config"
+import { ConfigTable } from "@/features/admin/config/components/config-table"
+import {
+  useConfig,
+  useUpdateConfig,
+} from "@/features/admin/config/hooks/use-config"
 
 export default function ConfigPage() {
   const query = useConfig()

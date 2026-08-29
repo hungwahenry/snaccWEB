@@ -2,11 +2,11 @@
 
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { PromptsTable } from "@/features/admin/onboarding-prompts/prompts-table"
+import { PromptsTable } from "@/features/admin/onboarding-prompts/components/prompts-table"
 import {
   usePromptMutations,
   usePrompts,
-} from "@/features/admin/onboarding-prompts/use-onboarding-prompts"
+} from "@/features/admin/onboarding-prompts/hooks/use-onboarding-prompts"
 
 export default function PromptsPage() {
   const query = usePrompts()

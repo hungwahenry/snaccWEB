@@ -1,7 +1,7 @@
 "use client"
 
 import { PageHeader } from "@/components/page-header"
-import { SuspensionsView } from "@/features/admin/suspensions/suspensions-view"
+import { SuspensionsView } from "@/features/admin/users/components/suspensions-view"
 
 export default function SuspensionsPage() {
   return (

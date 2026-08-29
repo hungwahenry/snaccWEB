@@ -2,11 +2,11 @@
 
 import { use } from "react"
 import { DetailScreen } from "@/components/admin/detail-screen"
-import { WalletDetail } from "@/features/admin/wallet/wallet-detail"
+import { WalletDetail } from "@/features/admin/wallet/components/wallet-detail"
 import {
   useWallet,
   useWalletMutations,
-} from "@/features/admin/wallet/use-wallet"
+} from "@/features/admin/wallet/hooks/use-wallet"
 
 export default function WalletDetailPage({
   params,

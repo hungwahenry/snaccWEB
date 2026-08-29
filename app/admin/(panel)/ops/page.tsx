@@ -1,7 +1,7 @@
 "use client"
 
 import { PageHeader } from "@/components/page-header"
-import { OpsView } from "@/features/admin/ops/ops-view"
+import { OpsView } from "@/features/admin/ops/components/ops-view"
 
 export default function OpsPage() {
   return (

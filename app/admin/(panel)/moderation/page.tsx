@@ -1,7 +1,7 @@
 "use client"
 
 import { PageHeader } from "@/components/page-header"
-import { ModerationView } from "@/features/admin/moderation/moderation-view"
+import { ModerationView } from "@/features/admin/moderation/components/moderation-view"
 
 export default function ModerationPage() {
   return (

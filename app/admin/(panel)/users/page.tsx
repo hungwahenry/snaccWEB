@@ -3,8 +3,8 @@
 import { useState } from "react"
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { UsersTable } from "@/features/admin/users/users-table"
-import { useUsers } from "@/features/admin/users/use-users"
+import { UsersTable } from "@/features/admin/users/components/users-table"
+import { useUsers } from "@/features/admin/users/hooks/use-users"
 import type { ListUsersParams } from "@/features/admin/users/types"
 
 export default function UsersPage() {

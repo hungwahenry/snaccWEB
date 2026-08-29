@@ -3,11 +3,11 @@
 import { useState } from "react"
 import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { ReportsTable } from "@/features/admin/reports/reports-table"
+import { ReportsTable } from "@/features/admin/reports/components/reports-table"
 import {
   useReports,
   useResolveReport,
-} from "@/features/admin/reports/use-reports"
+} from "@/features/admin/reports/hooks/use-reports"
 import type { ListReportsParams } from "@/features/admin/reports/types"
 
 export default function ReportsPage() {

@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { AnonChat } from "@/features/anon/anon-chat"
+import { AnonChat } from "@/features/anon/components/anon-chat"
 
 export const metadata: Metadata = {
   title: "Anonymous chat",

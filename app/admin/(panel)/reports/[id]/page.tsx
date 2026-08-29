@@ -2,11 +2,11 @@
 
 import { use } from "react"
 import { DetailScreen } from "@/components/admin/detail-screen"
-import { ReportDetail } from "@/features/admin/reports/report-detail"
+import { ReportDetail } from "@/features/admin/reports/components/report-detail"
 import {
   useReport,
   useResolveReport,
-} from "@/features/admin/reports/use-reports"
+} from "@/features/admin/reports/hooks/use-reports"
 
 export default function ReportDetailPage({
   params,

@@ -1,7 +1,7 @@
 "use client"
 
 import { PageHeader } from "@/components/page-header"
-import { MomentsView } from "@/features/admin/moments/moments-view"
+import { MomentsView } from "@/features/admin/moments/components/moments-view"
 
 export default function MomentsPage() {
   return (

@@ -2,8 +2,8 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { PageEditor } from "@/features/admin/pages/page-editor"
-import { usePageMutations } from "@/features/admin/pages/use-pages"
+import { PageEditor } from "@/features/admin/pages/components/page-editor"
+import { usePageMutations } from "@/features/admin/pages/hooks/use-pages"
 
 export default function NewPagePage() {
   const mutations = usePageMutations()

@@ -1,7 +1,7 @@
 "use client"
 
 import { PageHeader } from "@/components/page-header"
-import { NotificationTypesView } from "@/features/admin/notification-types/notification-types-view"
+import { NotificationTypesView } from "@/features/admin/notification-types/components/notification-types-view"
 
 export default function NotificationTypesPage() {
   return (
