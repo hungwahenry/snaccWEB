@@ -7,7 +7,11 @@ export interface AnonMessage {
 
 export interface AnonThread {
   conversation_id: string
-  recipient: { username: string | null; display_name: string | null; avatar_url: string }
+  recipient: {
+    username: string | null
+    display_name: string | null
+    avatar_url: string
+  }
   messages: AnonMessage[]
   remaining: number
 }

@@ -11,7 +11,6 @@ import { OpenDialog } from "./open-dialog"
 import { useGhostMutations, useGhostWindow } from "./use-ghost-hour"
 import type { GhostWindowState } from "./types"
 
-/** Counts down from what the server said was left, so a skewed laptop cannot keep a window open. */
 function useRemaining(state: GhostWindowState | undefined): number | null {
   const endsAt = state?.active ? state.ends_at : null
   const serverTime = state?.server_time ?? null

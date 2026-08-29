@@ -35,7 +35,6 @@ export interface AdminUserDetail extends AdminUserRow {
   engagement: {
     score: number
     tier: string | null
-    /** Non-revoked score credits by engagement kind. */
     received: Record<string, number>
   }
   earnings: {

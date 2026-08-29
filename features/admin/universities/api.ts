@@ -16,7 +16,6 @@ export function listUniversities(params: ListUniversitiesParams) {
   )
 }
 
-/** Every campus, for a picker. A page is capped server-side, and there are more campuses than that. */
 export async function listAllUniversities(): Promise<AdminUniversity[]> {
   const first = await listUniversities({ page: 1, perPage: MAX_PER_PAGE })
   const items = [...first.items]

@@ -15,7 +15,6 @@ const SIZES = {
   default: { avatar: "size-8", initial: "text-xs" },
 } as const
 
-/** One account, named and linked. Every moderation surface points at the same profile page. */
 export function UserInline({
   user,
   note,

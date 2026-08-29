@@ -132,7 +132,6 @@ function ReportedMoment({
   )
 }
 
-/** What was actually reported, shown in full — media included, because that is usually the case. */
 export function ReportedContent({ report }: { report: AdminReportDetail }) {
   const target = report.target
 

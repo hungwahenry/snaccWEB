@@ -9,7 +9,6 @@ function subscribe(onChange: () => void) {
   return () => query.removeEventListener("change", onChange)
 }
 
-/** The viewport is the browser's to report. The server has no view of one, so it answers no. */
 export function useIsMobile() {
   return React.useSyncExternalStore(
     subscribe,

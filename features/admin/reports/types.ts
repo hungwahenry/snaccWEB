@@ -37,7 +37,6 @@ export type ReportTarget =
         background: string | null
         deleted_at: string | null
         expires_at: string
-        /** Held open by this report; without it the purge would already have taken it. */
         held: boolean
         author: ReportAuthor
         images: MediaImage[]
@@ -67,17 +66,33 @@ export type ReportTarget =
     }
   | null
 
-export interface AdminReport {
+export interface ReportScan {
+  id: string
+  model: string
+  category: string | null
+  score: number | null
+  verdict: "allow" | "flag" | "hold" | "block"
+  applied: "allow" | "flag" | "hold" | "block"
+  scores: Record<string, number>
+  created_at: string
+}
+
+export interface ReportFiling {
   id: string
   status: ReportStatus
   detail: string | null
   reason: { slug: string; label: string }
-  reporter: ReportAuthor
+  source: "user" | "automation"
+  reporter: ReportAuthor | null
+  created_at: string
+}
+
+export interface AdminReport extends ReportFiling {
+  scan: ReportScan | null
   target: ReportTarget
   reviewed_by: ReportAuthor | null
   reviewed_at: string | null
   resolution_note: string | null
-  created_at: string
 }
 
 export interface ListReportsParams {
@@ -106,9 +121,7 @@ export interface ResolveReportInput {
   suspension?: { reasonId?: string; note?: string; until?: string }
 }
 
-/** The full reported snacc, so a moderator can see media rather than a body excerpt. */
 export interface AdminReportDetail extends AdminReport {
   snacc: AdminSnacc | null
-  /** Other reports on the same target — resolving closes them together. */
   siblings: AdminReport[]
 }

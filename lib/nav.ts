@@ -1,4 +1,5 @@
 import {
+  ScanEye,
   AtSign,
   Banknote,
   Bell,
@@ -40,7 +41,6 @@ export interface NavSection {
   items: NavItem[]
 }
 
-/** One group per backend console, so the panel and the code agree on where a thing lives. */
 export const NAV: NavSection[] = [
   {
     group: "Overview",
@@ -79,6 +79,12 @@ export const NAV: NavSection[] = [
         label: "Ghost threads",
         icon: Ghost,
         permission: "messages.read",
+      },
+      {
+        href: "/admin/moderation",
+        label: "Automatic review",
+        icon: ScanEye,
+        permission: "moderation.read",
       },
       {
         href: "/admin/report-reasons",
@@ -250,10 +256,6 @@ export function firstAllowedHref(
   return visibleNav(permissions)[0]?.items[0]?.href ?? null
 }
 
-/**
- * The permission a route needs, found from the nav. Detail routes inherit their console's key,
- * so /admin/users/:id is gated exactly like /admin/users.
- */
 export function permissionForPath(pathname: string): string | null {
   const items = NAV.flatMap((section) => section.items)
   const exact = items.find((item) => item.href === pathname)

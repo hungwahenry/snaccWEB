@@ -18,7 +18,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = snacc.body?.trim() || `${who} posted on Snacc.`
   const hasMedia = snacc.images.length > 0 || snacc.gif !== null
   const image =
-    snacc.images[0]?.url ?? snacc.gif?.url ?? (snacc.anonymous ? undefined : snacc.author.avatar_url)
+    snacc.images[0]?.url ??
+    snacc.gif?.url ??
+    (snacc.anonymous ? undefined : snacc.author.avatar_url)
 
   return {
     title,

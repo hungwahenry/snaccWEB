@@ -30,8 +30,6 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
-/** Keep in sync with the app's copy (frontend lib/icons/named-icon.tsx); a name missing there
- *  renders as nothing on a phone. */
 const NAMED_ICONS: Record<string, LucideIcon> = {
   award: Award,
   book: BookOpen,

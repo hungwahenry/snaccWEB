@@ -215,7 +215,11 @@ export function SnaccDetail({
                     {formatDate(report.created_at)}
                   </span>
                 </div>
-                <UserInline user={report.reporter} size="sm" />
+                {report.reporter ? (
+                  <UserInline user={report.reporter} size="sm" />
+                ) : (
+                  <Badge variant="outline">Automatic check</Badge>
+                )}
                 {report.detail ? (
                   <p className="text-sm text-pretty text-muted-foreground">
                     “{report.detail}”

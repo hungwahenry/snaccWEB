@@ -19,7 +19,11 @@ export async function generateMetadata({
   }
 }
 
-export default async function DynamicPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function DynamicPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
   const { slug } = await params
   const page = await getPublicPage(slug)
   if (!page) notFound()
@@ -29,13 +33,18 @@ export default async function DynamicPage({ params }: { params: Promise<{ slug: 
       <SiteHeader />
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-8">
-        <h1 className="text-4xl font-extrabold tracking-tight text-balance">{page.title}</h1>
+        <h1 className="text-4xl font-extrabold tracking-tight text-balance">
+          {page.title}
+        </h1>
         {page.published_at ? (
-          <p className="text-muted-foreground mt-2 text-sm">
+          <p className="mt-2 text-sm text-muted-foreground">
             Updated {longDate(page.published_at)}
           </p>
         ) : null}
-        <article className="snacc-prose mt-8" dangerouslySetInnerHTML={{ __html: page.html }} />
+        <article
+          className="snacc-prose mt-8"
+          dangerouslySetInnerHTML={{ __html: page.html }}
+        />
       </main>
 
       <SiteFooter />

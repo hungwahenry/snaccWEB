@@ -17,7 +17,14 @@ export const metadata: Metadata = {
   title: { default: TITLE, template: "%s · Snacc" },
   description: DESCRIPTION,
   applicationName: "Snacc",
-  keywords: ["Snacc", "campus", "university", "students", "social app", "Nigeria"],
+  keywords: [
+    "Snacc",
+    "campus",
+    "university",
+    "students",
+    "social app",
+    "Nigeria",
+  ],
   robots: { index: true, follow: true },
   openGraph: {
     type: "website",
@@ -43,7 +50,12 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", interTight.variable)}
+      className={cn(
+        "antialiased",
+        fontMono.variable,
+        "font-sans",
+        interTight.variable
+      )}
     >
       <body>
         <Providers>{children}</Providers>

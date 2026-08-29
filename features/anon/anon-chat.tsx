@@ -15,12 +15,12 @@ export function AnonChat({ conversationId }: { conversationId: string }) {
 
   return (
     <div className="flex min-h-dvh justify-center">
-      <div className="border-border flex min-h-dvh w-full max-w-lg flex-col border-x">
+      <div className="flex min-h-dvh w-full max-w-lg flex-col border-x border-border">
         <SiteHeader />
         <main className="flex flex-1 flex-col">
           {s.loading ? (
             <div className="p-6">
-              <div className="bg-muted h-40 animate-pulse rounded-2xl" />
+              <div className="h-40 animate-pulse rounded-2xl bg-muted" />
             </div>
           ) : !s.thread ? (
             <NotFound />
@@ -34,7 +34,9 @@ export function AnonChat({ conversationId }: { conversationId: string }) {
                 ))}
               </div>
 
-              {s.error ? <p className="text-destructive px-6 pb-2 text-sm">{s.error}</p> : null}
+              {s.error ? (
+                <p className="px-6 pb-2 text-sm text-destructive">{s.error}</p>
+              ) : null}
 
               {s.walled ? (
                 <Wall name={recipientName(s.thread.recipient)} />
@@ -58,11 +60,15 @@ export function AnonChat({ conversationId }: { conversationId: string }) {
 
 function RecipientBar({ recipient }: { recipient: AnonThread["recipient"] }) {
   return (
-    <div className="border-border flex items-center gap-3 border-b px-6 py-4">
+    <div className="flex items-center gap-3 border-b border-border px-6 py-4">
       <img src={recipient.avatar_url} alt="" className="size-11 rounded-full" />
       <div>
-        <p className="text-foreground font-extrabold">{recipientName(recipient)}</p>
-        <p className="text-muted-foreground text-xs">Anonymous chat · they don&rsquo;t know it&rsquo;s you</p>
+        <p className="font-extrabold text-foreground">
+          {recipientName(recipient)}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Anonymous chat · they don&rsquo;t know it&rsquo;s you
+        </p>
       </div>
     </div>
   )
@@ -74,11 +80,13 @@ function Bubble({ message }: { message: AnonMessage }) {
       className={cn(
         "max-w-[16rem] rounded-2xl px-4 py-2 text-[15px] leading-snug",
         message.mine
-          ? "bg-foreground text-background self-end rounded-br-md"
-          : "bg-muted text-foreground self-start rounded-bl-md",
+          ? "self-end rounded-br-md bg-foreground text-background"
+          : "self-start rounded-bl-md bg-muted text-foreground"
       )}
     >
-      {message.body ?? <span className="italic opacity-60">message removed</span>}
+      {message.body ?? (
+        <span className="italic opacity-60">message removed</span>
+      )}
     </div>
   )
 }
@@ -99,7 +107,7 @@ function Composer({
   remaining: number
 }) {
   return (
-    <div className="border-border flex flex-col gap-2 border-t px-6 py-4">
+    <div className="flex flex-col gap-2 border-t border-border px-6 py-4">
       <div className="flex items-end gap-2">
         <textarea
           value={text}
@@ -107,19 +115,19 @@ function Composer({
           placeholder="Say something…"
           maxLength={2000}
           rows={1}
-          className="border-border bg-background text-foreground placeholder:text-muted-foreground focus:border-foreground max-h-32 flex-1 resize-none rounded-2xl border p-3 text-base outline-none"
+          className="max-h-32 flex-1 resize-none rounded-2xl border border-border bg-background p-3 text-base text-foreground outline-none placeholder:text-muted-foreground focus:border-foreground"
         />
         <button
           type="button"
           onClick={onSend}
           disabled={!canSend}
-          className="bg-foreground text-background rounded-2xl px-5 py-3 font-semibold transition-transform enabled:hover:scale-[1.01] disabled:opacity-40"
+          className="rounded-2xl bg-foreground px-5 py-3 font-semibold text-background transition-transform enabled:hover:scale-[1.01] disabled:opacity-40"
         >
           {sending ? "…" : "Send"}
         </button>
       </div>
       {remaining > 0 ? (
-        <p className="text-muted-foreground text-center text-xs">
+        <p className="text-center text-xs text-muted-foreground">
           {remaining} more on the web · get the app to know when they reply
         </p>
       ) : null}
@@ -129,12 +137,13 @@ function Composer({
 
 function Wall({ name }: { name: string }) {
   return (
-    <div className="border-border flex flex-col items-center gap-4 border-t px-6 py-6 text-center">
-      <h3 className="text-foreground text-xl font-extrabold tracking-tight text-balance">
+    <div className="flex flex-col items-center gap-4 border-t border-border px-6 py-6 text-center">
+      <h3 className="text-xl font-extrabold tracking-tight text-balance text-foreground">
         Keep the conversation going
       </h3>
-      <p className="text-muted-foreground max-w-xs text-pretty">
-        Get Snacc to keep chatting with {name} anonymously — and know the moment they reply.
+      <p className="max-w-xs text-pretty text-muted-foreground">
+        Get Snacc to keep chatting with {name} anonymously — and know the moment
+        they reply.
       </p>
       <StoreButtons />
     </div>
@@ -145,10 +154,10 @@ function NotFound() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
       <p className="text-3xl">👻</p>
-      <p className="text-muted-foreground text-pretty">
+      <p className="text-pretty text-muted-foreground">
         This conversation isn&rsquo;t available on this device.
       </p>
-      <Link href="/" className="text-foreground font-semibold underline">
+      <Link href="/" className="font-semibold text-foreground underline">
         Go to Snacc
       </Link>
     </div>

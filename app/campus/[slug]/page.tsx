@@ -29,7 +29,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: `/campus/${campus.slug}`,
       images: image ? [image] : undefined,
     },
-    twitter: { card: "summary", title, description, images: image ? [image] : undefined },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+      images: image ? [image] : undefined,
+    },
   }
 }
 

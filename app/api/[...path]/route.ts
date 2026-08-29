@@ -1,7 +1,10 @@
 import type { NextRequest } from "next/server"
 import { getSessionToken, SNACC_API_URL } from "@/lib/session"
 
-async function proxy(request: NextRequest, params: Promise<{ path: string[] }>) {
+async function proxy(
+  request: NextRequest,
+  params: Promise<{ path: string[] }>
+) {
   const { path } = await params
   const token = await getSessionToken()
   const search = new URL(request.url).search
@@ -13,14 +16,17 @@ async function proxy(request: NextRequest, params: Promise<{ path: string[] }>) 
   if (token) headers["Authorization"] = `Bearer ${token}`
 
   const method = request.method
-  const body = method === "GET" || method === "HEAD" ? undefined : await request.text()
+  const body =
+    method === "GET" || method === "HEAD" ? undefined : await request.text()
 
   const res = await fetch(target, { method, headers, body, cache: "no-store" })
   const payload = await res.text()
 
   return new Response(payload, {
     status: res.status,
-    headers: { "Content-Type": res.headers.get("content-type") ?? "application/json" },
+    headers: {
+      "Content-Type": res.headers.get("content-type") ?? "application/json",
+    },
   })
 }
 

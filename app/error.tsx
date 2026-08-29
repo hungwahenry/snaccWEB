@@ -25,20 +25,20 @@ export default function Error({
           <h1 className="text-3xl font-extrabold tracking-tight text-balance sm:text-4xl">
             Something went wrong
           </h1>
-          <p className="text-muted-foreground mx-auto mt-3 max-w-sm text-lg leading-relaxed text-pretty">
+          <p className="mx-auto mt-3 max-w-sm text-lg leading-relaxed text-pretty text-muted-foreground">
             An unexpected error tripped us up. Try again in a moment.
           </p>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-3">
           <button
             onClick={reset}
-            className="bg-foreground text-background rounded-2xl px-6 py-3 font-semibold transition-transform hover:scale-[1.02]"
+            className="rounded-2xl bg-foreground px-6 py-3 font-semibold text-background transition-transform hover:scale-[1.02]"
           >
             Try again
           </button>
           <Link
             href="/"
-            className="border-border hover:bg-muted rounded-2xl border px-6 py-3 font-semibold transition-colors"
+            className="rounded-2xl border border-border px-6 py-3 font-semibold transition-colors hover:bg-muted"
           >
             Go home
           </Link>

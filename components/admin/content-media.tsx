@@ -54,10 +54,6 @@ function Frame({
   )
 }
 
-/**
- * Everything attached to a piece of content, shown rather than described. A moderator deciding on
- * an image post has nothing to read, so the image itself is the evidence — and it opens full size.
- */
 export function ContentMedia({
   images = [],
   gif = null,

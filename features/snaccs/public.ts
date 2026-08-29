@@ -53,9 +53,13 @@ async function listSnaccs(path: string): Promise<PublicSnacc[]> {
 }
 
 export function getUserSnaccs(username: string, perPage = 5) {
-  return listSnaccs(`/users/${encodeURIComponent(username)}/snaccs?perPage=${perPage}`)
+  return listSnaccs(
+    `/users/${encodeURIComponent(username)}/snaccs?perPage=${perPage}`
+  )
 }
 
 export function getCampusSnaccs(slug: string, perPage = 5) {
-  return listSnaccs(`/universities/${encodeURIComponent(slug)}/snaccs?perPage=${perPage}`)
+  return listSnaccs(
+    `/universities/${encodeURIComponent(slug)}/snaccs?perPage=${perPage}`
+  )
 }

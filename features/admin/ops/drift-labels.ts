@@ -1,4 +1,3 @@
-/** Every counter the nightly check reads, in the words an admin would use for it. */
 export const DRIFT_LABELS: Record<string, string> = {
   snaccs_count: "Snaccs per user",
   followers_count: "Followers",

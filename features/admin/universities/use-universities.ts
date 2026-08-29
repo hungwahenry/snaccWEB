@@ -26,7 +26,6 @@ export function useUniversities(params: ListUniversitiesParams) {
   })
 }
 
-/** For campus pickers, which need the whole list rather than a page of it. */
 export function useAllUniversities() {
   return useQuery({
     queryKey: ["admin", "universities", "all"],

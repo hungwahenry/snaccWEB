@@ -5,8 +5,10 @@ export function CampusHeader({ campus }: { campus: PublicCampus }) {
   return (
     <div className="flex flex-col gap-3 px-6 pt-6 pb-4">
       <div className="flex flex-col gap-0.5">
-        <h1 className="text-foreground text-2xl font-extrabold tracking-tight">{campus.name}</h1>
-        <p className="text-muted-foreground text-base">{campus.acronym}</p>
+        <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
+          {campus.name}
+        </h1>
+        <p className="text-base text-muted-foreground">{campus.acronym}</p>
       </div>
 
       <div className="flex gap-10">
@@ -20,8 +22,10 @@ export function CampusHeader({ campus }: { campus: PublicCampus }) {
 function Stat({ count, label }: { count: number; label: string }) {
   return (
     <div className="flex flex-col items-center">
-      <span className="text-foreground text-base font-extrabold">{compactCount(count)}</span>
-      <span className="text-muted-foreground text-xs">{label}</span>
+      <span className="text-base font-extrabold text-foreground">
+        {compactCount(count)}
+      </span>
+      <span className="text-xs text-muted-foreground">{label}</span>
     </div>
   )
 }

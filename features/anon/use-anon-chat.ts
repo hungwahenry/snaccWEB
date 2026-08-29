@@ -64,12 +64,26 @@ export function useAnonChat(conversationId: string) {
       apply(await replyAnon(conversationId, text.trim()))
       setText("")
     } catch (err) {
-      if (err instanceof AnonError && err.code === "guest_limit_reached") setWalled(true)
-      else setError(err instanceof AnonError ? err.message : "Couldn't send. Try again.")
+      if (err instanceof AnonError && err.code === "guest_limit_reached")
+        setWalled(true)
+      else
+        setError(
+          err instanceof AnonError ? err.message : "Couldn't send. Try again."
+        )
     } finally {
       setSending(false)
     }
   }
 
-  return { thread, loading, text, setText, canSend, sending, error, walled, submit }
+  return {
+    thread,
+    loading,
+    text,
+    setText,
+    canSend,
+    sending,
+    error,
+    walled,
+    submit,
+  }
 }

@@ -8,7 +8,6 @@ export interface DashboardSeriesPoint {
 }
 
 export interface DashboardMetrics {
-  /** False when the reader is confined: every number covers their campuses only. */
   platform: boolean
   users: {
     total: number
@@ -32,7 +31,6 @@ export interface DashboardMetrics {
     dismissed: number
     reports_7d: number
   }
-  /** Null for a campus-confined reader: platform money has no campus to filter on. */
   money: {
     total_distributed: number
     wallet_liability: number

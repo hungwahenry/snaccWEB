@@ -1,4 +1,3 @@
-/** Pinned, not `undefined`: server and browser must format identically or hydration mismatches. */
 const LOCALE = "en-NG"
 
 function upperMeridiem(value: string): string {

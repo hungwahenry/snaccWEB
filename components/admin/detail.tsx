@@ -1,7 +1,6 @@
 import type { ReactNode } from "react"
 import { cn } from "@/lib/utils"
 
-/** The top of a detail screen: what it is, how it stands, and what can be done to it. */
 export function DetailHeader({
   title,
   subtitle,
@@ -13,10 +12,8 @@ export function DetailHeader({
   title: ReactNode
   subtitle?: ReactNode
   badges?: ReactNode
-  /** Small facts that belong next to the title — dates, references, counts. */
   meta?: ReactNode
   actions?: ReactNode
-  /** An avatar or icon, shown before the title. */
   leading?: ReactNode
 }) {
   return (
@@ -24,15 +21,15 @@ export function DetailHeader({
       <div className="flex min-w-0 items-start gap-4">
         {leading ? <div className="shrink-0">{leading}</div> : null}
         <div className="flex min-w-0 flex-col gap-1">
-        <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
-          {badges}
-        </div>
-        {subtitle ? (
-          <p className="text-sm text-pretty text-muted-foreground">
-            {subtitle}
-          </p>
-        ) : null}
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
+            {badges}
+          </div>
+          {subtitle ? (
+            <p className="text-sm text-pretty text-muted-foreground">
+              {subtitle}
+            </p>
+          ) : null}
           {meta ? (
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
               {meta}
@@ -49,7 +46,6 @@ export function DetailHeader({
   )
 }
 
-/** A titled block. The heading carries it — a card around three lines of text does not. */
 export function Section({
   title,
   description,
@@ -90,7 +86,6 @@ const STAT_COLUMNS = {
   5: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5",
 } as const
 
-/** Figures side by side. Tight tiles, because a number needs a label and nothing else. */
 export function StatGrid({
   columns = 4,
   children,
@@ -125,7 +120,6 @@ export function Stat({
   )
 }
 
-/** Label-and-value rows in one bordered block. Two of these sit side by side on a wide screen. */
 export function Facts({ children }: { children: ReactNode }) {
   return <dl className="divide-y rounded-lg border">{children}</dl>
 }
@@ -137,7 +131,6 @@ export function Fact({
 }: {
   label: ReactNode
   value: ReactNode
-  /** For references and codes, which read better fixed-width and must not be truncated. */
   mono?: boolean
 }) {
   return (

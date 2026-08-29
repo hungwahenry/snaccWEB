@@ -17,12 +17,15 @@ export default function Home() {
           <h1 className="text-5xl font-extrabold tracking-tight text-balance sm:text-6xl">
             What&apos;s happening on campus?
           </h1>
-          <p className="text-muted-foreground mx-auto mt-5 max-w-xl text-lg leading-relaxed text-pretty">
-            Share a thought, a pic, or a GIF, and see what your campus is really talking about right
-            now.
+          <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-pretty text-muted-foreground">
+            Share a thought, a pic, or a GIF, and see what your campus is really
+            talking about right now.
           </p>
           <div className="mt-8 flex justify-center">
-            <DownloadButton label="Get the app" className="px-6 py-3 text-base" />
+            <DownloadButton
+              label="Get the app"
+              className="px-6 py-3 text-base"
+            />
           </div>
         </div>
       </main>

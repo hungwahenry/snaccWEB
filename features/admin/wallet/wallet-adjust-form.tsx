@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import type { useWalletMutations } from "./use-wallet"
 
-/** Naira in, kobo out — the ledger only ever moves whole kobo. */
 export function WalletAdjustForm({
   actions,
 }: {

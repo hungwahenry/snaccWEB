@@ -1,10 +1,6 @@
 import type { ReactNode } from "react"
 import { cn } from "@/lib/utils"
 
-/**
- * A thing you can change: what it is, what it currently is, and the control — on one line, so the
- * state and the action are never read apart. Stacks on narrow screens.
- */
 export function SettingRow({
   label,
   description,

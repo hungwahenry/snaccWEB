@@ -30,7 +30,6 @@ export const EMPTY_SUSPENSION: SuspensionDraft = {
   duration: INDEFINITE,
 }
 
-/** The draft as the API wants it: an end date rather than a number of days. */
 export function toSuspensionInput(draft: SuspensionDraft, note?: string) {
   const days = Number(draft.duration)
 
@@ -43,7 +42,6 @@ export function toSuspensionInput(draft: SuspensionDraft, note?: string) {
   }
 }
 
-/** Reason and length, shared by suspending directly and suspending off the back of a report. */
 export function SuspensionFields({
   value,
   onChange,

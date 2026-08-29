@@ -13,7 +13,6 @@ export function getUser(id: string) {
 export interface SuspendInput {
   reasonId?: string
   note?: string
-  /** ISO 8601. Omit to suspend indefinitely. */
   until?: string
 }
 

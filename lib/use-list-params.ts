@@ -3,10 +3,6 @@
 import { parseAsInteger, parseAsString, useQueryStates } from "nuqs"
 import { useCallback, useMemo } from "react"
 
-/**
- * List state lives in the URL, so a filtered view is a link a moderator can send someone. Every
- * admin list shares this, which is why they all page, search and reset the same way.
- */
 export function useListParams<T extends Record<string, string>>(extra?: {
   [K in keyof T]: string
 }) {
@@ -56,7 +52,6 @@ export function useListParams<T extends Record<string, string>>(extra?: {
   }
 }
 
-/** Drops empty strings, which the API treats as "filter by nothing" rather than "no filter". */
 export function queryOf(
   params: Record<string, string | number | boolean | undefined>
 ): Record<string, string | number | boolean> {

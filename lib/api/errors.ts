@@ -3,7 +3,7 @@ export class ApiError extends Error {
     readonly status: number,
     message: string,
     readonly code: string | null = null,
-    readonly errors?: Record<string, string[]>,
+    readonly errors?: Record<string, string[]>
   ) {
     super(message)
     this.name = "ApiError"

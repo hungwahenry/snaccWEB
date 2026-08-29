@@ -30,14 +30,12 @@ const features = tableFeatures({
   sortedRowModel: createSortedRowModel(),
 })
 
-/** Column definitions, so pages never touch the feature set the table is built from. */
 export type Column<T extends RowData> = ColumnDef<typeof features, T, unknown>
 
 export interface DataTableProps<T extends RowData> {
   columns: Column<T>[]
   rows: T[] | undefined
   isPending: boolean
-  /** Server-side paging; omit for a table that shows everything it is given. */
   page?: number
   perPage?: number
   total?: number

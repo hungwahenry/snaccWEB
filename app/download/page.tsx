@@ -16,14 +16,19 @@ export default function DownloadPage() {
       <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center justify-center gap-8 px-6 py-12 text-center">
         {/* Snacc mark — black on light, white on dark */}
         <img src="/logo-light.png" alt="" className="size-20 dark:hidden" />
-        <img src="/logo-dark.png" alt="" className="hidden size-20 dark:block" />
+        <img
+          src="/logo-dark.png"
+          alt=""
+          className="hidden size-20 dark:block"
+        />
 
         <div>
           <h1 className="text-4xl font-extrabold tracking-tight text-balance sm:text-5xl">
             Get Snacc
           </h1>
-          <p className="text-muted-foreground mx-auto mt-4 max-w-md text-lg leading-relaxed text-pretty">
-            Download the app on your phone and see what your campus is really talking about.
+          <p className="mx-auto mt-4 max-w-md text-lg leading-relaxed text-pretty text-muted-foreground">
+            Download the app on your phone and see what your campus is really
+            talking about.
           </p>
         </div>
 

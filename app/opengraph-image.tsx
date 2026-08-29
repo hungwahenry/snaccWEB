@@ -12,7 +12,7 @@ const MUTED = "#8b8b8b"
 
 async function loadInterTight(weight: number): Promise<ArrayBuffer> {
   const css = await fetch(
-    `https://fonts.googleapis.com/css2?family=Inter+Tight:wght@${weight}`,
+    `https://fonts.googleapis.com/css2?family=Inter+Tight:wght@${weight}`
   ).then((res) => res.text())
   const src = css.match(/src: url\((.+?)\) format\('(?:opentype|truetype)'\)/)
   if (!src) throw new Error(`Inter Tight ${weight} not found`)
@@ -20,12 +20,22 @@ async function loadInterTight(weight: number): Promise<ArrayBuffer> {
 }
 
 export default async function OpengraphImage() {
-  const markData = await readFile(new URL("./opengraph-mark.png", import.meta.url))
+  const markData = await readFile(
+    new URL("./opengraph-mark.png", import.meta.url)
+  )
   const markSrc = `data:image/png;base64,${markData.toString("base64")}`
 
-  let fonts: { name: string; data: ArrayBuffer; weight: 500 | 800; style: "normal" }[] = []
+  let fonts: {
+    name: string
+    data: ArrayBuffer
+    weight: 500 | 800
+    style: "normal"
+  }[] = []
   try {
-    const [extraBold, medium] = await Promise.all([loadInterTight(800), loadInterTight(500)])
+    const [extraBold, medium] = await Promise.all([
+      loadInterTight(800),
+      loadInterTight(500),
+    ])
     fonts = [
       { name: "Inter Tight", data: extraBold, weight: 800, style: "normal" },
       { name: "Inter Tight", data: medium, weight: 500, style: "normal" },
@@ -35,61 +45,75 @@ export default async function OpengraphImage() {
   }
 
   return new ImageResponse(
-    (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        background: BG,
+        padding: 80,
+        fontFamily: "Inter Tight, sans-serif",
+      }}
+    >
       <div
         style={{
-          width: "100%",
-          height: "100%",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          background: BG,
-          padding: 80,
-          fontFamily: "Inter Tight, sans-serif",
+          fontSize: 30,
+          fontWeight: 500,
+          color: MUTED,
+          letterSpacing: 1,
         }}
       >
-        <div style={{ display: "flex", fontSize: 30, fontWeight: 500, color: MUTED, letterSpacing: 1 }}>
-          snacc.fyi
-        </div>
+        snacc.fyi
+      </div>
 
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={markSrc} width={150} height={150} alt="" />
-            <div
-              style={{
-                display: "flex",
-                fontSize: 184,
-                fontWeight: 800,
-                color: FG,
-                letterSpacing: -9,
-                lineHeight: 1,
-              }}
-            >
-              snacc
-            </div>
-          </div>
-          <div style={{ display: "flex", fontSize: 52, fontWeight: 500, color: MUTED, marginTop: 24 }}>
-            What&apos;s happening on campus?
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={markSrc} width={150} height={150} alt="" />
+          <div
+            style={{
+              display: "flex",
+              fontSize: 184,
+              fontWeight: 800,
+              color: FG,
+              letterSpacing: -9,
+              lineHeight: 1,
+            }}
+          >
+            snacc
           </div>
         </div>
-
         <div
           style={{
             display: "flex",
-            alignItems: "center",
-            gap: 14,
-            fontSize: 28,
+            fontSize: 52,
             fontWeight: 500,
             color: MUTED,
+            marginTop: 24,
           }}
         >
-          <span style={{ display: "flex" }}>The social app for your campus</span>
-          <span style={{ display: "flex" }}>·</span>
-          <span style={{ display: "flex" }}>iOS &amp; Android</span>
+          What&apos;s happening on campus?
         </div>
       </div>
-    ),
-    { ...size, fonts },
+
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 14,
+          fontSize: 28,
+          fontWeight: 500,
+          color: MUTED,
+        }}
+      >
+        <span style={{ display: "flex" }}>The social app for your campus</span>
+        <span style={{ display: "flex" }}>·</span>
+        <span style={{ display: "flex" }}>iOS &amp; Android</span>
+      </div>
+    </div>,
+    { ...size, fonts }
   )
 }

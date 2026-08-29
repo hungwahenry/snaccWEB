@@ -1,4 +1,3 @@
-/** Empty `campuses` means unrestricted; populated, every key applies only within those campuses. */
 export interface AdminPermissions {
   all: boolean
   keys: string[]
@@ -18,7 +17,6 @@ export function can(
   return !!permissions && (permissions.all || permissions.keys.includes(key))
 }
 
-/** Whether a grant reaches a particular campus. Unrestricted holders reach every campus. */
 export function canForCampus(
   permissions: AdminPermissions | undefined,
   key: string,

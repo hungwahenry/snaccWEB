@@ -17,13 +17,13 @@ export default function GlobalError({
             <h1 className="text-3xl font-extrabold tracking-tight text-balance">
               Something went wrong
             </h1>
-            <p className="text-muted-foreground mx-auto mt-3 max-w-sm text-lg leading-relaxed">
+            <p className="mx-auto mt-3 max-w-sm text-lg leading-relaxed text-muted-foreground">
               The app hit an unexpected error. Please reload the page.
             </p>
           </div>
           <button
             onClick={reset}
-            className="bg-foreground text-background rounded-2xl px-6 py-3 font-semibold"
+            className="rounded-2xl bg-foreground px-6 py-3 font-semibold text-background"
           >
             Reload
           </button>

@@ -18,11 +18,8 @@ export interface OpsQueue {
 export interface OpsDrift {
   profiles: Record<string, number>
   snaccs: Record<string, number>
-  /** Profiles whose score columns disagree with the score ledger. */
   scores: Record<string, number>
-  /** Wallet balances that disagree with their entries. A trigger owns this, so always zero. */
   wallets: { accounts: number }
-  /** Absent until the backend that owns the earnings ledger is deployed. */
   earnings?: { profiles: number }
 }
 

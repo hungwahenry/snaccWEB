@@ -11,11 +11,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   try {
-    const res = await fetch(`${API_URL}/api/v1/pages`, { next: { revalidate: 3600 } })
+    const res = await fetch(`${API_URL}/api/v1/pages`, {
+      next: { revalidate: 3600 },
+    })
     if (res.ok) {
       const json = (await res.json()) as { data: { slug: string }[] }
       for (const page of json.data ?? []) {
-        entries.push({ url: `${BASE}/${page.slug}`, lastModified: now, priority: 0.5 })
+        entries.push({
+          url: `${BASE}/${page.slug}`,
+          lastModified: now,
+          priority: 0.5,
+        })
       }
     }
   } catch {

@@ -5,6 +5,7 @@ import { UserInline } from "@/components/admin/user-inline"
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/format"
 import { ReportedContent } from "./reported-content"
+import { ScanPanel } from "./scan-panel"
 import { ResolveDialog } from "./resolve-dialog"
 import type { useResolveReport } from "./use-reports"
 import type { AdminReport, AdminReportDetail } from "./types"
@@ -37,7 +38,18 @@ function Filing({ report }: { report: AdminReport }) {
           {formatDate(report.created_at)}
         </span>
       </div>
-      <UserInline user={report.reporter} size="sm" />
+      {report.reporter ? (
+        <UserInline user={report.reporter} size="sm" />
+      ) : (
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge variant="outline">Automatic check</Badge>
+          {report.scan?.category ? (
+            <span className="font-mono text-xs text-muted-foreground">
+              {report.scan.category} {report.scan.score?.toFixed(3)}
+            </span>
+          ) : null}
+        </div>
+      )}
       {report.detail ? (
         <p className="text-sm text-pretty text-muted-foreground">
           “{report.detail}”
@@ -96,6 +108,8 @@ export function ReportDetail({
       />
 
       <ReportedContent report={report} />
+
+      {report.scan ? <ScanPanel scan={report.scan} /> : null}
 
       <Section
         title={

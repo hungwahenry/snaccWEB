@@ -3,7 +3,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { getPublicConfig } from "./index"
 
-/** Falls back to what the caller was built expecting, so a screen renders before config lands. */
 export function useConfigValue<T>(key: string, fallback: T): T {
   const { data } = useQuery({
     queryKey: ["config", "public"],

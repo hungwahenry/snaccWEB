@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge"
 import { formatDate, formatNumber } from "@/lib/format"
 import type { AdminSnacc, SnaccContent } from "./types"
 
-/** The body and its attachments — the same block whether it is the snacc or the one it quotes. */
 export function SnaccBody({ snacc }: { snacc: SnaccContent }) {
   const empty =
     !snacc.body &&
@@ -42,7 +41,6 @@ export function SnaccBody({ snacc }: { snacc: SnaccContent }) {
   )
 }
 
-/** The snacc as a moderator needs to see it. Shared by the snacc page and the report page. */
 export function SnaccView({ snacc }: { snacc: AdminSnacc }) {
   return (
     <div className="flex flex-col gap-3 rounded-lg border p-4">

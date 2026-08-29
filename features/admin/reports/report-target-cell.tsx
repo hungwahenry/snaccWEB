@@ -6,7 +6,6 @@ import type { ReactNode } from "react"
 import { handleOf } from "@/lib/format"
 import type { AdminReport, ReportTarget } from "./types"
 
-/** The first thing attached to a target, if anything is. */
 function thumbOf(target: NonNullable<ReportTarget>): string | null {
   if (target.type === "user") return null
   const content =
@@ -52,7 +51,6 @@ function describe(target: ReportTarget): { title: string; who: string } {
   }
 }
 
-/** What was reported, at a glance — the image itself when there is one. */
 export function ReportTargetCell({ report }: { report: AdminReport }) {
   const { title, who } = describe(report.target)
   const thumb = report.target ? thumbOf(report.target) : null

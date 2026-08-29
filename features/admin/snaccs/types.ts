@@ -1,3 +1,4 @@
+import type { ReportFiling } from "@/features/admin/reports/types"
 import type {
   MediaGif,
   MediaImage,
@@ -13,7 +14,6 @@ export interface SnaccAuthor {
   university: { id: string; name: string; acronym: string } | null
 }
 
-/** What a snacc carries, as the app serializes it — the admin view shows all of it. */
 export interface SnaccContent {
   id: string
   body: string | null
@@ -30,7 +30,6 @@ export interface SnaccContent {
 
 export interface AdminSnacc extends SnaccContent {
   parent_id: string | null
-  /** The snacc this one quotes, when it is a resnacc. */
   resnacc_of: SnaccContent | null
   reactions_count: number
   comments_count: number
@@ -52,14 +51,6 @@ export interface ListSnaccsParams {
   held?: boolean
 }
 
-/** Detail adds the filings themselves — the reason a moderator opened this page. */
 export interface AdminSnaccDetail extends AdminSnacc {
-  reports: {
-    id: string
-    status: "open" | "actioned" | "dismissed"
-    detail: string | null
-    reason: { slug: string; label: string }
-    reporter: SnaccAuthor
-    created_at: string
-  }[]
+  reports: ReportFiling[]
 }

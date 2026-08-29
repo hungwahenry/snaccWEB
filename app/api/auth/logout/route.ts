@@ -1,4 +1,8 @@
-import { clearSessionToken, getSessionToken, SNACC_API_URL } from "@/lib/session"
+import {
+  clearSessionToken,
+  getSessionToken,
+  SNACC_API_URL,
+} from "@/lib/session"
 
 export async function POST() {
   const token = await getSessionToken()

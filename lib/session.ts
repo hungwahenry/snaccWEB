@@ -3,7 +3,6 @@ import { cookies } from "next/headers"
 
 const COOKIE = "snacc_admin_token"
 
-/** The Snacc API origin, called server-side only (BFF). Browser never talks to it directly. */
 export const SNACC_API_URL =
   process.env.SNACC_API_URL ?? "http://localhost:3000"
 

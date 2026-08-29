@@ -12,45 +12,62 @@ import Link from "next/link"
 import { compactCount, timeAgo } from "@/lib/format"
 import type { PublicQuotedSnacc, PublicSnacc } from "./public"
 
-export function SnaccCard({ snacc, href }: { snacc: PublicSnacc; href?: string }) {
+export function SnaccCard({
+  snacc,
+  href,
+}: {
+  snacc: PublicSnacc
+  href?: string
+}) {
   const { author } = snacc
   const media = snacc.images[0] ?? snacc.gif
   const ghost = snacc.anonymous
 
   const inner = (
-    <div className="border-border flex flex-col gap-3 border-b px-4 py-4">
+    <div className="flex flex-col gap-3 border-b border-border px-4 py-4">
       <div className="flex gap-3">
         {ghost ? (
-          <div className="bg-muted flex size-11 shrink-0 items-center justify-center rounded-full">
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-muted">
             <GhostIcon className="text-muted-foreground" size={20} />
           </div>
         ) : (
-          <img src={author.avatar_url} alt="" className="size-11 shrink-0 rounded-full" />
+          <img
+            src={author.avatar_url}
+            alt=""
+            className="size-11 shrink-0 rounded-full"
+          />
         )}
 
         <div className="flex min-w-0 flex-1 flex-col gap-2">
           <div className="flex items-center gap-1.5 text-sm">
-            <span className="text-foreground shrink truncate font-extrabold">
+            <span className="shrink truncate font-extrabold text-foreground">
               {ghost ? "Ghost" : (author.display_name ?? author.username)}
             </span>
             {!ghost ? (
-              <span className="text-muted-foreground shrink truncate">@{author.username}</span>
+              <span className="shrink truncate text-muted-foreground">
+                @{author.username}
+              </span>
             ) : null}
             {author.university ? (
               <>
                 <span className="text-muted-foreground">·</span>
-                <span className="text-muted-foreground font-semibold">
+                <span className="font-semibold text-muted-foreground">
                   {author.university.acronym}
                 </span>
               </>
             ) : null}
             <span className="text-muted-foreground">·</span>
-            <span className="text-muted-foreground shrink-0">{timeAgo(snacc.created_at)}</span>
-            <MoreHorizontalIcon className="text-muted-foreground ml-auto shrink-0" size={20} />
+            <span className="shrink-0 text-muted-foreground">
+              {timeAgo(snacc.created_at)}
+            </span>
+            <MoreHorizontalIcon
+              className="ml-auto shrink-0 text-muted-foreground"
+              size={20}
+            />
           </div>
 
           {snacc.body ? (
-            <p className="text-foreground text-[15px] leading-snug whitespace-pre-wrap">
+            <p className="text-[15px] leading-snug whitespace-pre-wrap text-foreground">
               {snacc.body}
             </p>
           ) : null}
@@ -58,7 +75,7 @@ export function SnaccCard({ snacc, href }: { snacc: PublicSnacc; href?: string }
           {snacc.resnacc_of ? (
             <QuotedSnacc snacc={snacc.resnacc_of} />
           ) : snacc.quoted_gone ? (
-            <div className="border-border text-muted-foreground rounded-2xl border px-3 py-2.5 text-sm">
+            <div className="rounded-2xl border border-border px-3 py-2.5 text-sm text-muted-foreground">
               This snacc is no longer available.
             </div>
           ) : null}
@@ -69,7 +86,7 @@ export function SnaccCard({ snacc, href }: { snacc: PublicSnacc; href?: string }
         <img
           src={media.url}
           alt=""
-          className="border-border ml-14 rounded-2xl border"
+          className="ml-14 rounded-2xl border border-border"
           style={{ aspectRatio: `${media.width} / ${media.height}` }}
         />
       ) : snacc.sticker ? (
@@ -77,7 +94,9 @@ export function SnaccCard({ snacc, href }: { snacc: PublicSnacc; href?: string }
           src={snacc.sticker.url}
           alt=""
           className="ml-14 max-h-40 self-start object-contain"
-          style={{ aspectRatio: `${snacc.sticker.width} / ${snacc.sticker.height}` }}
+          style={{
+            aspectRatio: `${snacc.sticker.width} / ${snacc.sticker.height}`,
+          }}
         />
       ) : null}
 
@@ -90,7 +109,7 @@ export function SnaccCard({ snacc, href }: { snacc: PublicSnacc; href?: string }
   if (!href) return inner
 
   return (
-    <Link href={href} className="hover:bg-muted/30 block transition-colors">
+    <Link href={href} className="block transition-colors hover:bg-muted/30">
       {inner}
     </Link>
   )
@@ -99,31 +118,36 @@ export function SnaccCard({ snacc, href }: { snacc: PublicSnacc; href?: string }
 function QuotedSnacc({ snacc }: { snacc: PublicQuotedSnacc }) {
   const { author } = snacc
   const ghost = snacc.anonymous
-  const hasMedia = snacc.images.length > 0 || snacc.gif !== null || snacc.sticker !== null
+  const hasMedia =
+    snacc.images.length > 0 || snacc.gif !== null || snacc.sticker !== null
 
   return (
-    <div className="border-border flex flex-col gap-1.5 rounded-2xl border px-3 py-2.5">
+    <div className="flex flex-col gap-1.5 rounded-2xl border border-border px-3 py-2.5">
       <div className="flex items-center gap-1.5 text-sm">
         {ghost ? (
           <GhostIcon className="text-muted-foreground" size={16} />
         ) : (
           <img src={author.avatar_url} alt="" className="size-5 rounded-full" />
         )}
-        <span className="text-foreground truncate font-bold">
+        <span className="truncate font-bold text-foreground">
           {ghost ? "Ghost" : (author.display_name ?? author.username)}
         </span>
         {!ghost ? (
-          <span className="text-muted-foreground truncate">@{author.username}</span>
+          <span className="truncate text-muted-foreground">
+            @{author.username}
+          </span>
         ) : null}
       </div>
 
       {snacc.body ? (
-        <p className="text-foreground line-clamp-3 text-sm leading-snug whitespace-pre-wrap">
+        <p className="line-clamp-3 text-sm leading-snug whitespace-pre-wrap text-foreground">
           {snacc.body}
         </p>
       ) : null}
 
-      {hasMedia ? <p className="text-muted-foreground text-xs">📎 Attachment</p> : null}
+      {hasMedia ? (
+        <p className="text-xs text-muted-foreground">📎 Attachment</p>
+      ) : null}
     </div>
   )
 }
@@ -141,7 +165,7 @@ function SnaccActions({ snacc }: { snacc: PublicSnacc }) {
                 </span>
               ))}
             </div>
-            <span className="text-muted-foreground text-sm font-bold">
+            <span className="text-sm font-bold text-muted-foreground">
               {compactCount(snacc.reactions_count)}
             </span>
           </div>
@@ -168,7 +192,9 @@ function Action({ icon: Icon, count }: { icon: LucideIcon; count: number }) {
     <div className="flex h-9 items-center gap-1.5">
       <Icon className="text-muted-foreground" size={22} />
       {count > 0 ? (
-        <span className="text-muted-foreground text-sm font-bold">{compactCount(count)}</span>
+        <span className="text-sm font-bold text-muted-foreground">
+          {compactCount(count)}
+        </span>
       ) : null}
     </div>
   )

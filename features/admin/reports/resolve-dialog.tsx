@@ -37,7 +37,6 @@ const TARGET_NOUN = {
   moment: "moment",
 } as const
 
-/** Taking the content down and suspending whoever posted it are separate choices, and usually both. */
 function actChoicesFor(target: AdminReport["target"]) {
   if (target?.type === "snacc")
     return [

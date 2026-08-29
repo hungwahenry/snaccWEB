@@ -14,10 +14,6 @@ import {
 
 type Variant = "default" | "destructive" | "outline" | "ghost"
 
-/**
- * A button that asks first. Anything irreversible, anything that moves money, and anything a user
- * would notice immediately goes through one of these — so the panel never acts on a stray click.
- */
 export function ConfirmAction({
   trigger,
   label,
@@ -32,7 +28,6 @@ export function ConfirmAction({
   disabled = false,
   onConfirm,
 }: {
-  /** Replaces the default button, for triggers that are not one. */
   trigger?: ReactElement
   label?: ReactNode
   icon?: ReactNode
@@ -64,7 +59,7 @@ export function ConfirmAction({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <p className="text-muted-foreground text-sm text-pretty">
+        <p className="text-sm text-pretty text-muted-foreground">
           {description}
         </p>
         <DialogFooter>

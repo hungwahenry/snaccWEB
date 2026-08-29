@@ -20,7 +20,6 @@ export function listFlags() {
   return api.get<AdminFeatureFlag[]>("/admin/flags")
 }
 
-/** Only the fields passed are touched; a bound left out keeps whatever it had. */
 export function updateFlag(key: string, changes: FlagChanges) {
   return api.patch<AdminFeatureFlag>(`/admin/flags/${key}`, changes)
 }

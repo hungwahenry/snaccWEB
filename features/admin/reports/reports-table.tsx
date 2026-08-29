@@ -126,9 +126,11 @@ export function ReportsTable({
                     {report.reason.label}
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {report.reporter.username
-                      ? `@${report.reporter.username}`
-                      : report.reporter.display_name}
+                    {report.reporter
+                      ? report.reporter.username
+                        ? `@${report.reporter.username}`
+                        : report.reporter.display_name
+                      : "Snacc"}
                   </TableCell>
                   <TableCell>
                     <Badge variant={STATUS_VARIANT[report.status]}>

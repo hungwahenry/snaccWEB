@@ -376,7 +376,6 @@ export function ReasonDialog({
   )
 }
 
-/** Same shape as ReasonDialog, without a reason field the endpoint would only discard. */
 export function ConfirmDialog({
   triggerLabel,
   title,

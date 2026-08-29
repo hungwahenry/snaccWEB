@@ -6,7 +6,6 @@ import type { ReactNode } from "react"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 
-/** Every detail route is the same three states behind a back link, so it is written once. */
 export function DetailScreen<T>({
   backHref,
   backLabel,
