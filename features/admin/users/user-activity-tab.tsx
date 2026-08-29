@@ -1,14 +1,9 @@
 "use client"
 
 import Link from "next/link"
+import { Section } from "@/components/admin/detail"
+import { TableFrame } from "@/components/data-table/table-frame"
 import { Badge } from "@/components/ui/badge"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import {
   Table,
   TableBody,
@@ -20,20 +15,23 @@ import {
 import { formatDate, formatNumber } from "@/lib/format"
 import type { AdminUserDetail } from "./types"
 
+function Nothing({ children }: { children: string }) {
+  return (
+    <p className="rounded-lg border border-dashed py-8 text-center text-sm text-muted-foreground">
+      {children}
+    </p>
+  )
+}
+
 export function UserActivityTab({ user }: { user: AdminUserDetail }) {
   return (
-    <div className="flex flex-col gap-6">
-      {user.top_engagers.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Who engages with them</CardTitle>
-            <CardDescription>
-              Resnaccs and replies aimed at this user, counted off the posts
-              themselves. A single account holding a large share is the shape
-              rank farming takes.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+    <div className="flex flex-col gap-6 pt-4">
+      {user.top_engagers.length > 0 ? (
+        <Section
+          title="Who engages with them"
+          description="Resnaccs and replies aimed at this user, counted off the posts themselves. A single account holding a large share is the shape rank farming takes."
+        >
+          <TableFrame>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -70,18 +68,15 @@ export function UserActivityTab({ user }: { user: AdminUserDetail }) {
                 ))}
               </TableBody>
             </Table>
-          </CardContent>
-        </Card>
-      )}
+          </TableFrame>
+        </Section>
+      ) : null}
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Sessions &amp; devices</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {user.sessions.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No active sessions.</p>
-          ) : (
+      <Section title="Sessions and devices">
+        {user.sessions.length === 0 ? (
+          <Nothing>No active sessions.</Nothing>
+        ) : (
+          <TableFrame>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -106,91 +101,86 @@ export function UserActivityTab({ user }: { user: AdminUserDetail }) {
                         : "—"}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {session.last_used_at
-                        ? formatDate(session.last_used_at)
-                        : "—"}
+                      {formatDate(session.last_used_at)}
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
-          )}
-        </CardContent>
-      </Card>
+          </TableFrame>
+        )}
+      </Section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Linked accounts</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Section
+          title="Linked accounts"
+          description="Other accounts seen on the same device or IP."
+        >
           {user.linked_accounts.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No other accounts share this user&apos;s IP or device.
-            </p>
+            <Nothing>Nothing shares this user&apos;s IP or device.</Nothing>
           ) : (
-            <div className="flex flex-col gap-2">
+            <div className="divide-y rounded-lg border">
               {user.linked_accounts.map((linked) => (
                 <div
                   key={linked.id}
-                  className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2"
+                  className="flex items-center justify-between gap-3 px-4 py-2.5"
                 >
                   <Link
                     href={`/admin/users/${linked.id}`}
-                    className="text-sm font-medium hover:underline"
+                    className="truncate text-sm font-medium underline-offset-4 hover:underline"
                   >
                     {linked.username ? `@${linked.username}` : linked.email}
                   </Link>
                   <div className="flex flex-wrap items-center gap-1.5">
-                    {linked.shared_device && (
+                    {linked.shared_device ? (
                       <Badge variant="destructive">same device</Badge>
-                    )}
-                    {linked.shared_ip && (
+                    ) : null}
+                    {linked.shared_ip ? (
                       <Badge variant="secondary">same IP</Badge>
-                    )}
-                    {linked.suspended && (
+                    ) : null}
+                    {linked.suspended ? (
                       <Badge variant="outline">suspended</Badge>
-                    )}
+                    ) : null}
                   </div>
                 </div>
               ))}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </Section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Reports against</CardTitle>
-        </CardHeader>
-        <CardContent>
+        <Section title="Reports against">
           {user.reports_against.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No reports.</p>
+            <Nothing>No reports.</Nothing>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Reason</TableHead>
-                  <TableHead>Detail</TableHead>
-                  <TableHead>Filed</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {user.reports_against.map((report) => (
-                  <TableRow key={report.id}>
-                    <TableCell>{report.reason.label}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {report.detail ?? "—"}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {formatDate(report.created_at)}
-                    </TableCell>
+            <TableFrame>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Reason</TableHead>
+                    <TableHead>Detail</TableHead>
+                    <TableHead>Filed</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {user.reports_against.map((report) => (
+                    <TableRow key={report.id}>
+                      <TableCell className="text-sm">
+                        {report.reason.label}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {report.detail ?? "—"}
+                      </TableCell>
+                      <TableCell className="text-sm whitespace-nowrap text-muted-foreground">
+                        {formatDate(report.created_at)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableFrame>
           )}
-        </CardContent>
-      </Card>
+        </Section>
+      </div>
     </div>
   )
 }

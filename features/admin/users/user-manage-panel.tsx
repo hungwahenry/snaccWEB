@@ -2,17 +2,13 @@
 
 import { ExternalLink, ShieldAlert } from "lucide-react"
 import Link from "next/link"
+import type { ReactNode } from "react"
+import { ConfirmAction } from "@/components/admin/confirm-action"
+import { Section } from "@/components/admin/detail"
 import { SettingGroup, SettingRow } from "@/components/admin/setting-row"
 import { CanAct } from "@/components/rbac/can"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { formatDate, formatNaira } from "@/lib/format"
 import {
   BalanceDialog,
@@ -27,25 +23,25 @@ import type { useUserMutations } from "./use-users"
 
 type Mutations = ReturnType<typeof useUserMutations>
 
-function Section({
+function Settings({
   title,
   description,
   children,
+  tone = "default",
 }: {
-  title: string
+  title: ReactNode
   description: string
-  children: React.ReactNode
+  children: ReactNode
+  tone?: "default" | "danger"
 }) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
+    <Section title={title} description={description}>
+      <div
+        className={`rounded-lg border ${tone === "danger" ? "border-destructive/40" : ""}`}
+      >
         <SettingGroup>{children}</SettingGroup>
-      </CardContent>
-    </Card>
+      </div>
+    </Section>
   )
 }
 
@@ -57,8 +53,8 @@ export function UserManagePanel({
   actions: Mutations
 }) {
   return (
-    <div className="flex flex-col gap-4">
-      <Section
+    <div className="flex flex-col gap-6 pt-4">
+      <Settings
         title="Access"
         description="Whether they can use the app, and on which devices."
       >
@@ -77,20 +73,23 @@ export function UserManagePanel({
                   user.suspended_until
                     ? `, lifts ${formatDate(user.suspended_until)}`
                     : ", indefinitely"
-                }${user.suspended_reason ? ` — ${user.suspended_reason.title}` : ""}`
+                }${user.suspended_reason ? ` — ${user.suspended_reason.label}` : ""}`
               : "They can post, message and earn as normal."
           }
           action={
             <CanAct permission="users.suspend">
               {user.suspended_at ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={actions.unsuspend.isPending}
-                  onClick={() => actions.unsuspend.mutate()}
-                >
-                  Reinstate
-                </Button>
+                <ConfirmAction
+                  label="Reinstate"
+                  confirmVariant="default"
+                  title="Lift this suspension?"
+                  description="They can post, message and earn again straight away."
+                  confirmLabel="Reinstate them"
+                  pending={actions.unsuspend.isPending}
+                  onConfirm={(close) =>
+                    actions.unsuspend.mutate(undefined, { onSuccess: close })
+                  }
+                />
               ) : (
                 <SuspendDialog actions={actions} />
               )}
@@ -102,14 +101,16 @@ export function UserManagePanel({
           description="Signs them out of every device. They can sign back in."
           action={
             <CanAct permission="users.revoke_sessions">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={actions.revoke.isPending}
-                onClick={() => actions.revoke.mutate()}
-              >
-                Revoke all
-              </Button>
+              <ConfirmAction
+                label="Revoke all"
+                title="Sign this account out everywhere?"
+                description="Every device is signed out immediately. They can sign back in with a fresh code."
+                confirmLabel="Revoke sessions"
+                pending={actions.revoke.isPending}
+                onConfirm={(close) =>
+                  actions.revoke.mutate(undefined, { onSuccess: close })
+                }
+              />
             </CanAct>
           }
         />
@@ -127,9 +128,9 @@ export function UserManagePanel({
             </CanAct>
           }
         />
-      </Section>
+      </Settings>
 
-      <Section
+      <Settings
         title="Money"
         description="Two separate balances. Earnings are what they have accrued; the wallet is what they can actually spend."
       >
@@ -251,9 +252,9 @@ export function UserManagePanel({
             </CanAct>
           }
         />
-      </Section>
+      </Settings>
 
-      <Section
+      <Settings
         title="Reach"
         description="How far this account's snaccs travel."
       >
@@ -272,14 +273,19 @@ export function UserManagePanel({
           action={
             <CanAct permission="users.set_global">
               {user.posts_globally ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={actions.makeCampusBound.isPending}
-                  onClick={() => actions.makeCampusBound.mutate()}
-                >
-                  Bind to campus
-                </Button>
+                <ConfirmAction
+                  label="Bind to campus"
+                  confirmVariant="default"
+                  title="Bind this account to its campus?"
+                  description="Its snaccs leave every other campus feed and go back to its own, and it starts earning again."
+                  confirmLabel="Bind it"
+                  pending={actions.makeCampusBound.isPending}
+                  onConfirm={(close) =>
+                    actions.makeCampusBound.mutate(undefined, {
+                      onSuccess: close,
+                    })
+                  }
+                />
               ) : (
                 <ConfirmDialog
                   triggerLabel="Post everywhere"
@@ -295,31 +301,29 @@ export function UserManagePanel({
             </CanAct>
           }
         />
-      </Section>
+      </Settings>
 
-      <Card className="border-destructive/40">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base text-destructive">
+      <Settings
+        tone="danger"
+        title={
+          <span className="flex items-center gap-2 text-destructive">
             <ShieldAlert className="size-4" />
             Danger zone
-          </CardTitle>
-          <CardDescription>This cannot be undone.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <SettingGroup>
-            <SettingRow
-              tone="danger"
-              label="Delete account"
-              description="Removes the account and everything attached to it. Their counters are unwound on the way out. You have to type their email to confirm."
-              action={
-                <CanAct permission="users.delete">
-                  <DeleteDialog user={user} actions={actions} />
-                </CanAct>
-              }
-            />
-          </SettingGroup>
-        </CardContent>
-      </Card>
+          </span>
+        }
+        description="This cannot be undone."
+      >
+        <SettingRow
+          tone="danger"
+          label="Delete account"
+          description="Removes the account and everything attached to it. Their counters are unwound on the way out. You have to type their email to confirm."
+          action={
+            <CanAct permission="users.delete">
+              <DeleteDialog user={user} actions={actions} />
+            </CanAct>
+          }
+        />
+      </Settings>
     </div>
   )
 }

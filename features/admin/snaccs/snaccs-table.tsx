@@ -1,8 +1,9 @@
 "use client"
 
+import { ConfirmAction } from "@/components/admin/confirm-action"
 import Link from "next/link"
 import { useState } from "react"
-import { DataPagination } from "@/components/data-pagination"
+import { TableFrame } from "@/components/data-table/table-frame"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { CanAct } from "@/components/rbac/can"
@@ -111,28 +112,34 @@ function SnaccActions({
   if (snacc.held_at) {
     return (
       <CanAct permission="snaccs.hold">
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={actions.release.isPending}
-          onClick={() => actions.release.mutate(snacc.id)}
-        >
-          Release
-        </Button>
+        <ConfirmAction
+          label="Release"
+          confirmVariant="default"
+          title="Put this snacc back?"
+          description="It becomes visible in every feed again, replies included."
+          confirmLabel="Release it"
+          pending={actions.release.isPending}
+          onConfirm={(close) =>
+            actions.release.mutate(snacc.id, { onSuccess: close })
+          }
+        />
       </CanAct>
     )
   }
   return (
     <div className="flex justify-end gap-2">
       <CanAct permission="snaccs.hold">
-        <Button
+        <ConfirmAction
+          label="Hold"
           variant="ghost"
-          size="sm"
-          disabled={actions.hold.isPending}
-          onClick={() => actions.hold.mutate({ id: snacc.id })}
-        >
-          Hold
-        </Button>
+          title="Hold this snacc?"
+          description="It is hidden from every feed while you decide, and its replies go with it. Nothing is deleted."
+          confirmLabel="Hold it"
+          pending={actions.hold.isPending}
+          onConfirm={(close) =>
+            actions.hold.mutate({ id: snacc.id }, { onSuccess: close })
+          }
+        />
       </CanAct>
       <Button
         variant="ghost"
@@ -215,98 +222,98 @@ export function SnaccsTable({
         </Select>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Author</TableHead>
-            <TableHead>Content</TableHead>
-            <TableHead className="text-right">Engagement</TableHead>
-            <TableHead className="text-right">Reports</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.items.length === 0 ? (
+      <TableFrame
+        page={data.page}
+        perPage={data.per_page}
+        total={data.total}
+        onPageChange={(page) => onParams({ page })}
+      >
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell
-                colSpan={6}
-                className="py-10 text-center text-sm text-muted-foreground"
-              >
-                No snaccs match these filters.
-              </TableCell>
+              <TableHead>Author</TableHead>
+              <TableHead>Content</TableHead>
+              <TableHead className="text-right">Engagement</TableHead>
+              <TableHead className="text-right">Reports</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
-          ) : (
-            data.items.map((snacc) => (
-              <TableRow key={snacc.id}>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Avatar className="size-7">
-                      <AvatarImage src={snacc.author.avatar_url} alt="" />
-                      <AvatarFallback>
-                        {(
-                          snacc.author.display_name ||
-                          snacc.author.username ||
-                          "?"
-                        )
-                          .slice(0, 2)
-                          .toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="text-sm">
-                      {snacc.author.username
-                        ? `@${snacc.author.username}`
-                        : snacc.author.display_name}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell className="max-w-xs">
-                  <Link
-                    href={`/admin/snaccs/${snacc.id}`}
-                    className="block truncate text-sm font-medium underline-offset-4 hover:underline"
-                  >
-                    {preview(snacc)}
-                  </Link>
-                  <p className="text-xs text-muted-foreground">
-                    {formatDate(snacc.created_at)}
-                  </p>
-                </TableCell>
-                <TableCell className="text-right text-xs text-muted-foreground tabular-nums">
-                  {formatNumber(snacc.reactions_count)} rx ·{" "}
-                  {formatNumber(snacc.comments_count)} co ·{" "}
-                  {formatNumber(snacc.views_count)} vw
-                </TableCell>
-                <TableCell className="text-right tabular-nums">
-                  {snacc.reports_count > 0 ? (
-                    <Badge variant="destructive">{snacc.reports_count}</Badge>
-                  ) : (
-                    <span className="text-muted-foreground">0</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  {snacc.deleted_at ? (
-                    <Badge variant="destructive">removed</Badge>
-                  ) : snacc.pinned ? (
-                    <Badge variant="secondary">pinned</Badge>
-                  ) : (
-                    <Badge variant="outline">live</Badge>
-                  )}
-                </TableCell>
-                <TableCell className="text-right">
-                  <SnaccActions snacc={snacc} actions={actions} />
+          </TableHeader>
+          <TableBody>
+            {data.items.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={6}
+                  className="py-10 text-center text-sm text-muted-foreground"
+                >
+                  No snaccs match these filters.
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-
-      <DataPagination
-        page={data.page}
-        lastPage={data.last_page}
-        total={data.total}
-        onPage={(page) => onParams({ page })}
-      />
+            ) : (
+              data.items.map((snacc) => (
+                <TableRow key={snacc.id}>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Avatar className="size-7">
+                        <AvatarImage src={snacc.author.avatar_url} alt="" />
+                        <AvatarFallback>
+                          {(
+                            snacc.author.display_name ||
+                            snacc.author.username ||
+                            "?"
+                          )
+                            .slice(0, 2)
+                            .toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="text-sm">
+                        {snacc.author.username
+                          ? `@${snacc.author.username}`
+                          : snacc.author.display_name}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="max-w-xs">
+                    <Link
+                      href={`/admin/snaccs/${snacc.id}`}
+                      className="block truncate text-sm font-medium underline-offset-4 hover:underline"
+                    >
+                      {preview(snacc)}
+                    </Link>
+                    <p className="text-xs text-muted-foreground">
+                      {formatDate(snacc.created_at)}
+                    </p>
+                  </TableCell>
+                  <TableCell className="text-right text-xs text-muted-foreground tabular-nums">
+                    {formatNumber(snacc.reactions_count)} rx ·{" "}
+                    {formatNumber(snacc.comments_count)} co ·{" "}
+                    {formatNumber(snacc.views_count)} vw
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {snacc.reports_count > 0 ? (
+                      <Badge variant="destructive">{snacc.reports_count}</Badge>
+                    ) : (
+                      <span className="text-muted-foreground">0</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {snacc.deleted_at ? (
+                      <Badge variant="destructive">removed</Badge>
+                    ) : snacc.pinned ? (
+                      <Badge variant="secondary">pinned</Badge>
+                    ) : (
+                      <Badge variant="outline">live</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <SnaccActions snacc={snacc} actions={actions} />
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableFrame>
     </div>
   )
 }

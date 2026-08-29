@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { DataPagination } from "@/components/data-pagination"
+import { TableFrame } from "@/components/data-table/table-frame"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import {
@@ -89,66 +89,66 @@ export function WithdrawalsTable({
         </Select>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Reference</TableHead>
-            <TableHead>User</TableHead>
-            <TableHead className="text-right">Amount</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Requested</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.items.length === 0 ? (
+      <TableFrame
+        page={data.page}
+        perPage={data.per_page}
+        total={data.total}
+        onPageChange={(page) => onParams({ page })}
+      >
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell
-                colSpan={5}
-                className="py-10 text-center text-sm text-muted-foreground"
-              >
-                No withdrawals match these filters.
-              </TableCell>
+              <TableHead>Reference</TableHead>
+              <TableHead>User</TableHead>
+              <TableHead className="text-right">Amount</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Requested</TableHead>
             </TableRow>
-          ) : (
-            data.items.map((withdrawal) => (
-              <TableRow
-                key={withdrawal.id}
-                className="cursor-pointer"
-                onClick={() =>
-                  router.push(`/admin/withdrawals/${withdrawal.id}`)
-                }
-              >
-                <TableCell className="font-mono text-xs">
-                  {withdrawal.reference}
-                </TableCell>
-                <TableCell className="text-sm">
-                  {withdrawal.user.username
-                    ? `@${withdrawal.user.username}`
-                    : withdrawal.user.display_name}
-                </TableCell>
-                <TableCell className="text-right tabular-nums">
-                  {formatNaira(withdrawal.amount)}
-                </TableCell>
-                <TableCell>
-                  <Badge variant={STATUS_VARIANT[withdrawal.status]}>
-                    {withdrawal.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {formatDate(withdrawal.created_at)}
+          </TableHeader>
+          <TableBody>
+            {data.items.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="py-10 text-center text-sm text-muted-foreground"
+                >
+                  No withdrawals match these filters.
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-
-      <DataPagination
-        page={data.page}
-        lastPage={data.last_page}
-        total={data.total}
-        onPage={(page) => onParams({ page })}
-      />
+            ) : (
+              data.items.map((withdrawal) => (
+                <TableRow
+                  key={withdrawal.id}
+                  className="cursor-pointer"
+                  onClick={() =>
+                    router.push(`/admin/withdrawals/${withdrawal.id}`)
+                  }
+                >
+                  <TableCell className="font-mono text-xs">
+                    {withdrawal.reference}
+                  </TableCell>
+                  <TableCell className="text-sm">
+                    {withdrawal.user.username
+                      ? `@${withdrawal.user.username}`
+                      : withdrawal.user.display_name}
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {formatNaira(withdrawal.amount)}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={STATUS_VARIANT[withdrawal.status]}>
+                      {withdrawal.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {formatDate(withdrawal.created_at)}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableFrame>
     </div>
   )
 }

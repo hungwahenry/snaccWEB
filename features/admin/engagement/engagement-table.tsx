@@ -1,9 +1,9 @@
 "use client"
+import { TableFrame } from "@/components/data-table/table-frame"
 
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -143,97 +143,81 @@ export function EngagementTable({
         if (rows.length === 0) return null
 
         return (
-          <Card key={source}>
-            <CardHeader>
-              <CardTitle className="text-base">
-                {source === "server"
-                  ? "Recorded by Snacc"
-                  : "Reported by the app"}
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                {source === "server"
-                  ? "Rows we wrote ourselves, so the counts can be trusted."
-                  : "The app says these happened, so each is capped at one per person per snacc."}
-              </p>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableBody>
-                  {rows.map((kind) => (
-                    <TableRow key={kind.key}>
-                      <TableCell className="align-top">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-medium">{kind.label}</span>
-                          <span className="font-mono text-xs text-muted-foreground">
-                            {kind.key}
-                          </span>
-                          {kind.is_default ? null : (
-                            <Badge variant="outline">
-                              Changed from shipped
-                            </Badge>
-                          )}
-                          {kind.enabled ? null : (
-                            <Badge variant="secondary">Off</Badge>
-                          )}
-                        </div>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          {kind.description}
-                        </p>
-                      </TableCell>
-                      <TableCell className="w-28 text-right align-top tabular-nums">
-                        <div className="text-sm">
-                          {weight(kind.score_weight)}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          board
-                        </div>
-                      </TableCell>
-                      <TableCell className="w-28 text-right align-top tabular-nums">
-                        <div className="text-sm">
-                          {weight(kind.feed_weight)}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          feed
-                        </div>
-                      </TableCell>
-                      <TableCell className="w-28 text-right align-top tabular-nums">
-                        <div className="text-sm">{weight(kind.earn_kobo)}</div>
-                        <div className="text-xs text-muted-foreground">
-                          kobo
-                        </div>
-                      </TableCell>
-                      <TableCell className="w-44 text-right align-top">
-                        <div className="flex justify-end gap-2">
-                          {kind.is_default ? null : (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              disabled={pending}
-                              onClick={() => onReset(kind.key)}
-                            >
-                              Reset
-                            </Button>
-                          )}
-                          <EditDialog
-                            kind={kind}
-                            onUpdate={onUpdate}
-                            pending={pending}
-                          />
-                          <Switch
-                            checked={kind.enabled}
+          <TableFrame
+            key={source}
+            title={
+              source === "server" ? "Recorded by Snacc" : "Reported by the app"
+            }
+            description={
+              source === "server"
+                ? "Rows we wrote ourselves, so the counts can be trusted."
+                : "The app says these happened, so each is capped at one per person per snacc."
+            }
+          >
+            <Table>
+              <TableBody>
+                {rows.map((kind) => (
+                  <TableRow key={kind.key}>
+                    <TableCell className="align-top">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-medium">{kind.label}</span>
+                        <span className="font-mono text-xs text-muted-foreground">
+                          {kind.key}
+                        </span>
+                        {kind.is_default ? null : (
+                          <Badge variant="outline">Changed from shipped</Badge>
+                        )}
+                        {kind.enabled ? null : (
+                          <Badge variant="secondary">Off</Badge>
+                        )}
+                      </div>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {kind.description}
+                      </p>
+                    </TableCell>
+                    <TableCell className="w-28 text-right align-top tabular-nums">
+                      <div className="text-sm">{weight(kind.score_weight)}</div>
+                      <div className="text-xs text-muted-foreground">board</div>
+                    </TableCell>
+                    <TableCell className="w-28 text-right align-top tabular-nums">
+                      <div className="text-sm">{weight(kind.feed_weight)}</div>
+                      <div className="text-xs text-muted-foreground">feed</div>
+                    </TableCell>
+                    <TableCell className="w-28 text-right align-top tabular-nums">
+                      <div className="text-sm">{weight(kind.earn_kobo)}</div>
+                      <div className="text-xs text-muted-foreground">kobo</div>
+                    </TableCell>
+                    <TableCell className="w-44 text-right align-top">
+                      <div className="flex justify-end gap-2">
+                        {kind.is_default ? null : (
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             disabled={pending}
-                            onCheckedChange={(enabled) =>
-                              onUpdate({ key: kind.key, enabled })
-                            }
-                          />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+                            onClick={() => onReset(kind.key)}
+                          >
+                            Reset
+                          </Button>
+                        )}
+                        <EditDialog
+                          kind={kind}
+                          onUpdate={onUpdate}
+                          pending={pending}
+                        />
+                        <Switch
+                          checked={kind.enabled}
+                          disabled={pending}
+                          onCheckedChange={(enabled) =>
+                            onUpdate({ key: kind.key, enabled })
+                          }
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableFrame>
         )
       })}
     </div>

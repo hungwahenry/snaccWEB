@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { DataPagination } from "@/components/data-pagination"
+import { TableFrame } from "@/components/data-table/table-frame"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -51,61 +51,67 @@ export function UsersTable({
         : "all"
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <form
-          className="flex-1"
-          onSubmit={(event) => {
-            event.preventDefault()
-            onParams({ q: search.trim() || undefined, page: 1 })
-          }}
-        >
-          <Input
-            placeholder="Search name, handle or email…"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            className="max-w-xs"
-          />
-        </form>
-        <Select
-          value={roleValue}
-          onValueChange={(value) =>
-            onParams({
-              role: value && value !== "all" ? value : undefined,
-              page: 1,
-            })
-          }
-        >
-          <SelectTrigger className="w-36">
-            <SelectValue placeholder="Role" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All roles</SelectItem>
-            <SelectItem value="user">User</SelectItem>
-            <SelectItem value="admin">Admin</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select
-          value={statusValue}
-          onValueChange={(value) =>
-            onParams({
-              suspended:
-                !value || value === "all" ? undefined : value === "suspended",
-              page: 1,
-            })
-          }
-        >
-          <SelectTrigger className="w-36">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All status</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="suspended">Suspended</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
+    <TableFrame
+      page={data.page}
+      perPage={data.per_page}
+      total={data.total}
+      onPageChange={(page) => onParams({ page })}
+      toolbar={
+        <div className="flex flex-wrap items-center gap-2">
+          <form
+            className="flex-1"
+            onSubmit={(event) => {
+              event.preventDefault()
+              onParams({ q: search.trim() || undefined, page: 1 })
+            }}
+          >
+            <Input
+              placeholder="Search name, handle or email…"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              className="max-w-xs"
+            />
+          </form>
+          <Select
+            value={roleValue}
+            onValueChange={(value) =>
+              onParams({
+                role: value && value !== "all" ? value : undefined,
+                page: 1,
+              })
+            }
+          >
+            <SelectTrigger className="w-36">
+              <SelectValue placeholder="Role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All roles</SelectItem>
+              <SelectItem value="user">User</SelectItem>
+              <SelectItem value="admin">Admin</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select
+            value={statusValue}
+            onValueChange={(value) =>
+              onParams({
+                suspended:
+                  !value || value === "all" ? undefined : value === "suspended",
+                page: 1,
+              })
+            }
+          >
+            <SelectTrigger className="w-36">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All status</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="suspended">Suspended</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      }
+    >
       <Table>
         <TableHeader>
           <TableRow>
@@ -178,13 +184,6 @@ export function UsersTable({
           )}
         </TableBody>
       </Table>
-
-      <DataPagination
-        page={data.page}
-        lastPage={data.last_page}
-        total={data.total}
-        onPage={(page) => onParams({ page })}
-      />
-    </div>
+    </TableFrame>
   )
 }

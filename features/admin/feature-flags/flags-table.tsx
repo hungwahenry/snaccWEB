@@ -3,7 +3,15 @@
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { TableFrame } from "@/components/data-table/table-frame"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import {
   Dialog,
   DialogClose,
@@ -114,53 +122,65 @@ export function FlagsTable({
   return (
     <div className="flex flex-col gap-6">
       {categories.map((category) => (
-        <Card key={category}>
-          <CardHeader>
-            <CardTitle className="text-base capitalize">{category}</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col divide-y">
-            {flags
-              .filter((f) => f.category === category)
-              .map((flag) => {
-                const gated = windowLabel(flag)
+        <TableFrame
+          key={category}
+          title={<span className="capitalize">{category}</span>}
+        >
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Flag</TableHead>
+                <TableHead>Reaches</TableHead>
+                <TableHead className="w-40 text-right">State</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {flags
+                .filter((f) => f.category === category)
+                .map((flag) => {
+                  const gated = windowLabel(flag)
 
-                return (
-                  <div
-                    key={flag.key}
-                    className="flex items-center justify-between gap-4 py-3"
-                  >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs">{flag.key}</span>
+                  return (
+                    <TableRow key={flag.key}>
+                      <TableCell className="align-top">
+                        <div className="font-mono text-xs">{flag.key}</div>
+                        <div className="mt-1 text-xs text-pretty text-muted-foreground">
+                          {flag.description}
+                        </div>
+                      </TableCell>
+                      <TableCell className="align-top">
                         {gated ? (
                           <Badge variant="outline" className="tabular-nums">
                             {gated}
                           </Badge>
-                        ) : null}
-                      </div>
-                      <div className="mt-0.5 text-xs text-muted-foreground">
-                        {flag.description}
-                      </div>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-3">
-                      <VersionDialog
-                        flag={flag}
-                        onUpdate={onToggle}
-                        pending={pending}
-                      />
-                      <Switch
-                        checked={flag.enabled}
-                        disabled={pending}
-                        onCheckedChange={(enabled) =>
-                          onToggle({ key: flag.key, enabled })
-                        }
-                      />
-                    </div>
-                  </div>
-                )
-              })}
-          </CardContent>
-        </Card>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">
+                            Every build
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className="align-top">
+                        <div className="flex items-center justify-end gap-3">
+                          <VersionDialog
+                            flag={flag}
+                            onUpdate={onToggle}
+                            pending={pending}
+                          />
+                          <Switch
+                            checked={flag.enabled}
+                            disabled={pending}
+                            onCheckedChange={(enabled) =>
+                              onToggle({ key: flag.key, enabled })
+                            }
+                          />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+            </TableBody>
+          </Table>
+        </TableFrame>
       ))}
     </div>
   )

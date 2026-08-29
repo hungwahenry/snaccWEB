@@ -1,5 +1,7 @@
 "use client"
 
+import { ConfirmAction } from "@/components/admin/confirm-action"
+
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -125,15 +127,26 @@ export function RolesDialog({ user }: { user: AdminUserDetail }) {
             {grants.data.map((grant) => (
               <Badge key={grant.id} variant="secondary" className="gap-1.5">
                 {grant.role.name}
-                <button
-                  type="button"
-                  aria-label={`Revoke ${grant.role.name}`}
-                  className="text-muted-foreground hover:text-foreground disabled:opacity-50"
-                  disabled={mutations.revoke.isPending}
-                  onClick={() => mutations.revoke.mutate(grant.role.id)}
-                >
-                  ×
-                </button>
+                <ConfirmAction
+                  trigger={
+                    <button
+                      type="button"
+                      aria-label={`Revoke ${grant.role.name}`}
+                      className="text-muted-foreground hover:text-foreground disabled:opacity-50"
+                    >
+                      ×
+                    </button>
+                  }
+                  title={`Revoke ${grant.role.name}?`}
+                  description="They lose everything this role granted, immediately."
+                  confirmLabel="Revoke role"
+                  pending={mutations.revoke.isPending}
+                  onConfirm={(close) =>
+                    mutations.revoke.mutate(grant.role.id, {
+                      onSuccess: close,
+                    })
+                  }
+                />
               </Badge>
             ))}
           </div>

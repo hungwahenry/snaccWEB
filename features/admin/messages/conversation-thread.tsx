@@ -1,10 +1,13 @@
 "use client"
 
 import { useState } from "react"
+import { ConfirmAction } from "@/components/admin/confirm-action"
+import { ContentMedia } from "@/components/admin/content-media"
+import { DetailHeader, Section } from "@/components/admin/detail"
+import { UserInline } from "@/components/admin/user-inline"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
   DialogClose,
@@ -16,45 +19,9 @@ import {
 } from "@/components/ui/dialog"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Textarea } from "@/components/ui/textarea"
-import { formatDate, timeAgo, handleOf } from "@/lib/format"
+import { formatDate, handleOf, timeAgo } from "@/lib/format"
 import type { useMessageModeration } from "./use-messages"
-import type {
-  AdminConversationDetail,
-  AdminThreadMessage,
-  MessageAuthor,
-} from "./types"
-
-function Party({
-  label,
-  author,
-  note,
-}: {
-  label: string
-  author: MessageAuthor
-  note?: string
-}) {
-  return (
-    <div className="flex items-center gap-3">
-      <Avatar className="size-9">
-        <AvatarImage src={author.avatar_url} alt="" />
-        <AvatarFallback>
-          {(author.username ?? author.display_name ?? "?")
-            .charAt(0)
-            .toUpperCase()}
-        </AvatarFallback>
-      </Avatar>
-      <div className="min-w-0">
-        <p className="text-xs tracking-wide text-muted-foreground uppercase">
-          {label}
-        </p>
-        <p className="truncate text-sm font-semibold">{handleOf(author)}</p>
-        {note ? (
-          <p className="truncate text-xs text-muted-foreground">{note}</p>
-        ) : null}
-      </div>
-    </div>
-  )
-}
+import type { AdminConversationDetail, AdminThreadMessage } from "./types"
 
 function DeleteMessageDialog({
   message,
@@ -125,15 +92,16 @@ function MessageRow({
   const isGhost = message.sender.id === ghostId
 
   return (
-    <div className="flex gap-3 border-b border-border/60 py-3 last:border-b-0">
-      <Avatar className="mt-0.5 size-8">
+    <div className="flex gap-3 px-4 py-3">
+      <Avatar className="mt-0.5 size-8 shrink-0">
         <AvatarImage src={message.sender.avatar_url} alt="" />
-        <AvatarFallback>
+        <AvatarFallback className="text-xs">
           {(message.sender.username ?? "?").charAt(0).toUpperCase()}
         </AvatarFallback>
       </Avatar>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
+
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-semibold">
             {handleOf(message.sender)}
           </span>
@@ -143,6 +111,9 @@ function MessageRow({
           <span className="text-xs text-muted-foreground">
             {timeAgo(message.created_at)}
           </span>
+          {message.edited_at ? (
+            <span className="text-xs text-muted-foreground">edited</span>
+          ) : null}
           {removed ? (
             <Badge variant="secondary" className="text-[10px]">
               removed
@@ -151,30 +122,42 @@ function MessageRow({
         </div>
 
         {message.reply_to ? (
-          <p className="mt-1 border-l-2 border-border pl-2 text-xs text-muted-foreground italic">
+          <p className="border-l-2 border-border pl-2 text-xs text-muted-foreground italic">
             {message.reply_to.removed
               ? "Removed message"
               : message.reply_to.body}
           </p>
         ) : null}
 
-        <p
-          className={`mt-1 text-sm whitespace-pre-wrap ${removed ? "text-muted-foreground line-through" : ""}`}
-        >
-          {message.body}
-        </p>
+        {message.body ? (
+          <p
+            className={`text-sm whitespace-pre-wrap ${removed ? "text-muted-foreground line-through" : ""}`}
+          >
+            {message.body}
+          </p>
+        ) : null}
+
+        <ContentMedia
+          images={message.images}
+          gif={message.gif}
+          sticker={message.sticker}
+        />
       </div>
 
       <div className="shrink-0">
         {removed ? (
-          <Button
+          <ConfirmAction
+            label="Restore"
             variant="ghost"
-            size="sm"
-            disabled={actions.restore.isPending}
-            onClick={() => actions.restore.mutate(message.id)}
-          >
-            Restore
-          </Button>
+            confirmVariant="default"
+            title="Put this message back?"
+            description="Both people in the thread will see it again."
+            confirmLabel="Restore message"
+            pending={actions.restore.isPending}
+            onConfirm={(close) =>
+              actions.restore.mutate(message.id, { onSuccess: close })
+            }
+          />
         ) : (
           <DeleteMessageDialog message={message} actions={actions} />
         )}
@@ -192,49 +175,68 @@ export function ConversationThread({
 }) {
   return (
     <div className="flex flex-col gap-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Thread</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Party
-              label="Ghost (initiator)"
-              author={conversation.ghost}
-              note={`Shown as “${conversation.pseudonym}”`}
-            />
-            <Party label="Target" author={conversation.target} />
-          </div>
-          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-            <span>
-              {conversation.revealed
-                ? `Revealed ${formatDate(conversation.revealed_at)}`
-                : "Ghost is still anonymous to the target"}
-            </span>
+      <DetailHeader
+        title="Ghost thread"
+        badges={
+          conversation.revealed ? (
+            <Badge variant="outline">Revealed</Badge>
+          ) : (
+            <Badge variant="secondary">Still anonymous</Badge>
+          )
+        }
+        subtitle={`The target sees the sender as “${conversation.pseudonym}”.`}
+        meta={
+          <>
             <span>Started {formatDate(conversation.created_at)}</span>
             <span>{conversation.messages.length} messages</span>
-          </div>
-        </CardContent>
-      </Card>
+            {conversation.revealed ? (
+              <span>Revealed {formatDate(conversation.revealed_at)}</span>
+            ) : null}
+          </>
+        }
+      />
 
-      <Card>
-        <CardContent className="pt-6">
-          {conversation.messages.length === 0 ? (
-            <p className="py-8 text-center text-sm text-muted-foreground">
-              No messages.
-            </p>
-          ) : (
-            conversation.messages.map((message) => (
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="rounded-lg border px-4 py-3">
+          <p className="text-xs tracking-wide text-muted-foreground uppercase">
+            Ghost (initiator)
+          </p>
+          <UserInline
+            user={conversation.ghost}
+            note={conversation.ghost.university?.name ?? undefined}
+            className="mt-1.5"
+          />
+        </div>
+        <div className="rounded-lg border px-4 py-3">
+          <p className="text-xs tracking-wide text-muted-foreground uppercase">
+            Target
+          </p>
+          <UserInline
+            user={conversation.target}
+            note={conversation.target.university?.name ?? undefined}
+            className="mt-1.5"
+          />
+        </div>
+      </div>
+
+      <Section title="Messages">
+        {conversation.messages.length === 0 ? (
+          <p className="rounded-lg border border-dashed py-8 text-center text-sm text-muted-foreground">
+            No messages.
+          </p>
+        ) : (
+          <div className="divide-y rounded-lg border">
+            {conversation.messages.map((message) => (
               <MessageRow
                 key={message.id}
                 message={message}
                 ghostId={conversation.ghost.id}
                 actions={actions}
               />
-            ))
-          )}
-        </CardContent>
-      </Card>
+            ))}
+          </div>
+        )}
+      </Section>
     </div>
   )
 }

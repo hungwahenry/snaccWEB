@@ -69,7 +69,7 @@ export function SuspensionFields({
             <SelectContent>
               {available.map((reason) => (
                 <SelectItem key={reason.id} value={reason.id}>
-                  {reason.slug}
+                  {reason.label}
                 </SelectItem>
               ))}
             </SelectContent>

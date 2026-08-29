@@ -22,7 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
-import { DataTablePagination } from "./data-table-pagination"
+import { TableFrame } from "./table-frame"
 
 const features = tableFeatures({
   rowSortingFeature,
@@ -70,89 +70,76 @@ export function DataTable<T extends RowData>({
   })
 
   return (
-    <div className="flex flex-col gap-4">
-      {toolbar}
-      <div className="rounded-lg border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((group) => (
-              <TableRow key={group.id}>
-                {group.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    className={cn(
-                      header.column.getCanSort() && "cursor-pointer select-none"
-                    )}
-                    onClick={header.column.getToggleSortingHandler()}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                    {{ asc: " ↑", desc: " ↓" }[
-                      header.column.getIsSorted() as string
-                    ] ?? null}
-                  </TableHead>
+    <TableFrame
+      toolbar={toolbar}
+      page={page}
+      perPage={perPage}
+      total={total}
+      onPageChange={onPageChange}
+    >
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((group) => (
+            <TableRow key={group.id}>
+              {group.headers.map((header) => (
+                <TableHead
+                  key={header.id}
+                  className={cn(
+                    header.column.getCanSort() && "cursor-pointer select-none"
+                  )}
+                  onClick={header.column.getToggleSortingHandler()}
+                >
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                  {{ asc: " ↑", desc: " ↓" }[
+                    header.column.getIsSorted() as string
+                  ] ?? null}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {isPending ? (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="py-10">
+                <div className="flex justify-center">
+                  <Spinner />
+                </div>
+              </TableCell>
+            </TableRow>
+          ) : table.getRowModel().rows.length === 0 ? (
+            <TableRow>
+              <TableCell
+                colSpan={columns.length}
+                className="py-10 text-center text-sm text-muted-foreground"
+              >
+                {empty}
+              </TableCell>
+            </TableRow>
+          ) : (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                className={cn(onRowClick && "cursor-pointer hover:bg-muted/50")}
+                onClick={
+                  onRowClick ? () => onRowClick(row.original) : undefined
+                }
+              >
+                {row.getAllCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
                 ))}
               </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {isPending ? (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="py-10">
-                  <div className="flex justify-center">
-                    <Spinner />
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : table.getRowModel().rows.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="py-10 text-center text-sm text-muted-foreground"
-                >
-                  {empty}
-                </TableCell>
-              </TableRow>
-            ) : (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  className={cn(
-                    onRowClick && "cursor-pointer hover:bg-muted/50"
-                  )}
-                  onClick={
-                    onRowClick ? () => onRowClick(row.original) : undefined
-                  }
-                >
-                  {row.getAllCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      {page !== undefined &&
-        perPage !== undefined &&
-        total !== undefined &&
-        onPageChange && (
-          <DataTablePagination
-            page={page}
-            perPage={perPage}
-            total={total}
-            onPageChange={onPageChange}
-          />
-        )}
-    </div>
+            ))
+          )}
+        </TableBody>
+      </Table>
+    </TableFrame>
   )
 }

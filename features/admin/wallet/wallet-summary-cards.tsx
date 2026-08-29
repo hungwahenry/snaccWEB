@@ -1,11 +1,6 @@
 "use client"
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardTitle,
-} from "@/components/ui/card"
+import { Stat, StatGrid } from "@/components/admin/detail"
 import { Skeleton } from "@/components/ui/skeleton"
 import { formatNaira, formatNumber } from "@/lib/format"
 import { useWalletSummary } from "./use-wallet"
@@ -25,34 +20,20 @@ export function WalletSummaryCards() {
   if (!query.data) return null
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <Card>
-        <CardContent className="flex flex-col gap-1 pt-6">
-          <CardDescription>Held by users</CardDescription>
-          <CardTitle className="text-2xl tabular-nums">
-            {formatNaira(query.data.users.balance)}
-          </CardTitle>
-          <p className="text-xs text-muted-foreground">
-            {formatNumber(query.data.users.accounts)} wallets ·{" "}
-            {formatNumber(query.data.users.frozen)} frozen
-          </p>
-        </CardContent>
-      </Card>
+    <StatGrid columns={3}>
+      <Stat
+        label="Held by users"
+        value={formatNaira(query.data.users.balance)}
+        hint={`${formatNumber(query.data.users.accounts)} wallets · ${formatNumber(query.data.users.frozen)} frozen`}
+      />
       {query.data.system.map((pool) => (
-        <Card key={pool.slug}>
-          <CardContent className="flex flex-col gap-1 pt-6">
-            <CardDescription className="capitalize">
-              {pool.slug}
-            </CardDescription>
-            <CardTitle className="text-2xl tabular-nums">
-              {formatNaira(pool.balance)}
-            </CardTitle>
-            <p className="text-xs text-muted-foreground">
-              {POOLS[pool.slug] ?? "System pool"}
-            </p>
-          </CardContent>
-        </Card>
+        <Stat
+          key={pool.slug}
+          label={<span className="capitalize">{pool.slug}</span>}
+          value={formatNaira(pool.balance)}
+          hint={POOLS[pool.slug] ?? "System pool"}
+        />
       ))}
-    </div>
+    </StatGrid>
   )
 }

@@ -1,5 +1,6 @@
 "use client"
 
+import { ConfirmAction } from "@/components/admin/confirm-action"
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -22,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
+import { TableFrame } from "@/components/data-table/table-frame"
 import {
   Table,
   TableBody,
@@ -174,13 +176,16 @@ export function ReasonsTable({
   mutations: Mutations
 }) {
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex justify-end">
-        <ReasonDialog
-          mutations={mutations}
-          trigger={<Button size="sm">Add reason</Button>}
-        />
-      </div>
+    <TableFrame
+      toolbar={
+        <div className="flex justify-end">
+          <ReasonDialog
+            mutations={mutations}
+            trigger={<Button size="sm">Add reason</Button>}
+          />
+        </div>
+      }
+    >
       <Table>
         <TableHeader>
           <TableRow>
@@ -238,14 +243,19 @@ export function ReasonsTable({
                       Restore
                     </Button>
                   ) : (
-                    <Button
+                    <ConfirmAction
+                      label="Retire"
                       variant="ghost"
-                      size="sm"
-                      disabled={mutations.retire.isPending}
-                      onClick={() => mutations.retire.mutate(reason.id)}
-                    >
-                      Retire
-                    </Button>
+                      title={`Retire "${reason.label}"?`}
+                      description="Nobody can pick it when reporting any more. Reports already filed under it keep their reason."
+                      confirmLabel="Retire it"
+                      pending={mutations.retire.isPending}
+                      onConfirm={(close) =>
+                        mutations.retire.mutate(reason.id, {
+                          onSuccess: close,
+                        })
+                      }
+                    />
                   )}
                 </div>
               </TableCell>
@@ -253,6 +263,6 @@ export function ReasonsTable({
           ))}
         </TableBody>
       </Table>
-    </div>
+    </TableFrame>
   )
 }

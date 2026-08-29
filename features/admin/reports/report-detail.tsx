@@ -1,11 +1,12 @@
 "use client"
 
+import { DetailHeader, Section } from "@/components/admin/detail"
+import { UserInline } from "@/components/admin/user-inline"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { formatDate, handleOf } from "@/lib/format"
-import type { useResolveReport } from "./use-reports"
+import { formatDate } from "@/lib/format"
 import { ReportedContent } from "./reported-content"
 import { ResolveDialog } from "./resolve-dialog"
+import type { useResolveReport } from "./use-reports"
 import type { AdminReport, AdminReportDetail } from "./types"
 
 const STATUS_VARIANT: Record<
@@ -17,22 +18,34 @@ const STATUS_VARIANT: Record<
   dismissed: "outline",
 }
 
+const TARGET_LABEL = {
+  snacc: "a snacc",
+  user: "an account",
+  message: "a ghost message",
+  moment: "a moment",
+} as const
+
 function Filing({ report }: { report: AdminReport }) {
   return (
-    <div className="flex flex-col gap-1 border-b border-border py-3 last:border-b-0">
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-sm font-medium">{report.reason.label}</span>
-        <Badge variant={STATUS_VARIANT[report.status]}>{report.status}</Badge>
+    <div className="flex flex-col gap-2 px-4 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-sm font-medium">{report.reason.label}</span>
+          <Badge variant={STATUS_VARIANT[report.status]}>{report.status}</Badge>
+        </div>
         <span className="text-xs text-muted-foreground">
-          {handleOf(report.reporter)} · {formatDate(report.created_at)}
+          {formatDate(report.created_at)}
         </span>
       </div>
+      <UserInline user={report.reporter} size="sm" />
       {report.detail ? (
-        <p className="text-sm text-muted-foreground">“{report.detail}”</p>
+        <p className="text-sm text-pretty text-muted-foreground">
+          “{report.detail}”
+        </p>
       ) : null}
       {report.resolution_note ? (
         <p className="text-xs text-muted-foreground">
-          Note: {report.resolution_note}
+          Resolution note: {report.resolution_note}
         </p>
       ) : null}
     </div>
@@ -46,50 +59,60 @@ export function ReportDetail({
   report: AdminReportDetail
   resolve: ReturnType<typeof useResolveReport>
 }) {
-  const open = [report, ...report.siblings].filter(
-    (each) => each.status === "open"
-  ).length
+  const filings = [report, ...report.siblings]
+  const open = filings.filter((each) => each.status === "open").length
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
+      <DetailHeader
+        title={report.reason.label}
+        badges={
+          <Badge variant={STATUS_VARIANT[report.status]}>{report.status}</Badge>
+        }
+        subtitle={
+          report.target
+            ? `Filed against ${TARGET_LABEL[report.target.type]}.`
+            : "The reported thing no longer exists."
+        }
+        meta={
+          <>
+            <span>Reported {formatDate(report.created_at)}</span>
+            {filings.length > 1 ? (
+              <span>{filings.length} filings on this target</span>
+            ) : null}
+            {report.reviewed_by ? (
+              <span>
+                Resolved by {report.reviewed_by.username ?? "an admin"}
+                {report.reviewed_at
+                  ? ` on ${formatDate(report.reviewed_at)}`
+                  : ""}
+              </span>
+            ) : null}
+          </>
+        }
+        actions={
+          open > 0 ? <ResolveDialog report={report} resolve={resolve} /> : null
+        }
+      />
+
       <ReportedContent report={report} />
 
-      <Card>
-        <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <CardTitle className="text-base">
-            {report.siblings.length > 0
-              ? `${report.siblings.length + 1} reports on this target`
-              : "The report"}
-          </CardTitle>
-          {open > 0 ? (
-            <ResolveDialog report={report} resolve={resolve} />
-          ) : null}
-        </CardHeader>
-        <CardContent>
-          <Filing report={report} />
-          {report.siblings.map((sibling) => (
-            <Filing key={sibling.id} report={sibling} />
+      <Section
+        title={
+          filings.length === 1 ? "The report" : `${filings.length} reports`
+        }
+        description={
+          open > 0
+            ? `Resolving acts on the target and closes all ${open} open ${open === 1 ? "report" : "reports"} at once.`
+            : undefined
+        }
+      >
+        <div className="divide-y rounded-lg border">
+          {filings.map((filing) => (
+            <Filing key={filing.id} report={filing} />
           ))}
-          {open > 0 ? (
-            <p className="pt-3 text-xs text-muted-foreground">
-              Resolving acts on the target and closes all {open} open{" "}
-              {open === 1 ? "report" : "reports"} at once.
-            </p>
-          ) : null}
-        </CardContent>
-      </Card>
-
-      {report.reviewed_by ? (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Review</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            Resolved by {handleOf(report.reviewed_by)}
-            {report.reviewed_at ? ` on ${formatDate(report.reviewed_at)}` : ""}.
-          </CardContent>
-        </Card>
-      ) : null}
+        </div>
+      </Section>
     </div>
   )
 }

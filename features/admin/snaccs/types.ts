@@ -1,3 +1,10 @@
+import type {
+  MediaGif,
+  MediaImage,
+  MediaSticker,
+  MediaVoice,
+} from "@/components/admin/content-media"
+
 export interface SnaccAuthor {
   id: string
   username: string | null
@@ -6,13 +13,25 @@ export interface SnaccAuthor {
   university: { id: string; name: string; acronym: string } | null
 }
 
-export interface AdminSnacc {
+/** What a snacc carries, as the app serializes it — the admin view shows all of it. */
+export interface SnaccContent {
   id: string
   body: string | null
   created_at: string
+  edited_at: string | null
+  anonymous: boolean
+  spoiler: boolean
   author: SnaccAuthor
-  images: { url: string }[]
-  gif: { url: string } | null
+  images: MediaImage[]
+  gif: MediaGif | null
+  sticker: MediaSticker | null
+  voice: MediaVoice | null
+}
+
+export interface AdminSnacc extends SnaccContent {
+  parent_id: string | null
+  /** The snacc this one quotes, when it is a resnacc. */
+  resnacc_of: SnaccContent | null
   reactions_count: number
   comments_count: number
   resnaccs_count: number

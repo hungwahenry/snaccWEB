@@ -41,7 +41,7 @@ export function SuspensionsView() {
         cell: ({ row }) =>
           row.original.suspended_reason ? (
             <Badge variant="secondary">
-              {row.original.suspended_reason.title}
+              {row.original.suspended_reason.label}
             </Badge>
           ) : (
             <span className="text-sm text-muted-foreground">Not given</span>

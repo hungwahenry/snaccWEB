@@ -69,7 +69,7 @@ function Toolbar({ editor }: { editor: Editor }) {
   ]
 
   return (
-    <div className="flex flex-wrap items-center gap-1 border-b p-2">
+    <div className="flex shrink-0 flex-wrap items-center gap-1 border-b p-2">
       {items.map((item) => (
         <Toggle
           key={item.label}
@@ -115,20 +115,24 @@ export function RichTextEditor({
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: "snacc-prose min-h-[320px] px-4 py-3 focus:outline-none",
+        class: "snacc-prose min-h-full px-4 py-3 focus:outline-none",
       },
     },
     onUpdate: ({ editor }) => onChange(editor.getJSON(), editor.getHTML()),
   })
 
   if (!editor) {
-    return <div className="h-96 rounded-xl border border-input" />
+    return <div className="h-[60vh] rounded-xl border border-input" />
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-input">
+    <div className="flex h-[60vh] flex-col overflow-hidden rounded-xl border border-input">
       <Toolbar editor={editor} />
-      <EditorContent editor={editor} />
+      {/* The body scrolls inside the frame: a long page must not push the toolbar and Save away. */}
+      <EditorContent
+        editor={editor}
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
+      />
     </div>
   )
 }

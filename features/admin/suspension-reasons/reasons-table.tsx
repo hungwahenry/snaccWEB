@@ -15,6 +15,7 @@ import {
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { TableFrame } from "@/components/data-table/table-frame"
 import {
   Table,
   TableBody,
@@ -39,6 +40,7 @@ function ReasonDialog({
 }) {
   const [open, setOpen] = useState(false)
   const [slug, setSlug] = useState(reason?.slug ?? "")
+  const [label, setLabel] = useState(reason?.label ?? "")
   const [title, setTitle] = useState(
     reason?.title ?? "Your account is suspended"
   )
@@ -47,11 +49,15 @@ function ReasonDialog({
 
   const editing = Boolean(reason)
   const valid =
-    slug.trim() !== "" && title.trim() !== "" && description.trim() !== ""
+    slug.trim() !== "" &&
+    label.trim() !== "" &&
+    title.trim() !== "" &&
+    description.trim() !== ""
 
   function save() {
     const base = {
       slug: slug.trim(),
+      label: label.trim(),
       title: title.trim(),
       description: description.trim(),
       position: Number(position) || 0,
@@ -84,11 +90,12 @@ function ReasonDialog({
             />
           </Field>
           <Field className="flex-1">
-            <FieldLabel>Title</FieldLabel>
+            <FieldLabel>Name</FieldLabel>
             <Input
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              maxLength={100}
+              value={label}
+              onChange={(event) => setLabel(event.target.value)}
+              placeholder="Harassment"
+              maxLength={60}
             />
           </Field>
           <Field className="w-24">
@@ -100,6 +107,18 @@ function ReasonDialog({
             />
           </Field>
         </div>
+        <p className="text-xs text-muted-foreground">
+          The name is what a moderator picks it by. Keep it to the offence in a
+          couple of words — the wording below is for the user, not for them.
+        </p>
+        <Field>
+          <FieldLabel>Heading the user sees</FieldLabel>
+          <Input
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            maxLength={100}
+          />
+        </Field>
         <Field>
           <FieldLabel>What the user reads</FieldLabel>
           <Textarea
@@ -137,16 +156,20 @@ export function SuspensionReasonsTable({
   mutations: Mutations
 }) {
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex justify-end">
-        <ReasonDialog
-          mutations={mutations}
-          trigger={<Button size="sm">Add reason</Button>}
-        />
-      </div>
+    <TableFrame
+      toolbar={
+        <div className="flex justify-end">
+          <ReasonDialog
+            mutations={mutations}
+            trigger={<Button size="sm">Add reason</Button>}
+          />
+        </div>
+      }
+    >
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>Name</TableHead>
             <TableHead>Slug</TableHead>
             <TableHead>What the user reads</TableHead>
             <TableHead className="text-right">Actions</TableHead>
@@ -157,11 +180,14 @@ export function SuspensionReasonsTable({
             <TableRow key={reason.id}>
               <TableCell className="font-medium">
                 <span className="inline-flex items-center gap-2">
-                  {reason.slug}
+                  {reason.label}
                   {reason.retired ? (
                     <Badge variant="outline">retired</Badge>
                   ) : null}
                 </span>
+              </TableCell>
+              <TableCell className="font-mono text-xs text-muted-foreground">
+                {reason.slug}
               </TableCell>
               <TableCell className="max-w-lg text-sm text-muted-foreground">
                 {reason.description}
@@ -196,6 +222,6 @@ export function SuspensionReasonsTable({
           ))}
         </TableBody>
       </Table>
-    </div>
+    </TableFrame>
   )
 }

@@ -1,7 +1,9 @@
 "use client"
 
+import { ConfirmAction } from "@/components/admin/confirm-action"
+
 import { useState } from "react"
-import { DataPagination } from "@/components/data-pagination"
+import { TableFrame } from "@/components/data-table/table-frame"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -174,67 +176,73 @@ export function AnnouncementsTable({
       <div className="flex justify-end">
         <BroadcastDialog universities={universities} mutations={mutations} />
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Audience</TableHead>
-            <TableHead>Sent</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.items.length === 0 ? (
+      <TableFrame
+        page={data.page}
+        perPage={data.per_page}
+        total={data.total}
+        onPageChange={(page) => onParams({ page })}
+      >
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell
-                colSpan={4}
-                className="py-10 text-center text-sm text-muted-foreground"
-              >
-                No announcements yet.
-              </TableCell>
+              <TableHead>Title</TableHead>
+              <TableHead>Audience</TableHead>
+              <TableHead>Sent</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
-          ) : (
-            data.items.map((announcement) => (
-              <TableRow key={announcement.id}>
-                <TableCell className="max-w-md">
-                  <div className="font-medium">{announcement.title}</div>
-                  <div className="truncate text-xs text-muted-foreground">
-                    {announcement.message}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    variant={
-                      announcement.university_id ? "secondary" : "outline"
-                    }
-                  >
-                    {campusName(announcement.university_id)}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {formatDate(announcement.created_at)}
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    disabled={mutations.remove.isPending}
-                    onClick={() => mutations.remove.mutate(announcement.id)}
-                  >
-                    Delete
-                  </Button>
+          </TableHeader>
+          <TableBody>
+            {data.items.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={4}
+                  className="py-10 text-center text-sm text-muted-foreground"
+                >
+                  No announcements yet.
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-      <DataPagination
-        page={data.page}
-        lastPage={data.last_page}
-        total={data.total}
-        onPage={(page) => onParams({ page })}
-      />
+            ) : (
+              data.items.map((announcement) => (
+                <TableRow key={announcement.id}>
+                  <TableCell className="max-w-md">
+                    <div className="font-medium">{announcement.title}</div>
+                    <div className="truncate text-xs text-muted-foreground">
+                      {announcement.message}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        announcement.university_id ? "secondary" : "outline"
+                      }
+                    >
+                      {campusName(announcement.university_id)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {formatDate(announcement.created_at)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <ConfirmAction
+                      label="Delete"
+                      variant="ghost"
+                      title="Delete this announcement?"
+                      description="It disappears from everyone's notifications. Pushes already sent cannot be taken back."
+                      confirmLabel="Delete announcement"
+                      pending={mutations.remove.isPending}
+                      onConfirm={(close) =>
+                        mutations.remove.mutate(announcement.id, {
+                          onSuccess: close,
+                        })
+                      }
+                    />
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableFrame>
     </div>
   )
 }

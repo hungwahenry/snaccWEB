@@ -1,6 +1,8 @@
 export interface SuspensionReason {
   id: string
   slug: string
+  /** What a moderator picks it by — the title is written to the suspended user. */
+  label: string
   title: string
   description: string
   position: number
@@ -10,6 +12,7 @@ export interface SuspensionReason {
 
 export interface CreateSuspensionReasonInput {
   slug: string
+  label: string
   title: string
   description: string
   position?: number

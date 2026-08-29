@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
   DialogClose,
@@ -21,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { TableFrame } from "@/components/data-table/table-frame"
 import {
   Table,
   TableBody,
@@ -185,55 +185,54 @@ export function FundsPanel({
   mutations: Mutations
 }) {
   return (
-    <Card>
-      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <CardTitle className="text-base">Campus funds</CardTitle>
+    <TableFrame
+      title="Campus funds"
+      toolbar={
         <ProvisionDialog
           universities={universities}
           funds={funds}
           mutations={mutations}
         />
-      </CardHeader>
-      <CardContent>
-        {funds.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No campus is in paid mode yet.
-          </p>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Campus</TableHead>
-                <TableHead className="text-right">Cap</TableHead>
-                <TableHead className="text-right">Distributed</TableHead>
-                <TableHead className="text-right">Remaining</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+      }
+    >
+      {funds.length === 0 ? (
+        <p className="p-6 text-sm text-muted-foreground">
+          No campus is in paid mode yet.
+        </p>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Campus</TableHead>
+              <TableHead className="text-right">Cap</TableHead>
+              <TableHead className="text-right">Distributed</TableHead>
+              <TableHead className="text-right">Remaining</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {funds.map((fund) => (
+              <TableRow key={fund.university_id}>
+                <TableCell className="font-medium">
+                  {fund.university.name}
+                </TableCell>
+                <TableCell className="text-right tabular-nums">
+                  {formatNaira(fund.cap)}
+                </TableCell>
+                <TableCell className="text-right tabular-nums">
+                  {formatNaira(fund.distributed)}
+                </TableCell>
+                <TableCell className="text-right tabular-nums">
+                  {formatNaira(fund.cap - fund.distributed)}
+                </TableCell>
+                <TableCell className="text-right">
+                  <AdjustDialog fund={fund} mutations={mutations} />
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {funds.map((fund) => (
-                <TableRow key={fund.university_id}>
-                  <TableCell className="font-medium">
-                    {fund.university.name}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {formatNaira(fund.cap)}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {formatNaira(fund.distributed)}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {formatNaira(fund.cap - fund.distributed)}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <AdjustDialog fund={fund} mutations={mutations} />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </CardContent>
-    </Card>
+            ))}
+          </TableBody>
+        </Table>
+      )}
+    </TableFrame>
   )
 }

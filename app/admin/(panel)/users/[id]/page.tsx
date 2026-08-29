@@ -1,9 +1,7 @@
 "use client"
 
-import Link from "next/link"
 import { use } from "react"
-import { Button } from "@/components/ui/button"
-import { Spinner } from "@/components/ui/spinner"
+import { DetailScreen } from "@/components/admin/detail-screen"
 import { UserDetail } from "@/features/admin/users/user-detail"
 import { useUser, useUserMutations } from "@/features/admin/users/use-users"
 
@@ -17,26 +15,13 @@ export default function UserDetailPage({
   const actions = useUserMutations(id)
 
   return (
-    <>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="mb-4 w-fit"
-        render={<Link href="/admin/users" />}
-      >
-        ← Back to users
-      </Button>
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load this user.
-        </p>
-      ) : (
-        <UserDetail user={query.data} actions={actions} />
-      )}
-    </>
+    <DetailScreen
+      backHref="/admin/users"
+      backLabel="Back to users"
+      missing="Couldn't load this user."
+      query={query}
+    >
+      {(user) => <UserDetail user={user} actions={actions} />}
+    </DetailScreen>
   )
 }

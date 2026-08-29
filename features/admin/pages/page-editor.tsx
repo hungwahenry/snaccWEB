@@ -1,5 +1,6 @@
 "use client"
 
+import { ConfirmAction } from "@/components/admin/confirm-action"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Field, FieldLabel } from "@/components/ui/field"
@@ -57,19 +58,35 @@ export function PageEditor({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           {editing && page && (
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={mutations.setStatus.isPending}
-              onClick={() =>
-                mutations.setStatus.mutate({
-                  pageId: page.id,
-                  status: page.status === "published" ? "draft" : "published",
-                })
+            <ConfirmAction
+              label={page.status === "published" ? "Unpublish" : "Publish"}
+              title={
+                page.status === "published"
+                  ? "Take this page down?"
+                  : "Publish this page?"
               }
-            >
-              {page.status === "published" ? "Unpublish" : "Publish"}
-            </Button>
+              description={
+                page.status === "published"
+                  ? "Anyone who opens the link will get a not-found instead. The draft is kept."
+                  : "It goes live on the site straight away, exactly as written here."
+              }
+              confirmLabel={
+                page.status === "published" ? "Unpublish" : "Publish it"
+              }
+              confirmVariant={
+                page.status === "published" ? "destructive" : "default"
+              }
+              pending={mutations.setStatus.isPending}
+              onConfirm={(close) =>
+                mutations.setStatus.mutate(
+                  {
+                    pageId: page.id,
+                    status: page.status === "published" ? "draft" : "published",
+                  },
+                  { onSuccess: close }
+                )
+              }
+            />
           )}
         </div>
         <Button disabled={!valid || pending} onClick={save}>

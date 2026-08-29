@@ -1,8 +1,7 @@
 "use client"
 
-import { DataPagination } from "@/components/data-pagination"
+import { TableFrame } from "@/components/data-table/table-frame"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Select,
   SelectContent,
@@ -36,9 +35,13 @@ export function EarningsLedger({
   onParams: (patch: Partial<ListEarningsParams>) => void
 }) {
   return (
-    <Card>
-      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <CardTitle className="text-base">Earning events</CardTitle>
+    <TableFrame
+      title="Earning events"
+      page={data.page}
+      perPage={data.per_page}
+      total={data.total}
+      onPageChange={(page) => onParams({ page })}
+      toolbar={
         <Select
           value={params.type ?? "all"}
           onValueChange={(value) =>
@@ -57,58 +60,51 @@ export function EarningsLedger({
             <SelectItem value="resnacc">Resnacc</SelectItem>
           </SelectContent>
         </Select>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
+      }
+    >
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Type</TableHead>
+            <TableHead className="text-right">Amount</TableHead>
+            <TableHead>Beneficiary</TableHead>
+            <TableHead>From</TableHead>
+            <TableHead>When</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.items.length === 0 ? (
             <TableRow>
-              <TableHead>Type</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
-              <TableHead>Beneficiary</TableHead>
-              <TableHead>From</TableHead>
-              <TableHead>When</TableHead>
+              <TableCell
+                colSpan={5}
+                className="py-10 text-center text-sm text-muted-foreground"
+              >
+                No earning events.
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.items.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={5}
-                  className="py-10 text-center text-sm text-muted-foreground"
-                >
-                  No earning events.
+          ) : (
+            data.items.map((event) => (
+              <TableRow key={event.id}>
+                <TableCell>
+                  <Badge variant="outline">{event.type}</Badge>
+                </TableCell>
+                <TableCell className="text-right tabular-nums">
+                  {formatNaira(event.amount)}
+                </TableCell>
+                <TableCell className="text-sm">
+                  {handle(event.beneficiary)}
+                </TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  {handle(event.actor)}
+                </TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  {formatDate(event.created_at)}
                 </TableCell>
               </TableRow>
-            ) : (
-              data.items.map((event) => (
-                <TableRow key={event.id}>
-                  <TableCell>
-                    <Badge variant="outline">{event.type}</Badge>
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {formatNaira(event.amount)}
-                  </TableCell>
-                  <TableCell className="text-sm">
-                    {handle(event.beneficiary)}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {handle(event.actor)}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {formatDate(event.created_at)}
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-        <DataPagination
-          page={data.page}
-          lastPage={data.last_page}
-          total={data.total}
-          onPage={(page) => onParams({ page })}
-        />
-      </CardContent>
-    </Card>
+            ))
+          )}
+        </TableBody>
+      </Table>
+    </TableFrame>
   )
 }

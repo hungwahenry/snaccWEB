@@ -1,9 +1,7 @@
 "use client"
 
-import Link from "next/link"
 import { use } from "react"
-import { Button } from "@/components/ui/button"
-import { Spinner } from "@/components/ui/spinner"
+import { DetailScreen } from "@/components/admin/detail-screen"
 import { WithdrawalDetail } from "@/features/admin/withdrawals/withdrawal-detail"
 import {
   useWithdrawal,
@@ -20,26 +18,15 @@ export default function WithdrawalDetailPage({
   const actions = useWithdrawalMutations(id)
 
   return (
-    <>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="mb-4 w-fit"
-        render={<Link href="/admin/withdrawals" />}
-      >
-        ← Back to withdrawals
-      </Button>
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load this withdrawal.
-        </p>
-      ) : (
-        <WithdrawalDetail withdrawal={query.data} actions={actions} />
+    <DetailScreen
+      backHref="/admin/withdrawals"
+      backLabel="Back to withdrawals"
+      missing="Couldn't load this withdrawal."
+      query={query}
+    >
+      {(withdrawal) => (
+        <WithdrawalDetail withdrawal={withdrawal} actions={actions} />
       )}
-    </>
+    </DetailScreen>
   )
 }

@@ -1,5 +1,7 @@
 "use client"
 
+import { ConfirmAction } from "@/components/admin/confirm-action"
+
 import { useMemo, useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -15,6 +17,7 @@ import {
 } from "@/components/ui/dialog"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { TableFrame } from "@/components/data-table/table-frame"
 import {
   Table,
   TableBody,
@@ -224,13 +227,16 @@ export function RolesTable({
   const catalog = permissions.data ?? []
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex justify-end">
-        <RoleDialog
-          mutations={mutations}
-          trigger={<Button size="sm">New role</Button>}
-        />
-      </div>
+    <TableFrame
+      toolbar={
+        <div className="flex justify-end">
+          <RoleDialog
+            mutations={mutations}
+            trigger={<Button size="sm">New role</Button>}
+          />
+        </div>
+      }
+    >
       <Table>
         <TableHeader>
           <TableRow>
@@ -282,15 +288,17 @@ export function RolesTable({
                     }
                   />
                   {role.is_system ? null : (
-                    <Button
+                    <ConfirmAction
+                      label="Delete"
                       variant="ghost"
-                      size="sm"
-                      className="text-destructive"
-                      disabled={mutations.remove.isPending}
-                      onClick={() => mutations.remove.mutate(role.id)}
-                    >
-                      Delete
-                    </Button>
+                      title="Delete this role?"
+                      description="Everyone holding it loses the access it granted, immediately."
+                      confirmLabel="Delete role"
+                      pending={mutations.remove.isPending}
+                      onConfirm={(close) =>
+                        mutations.remove.mutate(role.id, { onSuccess: close })
+                      }
+                    />
                   )}
                 </div>
               </TableCell>
@@ -298,6 +306,6 @@ export function RolesTable({
           ))}
         </TableBody>
       </Table>
-    </div>
+    </TableFrame>
   )
 }

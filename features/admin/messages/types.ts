@@ -1,3 +1,9 @@
+import type {
+  MediaGif,
+  MediaImage,
+  MediaSticker,
+} from "@/components/admin/content-media"
+
 export interface MessageAuthor {
   id: string
   username: string | null
@@ -22,7 +28,11 @@ export interface AdminThreadMessage {
   id: string
   body: string
   deleted_at: string | null
+  edited_at: string | null
   created_at: string
+  images: MediaImage[]
+  sticker: MediaSticker | null
+  gif: MediaGif | null
   sender: MessageAuthor
   reply_to: { id: string; body: string; removed: boolean } | null
 }

@@ -1,5 +1,7 @@
 "use client"
 
+import { ConfirmAction } from "@/components/admin/confirm-action"
+
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,6 +15,7 @@ import {
 } from "@/components/ui/dialog"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { TableFrame } from "@/components/data-table/table-frame"
 import {
   Table,
   TableBody,
@@ -166,13 +169,16 @@ export function TiersTable({
   mutations: Mutations
 }) {
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex justify-end">
-        <TierDialog
-          mutations={mutations}
-          trigger={<Button size="sm">Add tier</Button>}
-        />
-      </div>
+    <TableFrame
+      toolbar={
+        <div className="flex justify-end">
+          <TierDialog
+            mutations={mutations}
+            trigger={<Button size="sm">Add tier</Button>}
+          />
+        </div>
+      }
+    >
       <Table>
         <TableHeader>
           <TableRow>
@@ -214,21 +220,23 @@ export function TiersTable({
                       </Button>
                     }
                   />
-                  <Button
+                  <ConfirmAction
+                    label="Delete"
                     variant="ghost"
-                    size="sm"
-                    className="text-destructive"
-                    disabled={mutations.remove.isPending}
-                    onClick={() => mutations.remove.mutate(tier.id)}
-                  >
-                    Delete
-                  </Button>
+                    title="Delete this tier?"
+                    description="Every profile standing on the ladder is recomputed straight away, so people can move tier the moment you confirm."
+                    confirmLabel="Delete tier"
+                    pending={mutations.remove.isPending}
+                    onConfirm={(close) =>
+                      mutations.remove.mutate(tier.id, { onSuccess: close })
+                    }
+                  />
                 </div>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-    </div>
+    </TableFrame>
   )
 }

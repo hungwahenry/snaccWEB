@@ -1,150 +1,125 @@
 "use client"
 
-import { useState } from "react"
+import { ConfirmAction } from "@/components/admin/confirm-action"
+import { DetailHeader, Fact, Facts, Section } from "@/components/admin/detail"
+import { UserInline } from "@/components/admin/user-inline"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Field, FieldLabel } from "@/components/ui/field"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
 import { formatDate, formatNaira } from "@/lib/format"
 import { STATUS_VARIANT } from "./withdrawals-table"
 import type { useWithdrawalMutations } from "./use-withdrawals"
 import type { AdminWithdrawal } from "./types"
-
-type Mutations = ReturnType<typeof useWithdrawalMutations>
-
-function Row({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="flex items-start justify-between gap-4 py-2 text-sm">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="text-right font-medium">{value}</span>
-    </div>
-  )
-}
 
 export function WithdrawalDetail({
   withdrawal,
   actions,
 }: {
   withdrawal: AdminWithdrawal
-  actions: Mutations
+  actions: ReturnType<typeof useWithdrawalMutations>
 }) {
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-semibold tabular-nums">
-              {formatNaira(withdrawal.amount)}
-            </h2>
-            <Badge variant={STATUS_VARIANT[withdrawal.status]}>
-              {withdrawal.status}
-            </Badge>
-          </div>
-          <p className="font-mono text-xs text-muted-foreground">
-            {withdrawal.reference}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            {withdrawal.user.username
-              ? `@${withdrawal.user.username}`
-              : withdrawal.user.display_name}
-          </p>
-        </div>
-        {withdrawal.status === "pending" && (
-          <Button
-            size="sm"
-            disabled={actions.retry.isPending}
-            onClick={() => actions.retry.mutate()}
-          >
-            Send to Paystack again
-          </Button>
-        )}
+      <DetailHeader
+        title={formatNaira(withdrawal.amount)}
+        badges={
+          <Badge variant={STATUS_VARIANT[withdrawal.status]}>
+            {withdrawal.status}
+          </Badge>
+        }
+        meta={
+          <>
+            <span className="font-mono">{withdrawal.reference}</span>
+            <span>Requested {formatDate(withdrawal.created_at)}</span>
+            {withdrawal.completed_at ? (
+              <span>Completed {formatDate(withdrawal.completed_at)}</span>
+            ) : null}
+          </>
+        }
+        actions={
+          withdrawal.status === "pending" ? (
+            <ConfirmAction
+              label="Send to Paystack again"
+              variant="default"
+              confirmVariant="default"
+              title="Re-attempt this transfer?"
+              description="Paystack is asked to move the money again. If the first attempt actually succeeded, this could pay twice — check the timeline before confirming."
+              confirmLabel="Send again"
+              pending={actions.retry.isPending}
+              onConfirm={(close) =>
+                actions.retry.mutate(undefined, { onSuccess: close })
+              }
+            />
+          ) : null
+        }
+      />
+
+      <div className="rounded-lg border px-4 py-3">
+        <UserInline user={withdrawal.user} note="Requested by" />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Payout</CardTitle>
-          </CardHeader>
-          <CardContent className="divide-y">
-            <Row label="Bank" value={withdrawal.bank_name} />
-            <Row label="Account name" value={withdrawal.account_name} />
-            <Row
+        <Section title="Where it went">
+          <Facts>
+            <Fact label="Bank" value={withdrawal.bank_name} />
+            <Fact label="Account name" value={withdrawal.account_name} />
+            <Fact
               label="Account"
               value={
                 withdrawal.account_number ?? `•••• ${withdrawal.account_last4}`
               }
             />
-            <Row
+            <Fact
               label="Recipient code"
               value={withdrawal.recipient_code ?? "—"}
+              mono
             />
-            <Row
+            <Fact
+              label="Transfer code"
+              value={withdrawal.transfer_code ?? "—"}
+              mono
+            />
+            {withdrawal.failure_reason ? (
+              <Fact
+                label="Failure reason"
+                value={
+                  <span className="text-destructive">
+                    {withdrawal.failure_reason}
+                  </span>
+                }
+              />
+            ) : null}
+          </Facts>
+        </Section>
+
+        <Section
+          title="Timeline"
+          description="Balance moved from what it was before to what it is now."
+        >
+          <Facts>
+            <Fact
               label="Balance before"
               value={formatNaira(withdrawal.balance_before)}
             />
-            <Row
+            <Fact
               label="Balance after"
               value={formatNaira(withdrawal.balance_after)}
             />
-            <Row
-              label="Transfer code"
-              value={withdrawal.transfer_code ?? "—"}
-            />
-            <Row
-              label="Failure reason"
-              value={withdrawal.failure_reason ?? "—"}
-            />
-            <Row label="Requested" value={formatDate(withdrawal.created_at)} />
-            <Row
-              label="Completed"
-              value={formatDate(withdrawal.completed_at)}
-            />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Timeline</CardTitle>
-          </CardHeader>
-          <CardContent>
             {withdrawal.events.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                No events recorded.
-              </p>
+              <Fact label="Events" value="None recorded" />
             ) : (
-              <ol className="flex flex-col gap-3">
-                {withdrawal.events.map((event, index) => (
-                  <li
-                    key={index}
-                    className="flex items-center justify-between gap-4 text-sm"
-                  >
-                    <Badge variant="outline">{event.status}</Badge>
-                    <span className="text-xs text-muted-foreground">
-                      {formatDate(event.created_at)}
-                    </span>
-                  </li>
-                ))}
-              </ol>
+              withdrawal.events.map((event, index) => (
+                <Fact
+                  key={`${event.status}-${index}`}
+                  label={
+                    <Badge variant="outline" className="capitalize">
+                      {event.status}
+                    </Badge>
+                  }
+                  value={formatDate(event.created_at)}
+                />
+              ))
             )}
-          </CardContent>
-        </Card>
+          </Facts>
+        </Section>
       </div>
     </div>
   )

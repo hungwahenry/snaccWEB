@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { DataPagination } from "@/components/data-pagination"
+import { TableFrame } from "@/components/data-table/table-frame"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -229,65 +229,68 @@ export function UniversitiesTable({
           trigger={<Button size="sm">Add university</Button>}
         />
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>University</TableHead>
-            <TableHead className="text-right">Members</TableHead>
-            <TableHead className="text-right">Snaccs</TableHead>
-            <TableHead>Fund</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.items.map((university) => (
-            <TableRow key={university.id}>
-              <TableCell>
-                <div className="font-medium">{university.name}</div>
-                <div className="text-xs text-muted-foreground">
-                  {university.acronym} · {university.slug}
-                </div>
-              </TableCell>
-              <TableCell className="text-right tabular-nums">
-                {formatNumber(university.stats.profiles)}
-              </TableCell>
-              <TableCell className="text-right tabular-nums">
-                {formatNumber(university.stats.snaccs)}
-              </TableCell>
-              <TableCell>
-                {university.fund ? (
-                  <Badge variant="secondary">
-                    {formatNaira(university.fund.cap)} cap
-                  </Badge>
-                ) : (
-                  <Badge variant="outline">free</Badge>
-                )}
-              </TableCell>
-              <TableCell className="text-right">
-                <div className="flex justify-end gap-2">
-                  <UniversityDialog
-                    university={university}
-                    mutations={mutations}
-                    trigger={
-                      <Button variant="outline" size="sm">
-                        Edit
-                      </Button>
-                    }
-                  />
-                  <DeleteDialog university={university} mutations={mutations} />
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-
-      <DataPagination
+      <TableFrame
         page={data.page}
-        lastPage={data.last_page}
+        perPage={data.per_page}
         total={data.total}
-        onPage={(page) => onParams({ page })}
-      />
+        onPageChange={(page) => onParams({ page })}
+      >
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>University</TableHead>
+              <TableHead className="text-right">Members</TableHead>
+              <TableHead className="text-right">Snaccs</TableHead>
+              <TableHead>Fund</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data.items.map((university) => (
+              <TableRow key={university.id}>
+                <TableCell>
+                  <div className="font-medium">{university.name}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {university.acronym} · {university.slug}
+                  </div>
+                </TableCell>
+                <TableCell className="text-right tabular-nums">
+                  {formatNumber(university.stats.profiles)}
+                </TableCell>
+                <TableCell className="text-right tabular-nums">
+                  {formatNumber(university.stats.snaccs)}
+                </TableCell>
+                <TableCell>
+                  {university.fund ? (
+                    <Badge variant="secondary">
+                      {formatNaira(university.fund.cap)} cap
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline">free</Badge>
+                  )}
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-2">
+                    <UniversityDialog
+                      university={university}
+                      mutations={mutations}
+                      trigger={
+                        <Button variant="outline" size="sm">
+                          Edit
+                        </Button>
+                      }
+                    />
+                    <DeleteDialog
+                      university={university}
+                      mutations={mutations}
+                    />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableFrame>
     </div>
   )
 }

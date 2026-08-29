@@ -1,5 +1,7 @@
 "use client"
 
+import { ConfirmAction } from "@/components/admin/confirm-action"
+
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,6 +15,7 @@ import {
 } from "@/components/ui/dialog"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { TableFrame } from "@/components/data-table/table-frame"
 import {
   Table,
   TableBody,
@@ -134,13 +137,16 @@ export function PromptsTable({
   mutations: Mutations
 }) {
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex justify-end">
-        <PromptDialog
-          mutations={mutations}
-          trigger={<Button size="sm">Add prompt</Button>}
-        />
-      </div>
+    <TableFrame
+      toolbar={
+        <div className="flex justify-end">
+          <PromptDialog
+            mutations={mutations}
+            trigger={<Button size="sm">Add prompt</Button>}
+          />
+        </div>
+      }
+    >
       <Table>
         <TableHeader>
           <TableRow>
@@ -174,21 +180,23 @@ export function PromptsTable({
                       </Button>
                     }
                   />
-                  <Button
+                  <ConfirmAction
+                    label="Delete"
                     variant="ghost"
-                    size="sm"
-                    className="text-destructive"
-                    disabled={mutations.remove.isPending}
-                    onClick={() => mutations.remove.mutate(prompt.id)}
-                  >
-                    Delete
-                  </Button>
+                    title="Delete this prompt?"
+                    description="New sign-ups will stop being offered it. Answers people already gave stay where they are."
+                    confirmLabel="Delete prompt"
+                    pending={mutations.remove.isPending}
+                    onConfirm={(close) =>
+                      mutations.remove.mutate(prompt.id, { onSuccess: close })
+                    }
+                  />
                 </div>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-    </div>
+    </TableFrame>
   )
 }

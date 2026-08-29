@@ -1,8 +1,12 @@
 "use client"
 
 import { use } from "react"
-import { PageHeader } from "@/components/page-header"
-import { WalletDetailView } from "@/features/admin/wallet/wallet-detail-view"
+import { DetailScreen } from "@/components/admin/detail-screen"
+import { WalletDetail } from "@/features/admin/wallet/wallet-detail"
+import {
+  useWallet,
+  useWalletMutations,
+} from "@/features/admin/wallet/use-wallet"
 
 export default function WalletDetailPage({
   params,
@@ -10,14 +14,17 @@ export default function WalletDetailPage({
   params: Promise<{ userId: string }>
 }) {
   const { userId } = use(params)
+  const query = useWallet(userId)
+  const actions = useWalletMutations(userId)
 
   return (
-    <>
-      <PageHeader
-        title="Wallet"
-        description="One holder, and every movement."
-      />
-      <WalletDetailView userId={userId} />
-    </>
+    <DetailScreen
+      backHref="/admin/wallet"
+      backLabel="Back to wallets"
+      missing="This user has no wallet yet."
+      query={query}
+    >
+      {(wallet) => <WalletDetail wallet={wallet} actions={actions} />}
+    </DetailScreen>
   )
 }

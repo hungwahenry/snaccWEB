@@ -1,3 +1,8 @@
+import type {
+  MediaGif,
+  MediaImage,
+  MediaSticker,
+} from "@/components/admin/content-media"
 import type { AdminSnacc } from "@/features/admin/snaccs/types"
 
 export type ReportStatus = "open" | "actioned" | "dismissed"
@@ -18,6 +23,9 @@ export type ReportTarget =
         body: string | null
         deleted_at: string | null
         author: ReportAuthor
+        images: MediaImage[]
+        sticker: MediaSticker | null
+        gif: MediaGif | null
       }
     }
   | { type: "user"; user: ReportAuthor }
@@ -32,7 +40,9 @@ export type ReportTarget =
         /** Held open by this report; without it the purge would already have taken it. */
         held: boolean
         author: ReportAuthor
-        images: { id: string; url: string; width: number; height: number }[]
+        images: MediaImage[]
+        sticker: MediaSticker | null
+        gif: MediaGif | null
       }
     }
   | {
@@ -42,7 +52,9 @@ export type ReportTarget =
         body: string
         deleted_at: string | null
         created_at: string
-        images: { id: string; url: string; width: number; height: number }[]
+        images: MediaImage[]
+        sticker: MediaSticker | null
+        gif: MediaGif | null
         sender: ReportAuthor
         conversation: {
           id: string

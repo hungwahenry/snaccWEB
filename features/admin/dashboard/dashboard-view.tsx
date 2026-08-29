@@ -1,14 +1,9 @@
 "use client"
 
 import { Area, AreaChart } from "recharts"
+import { Fact, Facts, Section, Stat, StatGrid } from "@/components/admin/detail"
+import { TableFrame } from "@/components/data-table/table-frame"
 import { Badge } from "@/components/ui/badge"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import {
   ChartContainer,
   ChartTooltip,
@@ -26,30 +21,6 @@ import {
 import { formatNaira, formatNumber } from "@/lib/format"
 import type { DashboardMetrics, DashboardSeriesPoint } from "./index"
 
-function Kpi({
-  label,
-  value,
-  hint,
-}: {
-  label: string
-  value: string
-  hint?: string
-}) {
-  return (
-    <Card>
-      <CardHeader>
-        <CardDescription>{label}</CardDescription>
-        <CardTitle className="text-3xl tabular-nums">{value}</CardTitle>
-      </CardHeader>
-      {hint ? (
-        <CardContent className="text-xs text-muted-foreground">
-          {hint}
-        </CardContent>
-      ) : null}
-    </Card>
-  )
-}
-
 function Trend({
   label,
   value,
@@ -66,48 +37,31 @@ function Trend({
   } satisfies ChartConfig
 
   return (
-    <Card>
-      <CardHeader>
-        <CardDescription>{label}</CardDescription>
-        <CardTitle className="text-3xl tabular-nums">{value}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={config} className="h-20 w-full">
-          <AreaChart
-            data={data}
-            margin={{ top: 4, right: 0, bottom: 0, left: 0 }}
-          >
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Area
-              dataKey={dataKey as string}
-              type="monotone"
-              stroke={`var(--color-${dataKey as string})`}
-              fill={`var(--color-${dataKey as string})`}
-              fillOpacity={0.12}
-              strokeWidth={2}
-              dot={false}
-            />
-          </AreaChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
-  )
-}
-
-function Row({
-  label,
-  value,
-}: {
-  label: React.ReactNode
-  value: React.ReactNode
-}) {
-  return (
-    <div className="flex items-center justify-between py-2 text-sm">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium tabular-nums">{value}</span>
+    <div className="flex flex-col gap-2 rounded-lg border px-4 py-3">
+      <div>
+        <p className="text-xs text-muted-foreground">{label}</p>
+        <p className="text-xl font-semibold tabular-nums">{value}</p>
+      </div>
+      <ChartContainer config={config} className="h-20 w-full">
+        <AreaChart
+          data={data}
+          margin={{ top: 4, right: 0, bottom: 0, left: 0 }}
+        >
+          <ChartTooltip
+            cursor={false}
+            content={<ChartTooltipContent hideLabel />}
+          />
+          <Area
+            dataKey={dataKey as string}
+            type="monotone"
+            stroke={`var(--color-${dataKey as string})`}
+            fill={`var(--color-${dataKey as string})`}
+            fillOpacity={0.12}
+            strokeWidth={2}
+            dot={false}
+          />
+        </AreaChart>
+      </ChartContainer>
     </div>
   )
 }
@@ -120,44 +74,44 @@ export function DashboardView({ metrics }: { metrics: DashboardMetrics }) {
 
   return (
     <div className="flex flex-col gap-6">
-      {!metrics.platform && (
-        <p className="text-sm text-muted-foreground">
+      {metrics.platform ? null : (
+        <p className="text-sm text-pretty text-muted-foreground">
           These numbers cover your campuses. Platform money is not included.
         </p>
       )}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
-        <Kpi
+
+      <StatGrid columns={3}>
+        <Stat
           label="Users"
           value={formatNumber(metrics.users.total)}
           hint={`${formatNumber(metrics.users.verified)} verified · ${formatNumber(metrics.users.suspended)} suspended`}
         />
-        <Kpi
+        <Stat
           label="Posts"
           value={formatNumber(metrics.content.snaccs)}
           hint={`${formatNumber(metrics.content.comments)} comments · ${formatNumber(metrics.content.resnaccs)} resnaccs`}
         />
-        <Kpi
+        <Stat
           label="Reactions"
           value={formatNumber(metrics.engagement.reactions)}
         />
-        <Kpi label="Views" value={formatNumber(metrics.engagement.views)} />
-        {money && (
-          <Kpi
+        <Stat label="Views" value={formatNumber(metrics.engagement.views)} />
+        {money ? (
+          <Stat
             label="Wallet liability"
             value={formatNaira(money.wallet_liability)}
             hint="unpaid balances"
           />
-        )}
-        <Kpi
+        ) : null}
+        <Stat
           label="Open reports"
           value={formatNumber(metrics.moderation.open_reports)}
           hint={`${formatNumber(metrics.moderation.reports_7d)} in last 7 days`}
         />
-      </div>
+      </StatGrid>
 
-      <div>
-        <h2 className="mb-3 text-sm font-medium">Last 14 days</h2>
-        <div className="grid gap-4 sm:grid-cols-3">
+      <Section title="Last 14 days">
+        <div className="grid gap-3 sm:grid-cols-3">
           <Trend
             label="Signups"
             value={formatNumber(sum("signups"))}
@@ -177,15 +131,12 @@ export function DashboardView({ metrics }: { metrics: DashboardMetrics }) {
             dataKey="active"
           />
         </div>
-      </div>
+      </Section>
 
-      {money && (
-        <div className="grid gap-4 lg:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Withdrawals</CardTitle>
-            </CardHeader>
-            <CardContent>
+      {money ? (
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Section title="Withdrawals">
+            <TableFrame>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -195,127 +146,132 @@ export function DashboardView({ metrics }: { metrics: DashboardMetrics }) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {money.withdrawals_by_status.map((row) => (
-                    <TableRow key={row.status}>
-                      <TableCell className="capitalize">{row.status}</TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {formatNumber(row.count)}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {formatNaira(row.amount)}
+                  {money.withdrawals_by_status.length === 0 ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={3}
+                        className="py-8 text-center text-sm text-muted-foreground"
+                      >
+                        No withdrawals yet.
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ) : (
+                    money.withdrawals_by_status.map((row) => (
+                      <TableRow key={row.status}>
+                        <TableCell className="capitalize">
+                          {row.status}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {formatNumber(row.count)}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {formatNaira(row.amount)}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
-            </CardContent>
-          </Card>
+            </TableFrame>
+          </Section>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Earnings</CardTitle>
-            </CardHeader>
-            <CardContent className="divide-y">
-              <Row
+          <Section title="Earnings">
+            <Facts>
+              <Fact
                 label="Total distributed"
                 value={formatNaira(money.total_distributed)}
               />
               {money.earnings_by_type.map((row) => (
-                <Row
+                <Fact
                   key={row.type}
                   label={<span className="capitalize">From {row.type}s</span>}
                   value={formatNaira(row.amount)}
                 />
               ))}
-            </CardContent>
-          </Card>
+            </Facts>
+          </Section>
         </div>
-      )}
+      ) : null}
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Content</CardTitle>
-          </CardHeader>
-          <CardContent className="divide-y">
-            <Row label="Posts" value={formatNumber(metrics.content.snaccs)} />
-            <Row
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Section title="Content">
+          <Facts>
+            <Fact label="Posts" value={formatNumber(metrics.content.snaccs)} />
+            <Fact
               label="Comments"
               value={formatNumber(metrics.content.comments)}
             />
-            <Row
+            <Fact
               label="Resnaccs"
               value={formatNumber(metrics.content.resnaccs)}
             />
-            <Row
+            <Fact
               label="With image"
               value={formatNumber(metrics.content.with_image)}
             />
-            <Row
+            <Fact
               label="With GIF"
               value={formatNumber(metrics.content.with_gif)}
             />
-            <Row
+            <Fact
               label="Removed"
               value={formatNumber(metrics.content.deleted_snaccs)}
             />
-          </CardContent>
-        </Card>
+          </Facts>
+        </Section>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Moderation</CardTitle>
-          </CardHeader>
-          <CardContent className="divide-y">
-            <Row
+        <Section title="Moderation">
+          <Facts>
+            <Fact
               label="Open reports"
               value={formatNumber(metrics.moderation.open_reports)}
             />
-            <Row
+            <Fact
               label="Actioned"
               value={formatNumber(metrics.moderation.actioned)}
             />
-            <Row
+            <Fact
               label="Dismissed"
               value={formatNumber(metrics.moderation.dismissed)}
             />
-            <Row
+            <Fact
               label="Filed in last 7 days"
               value={formatNumber(metrics.moderation.reports_7d)}
             />
-            <Row
+            <Fact
               label="Follows"
               value={formatNumber(metrics.engagement.follows)}
             />
-          </CardContent>
-        </Card>
+          </Facts>
+        </Section>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Top campuses</CardTitle>
-            <CardDescription>
-              {formatNumber(metrics.campuses.funded)} of{" "}
-              {formatNumber(metrics.campuses.total)} funded
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {metrics.top_campuses.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                No campuses with members yet.
-              </p>
-            ) : (
-              <Table>
-                <TableHeader>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Section
+          title="Top campuses"
+          description={`${formatNumber(metrics.campuses.funded)} of ${formatNumber(metrics.campuses.total)} funded`}
+        >
+          <TableFrame>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Campus</TableHead>
+                  <TableHead className="text-right">Members</TableHead>
+                  <TableHead className="text-right">Snaccs</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {metrics.top_campuses.length === 0 ? (
                   <TableRow>
-                    <TableHead>Campus</TableHead>
-                    <TableHead className="text-right">Members</TableHead>
-                    <TableHead className="text-right">Snaccs</TableHead>
+                    <TableCell
+                      colSpan={3}
+                      className="py-8 text-center text-sm text-muted-foreground"
+                    >
+                      No campuses with members yet.
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {metrics.top_campuses.map((campus) => (
+                ) : (
+                  metrics.top_campuses.map((campus) => (
                     <TableRow key={campus.id}>
                       <TableCell>
                         <span className="font-medium">{campus.acronym}</span>
@@ -330,38 +286,35 @@ export function DashboardView({ metrics }: { metrics: DashboardMetrics }) {
                         {formatNumber(campus.snaccs)}
                       </TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableFrame>
+        </Section>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Top reactions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {metrics.top_reactions.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No reactions yet.</p>
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {metrics.top_reactions.map((reaction) => (
-                  <Badge
-                    key={reaction.emoji}
-                    variant="secondary"
-                    className="gap-1.5 text-sm"
-                  >
-                    <span>{reaction.emoji}</span>
-                    <span className="tabular-nums">
-                      {formatNumber(reaction.count)}
-                    </span>
-                  </Badge>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <Section title="Top reactions">
+          {metrics.top_reactions.length === 0 ? (
+            <p className="rounded-lg border border-dashed py-8 text-center text-sm text-muted-foreground">
+              No reactions yet.
+            </p>
+          ) : (
+            <div className="flex flex-wrap gap-2 rounded-lg border p-4">
+              {metrics.top_reactions.map((reaction) => (
+                <Badge
+                  key={reaction.emoji}
+                  variant="secondary"
+                  className="gap-1.5 text-sm"
+                >
+                  <span>{reaction.emoji}</span>
+                  <span className="tabular-nums">
+                    {formatNumber(reaction.count)}
+                  </span>
+                </Badge>
+              ))}
+            </div>
+          )}
+        </Section>
       </div>
     </div>
   )

@@ -1,9 +1,9 @@
 "use client"
+import { TableFrame } from "@/components/data-table/table-frame"
 
 import { useMemo, useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
   DialogClose,
@@ -158,15 +158,10 @@ export function ReservedUsernamesTable({
   }, [names, filter])
 
   return (
-    <Card>
-      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <CardTitle className="text-base">{names.length} names held</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Every one can be released. Snacc seeds this list on a fresh install
-            and never overrides it again.
-          </p>
-        </div>
+    <TableFrame
+      title={`${names.length} names held`}
+      description="Every one can be released. Snacc seeds this list on a fresh install and never overrides it again."
+      toolbar={
         <div className="flex items-center gap-2">
           <Input
             value={filter}
@@ -176,39 +171,40 @@ export function ReservedUsernamesTable({
           />
           <HoldDialog onHold={onHold} pending={pending} />
         </div>
-      </CardHeader>
-      <CardContent>
-        {shown.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Nothing matches that.</p>
-        ) : (
-          <Table>
-            <TableBody>
-              {shown.map((held) => (
-                <TableRow key={held.name}>
-                  <TableCell className="w-56 font-mono text-sm">
-                    {held.name}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {held.reason}
-                  </TableCell>
-                  <TableCell className="w-32">
-                    {held.seeded ? null : (
-                      <Badge variant="outline">added here</Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className="w-28 text-right">
-                    <ReleaseDialog
-                      held={held}
-                      onRelease={onRelease}
-                      pending={pending}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </CardContent>
-    </Card>
+      }
+    >
+      {shown.length === 0 ? (
+        <p className="p-6 text-sm text-muted-foreground">
+          Nothing matches that.
+        </p>
+      ) : (
+        <Table>
+          <TableBody>
+            {shown.map((held) => (
+              <TableRow key={held.name}>
+                <TableCell className="w-56 font-mono text-sm">
+                  {held.name}
+                </TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  {held.reason}
+                </TableCell>
+                <TableCell className="w-32">
+                  {held.seeded ? null : (
+                    <Badge variant="outline">added here</Badge>
+                  )}
+                </TableCell>
+                <TableCell className="w-28 text-right">
+                  <ReleaseDialog
+                    held={held}
+                    onRelease={onRelease}
+                    pending={pending}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
+    </TableFrame>
   )
 }

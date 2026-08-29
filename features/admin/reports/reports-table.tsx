@@ -1,7 +1,6 @@
 "use client"
 
-import Link from "next/link"
-import { DataPagination } from "@/components/data-pagination"
+import { TableFrame } from "@/components/data-table/table-frame"
 import { Badge } from "@/components/ui/badge"
 import {
   Select,
@@ -18,8 +17,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { formatDate, handleOf } from "@/lib/format"
+import { formatDate } from "@/lib/format"
 import type { Paginated } from "@/lib/api/types"
+import { ReportTargetCell } from "./report-target-cell"
 import { ResolveDialog } from "./resolve-dialog"
 import type { useResolveReport } from "./use-reports"
 import type { AdminReport, ListReportsParams } from "./types"
@@ -31,20 +31,6 @@ const STATUS_VARIANT: Record<
   open: "secondary",
   actioned: "default",
   dismissed: "outline",
-}
-
-function targetLabel(target: AdminReport["target"]) {
-  if (!target) return "—"
-  if (target.type === "snacc") {
-    return `${target.snacc.body?.slice(0, 40) || "media snacc"} · ${handleOf(target.snacc.author)}`
-  }
-  if (target.type === "user") {
-    return `User ${handleOf(target.user)}`
-  }
-  if (target.type === "moment") {
-    return `${target.moment.body?.slice(0, 40) || "photo moment"} · ${handleOf(target.moment.author)}`
-  }
-  return `${target.message.body?.slice(0, 40) || "message"} · ${handleOf(target.message.sender)}`
 }
 
 export function ReportsTable({
@@ -103,80 +89,72 @@ export function ReportsTable({
         </Select>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Target</TableHead>
-            <TableHead>Reason</TableHead>
-            <TableHead>Reporter</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Reported</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.items.length === 0 ? (
+      <TableFrame
+        page={data.page}
+        perPage={data.per_page}
+        total={data.total}
+        onPageChange={(page) => onParams({ page })}
+      >
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell
-                colSpan={6}
-                className="py-10 text-center text-sm text-muted-foreground"
-              >
-                No reports match these filters.
-              </TableCell>
+              <TableHead>Target</TableHead>
+              <TableHead>Reason</TableHead>
+              <TableHead>Reporter</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Reported</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
-          ) : (
-            data.items.map((report) => (
-              <TableRow key={report.id}>
-                <TableCell className="max-w-xs">
-                  <Link
-                    href={`/admin/reports/${report.id}`}
-                    className="truncate text-sm font-medium underline-offset-4 hover:underline"
-                  >
-                    {targetLabel(report.target)}
-                  </Link>
-                  {report.detail && (
-                    <p className="truncate text-xs text-muted-foreground">
-                      “{report.detail}”
-                    </p>
-                  )}
-                </TableCell>
-                <TableCell className="text-sm">{report.reason.label}</TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {report.reporter.username
-                    ? `@${report.reporter.username}`
-                    : report.reporter.display_name}
-                </TableCell>
-                <TableCell>
-                  <Badge variant={STATUS_VARIANT[report.status]}>
-                    {report.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {formatDate(report.created_at)}
-                </TableCell>
-                <TableCell className="text-right">
-                  {report.status === "open" ? (
-                    <ResolveDialog report={report} resolve={resolve} />
-                  ) : (
-                    <span className="text-xs text-muted-foreground">
-                      {report.reviewed_by?.username
-                        ? `@${report.reviewed_by.username}`
-                        : "resolved"}
-                    </span>
-                  )}
+          </TableHeader>
+          <TableBody>
+            {data.items.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={6}
+                  className="py-10 text-center text-sm text-muted-foreground"
+                >
+                  No reports match these filters.
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-
-      <DataPagination
-        page={data.page}
-        lastPage={data.last_page}
-        total={data.total}
-        onPage={(page) => onParams({ page })}
-      />
+            ) : (
+              data.items.map((report) => (
+                <TableRow key={report.id}>
+                  <TableCell className="max-w-xs">
+                    <ReportTargetCell report={report} />
+                  </TableCell>
+                  <TableCell className="text-sm">
+                    {report.reason.label}
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {report.reporter.username
+                      ? `@${report.reporter.username}`
+                      : report.reporter.display_name}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={STATUS_VARIANT[report.status]}>
+                      {report.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {formatDate(report.created_at)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {report.status === "open" ? (
+                      <ResolveDialog report={report} resolve={resolve} />
+                    ) : (
+                      <span className="text-xs text-muted-foreground">
+                        {report.reviewed_by?.username
+                          ? `@${report.reviewed_by.username}`
+                          : "resolved"}
+                      </span>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableFrame>
     </div>
   )
 }

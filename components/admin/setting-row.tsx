@@ -19,7 +19,7 @@ export function SettingRow({
   tone?: "default" | "danger"
 }) {
   return (
-    <div className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+    <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <p

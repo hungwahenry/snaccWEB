@@ -1,9 +1,7 @@
 "use client"
 
-import Link from "next/link"
 import { use } from "react"
-import { Button } from "@/components/ui/button"
-import { Spinner } from "@/components/ui/spinner"
+import { DetailScreen } from "@/components/admin/detail-screen"
 import { ReportDetail } from "@/features/admin/reports/report-detail"
 import {
   useReport,
@@ -20,26 +18,13 @@ export default function ReportDetailPage({
   const resolve = useResolveReport()
 
   return (
-    <>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="mb-4 w-fit"
-        render={<Link href="/admin/reports" />}
-      >
-        ← Back to reports
-      </Button>
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load this report.
-        </p>
-      ) : (
-        <ReportDetail report={query.data} resolve={resolve} />
-      )}
-    </>
+    <DetailScreen
+      backHref="/admin/reports"
+      backLabel="Back to reports"
+      missing="Couldn't load this report."
+      query={query}
+    >
+      {(report) => <ReportDetail report={report} resolve={resolve} />}
+    </DetailScreen>
   )
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { DataPagination } from "@/components/data-pagination"
+import { TableFrame } from "@/components/data-table/table-frame"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -87,62 +87,63 @@ export function AuditTable({
           className="max-w-xs"
         />
       </form>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Action</TableHead>
-            <TableHead>Admin</TableHead>
-            <TableHead>Target</TableHead>
-            <TableHead>When</TableHead>
-            <TableHead className="text-right">Detail</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.items.length === 0 ? (
+      <TableFrame
+        page={data.page}
+        perPage={data.per_page}
+        total={data.total}
+        onPageChange={(page) => onParams({ page })}
+      >
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell
-                colSpan={5}
-                className="py-10 text-center text-sm text-muted-foreground"
-              >
-                No audit entries.
-              </TableCell>
+              <TableHead>Action</TableHead>
+              <TableHead>Admin</TableHead>
+              <TableHead>Target</TableHead>
+              <TableHead>When</TableHead>
+              <TableHead className="text-right">Detail</TableHead>
             </TableRow>
-          ) : (
-            data.items.map((log) => (
-              <TableRow key={log.id}>
-                <TableCell className="font-mono text-xs">
-                  {log.action}
-                </TableCell>
-                <TableCell className="text-sm">
-                  {log.admin_username
-                    ? `@${log.admin_username}`
-                    : log.admin_email}
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline">{log.target_type}</Badge>
-                  {log.target_id && (
-                    <span className="ml-2 font-mono text-xs text-muted-foreground">
-                      {log.target_id.slice(0, 8)}…
-                    </span>
-                  )}
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {formatDate(log.created_at)}
-                </TableCell>
-                <TableCell className="text-right">
-                  <DiffDialog log={log} />
+          </TableHeader>
+          <TableBody>
+            {data.items.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="py-10 text-center text-sm text-muted-foreground"
+                >
+                  No audit entries.
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-      <DataPagination
-        page={data.page}
-        lastPage={data.last_page}
-        total={data.total}
-        onPage={(page) => onParams({ page })}
-      />
+            ) : (
+              data.items.map((log) => (
+                <TableRow key={log.id}>
+                  <TableCell className="font-mono text-xs">
+                    {log.action}
+                  </TableCell>
+                  <TableCell className="text-sm">
+                    {log.admin_username
+                      ? `@${log.admin_username}`
+                      : log.admin_email}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{log.target_type}</Badge>
+                    {log.target_id && (
+                      <span className="ml-2 font-mono text-xs text-muted-foreground">
+                        {log.target_id.slice(0, 8)}…
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {formatDate(log.created_at)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <DiffDialog log={log} />
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableFrame>
     </div>
   )
 }

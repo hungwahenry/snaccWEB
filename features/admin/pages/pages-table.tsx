@@ -1,8 +1,11 @@
 "use client"
 
+import { ConfirmAction } from "@/components/admin/confirm-action"
+
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { TableFrame } from "@/components/data-table/table-frame"
 import {
   Table,
   TableBody,
@@ -23,12 +26,15 @@ export function PagesTable({
   mutations: ReturnType<typeof usePageMutations>
 }) {
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex justify-end">
-        <Button size="sm" render={<Link href="/admin/pages/new" />}>
-          New page
-        </Button>
-      </div>
+    <TableFrame
+      toolbar={
+        <div className="flex justify-end">
+          <Button size="sm" render={<Link href="/admin/pages/new" />}>
+            New page
+          </Button>
+        </div>
+      }
+    >
       <Table>
         <TableHeader>
           <TableRow>
@@ -76,14 +82,17 @@ export function PagesTable({
                     >
                       Edit
                     </Button>
-                    <Button
+                    <ConfirmAction
+                      label="Delete"
                       variant="ghost"
-                      size="sm"
-                      disabled={mutations.remove.isPending}
-                      onClick={() => mutations.remove.mutate(page.id)}
-                    >
-                      Delete
-                    </Button>
+                      title="Delete this page?"
+                      description="Anyone following its link gets a 404 from the moment you confirm."
+                      confirmLabel="Delete page"
+                      pending={mutations.remove.isPending}
+                      onConfirm={(close) =>
+                        mutations.remove.mutate(page.id, { onSuccess: close })
+                      }
+                    />
                   </div>
                 </TableCell>
               </TableRow>
@@ -91,6 +100,6 @@ export function PagesTable({
           )}
         </TableBody>
       </Table>
-    </div>
+    </TableFrame>
   )
 }

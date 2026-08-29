@@ -1,12 +1,12 @@
 "use client"
 
+import { ConfirmAction } from "@/components/admin/confirm-action"
 import { Flag, Trash2, Undo2 } from "lucide-react"
 import { useMemo } from "react"
 import { DataTable, type Column } from "@/components/data-table/data-table"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { CanAct } from "@/components/rbac/can"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
   Select,
   SelectContent,
@@ -122,28 +122,39 @@ export function MomentsView() {
           <div className="flex justify-end gap-1">
             {row.original.held_at && (
               <CanAct permission="moments.read">
-                <Button
+                <ConfirmAction
+                  label="Release"
+                  icon={<Undo2 />}
                   variant="ghost"
-                  size="sm"
-                  onClick={() => mutations.release.mutate(row.original.id)}
-                >
-                  <Undo2 />
-                  Release
-                </Button>
+                  title="Release this moment?"
+                  description="It stops being held for review, so the next purge deletes it for good. Decide from what you can see now."
+                  confirmLabel="Release it"
+                  pending={mutations.release.isPending}
+                  onConfirm={(close) =>
+                    mutations.release.mutate(row.original.id, {
+                      onSuccess: close,
+                    })
+                  }
+                />
               </CanAct>
             )}
             {!row.original.deleted_at && (
               <CanAct permission="moments.delete">
-                <Button
+                <ConfirmAction
+                  label="Remove"
+                  icon={<Trash2 />}
                   variant="ghost"
-                  size="sm"
-                  onClick={() =>
-                    mutations.remove.mutate({ id: row.original.id })
+                  title="Remove this moment?"
+                  description="It disappears from the app straight away. The record stays here."
+                  confirmLabel="Remove it"
+                  pending={mutations.remove.isPending}
+                  onConfirm={(close) =>
+                    mutations.remove.mutate(
+                      { id: row.original.id },
+                      { onSuccess: close }
+                    )
                   }
-                >
-                  <Trash2 />
-                  Remove
-                </Button>
+                />
               </CanAct>
             )}
           </div>

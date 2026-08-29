@@ -1,10 +1,10 @@
 "use client"
+import { TableFrame } from "@/components/data-table/table-frame"
 
 import { useState } from "react"
 import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -127,48 +127,44 @@ export function ConfigTable({
   return (
     <div className="flex flex-col gap-6">
       {categories.map((category) => (
-        <Card key={category}>
-          <CardHeader>
-            <CardTitle className="text-base capitalize">{category}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableBody>
-                {settings
-                  .filter((s) => s.category === category)
-                  .map((setting) => (
-                    <TableRow key={setting.key}>
-                      <TableCell className="align-top">
-                        <div className="font-mono text-xs">{setting.key}</div>
-                        <div className="mt-1 text-xs text-muted-foreground">
-                          {setting.description}
-                        </div>
-                      </TableCell>
-                      <TableCell className="align-top">
-                        <code className="text-xs">
-                          {display(setting.value)}
-                        </code>
-                      </TableCell>
-                      <TableCell className="align-top">
-                        {setting.is_public ? (
-                          <Badge variant="secondary">public</Badge>
-                        ) : (
-                          <Badge variant="outline">private</Badge>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right align-top">
-                        <EditDialog
-                          setting={setting}
-                          onUpdate={onUpdate}
-                          pending={pending}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+        <TableFrame
+          key={category}
+          title={<span className="capitalize">{category}</span>}
+        >
+          <Table>
+            <TableBody>
+              {settings
+                .filter((s) => s.category === category)
+                .map((setting) => (
+                  <TableRow key={setting.key}>
+                    <TableCell className="align-top">
+                      <div className="font-mono text-xs">{setting.key}</div>
+                      <div className="mt-1 text-xs text-muted-foreground">
+                        {setting.description}
+                      </div>
+                    </TableCell>
+                    <TableCell className="align-top">
+                      <code className="text-xs">{display(setting.value)}</code>
+                    </TableCell>
+                    <TableCell className="align-top">
+                      {setting.is_public ? (
+                        <Badge variant="secondary">public</Badge>
+                      ) : (
+                        <Badge variant="outline">private</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right align-top">
+                      <EditDialog
+                        setting={setting}
+                        onUpdate={onUpdate}
+                        pending={pending}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableFrame>
       ))}
     </div>
   )
