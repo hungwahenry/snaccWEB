@@ -25,7 +25,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { formatDate, formatNaira } from "@/lib/format"
 import { STATUS_VARIANT } from "./withdrawals-table"
 import type { useWithdrawalMutations } from "./use-withdrawals"
-import type { AdminWithdrawal, SettleWithdrawalInput } from "./types"
+import type { AdminWithdrawal } from "./types"
 
 type Mutations = ReturnType<typeof useWithdrawalMutations>
 
@@ -35,73 +35,6 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
       <span className="text-muted-foreground">{label}</span>
       <span className="text-right font-medium">{value}</span>
     </div>
-  )
-}
-
-function SettleDialog({ actions }: { actions: Mutations }) {
-  const [open, setOpen] = useState(false)
-  const [status, setStatus] =
-    useState<SettleWithdrawalInput["status"]>("success")
-  const [reason, setReason] = useState("")
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          <Button variant="outline" size="sm">
-            Mark settled
-          </Button>
-        }
-      />
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Settle withdrawal</DialogTitle>
-        </DialogHeader>
-        <p className="text-sm text-muted-foreground">
-          Manually record the outcome. Reversing a successful transfer refunds
-          the balance once.
-        </p>
-        <Field>
-          <FieldLabel>Outcome</FieldLabel>
-          <Select
-            value={status}
-            onValueChange={(value) => value && setStatus(value as never)}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="success">Success</SelectItem>
-              <SelectItem value="failed">Failed</SelectItem>
-              <SelectItem value="reversed">Reversed</SelectItem>
-            </SelectContent>
-          </Select>
-        </Field>
-        <Field>
-          <FieldLabel>Reason (optional)</FieldLabel>
-          <Textarea
-            value={reason}
-            onChange={(event) => setReason(event.target.value)}
-            rows={3}
-            maxLength={200}
-          />
-        </Field>
-        <DialogFooter>
-          <DialogClose render={<Button variant="ghost">Cancel</Button>} />
-          <Button
-            disabled={actions.settle.isPending}
-            onClick={() =>
-              actions.settle.mutate(
-                { status, reason: reason.trim() || undefined },
-                { onSuccess: () => setOpen(false) }
-              )
-            }
-          >
-            Settle
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   )
 }
 
@@ -133,38 +66,15 @@ export function WithdrawalDetail({
               : withdrawal.user.display_name}
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {withdrawal.status === "pending" && (
-            <>
-              <Button
-                size="sm"
-                disabled={actions.claim.isPending}
-                onClick={() => actions.claim.mutate()}
-              >
-                Claim to pay
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={actions.retry.isPending}
-                onClick={() => actions.retry.mutate()}
-              >
-                Retry transfer
-              </Button>
-            </>
-          )}
-          {withdrawal.status === "processing" && (
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={actions.release.isPending}
-              onClick={() => actions.release.mutate()}
-            >
-              Release
-            </Button>
-          )}
-          <SettleDialog actions={actions} />
-        </div>
+        {withdrawal.status === "pending" && (
+          <Button
+            size="sm"
+            disabled={actions.retry.isPending}
+            onClick={() => actions.retry.mutate()}
+          >
+            Send to Paystack again
+          </Button>
+        )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -181,18 +91,9 @@ export function WithdrawalDetail({
                 withdrawal.account_number ?? `•••• ${withdrawal.account_last4}`
               }
             />
-            {/* The handle for finding this payee in Paystack, which is how a manual payout is made. */}
             <Row
               label="Recipient code"
               value={withdrawal.recipient_code ?? "—"}
-            />
-            <Row
-              label="Claimed by"
-              value={
-                withdrawal.claimed_by
-                  ? `${withdrawal.claimed_by.username ? `@${withdrawal.claimed_by.username}` : withdrawal.claimed_by.display_name} · ${formatDate(withdrawal.claimed_at)}`
-                  : "—"
-              }
             />
             <Row
               label="Balance before"

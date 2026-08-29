@@ -1,5 +1,4 @@
-export type WithdrawalStatus =
-  "pending" | "processing" | "success" | "failed" | "reversed"
+export type WithdrawalStatus = "pending" | "success" | "failed" | "reversed"
 
 export interface WithdrawalUser {
   id: string
@@ -31,8 +30,6 @@ export interface AdminWithdrawal {
   failure_reason: string | null
   completed_at: string | null
   created_at: string
-  claimed_at: string | null
-  claimed_by: WithdrawalUser | null
   user: WithdrawalUser
   events: WithdrawalEvent[]
 }
@@ -46,11 +43,5 @@ export interface ListWithdrawalsParams {
 
 export interface WithdrawalSummary {
   pending: { count: number; total: number; oldest_at: string | null }
-  processing: { count: number; total: number }
   paid: { days: number; count: number; total: number }
-}
-
-export interface SettleWithdrawalInput {
-  status: "success" | "failed" | "reversed"
-  reason?: string
 }

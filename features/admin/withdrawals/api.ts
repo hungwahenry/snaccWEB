@@ -3,7 +3,6 @@ import type { Paginated } from "@/lib/api/types"
 import type {
   AdminWithdrawal,
   ListWithdrawalsParams,
-  SettleWithdrawalInput,
   WithdrawalSummary,
 } from "./types"
 
@@ -20,18 +19,6 @@ export function getWithdrawalSummary() {
 
 export function getWithdrawal(id: string) {
   return api.get<AdminWithdrawal>(`/admin/withdrawals/${id}`)
-}
-
-export function settleWithdrawal(id: string, input: SettleWithdrawalInput) {
-  return api.post<AdminWithdrawal>(`/admin/withdrawals/${id}/settle`, input)
-}
-
-export function claimWithdrawal(id: string) {
-  return api.post<AdminWithdrawal>(`/admin/withdrawals/${id}/claim`)
-}
-
-export function releaseWithdrawal(id: string) {
-  return api.post<AdminWithdrawal>(`/admin/withdrawals/${id}/release`)
 }
 
 export function retryWithdrawal(id: string) {

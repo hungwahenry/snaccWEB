@@ -23,7 +23,7 @@ export default function WithdrawalsPage() {
     <>
       <PageHeader
         title="Withdrawals"
-        description="Review and settle creator payouts."
+        description="Payouts on their way to a bank, and what has landed."
       />
       <div className="flex flex-col gap-6">
         <WithdrawalsSummary />

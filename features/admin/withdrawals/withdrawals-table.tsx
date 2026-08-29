@@ -33,7 +33,6 @@ export const STATUS_VARIANT: Record<
   "secondary" | "default" | "destructive" | "outline"
 > = {
   pending: "secondary",
-  processing: "outline",
   success: "default",
   failed: "destructive",
   reversed: "outline",
@@ -83,7 +82,6 @@ export function WithdrawalsTable({
           <SelectContent>
             <SelectItem value="all">All status</SelectItem>
             <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="processing">Being paid</SelectItem>
             <SelectItem value="success">Success</SelectItem>
             <SelectItem value="failed">Failed</SelectItem>
             <SelectItem value="reversed">Reversed</SelectItem>

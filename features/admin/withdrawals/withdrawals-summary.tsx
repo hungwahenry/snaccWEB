@@ -48,16 +48,11 @@ export function WithdrawalsSummary() {
   if (!data) return null
 
   return (
-    <div className="grid gap-4 sm:grid-cols-3">
+    <div className="grid gap-4 sm:grid-cols-2">
       <Tile
-        label="Waiting to be claimed"
+        label="Still with Paystack"
         value={formatNaira(data.pending.total)}
-        hint={`${formatNumber(data.pending.count)} waiting · ${waitingSince(data.pending.oldest_at)}`}
-      />
-      <Tile
-        label="Being paid out"
-        value={formatNaira(data.processing.total)}
-        hint={`${formatNumber(data.processing.count)} claimed by an admin`}
+        hint={`${formatNumber(data.pending.count)} unsettled · ${waitingSince(data.pending.oldest_at)}`}
       />
       <Tile
         label={`Paid in ${data.paid.days} days`}

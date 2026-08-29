@@ -9,15 +9,12 @@ import {
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/api/errors"
 import {
-  claimWithdrawal,
   getWithdrawal,
   getWithdrawalSummary,
   listWithdrawals,
-  releaseWithdrawal,
   retryWithdrawal,
-  settleWithdrawal,
 } from "./api"
-import type { ListWithdrawalsParams, SettleWithdrawalInput } from "./types"
+import type { ListWithdrawalsParams } from "./types"
 
 export function useWithdrawals(params: ListWithdrawalsParams) {
   return useQuery({
@@ -54,30 +51,6 @@ export function useWithdrawalMutations(id: string) {
   }
 
   return {
-    settle: useMutation({
-      mutationFn: (input: SettleWithdrawalInput) => settleWithdrawal(id, input),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Withdrawal settled.")
-      },
-      onError,
-    }),
-    claim: useMutation({
-      mutationFn: () => claimWithdrawal(id),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Claimed — it is yours to pay.")
-      },
-      onError,
-    }),
-    release: useMutation({
-      mutationFn: () => releaseWithdrawal(id),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Released back to the queue.")
-      },
-      onError,
-    }),
     retry: useMutation({
       mutationFn: () => retryWithdrawal(id),
       onSuccess: () => {
