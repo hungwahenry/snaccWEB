@@ -1,5 +1,4 @@
 import {
-  ScanEye,
   AtSign,
   Banknote,
   Bell,
@@ -12,8 +11,10 @@ import {
   Medal,
   Megaphone,
   MessageSquare,
-  School,
+  Palette,
   Scale,
+  ScanEye,
+  School,
   ScrollText,
   ShieldCheck,
   SlidersHorizontal,
@@ -178,6 +179,12 @@ export const NAV: NavSection[] = [
         label: "Score tiers",
         icon: Medal,
         permission: "score_tiers.read",
+      },
+      {
+        href: "/admin/app-icons",
+        label: "App icons",
+        icon: Palette,
+        permission: "app_icons.read",
       },
       {
         href: "/admin/universities",
