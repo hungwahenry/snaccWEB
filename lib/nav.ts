@@ -151,6 +151,12 @@ export const NAV: NavSection[] = [
         icon: Coins,
         permission: "earnings.read",
       },
+      {
+        href: "/admin/premium",
+        label: "Premium",
+        icon: Sparkles,
+        permission: "premium.read",
+      },
     ],
   },
   {

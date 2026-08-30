@@ -21,6 +21,8 @@ export interface OpsDrift {
   scores: Record<string, number>
   wallets: { accounts: number }
   earnings?: { profiles: number }
+  /** Absent until the backend that owns premium subscriptions is deployed. */
+  premium?: { profiles: number }
 }
 
 export function getHealth() {
