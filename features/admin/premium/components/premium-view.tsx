@@ -153,11 +153,21 @@ function SubscriberRow({ row }: { row: AdminSubscriber }) {
       <TableCell className="text-muted-foreground">{row.product_id}</TableCell>
       <TableCell>
         <Badge variant={row.active ? "secondary" : "outline"}>
-          {row.active ? (row.will_renew ? "active" : "cancelling") : "lapsed"}
+          {row.active
+            ? row.lifetime
+              ? "lifetime"
+              : row.will_renew
+                ? "active"
+                : "cancelling"
+            : "lapsed"}
         </Badge>
       </TableCell>
       <TableCell className="tabular-nums">
-        {new Date(row.expires_at).toLocaleDateString()}
+        {row.expires_at ? (
+          new Date(row.expires_at).toLocaleDateString()
+        ) : (
+          <span className="text-muted-foreground">never</span>
+        )}
       </TableCell>
       <TableCell className="text-right">
         {row.active ? (

@@ -5,7 +5,9 @@ export interface AdminSubscriber {
   status: "active" | "grace" | "expired"
   product_id: string
   active: boolean
-  expires_at: string
+  lifetime: boolean
+  /** Null with `lifetime` set: bought outright, so there is no date to show. */
+  expires_at: string | null
   will_renew: boolean
   started_at: string
 }

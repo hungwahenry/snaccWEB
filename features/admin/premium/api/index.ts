@@ -28,7 +28,7 @@ export function updateBenefit(id: string, input: UpdateBenefitInput) {
 }
 
 export function grantPremium(userId: string, days: number, reason: string) {
-  return api.post<{ until: string }>(`/admin/premium/users/${userId}/grant`, {
+  return api.post<{ until: string | null }>(`/admin/premium/users/${userId}/grant`, {
     days,
     reason,
   })
