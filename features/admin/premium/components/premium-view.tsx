@@ -51,6 +51,10 @@ export function PremiumView() {
                 value={formatNumber(stats.data.cancelling)}
               />
               <Fact label="Lapsed" value={formatNumber(stats.data.lapsed)} />
+              <Fact
+                label="Lifetime"
+                value={formatNumber(stats.data.lifetime)}
+              />
             </Facts>
             <Facts>
               {stats.data.byStore.map((row) => (

@@ -21,6 +21,7 @@ import {
   Sparkles,
   Tags,
   ToggleRight,
+  Webhook,
   UserX,
   Users,
   VenetianMask,
@@ -173,6 +174,12 @@ export const NAV: NavSection[] = [
         label: "Feature flags",
         icon: ToggleRight,
         permission: "flags.read",
+      },
+      {
+        href: "/admin/webhooks",
+        label: "Webhooks",
+        icon: Webhook,
+        permission: "webhooks.read",
       },
       {
         href: "/admin/engagement",

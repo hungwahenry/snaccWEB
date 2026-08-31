@@ -6,7 +6,6 @@ export interface AdminSubscriber {
   product_id: string
   active: boolean
   lifetime: boolean
-  /** Null with `lifetime` set: bought outright, so there is no date to show. */
   expires_at: string | null
   will_renew: boolean
   started_at: string
@@ -16,6 +15,7 @@ export interface PremiumStats {
   active: number
   lapsed: number
   cancelling: number
+  lifetime: number
   byStore: { store: string; count: number }[]
 }
 
@@ -39,7 +39,7 @@ export interface UpdateBenefitInput {
 
 export interface SubscriberFilters {
   page?: number
-  state?: "active" | "lapsed"
+  state?: "active" | "lapsed" | "lifetime"
   store?: AdminSubscriber["store"]
   q?: string
 }
