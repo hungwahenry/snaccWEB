@@ -10,7 +10,7 @@ export function useConfigValue<T>(key: string, fallback: T): T {
     staleTime: 5 * 60 * 1000,
   })
 
-  const value = data?.values[key]
+  const value = data?.[key]
 
   return value === undefined ? fallback : (value as T)
 }
