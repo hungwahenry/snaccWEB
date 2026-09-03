@@ -20,7 +20,7 @@ export function AuthorBadges({
         <BadgeCheckIcon
           className="shrink-0"
           size={size}
-          color={PREMIUM_COLOR}
+          color="#FFFFFF"
           fill={PREMIUM_COLOR}
         />
       ) : null}
