@@ -11,9 +11,8 @@ export function Wordmark({ className }: { className?: string }) {
       )}
     >
       {/* Snacc mark — black on light, white on dark */}
-      <img src="/1.png" alt="" className="size-6 dark:hidden" />
-      <img src="/2.png" alt="" className="hidden size-6 dark:block" />
-      <span>snacc</span>
+      <img src="/1.png" alt="Snacc" className="h-6 w-auto dark:hidden" />
+      <img src="/2.png" alt="Snacc" className="hidden h-6 w-auto dark:block" />
     </Link>
   )
 }
