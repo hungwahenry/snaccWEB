@@ -1,5 +1,8 @@
 import Link from "next/link"
 import type { PublicProfile } from "@/features/users/api/public"
+import { PayCode } from "./pay-code"
+
+const BASE = "https://snacc.fyi"
 
 export function PayEntry({ profile }: { profile: PublicProfile }) {
   const name = profile.display_name ?? `@${profile.username}`
@@ -14,6 +17,18 @@ export function PayEntry({ profile }: { profile: PublicProfile }) {
           </h1>
           <p className="text-base text-muted-foreground">
             @{profile.username} takes money on Snacc — instant and free.
+          </p>
+        </div>
+      </div>
+
+      <div className="flex justify-center">
+        <div className="flex flex-col items-center gap-3 rounded-3xl border border-border p-5">
+          <PayCode
+            value={`${BASE}/pay/${profile.username}`}
+            avatarUrl={profile.avatar_url}
+          />
+          <p className="text-xs font-semibold text-muted-foreground">
+            Scan with Snacc to pay
           </p>
         </div>
       </div>

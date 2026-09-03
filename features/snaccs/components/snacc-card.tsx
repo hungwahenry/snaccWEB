@@ -1,5 +1,4 @@
 import {
-  EyeIcon,
   GhostIcon,
   MessageCircleIcon,
   MoreHorizontalIcon,
@@ -10,7 +9,10 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { compactCount, timeAgo } from "@/lib/format"
+import { richText } from "@/lib/rich-text"
+import { AuthorBadges } from "@/features/users/components/badges"
 import type { PublicQuotedSnacc, PublicSnacc } from "../api/public"
+import { VoiceNote } from "./voice-note"
 
 export function SnaccCard({
   snacc,
@@ -44,6 +46,9 @@ export function SnaccCard({
               {ghost ? "Ghost" : (author.display_name ?? author.username)}
             </span>
             {!ghost ? (
+              <AuthorBadges official={author.official} premium={author.premium} size={15} />
+            ) : null}
+            {!ghost ? (
               <span className="shrink truncate text-muted-foreground">
                 @{author.username}
               </span>
@@ -68,7 +73,7 @@ export function SnaccCard({
 
           {snacc.body ? (
             <p className="text-[15px] leading-snug whitespace-pre-wrap text-foreground">
-              {snacc.body}
+              {richText(snacc.body)}
             </p>
           ) : null}
 
@@ -98,6 +103,10 @@ export function SnaccCard({
             aspectRatio: `${snacc.sticker.width} / ${snacc.sticker.height}`,
           }}
         />
+      ) : snacc.voice ? (
+        <div className="ml-14">
+          <VoiceNote url={snacc.voice.url} durationMs={snacc.voice.duration_ms} />
+        </div>
       ) : null}
 
       <div className="ml-14">
@@ -132,6 +141,9 @@ function QuotedSnacc({ snacc }: { snacc: PublicQuotedSnacc }) {
         <span className="truncate font-bold text-foreground">
           {ghost ? "Ghost" : (author.display_name ?? author.username)}
         </span>
+        {!ghost ? (
+          <AuthorBadges official={author.official} premium={author.premium} size={13} />
+        ) : null}
         {!ghost ? (
           <span className="truncate text-muted-foreground">
             @{author.username}
@@ -178,7 +190,6 @@ function SnaccActions({ snacc }: { snacc: PublicSnacc }) {
       <div className="flex shrink-0 items-center gap-4">
         <Action icon={MessageCircleIcon} count={snacc.comments_count} />
         <Action icon={RepeatIcon} count={snacc.resnaccs_count} />
-        <Action icon={EyeIcon} count={snacc.views_count} />
         <div className="flex h-9 items-center justify-center">
           <Share2Icon className="text-muted-foreground" size={22} />
         </div>

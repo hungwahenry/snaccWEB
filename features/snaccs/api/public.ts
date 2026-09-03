@@ -6,6 +6,8 @@ export interface PublicSnaccAuthor {
   display_name: string | null
   avatar_url: string
   university: { name: string; acronym: string; slug: string } | null
+  official: boolean
+  premium: boolean
 }
 
 export interface PublicSticker {
@@ -34,6 +36,7 @@ export interface PublicSnacc {
   images: { url: string; width: number; height: number }[]
   gif: { url: string; width: number; height: number } | null
   sticker: PublicSticker | null
+  voice: { url: string; duration_ms: number } | null
   reactions: { emoji: string; count: number }[]
   reactions_count: number
   comments_count: number

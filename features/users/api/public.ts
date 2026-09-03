@@ -5,6 +5,7 @@ export interface PublicProfile {
   username: string | null
   display_name: string | null
   avatar_url: string
+  cover_url: string | null
   bio: string | null
   major: string | null
   graduation_year: number | null
@@ -14,6 +15,8 @@ export interface PublicProfile {
   followers_count: number
   following_count: number
   total_views_received: number
+  official: boolean
+  premium: boolean
   accepts_public_messages: boolean
 }
 
