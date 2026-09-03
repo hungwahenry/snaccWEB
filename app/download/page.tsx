@@ -15,9 +15,9 @@ export default function DownloadPage() {
 
       <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center justify-center gap-8 px-6 py-12 text-center">
         {/* Snacc mark — black on light, white on dark */}
-        <img src="/1.png" alt="" className="size-20 dark:hidden" />
+        <img src="/logo-light.png" alt="" className="size-20 dark:hidden" />
         <img
-          src="/2.png"
+          src="/logo-dark.png"
           alt=""
           className="hidden size-20 dark:block"
         />
