@@ -107,6 +107,47 @@ export function SnaccCard({
         <div className="ml-14">
           <VoiceNote url={snacc.voice.url} durationMs={snacc.voice.duration_ms} />
         </div>
+      ) : snacc.poll ? (
+        <div className="ml-14 flex flex-col gap-1.5">
+          {snacc.poll.options.map((option) => {
+            const total = snacc.poll?.total_votes ?? 0
+            const share =
+              option.votes_count !== null && total > 0 ? option.votes_count / total : 0
+            return (
+              <div
+                key={option.id}
+                className="relative flex h-10 items-center overflow-hidden rounded-xl border border-border px-3"
+              >
+                {option.votes_count !== null ? (
+                  <div
+                    className="absolute inset-y-0 left-0 bg-muted"
+                    style={{ width: `${Math.max(share * 100, 3)}%` }}
+                  />
+                ) : null}
+                {option.image ? (
+                  <img
+                    src={option.image.thumb_url}
+                    alt=""
+                    className="relative mr-2 size-6 rounded-full object-cover"
+                  />
+                ) : null}
+                <span className="relative text-sm font-semibold text-foreground">
+                  {option.label}
+                </span>
+                {option.votes_count !== null ? (
+                  <span className="relative ml-auto text-sm font-bold text-muted-foreground">
+                    {Math.round(share * 100)}%
+                  </span>
+                ) : null}
+              </div>
+            )
+          })}
+          <p className="text-xs text-muted-foreground">
+            {snacc.poll.closed
+              ? `Final results · ${snacc.poll.total_votes ?? 0} votes`
+              : "Poll · vote in the app"}
+          </p>
+        </div>
       ) : null}
 
       <div className="ml-14">
