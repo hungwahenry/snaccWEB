@@ -1,9 +1,9 @@
 import {
-  ScanEye,
   AtSign,
   Banknote,
   Bell,
   Coins,
+  Egg,
   FileText,
   Flag,
   Ghost,
@@ -12,20 +12,21 @@ import {
   Medal,
   Megaphone,
   MessageSquare,
-  School,
   Scale,
+  ScanEye,
+  School,
   ScrollText,
   ShieldCheck,
   SlidersHorizontal,
   Sparkles,
   Tags,
   ToggleRight,
-  UserX,
+  type LucideIcon,
   Users,
+  UserX,
   VenetianMask,
   Wallet,
   Wrench,
-  type LucideIcon,
 } from "lucide-react"
 import { can, type AdminPermissions } from "./permissions"
 
@@ -178,6 +179,12 @@ export const NAV: NavSection[] = [
         label: "Score tiers",
         icon: Medal,
         permission: "score_tiers.read",
+      },
+      {
+        href: "/admin/eggs",
+        label: "Easter eggs",
+        icon: Egg,
+        permission: "easter_eggs.read",
       },
       {
         href: "/admin/universities",

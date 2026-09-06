@@ -60,6 +60,23 @@ export const api = {
   get: <T>(path: string, params?: QueryParams) =>
     request<T>("GET", path, { params }),
   post: <T>(path: string, body?: unknown) => request<T>("POST", path, { body }),
+  upload: async <T>(path: string, form: FormData): Promise<T> => {
+    const res = await fetch(buildUrl(path), {
+      method: "POST",
+      body: form,
+      credentials: "same-origin",
+    })
+    const json = (await res.json().catch(() => null)) as ApiResponse<T> | null
+    if (!res.ok) {
+      const err = json as { message?: string; code?: string } | null
+      throw new ApiError(
+        res.status,
+        err?.message ?? "Upload failed",
+        err?.code ?? null
+      )
+    }
+    return (json as ApiResponse<T>).data
+  },
   patch: <T>(path: string, body?: unknown) =>
     request<T>("PATCH", path, { body }),
   del: <T>(path: string, body?: unknown) =>
