@@ -15,6 +15,7 @@ import {
   ConfirmDialog,
   DeleteDialog,
   ReasonDialog,
+  CampusDialog,
   RolesDialog,
   SuspendDialog,
 } from "./user-action-dialogs"
@@ -125,6 +126,18 @@ export function UserManagePanel({
           action={
             <CanAct permission="roles.read">
               <RolesDialog user={user} />
+            </CanAct>
+          }
+        />
+        <SettingRow
+          label="Campus"
+          state={
+            <Badge variant="outline">{user.university?.acronym ?? "None"}</Badge>
+          }
+          description="Which university the account belongs to. Posts keep the campus they were posted from."
+          action={
+            <CanAct permission="users.set_university">
+              <CampusDialog user={user} actions={actions} />
             </CanAct>
           }
         />

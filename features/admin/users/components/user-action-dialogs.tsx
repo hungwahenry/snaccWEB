@@ -35,6 +35,7 @@ import {
   useGrantMutations,
   useUserRoles,
 } from "@/features/admin/roles/hooks/use-user-roles"
+import { useAllUniversities } from "@/features/admin/universities/hooks/use-universities"
 import { formatNaira } from "@/lib/format"
 import type { useUserMutations } from "../hooks/use-users"
 import type { AdminUserDetail } from "../types"
@@ -414,6 +415,79 @@ export function ConfirmDialog({
             onClick={() => onConfirm(() => setOpen(false))}
           >
             {confirmLabel}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+export function CampusDialog({
+  user,
+  actions,
+}: {
+  user: AdminUserDetail
+  actions: Mutations
+}) {
+  const [open, setOpen] = useState(false)
+  const [selected, setSelected] = useState("")
+  const universities = useAllUniversities()
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger
+        render={
+          <Button variant="outline" size="sm">
+            Change
+          </Button>
+        }
+      />
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Change campus</DialogTitle>
+        </DialogHeader>
+        <p className="text-sm text-muted-foreground">
+          Moves this account to another university. Snaccs they already posted
+          stay on the campus they were posted from.
+        </p>
+        {universities.isLoading ? (
+          <div className="flex justify-center py-6">
+            <Spinner />
+          </div>
+        ) : (
+          <Field>
+            <FieldLabel>University</FieldLabel>
+            <Select value={selected} onValueChange={(value) => setSelected(value ?? "")}>
+              <SelectTrigger>
+                <SelectValue
+                  placeholder={user.university?.name ?? "Pick a campus"}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {(universities.data ?? []).map((university) => (
+                  <SelectItem key={university.id} value={university.id}>
+                    {university.name} ({university.acronym})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+        )}
+        <DialogFooter>
+          <DialogClose render={<Button variant="ghost">Cancel</Button>} />
+          <Button
+            disabled={
+              !selected ||
+              selected === user.university?.id ||
+              actions.setUniversity.isPending
+            }
+            onClick={() =>
+              actions.setUniversity.mutate(selected, {
+                onSuccess: () => setOpen(false),
+              })
+            }
+          >
+            {actions.setUniversity.isPending ? "Moving…" : "Move campus"}
           </Button>
         </DialogFooter>
       </DialogContent>

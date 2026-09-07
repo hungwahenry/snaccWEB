@@ -20,6 +20,7 @@ import {
   pauseEarnings,
   resumeEarnings,
   revokeSessions,
+  setUserUniversity,
   suspendUser,
   type SuspendInput,
   unblockPayouts,
@@ -134,6 +135,14 @@ export function useUserMutations(id: string) {
       onSuccess: (result) => {
         invalidate()
         toast.success(`Revoked ${result.revoked} session(s).`)
+      },
+      onError,
+    }),
+    setUniversity: useMutation({
+      mutationFn: (universityId: string) => setUserUniversity(id, universityId),
+      onSuccess: () => {
+        invalidate()
+        toast.success("Campus updated.")
       },
       onError,
     }),
