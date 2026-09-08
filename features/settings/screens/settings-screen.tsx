@@ -12,6 +12,7 @@ import {
   MailIcon,
   PaletteIcon,
   ShieldCheckIcon,
+  ShieldIcon,
   UserRoundIcon,
   WalletIcon,
 } from "lucide-react"
@@ -20,6 +21,7 @@ import { Button } from "@/components/ui/button"
 import { confirm } from "@/components/ui/confirm"
 import { Spinner } from "@/components/ui/spinner"
 import { useLogout } from "@/features/auth/hooks/use-logout"
+import { useMe } from "@/features/auth/hooks/use-me"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import {
@@ -28,11 +30,13 @@ import {
   WALLET_PATH,
 } from "@/features/wallet/routes"
 import { useBack } from "@/hooks/use-back"
+import { hasAdminAccess } from "@/lib/permissions"
 import { Row, Section } from "../components/rows"
 
 export function SettingsScreen() {
   const back = useBack()
   const logout = useLogout()
+  const moderator = hasAdminAccess(useMe().data?.permissions)
   const messagesEnabled = useFlag("anon_messages")
   const accentsEnabled = useFlag("accent_colors")
   const earningsEnabled = useFlag("earnings")
@@ -98,6 +102,12 @@ export function SettingsScreen() {
               label="Anonymous messages"
               href="/settings/privacy"
             />
+          </Section>
+        ) : null}
+
+        {moderator ? (
+          <Section title="Moderation">
+            <Row icon={ShieldIcon} label="Moderator tools" href="/admin" />
           </Section>
         ) : null}
 

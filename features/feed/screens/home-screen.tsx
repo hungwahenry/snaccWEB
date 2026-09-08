@@ -8,7 +8,15 @@ import {
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
+import { BirthdayFab } from "@/features/birthdays/components/birthday-fab"
+import { BirthdayNudgeSheet } from "@/features/birthdays/components/birthday-nudge-sheet"
+import { BirthdayWishDialog } from "@/features/birthdays/components/birthday-wish-dialog"
+import { useBirthdayNudge } from "@/features/birthdays/hooks/use-birthday-nudge"
+import { useBirthdayWish } from "@/features/birthdays/hooks/use-birthday-wish"
 import { useFlag } from "@/features/config/hooks/use-flag"
+import { FirstPostCard } from "@/features/first-post/components/first-post-card"
+import { useFirstPostPrompt } from "@/features/first-post/hooks/use-first-post"
+import { useMe } from "@/features/auth/hooks/use-me"
 import { MomentTray } from "@/features/moments/components/moment-tray"
 import { MomentTraySkeleton } from "@/features/moments/components/moment-tray-skeleton"
 import { useMomentsStrip } from "@/features/moments/hooks/use-moments-strip"
@@ -45,6 +53,10 @@ export function HomeScreen() {
   const { handlers, votingPollFor, sheets } = useSnaccActions()
   const tracker = useViewTracker()
   const moments = useMomentsStrip()
+  const profile = useMe().data?.profile
+  const firstPost = useFirstPostPrompt()
+  const birthdayNudge = useBirthdayNudge()
+  const birthdayWish = useBirthdayWish({ blocked: !birthdayNudge.resolved })
   const searchEnabled = useFlag("search")
   const messagesEnabled = useFlag("anon_messages")
   const walletEnabled = useFlag("wallet")
@@ -93,18 +105,23 @@ export function HomeScreen() {
         votingPollFor={votingPollFor}
         itemRef={tracker.ref}
         header={
-          moments.show ? (
-            moments.loading ? (
-              <MomentTraySkeleton />
-            ) : (
-              <MomentTray
-                mine={moments.mine}
-                others={moments.others}
-                onOpen={moments.open}
-                onCompose={moments.compose}
-              />
-            )
-          ) : undefined
+          <>
+            {moments.show ? (
+              moments.loading ? (
+                <MomentTraySkeleton />
+              ) : (
+                <MomentTray
+                  mine={moments.mine}
+                  others={moments.others}
+                  onOpen={moments.open}
+                  onCompose={moments.compose}
+                />
+              )
+            ) : null}
+            {firstPost.show ? (
+              <FirstPostCard onPosted={firstPost.markPosted} />
+            ) : null}
+          </>
         }
         failedTitle={
           screen.scope === "campus"
@@ -135,7 +152,17 @@ export function HomeScreen() {
         onDismiss={screen.closeSortMenu}
       />
       <SnaccSheets {...sheets} />
+      <BirthdayNudgeSheet {...birthdayNudge.sheet} />
+      <BirthdayWishDialog
+        open={birthdayWish.open}
+        onOpenChange={birthdayWish.onOpenChange}
+        username={profile?.username ?? null}
+        avatarUrl={profile?.avatar_url ?? null}
+      />
       {walletEnabled ? <MoneyFab /> : null}
+      {birthdayWish.showButton ? (
+        <BirthdayFab onPress={birthdayWish.onOpen} />
+      ) : null}
     </>
   )
 }
