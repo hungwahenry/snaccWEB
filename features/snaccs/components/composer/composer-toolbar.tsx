@@ -1,7 +1,6 @@
 import {
   ChartBarBigIcon,
   EyeOffIcon,
-  FilmIcon,
   ImageIcon,
   MicIcon,
   StickerIcon,
@@ -13,12 +12,9 @@ import { cn } from "@/lib/utils"
 type ComposerToolbarProps = {
   canAddImages: boolean
   onAddImages: () => void
-  showGif: boolean
-  canAddGif: boolean
-  onOpenGif: () => void
-  showSticker?: boolean
-  canAddSticker?: boolean
-  onOpenStickers?: () => void
+  showTray?: boolean
+  canOpenTray?: boolean
+  onOpenTray?: () => void
   showVoice?: boolean
   canRecordVoice?: boolean
   onRecordVoice?: () => void
@@ -37,12 +33,9 @@ type ComposerToolbarProps = {
 export function ComposerToolbar({
   canAddImages,
   onAddImages,
-  showGif,
-  canAddGif,
-  onOpenGif,
-  showSticker = false,
-  canAddSticker = false,
-  onOpenStickers,
+  showTray = false,
+  canOpenTray = false,
+  onOpenTray,
   showVoice = false,
   canRecordVoice = false,
   onRecordVoice,
@@ -66,28 +59,20 @@ export function ComposerToolbar({
           disabled={!canAddImages}
           onClick={onAddImages}
         />
-        {showGif ? (
-          <IconButton
-            icon={FilmIcon}
-            label="Add a GIF"
-            disabled={!canAddGif}
-            onClick={onOpenGif}
-          />
-        ) : null}
-        {showSticker ? (
-          <IconButton
-            icon={StickerIcon}
-            label="Add a sticker"
-            disabled={!canAddSticker}
-            onClick={onOpenStickers}
-          />
-        ) : null}
         {showVoice ? (
           <IconButton
             icon={MicIcon}
             label="Record a voice note"
             disabled={!canRecordVoice}
             onClick={onRecordVoice}
+          />
+        ) : null}
+        {showTray ? (
+          <IconButton
+            icon={StickerIcon}
+            label="Add a sticker or GIF"
+            disabled={!canOpenTray}
+            onClick={onOpenTray}
           />
         ) : null}
         {showPoll ? (

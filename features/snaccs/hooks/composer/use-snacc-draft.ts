@@ -49,8 +49,7 @@ export function useSnaccDraft(
   const bodyMax = useConfigValue("content.snacc.body_max_length")
   const maxImages = useConfigValue("content.snacc.max_images")
   const showGif = useFlag("snacc_gifs")
-  const stickersOn = useFlag("stickers")
-  const snaccStickersOn = useFlag("snacc_stickers")
+  const stickersEnabled = useFlag("snacc_stickers")
   const voiceOn = useFlag("voice_snaccs")
 
   const [body, setBody] = useState(seed.body)
@@ -69,9 +68,9 @@ export function useSnaccDraft(
 
   const trimmed = body.trim()
   const remaining = bodyMax - trimmed.length
-  const hasMedia = images.length > 0 || gif !== null || sticker !== null
+  const hasMedia = images.length > 0 || gif !== null
   const storedVoice = seed.storedVoice ?? null
-  const hasVoice = voice !== null || storedVoice !== null
+  const voiceBusy = recorder.recording || voice !== null || storedVoice !== null
 
   function replaceRange(start: number, end: number, text: string) {
     setBody(`${body.slice(0, start)}${text}${body.slice(end)}`)
@@ -134,7 +133,7 @@ export function useSnaccDraft(
     hasMedia,
     ...pollDraft,
     showPoll: pollDraft.pollsEnabled,
-    canStartPoll: !hasMedia && !hasVoice,
+    canStartPoll: !hasMedia && sticker === null && !voiceBusy,
     spoiler,
     toggleSpoiler: () => setSpoiler((current) => !current),
     addImages: () => void addImages(),
@@ -157,7 +156,13 @@ export function useSnaccDraft(
     stopVoice: () => void stopVoice(),
     discardVoice: () => setVoice(null),
     showVoice: voiceOn && options.allowVoice !== false,
-    canRecordVoice: poll === null && !hasVoice && !recorder.recording,
+    canRecordVoice:
+      poll === null &&
+      voiceOn &&
+      options.allowVoice !== false &&
+      images.length === 0 &&
+      sticker === null &&
+      !voiceBusy,
 
     remaining,
     showCounter: remaining <= COUNTER_APPEARS_AT,
@@ -167,15 +172,22 @@ export function useSnaccDraft(
       !recorder.recording &&
       (poll !== null
         ? trimmed.length > 0 && pollValid
-        : hasMedia || trimmed.length > 0 || hasVoice),
+        : hasMedia ||
+          trimmed.length > 0 ||
+          sticker !== null ||
+          voice !== null ||
+          storedVoice !== null),
     canAddImages:
       poll === null &&
       gif === null &&
       sticker === null &&
+      !voiceBusy &&
       images.length < maxImages,
-    canAddGif: poll === null && images.length === 0 && sticker === null,
-    canAddSticker: poll === null && images.length === 0 && gif === null,
+    canAddGif: poll === null && images.length === 0 && !recorder.recording,
+    canAddSticker:
+      poll === null && stickersEnabled && images.length === 0 && !voiceBusy,
     showGif,
-    showSticker: stickersOn && snaccStickersOn,
+    showSticker: stickersEnabled,
+    showTray: showGif || stickersEnabled,
   }
 }

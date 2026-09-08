@@ -3,7 +3,6 @@
 import { FileTextIcon, GhostIcon } from "lucide-react"
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { GifPickerSheet } from "@/features/giphy/components/gif-picker-sheet"
 import { ImageEditorSheet } from "@/features/image-editor/components/image-editor-sheet"
 import { StickerCreator } from "@/features/stickers/components/sticker-creator"
 import { StickerTraySheet } from "@/features/stickers/components/sticker-tray-sheet"
@@ -171,12 +170,9 @@ function ComposeBody({
         <ComposerToolbar
           canAddImages={composer.canAddImages}
           onAddImages={composer.addImages}
-          showGif={composer.showGif}
-          canAddGif={composer.canAddGif}
-          onOpenGif={composer.openGifPicker}
-          showSticker={composer.showSticker}
-          canAddSticker={composer.canAddSticker}
-          onOpenStickers={composer.openStickerTray}
+          showTray={composer.showTray}
+          canOpenTray={composer.canAddGif || composer.canAddSticker}
+          onOpenTray={composer.openStickerTray}
           showVoice={composer.showVoice}
           canRecordVoice={composer.canRecordVoice}
           onRecordVoice={composer.startVoice}
@@ -202,7 +198,6 @@ function ComposeBody({
         />
       </div>
 
-      <GifPickerSheet {...composer.gifPicker} />
       <StickerTraySheet {...composer.stickerTray} />
       <StickerCreator {...composer.stickerCreator} />
       <ImageEditorSheet {...composer.imageEditor} />

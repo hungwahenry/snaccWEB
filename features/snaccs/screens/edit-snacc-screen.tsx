@@ -73,9 +73,6 @@ function Editor({ snacc }: { snacc: Snacc }) {
         <ComposerToolbar
           canAddImages={editor.canAddImages}
           onAddImages={editor.addImages}
-          showGif={false}
-          canAddGif={false}
-          onOpenGif={() => {}}
           showPoll={false}
           pollActive={false}
           canStartPoll={false}

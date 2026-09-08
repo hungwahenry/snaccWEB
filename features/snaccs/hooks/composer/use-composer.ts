@@ -7,7 +7,6 @@ import { confirm } from "@/components/ui/confirm"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { useGhostCountdown } from "@/features/ghost/hooks/use-ghost-countdown"
 import { useGhostWindow } from "@/features/ghost/hooks/use-ghost-window"
-import { useGifPicker } from "@/features/giphy/hooks/use-gif-picker"
 import { useStickerCreator } from "@/features/stickers/hooks/use-sticker-creator"
 import { useBack } from "@/hooks/use-back"
 import type { SnaccDraft } from "../../cache/optimistic-snacc"
@@ -84,7 +83,6 @@ export function useComposer(params: {
   const draft = useSnaccDraft(seed, { allowVoice: !ghost.active })
   const typeahead = useComposerTypeahead(draft.body, draft.cursor)
 
-  const gifPicker = useGifPicker(draft.selectGif)
   const stickerCreator = useStickerCreator(draft.selectSticker)
 
   const dirty =
@@ -191,9 +189,6 @@ export function useComposer(params: {
         suggestion.replacement
       )
     },
-
-    gifPicker: gifPicker.sheet,
-    openGifPicker: gifPicker.show,
 
     stickerTray: {
       open: stickerTrayOpen,
