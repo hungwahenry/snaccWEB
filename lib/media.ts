@@ -1,3 +1,5 @@
+import { sameOriginMedia } from "./media-url"
+
 export interface PickedImage {
   file: Blob
   uri: string
@@ -115,7 +117,7 @@ function loadFromUrl(uri: string): Promise<HTMLImageElement> {
     image.crossOrigin = "anonymous"
     image.onload = () => resolve(image)
     image.onerror = () => reject(new Error("Could not read that picture."))
-    image.src = uri
+    image.src = sameOriginMedia(uri)
   })
 }
 

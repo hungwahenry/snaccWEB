@@ -1,6 +1,7 @@
 import { Mark } from "@/components/marketing/mark"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { compactCount } from "@/lib/format"
+import { sameOriginMedia } from "@/lib/media-url"
 import type { PublicProfile } from "../../types"
 import { TierName } from "../flair"
 
@@ -16,7 +17,7 @@ export function ProfileShareCard({ profile }: { profile: PublicProfile }) {
         <UserAvatar
           alt={profile.display_name ?? "Avatar"}
           className="size-20"
-          avatarUrl={profile.avatar_url}
+          avatarUrl={sameOriginMedia(profile.avatar_url)}
           name={profile.username}
           textClassName="text-2xl"
         />

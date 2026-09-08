@@ -1,3 +1,4 @@
+import { sameOriginMedia } from "@/lib/media-url"
 import type { CropRect, PickedImage } from "@/lib/media"
 
 function load(uri: string): Promise<HTMLImageElement> {
@@ -6,7 +7,7 @@ function load(uri: string): Promise<HTMLImageElement> {
     image.crossOrigin = "anonymous"
     image.onload = () => resolve(image)
     image.onerror = () => reject(new Error("Could not read the picture."))
-    image.src = uri
+    image.src = sameOriginMedia(uri)
   })
 }
 

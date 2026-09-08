@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { toast } from "sonner"
 import { openExternal } from "@/lib/links"
+import { sameOriginMedia } from "@/lib/media-url"
 
 function fileNameFor(url: string): string {
   const name = url.split("?")[0].split("/").pop()
@@ -18,7 +19,7 @@ export function useSaveImage() {
     if (saving) return
     setSaving(true)
     try {
-      const blob = await fetch(url, { mode: "cors" }).then((res) => res.blob())
+      const blob = await fetch(sameOriginMedia(url)).then((res) => res.blob())
       const name = fileNameFor(url)
       const file = new File([blob], name, { type: blob.type })
 

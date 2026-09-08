@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { useFlag } from "@/features/config/hooks/use-flag"
+import { sameOriginMedia } from "@/lib/media-url"
 import { usernameFromPayCode } from "../utils/pay-code"
 
 type Detector = {
@@ -23,7 +24,7 @@ async function scan(url: string): Promise<string | null> {
   const found = detector()
   if (!found) return null
 
-  const response = await fetch(url, { mode: "cors" })
+  const response = await fetch(sameOriginMedia(url))
   const bitmap = await createImageBitmap(await response.blob())
   try {
     for (const code of await found.detect(bitmap)) {

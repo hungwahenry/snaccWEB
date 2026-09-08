@@ -1,3 +1,4 @@
+import { sameOriginMedia } from "@/lib/media-url"
 import type { PickedImage } from "@/lib/media"
 import type { Layer } from "../types"
 import type { Size } from "./geometry"
@@ -11,7 +12,7 @@ function load(uri: string): Promise<HTMLImageElement> {
     image.crossOrigin = "anonymous"
     image.onload = () => resolve(image)
     image.onerror = () => reject(new Error("Could not read the picture."))
-    image.src = uri
+    image.src = sameOriginMedia(uri)
   })
 }
 

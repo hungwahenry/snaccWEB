@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { sameOriginMedia } from "@/lib/media-url"
 import type { Layer } from "../types"
 import type { Size } from "../utils/geometry"
 import { drawScene, type LiveStroke } from "../utils/render"
@@ -26,7 +27,7 @@ export function EditorCanvas({
     element.onload = () => {
       if (!cancelled) setImage(element)
     }
-    element.src = uri
+    element.src = sameOriginMedia(uri)
     return () => {
       cancelled = true
     }

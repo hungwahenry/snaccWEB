@@ -12,6 +12,7 @@ import { barCount, VoiceBars } from "@/features/voice/components/voice-bars"
 import { clock } from "@/features/voice/utils/clock"
 import { levelsFor } from "@/features/voice/utils/levels"
 import { compactCount, timeAgo } from "@/lib/format"
+import { sameOriginMedia } from "@/lib/media-url"
 import type { Snacc } from "../../types"
 import { TOP_REACTIONS_SHOWN } from "../../utils/constants"
 import { pollFooter } from "../../utils/polls"
@@ -85,7 +86,7 @@ export function ShareCard({ snacc }: { snacc: Snacc }) {
           <UserAvatar
             alt={author.display_name ?? "Author"}
             className="size-11"
-            avatarUrl={author.avatar_url}
+            avatarUrl={sameOriginMedia(author.avatar_url)}
             name={author.username}
           />
         )}
@@ -135,7 +136,7 @@ export function ShareCard({ snacc }: { snacc: Snacc }) {
             >
               {option.image ? (
                 <img
-                  src={option.image.thumb_url}
+                  src={sameOriginMedia(option.image.thumb_url)}
                   alt=""
                   className="size-7 rounded-full object-cover"
                 />
@@ -164,11 +165,11 @@ export function ShareCard({ snacc }: { snacc: Snacc }) {
           </div>
         ) : (
           <img
-            src={
+            src={sameOriginMedia(
               "thumb_url" in media && media.thumb_url
                 ? media.thumb_url
                 : media.url
-            }
+            )}
             alt=""
             className="w-full rounded-2xl object-cover"
             style={{ aspectRatio: ratio }}
