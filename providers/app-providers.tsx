@@ -19,17 +19,17 @@ export function AppProviders({ children }: { children: ReactNode }) {
     <TooltipProvider>
       <RealtimeProvider enabled={realtime}>
         <TiersProvider>
-          <LightboxProvider>
-            <StepUpProvider>
-              <PinPromptProvider>
-                <StickerStudioProvider>
+          <StepUpProvider>
+            <PinPromptProvider>
+              <StickerStudioProvider>
+                <LightboxProvider>
                   <AccentStyle />
                   {children}
                   <ConfirmHost />
-                </StickerStudioProvider>
-              </PinPromptProvider>
-            </StepUpProvider>
-          </LightboxProvider>
+                </LightboxProvider>
+              </StickerStudioProvider>
+            </PinPromptProvider>
+          </StepUpProvider>
         </TiersProvider>
       </RealtimeProvider>
     </TooltipProvider>
