@@ -17,7 +17,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useLogout, useMe } from "@/features/admin/auth/hooks/use-auth"
-import { visibleNav } from "@/lib/nav"
+import { visibleNav } from "@/features/admin/shell/nav"
 
 export function AppSidebar() {
   const pathname = usePathname()

@@ -1,6 +1,6 @@
 "use client"
 
-import { Stat, StatGrid } from "@/components/admin/detail"
+import { Stat, StatGrid } from "@/features/admin/shell/ui/detail"
 import { Skeleton } from "@/components/ui/skeleton"
 import { formatNaira, formatNumber } from "@/lib/format"
 import { useWalletSummary } from "../hooks/use-wallet"

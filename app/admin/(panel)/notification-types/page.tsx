@@ -1,16 +1,8 @@
-"use client"
+import type { Metadata } from "next"
+import { NotificationTypesScreen } from "@/features/admin/notification-types/screens/notification-types-screen"
 
-import { PageHeader } from "@/components/page-header"
-import { NotificationTypesView } from "@/features/admin/notification-types/components/notification-types-view"
+export const metadata: Metadata = { title: "Notification types" }
 
-export default function NotificationTypesPage() {
-  return (
-    <>
-      <PageHeader
-        title="Notifications"
-        description="What every notification says, and how it reaches people."
-      />
-      <NotificationTypesView />
-    </>
-  )
+export default function Page() {
+  return <NotificationTypesScreen />
 }

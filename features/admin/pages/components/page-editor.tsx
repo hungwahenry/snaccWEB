@@ -1,6 +1,6 @@
 "use client"
 
-import { ConfirmAction } from "@/components/admin/confirm-action"
+import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Field, FieldLabel } from "@/components/ui/field"

@@ -1,6 +1,6 @@
 "use client"
 
-import { Stat, StatGrid } from "@/components/admin/detail"
+import { Stat, StatGrid } from "@/features/admin/shell/ui/detail"
 import { formatNaira, formatNumber } from "@/lib/format"
 import { useWithdrawalSummary } from "../hooks/use-withdrawals"
 

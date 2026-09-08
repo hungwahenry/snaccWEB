@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react"
 import { DataTable, type Column } from "@/components/data-table/data-table"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
-import { CanAct } from "@/components/rbac/can"
+import { CanAct } from "@/features/admin/auth/components/can"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {

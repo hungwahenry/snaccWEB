@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Stat, StatGrid } from "@/components/admin/detail"
+import { Stat, StatGrid } from "@/features/admin/shell/ui/detail"
 import { Spinner } from "@/components/ui/spinner"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { formatNumber } from "@/lib/format"

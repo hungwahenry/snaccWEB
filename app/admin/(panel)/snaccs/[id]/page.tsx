@@ -1,30 +1,13 @@
-"use client"
+import type { Metadata } from "next"
+import { SnaccDetailScreen } from "@/features/admin/snaccs/screens/snacc-detail-screen"
 
-import { use } from "react"
-import { DetailScreen } from "@/components/admin/detail-screen"
-import { SnaccDetail } from "@/features/admin/snaccs/components/snacc-detail"
-import {
-  useSnacc,
-  useSnaccMutations,
-} from "@/features/admin/snaccs/hooks/use-snaccs"
+export const metadata: Metadata = { title: "Snacc" }
 
-export default function SnaccDetailPage({
+export default async function Page({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
-  const { id } = use(params)
-  const query = useSnacc(id)
-  const actions = useSnaccMutations()
-
-  return (
-    <DetailScreen
-      backHref="/admin/snaccs"
-      backLabel="Back to snaccs"
-      missing="Couldn't load this snacc."
-      query={query}
-    >
-      {(snacc) => <SnaccDetail snacc={snacc} actions={actions} />}
-    </DetailScreen>
-  )
+  const { id } = await params
+  return <SnaccDetailScreen id={id} />
 }

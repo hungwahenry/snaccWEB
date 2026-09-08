@@ -1,32 +1,13 @@
-"use client"
+import type { Metadata } from "next"
+import { ConversationScreen } from "@/features/admin/messages/screens/conversation-screen"
 
-import { use } from "react"
-import { DetailScreen } from "@/components/admin/detail-screen"
-import { ConversationThread } from "@/features/admin/messages/components/conversation-thread"
-import {
-  useConversation,
-  useMessageModeration,
-} from "@/features/admin/messages/hooks/use-messages"
+export const metadata: Metadata = { title: "Conversation" }
 
-export default function MessageThreadPage({
+export default async function Page({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
-  const { id } = use(params)
-  const query = useConversation(id)
-  const actions = useMessageModeration(id)
-
-  return (
-    <DetailScreen
-      backHref="/admin/messages"
-      backLabel="Back to messages"
-      missing="Couldn't load this thread."
-      query={query}
-    >
-      {(conversation) => (
-        <ConversationThread conversation={conversation} actions={actions} />
-      )}
-    </DetailScreen>
-  )
+  const { id } = await params
+  return <ConversationScreen id={id} />
 }

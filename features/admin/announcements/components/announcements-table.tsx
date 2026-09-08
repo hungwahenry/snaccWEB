@@ -1,6 +1,6 @@
 "use client"
 
-import { ConfirmAction } from "@/components/admin/confirm-action"
+import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
 
 import { useState } from "react"
 import { TableFrame } from "@/components/data-table/table-frame"

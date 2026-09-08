@@ -1,7 +1,7 @@
 "use client"
 
-import { ContentMedia } from "@/components/admin/content-media"
-import { UserInline } from "@/components/admin/user-inline"
+import { ContentMedia } from "@/features/admin/shell/ui/content-media"
+import { UserInline } from "@/features/admin/shell/ui/user-inline"
 import { Badge } from "@/components/ui/badge"
 import { formatDate, formatNumber } from "@/lib/format"
 import type { AdminSnacc, SnaccContent } from "../types"

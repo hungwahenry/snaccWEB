@@ -1,6 +1,6 @@
 "use client"
 
-import { Fact, Facts } from "@/components/admin/detail"
+import { Fact, Facts } from "@/features/admin/shell/ui/detail"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,

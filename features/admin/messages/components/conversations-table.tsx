@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/table"
 import { formatNumber, timeAgo } from "@/lib/format"
 import type { Paginated } from "@/lib/api/types"
-import { UserInline } from "@/components/admin/user-inline"
+import { UserInline } from "@/features/admin/shell/ui/user-inline"
 import type { AdminConversationRow, ListConversationsParams } from "../types"
 
 export function ConversationsTable({

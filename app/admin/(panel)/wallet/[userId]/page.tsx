@@ -1,30 +1,13 @@
-"use client"
+import type { Metadata } from "next"
+import { WalletDetailScreen } from "@/features/admin/wallet/screens/wallet-detail-screen"
 
-import { use } from "react"
-import { DetailScreen } from "@/components/admin/detail-screen"
-import { WalletDetail } from "@/features/admin/wallet/components/wallet-detail"
-import {
-  useWallet,
-  useWalletMutations,
-} from "@/features/admin/wallet/hooks/use-wallet"
+export const metadata: Metadata = { title: "Wallet" }
 
-export default function WalletDetailPage({
+export default async function Page({
   params,
 }: {
   params: Promise<{ userId: string }>
 }) {
-  const { userId } = use(params)
-  const query = useWallet(userId)
-  const actions = useWalletMutations(userId)
-
-  return (
-    <DetailScreen
-      backHref="/admin/wallet"
-      backLabel="Back to wallets"
-      missing="This user has no wallet yet."
-      query={query}
-    >
-      {(wallet) => <WalletDetail wallet={wallet} actions={actions} />}
-    </DetailScreen>
-  )
+  const { userId } = await params
+  return <WalletDetailScreen userId={userId} />
 }

@@ -5,7 +5,7 @@ import type {
   MediaImage,
   MediaSticker,
   MediaVoice,
-} from "@/components/admin/content-media"
+} from "@/features/admin/shell/ui/content-media"
 
 export type SnaccAuthor = UserRefWithCampus
 

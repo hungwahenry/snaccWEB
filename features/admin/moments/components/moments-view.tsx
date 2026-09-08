@@ -1,11 +1,11 @@
 "use client"
 
-import { ConfirmAction } from "@/components/admin/confirm-action"
+import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
 import { Flag, Trash2, Undo2 } from "lucide-react"
 import { useMemo } from "react"
 import { DataTable, type Column } from "@/components/data-table/data-table"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
-import { CanAct } from "@/components/rbac/can"
+import { CanAct } from "@/features/admin/auth/components/can"
 import { Badge } from "@/components/ui/badge"
 import {
   Select,
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select"
 import { formatDate, formatNumber } from "@/lib/format"
 import { queryOf, useListParams } from "@/lib/use-list-params"
-import { UserCell } from "@/components/admin/user-cell"
+import { UserCell } from "@/features/admin/shell/ui/user-cell"
 import type { MomentRow } from "../types"
 import { useMomentMutations, useMoments } from "../hooks/use-moments"
 

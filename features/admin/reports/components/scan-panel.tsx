@@ -1,6 +1,6 @@
 "use client"
 
-import { Section } from "@/components/admin/detail"
+import { Section } from "@/features/admin/shell/ui/detail"
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/format"
 import type { ReportScan } from "../types"

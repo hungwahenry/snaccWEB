@@ -7,7 +7,7 @@ import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/format"
 import { queryOf, useListParams } from "@/lib/use-list-params"
-import { UserCell } from "@/components/admin/user-cell"
+import { UserCell } from "@/features/admin/shell/ui/user-cell"
 import type { AdminUserRow } from "../types"
 import { useUsers } from "../hooks/use-users"
 

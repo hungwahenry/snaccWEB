@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Section } from "@/components/admin/detail"
-import { CanAct } from "@/components/rbac/can"
+import { Section } from "@/features/admin/shell/ui/detail"
+import { CanAct } from "@/features/admin/auth/components/can"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"

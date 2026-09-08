@@ -1,16 +1,8 @@
-"use client"
+import type { Metadata } from "next"
+import { GhostHourScreen } from "@/features/admin/ghost-hour/screens/ghost-hour-screen"
 
-import { PageHeader } from "@/components/page-header"
-import { GhostHourPanel } from "@/features/admin/ghost-hour/components/ghost-hour-panel"
+export const metadata: Metadata = { title: "Ghost Hour" }
 
-export default function GhostHourPage() {
-  return (
-    <>
-      <PageHeader
-        title="Ghost Hour"
-        description="Open an anonymous window on demand — broadcasts a push to every device."
-      />
-      <GhostHourPanel />
-    </>
-  )
+export default function Page() {
+  return <GhostHourScreen />
 }

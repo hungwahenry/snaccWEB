@@ -1,16 +1,8 @@
-"use client"
+import type { Metadata } from "next"
+import { OpsScreen } from "@/features/admin/ops/screens/ops-screen"
 
-import { PageHeader } from "@/components/page-header"
-import { OpsView } from "@/features/admin/ops/components/ops-view"
+export const metadata: Metadata = { title: "Ops" }
 
-export default function OpsPage() {
-  return (
-    <>
-      <PageHeader
-        title="Ops & maintenance"
-        description="System health, background jobs, and whether the data still adds up."
-      />
-      <OpsView />
-    </>
-  )
+export default function Page() {
+  return <OpsScreen />
 }

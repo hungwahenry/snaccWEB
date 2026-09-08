@@ -1,32 +1,13 @@
-"use client"
+import type { Metadata } from "next"
+import { WithdrawalDetailScreen } from "@/features/admin/withdrawals/screens/withdrawal-detail-screen"
 
-import { use } from "react"
-import { DetailScreen } from "@/components/admin/detail-screen"
-import { WithdrawalDetail } from "@/features/admin/withdrawals/components/withdrawal-detail"
-import {
-  useWithdrawal,
-  useWithdrawalMutations,
-} from "@/features/admin/withdrawals/hooks/use-withdrawals"
+export const metadata: Metadata = { title: "Withdrawal" }
 
-export default function WithdrawalDetailPage({
+export default async function Page({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
-  const { id } = use(params)
-  const query = useWithdrawal(id)
-  const actions = useWithdrawalMutations(id)
-
-  return (
-    <DetailScreen
-      backHref="/admin/withdrawals"
-      backLabel="Back to withdrawals"
-      missing="Couldn't load this withdrawal."
-      query={query}
-    >
-      {(withdrawal) => (
-        <WithdrawalDetail withdrawal={withdrawal} actions={actions} />
-      )}
-    </DetailScreen>
-  )
+  const { id } = await params
+  return <WithdrawalDetailScreen id={id} />
 }

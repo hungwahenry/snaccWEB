@@ -1,7 +1,7 @@
 "use client"
 
-import { ConfirmAction } from "@/components/admin/confirm-action"
-import { Fact, Facts, Section } from "@/components/admin/detail"
+import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
+import { Fact, Facts, Section } from "@/features/admin/shell/ui/detail"
 import { TableFrame } from "@/components/data-table/table-frame"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"

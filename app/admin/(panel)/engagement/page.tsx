@@ -1,41 +1,8 @@
-"use client"
+import type { Metadata } from "next"
+import { EngagementScreen } from "@/features/admin/engagement/screens/engagement-screen"
 
-import { PageHeader } from "@/components/page-header"
-import { Spinner } from "@/components/ui/spinner"
-import { EngagementTable } from "@/features/admin/engagement/components/engagement-table"
-import {
-  useEngagement,
-  useResetEngagement,
-  useUpdateEngagement,
-} from "@/features/admin/engagement/hooks/use-engagement"
+export const metadata: Metadata = { title: "Engagement" }
 
-export default function EngagementPage() {
-  const query = useEngagement()
-  const update = useUpdateEngagement()
-  const reset = useResetEngagement()
-
-  return (
-    <>
-      <PageHeader
-        title="Engagement weights"
-        description="What each act on a snacc is worth — to Snacc Score, and to the feed. One catalog, so the two can never disagree. Changes apply within ~30s."
-      />
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load the catalog.
-        </p>
-      ) : (
-        <EngagementTable
-          kinds={query.data}
-          onUpdate={update.mutate}
-          onReset={reset.mutate}
-          pending={update.isPending || reset.isPending}
-        />
-      )}
-    </>
-  )
+export default function Page() {
+  return <EngagementScreen />
 }

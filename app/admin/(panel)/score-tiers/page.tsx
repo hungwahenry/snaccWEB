@@ -1,34 +1,8 @@
-"use client"
+import type { Metadata } from "next"
+import { ScoreTiersScreen } from "@/features/admin/score-tiers/screens/score-tiers-screen"
 
-import { PageHeader } from "@/components/page-header"
-import { Spinner } from "@/components/ui/spinner"
-import { TiersTable } from "@/features/admin/score-tiers/components/tiers-table"
-import {
-  useTierMutations,
-  useTiers,
-} from "@/features/admin/score-tiers/hooks/use-score-tiers"
+export const metadata: Metadata = { title: "Score tiers" }
 
-export default function TiersPage() {
-  const query = useTiers()
-  const mutations = useTierMutations()
-
-  return (
-    <>
-      <PageHeader
-        title="Snacc Score tiers"
-        description="The ladder: each rung is a score threshold. Edit names, thresholds, icons and colours here; everyone is re-tiered on save."
-      />
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load tiers.
-        </p>
-      ) : (
-        <TiersTable tiers={query.data} mutations={mutations} />
-      )}
-    </>
-  )
+export default function Page() {
+  return <ScoreTiersScreen />
 }

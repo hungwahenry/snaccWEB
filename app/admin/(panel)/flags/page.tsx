@@ -1,38 +1,8 @@
-"use client"
+import type { Metadata } from "next"
+import { FlagsScreen } from "@/features/admin/feature-flags/screens/flags-screen"
 
-import { PageHeader } from "@/components/page-header"
-import { Spinner } from "@/components/ui/spinner"
-import { FlagsTable } from "@/features/admin/feature-flags/components/flags-table"
-import {
-  useFlags,
-  useUpdateFlag,
-} from "@/features/admin/feature-flags/hooks/use-flags"
+export const metadata: Metadata = { title: "Feature flags" }
 
-export default function FlagsPage() {
-  const query = useFlags()
-  const update = useUpdateFlag()
-
-  return (
-    <>
-      <PageHeader
-        title="Feature flags"
-        description="Turn features on or off across the app."
-      />
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load flags.
-        </p>
-      ) : (
-        <FlagsTable
-          flags={query.data}
-          onToggle={update.mutate}
-          pending={update.isPending}
-        />
-      )}
-    </>
-  )
+export default function Page() {
+  return <FlagsScreen />
 }

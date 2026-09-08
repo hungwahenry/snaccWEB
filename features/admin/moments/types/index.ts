@@ -1,5 +1,5 @@
 import type { Paginated } from "@/lib/api/types"
-import type { CellUser } from "@/components/admin/user-cell"
+import type { CellUser } from "@/features/admin/shell/ui/user-cell"
 
 export type MomentRow = {
   id: string

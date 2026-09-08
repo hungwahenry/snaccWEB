@@ -1,20 +1,8 @@
-"use client"
+import type { Metadata } from "next"
+import { WalletsScreen } from "@/features/admin/wallet/screens/wallets-screen"
 
-import { PageHeader } from "@/components/page-header"
-import { WalletAccountsView } from "@/features/admin/wallet/components/wallet-accounts-view"
-import { WalletSummaryCards } from "@/features/admin/wallet/components/wallet-summary-cards"
+export const metadata: Metadata = { title: "Wallets" }
 
-export default function WalletPage() {
-  return (
-    <>
-      <PageHeader
-        title="Wallets"
-        description="Spendable balances, and every posting that produced them."
-      />
-      <div className="flex flex-col gap-6">
-        <WalletSummaryCards />
-        <WalletAccountsView />
-      </div>
-    </>
-  )
+export default function Page() {
+  return <WalletsScreen />
 }

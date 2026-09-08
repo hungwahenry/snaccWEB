@@ -1,30 +1,13 @@
-"use client"
+import type { Metadata } from "next"
+import { ReportDetailScreen } from "@/features/admin/reports/screens/report-detail-screen"
 
-import { use } from "react"
-import { DetailScreen } from "@/components/admin/detail-screen"
-import { ReportDetail } from "@/features/admin/reports/components/report-detail"
-import {
-  useReport,
-  useResolveReport,
-} from "@/features/admin/reports/hooks/use-reports"
+export const metadata: Metadata = { title: "Report" }
 
-export default function ReportDetailPage({
+export default async function Page({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
-  const { id } = use(params)
-  const query = useReport(id)
-  const resolve = useResolveReport()
-
-  return (
-    <DetailScreen
-      backHref="/admin/reports"
-      backLabel="Back to reports"
-      missing="Couldn't load this report."
-      query={query}
-    >
-      {(report) => <ReportDetail report={report} resolve={resolve} />}
-    </DetailScreen>
-  )
+  const { id } = await params
+  return <ReportDetailScreen id={id} />
 }

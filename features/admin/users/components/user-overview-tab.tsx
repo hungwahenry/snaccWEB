@@ -1,6 +1,6 @@
 "use client"
 
-import { Fact, Facts, Section, Stat, StatGrid } from "@/components/admin/detail"
+import { Fact, Facts, Section, Stat, StatGrid } from "@/features/admin/shell/ui/detail"
 import { formatDate, formatNaira, formatNumber } from "@/lib/format"
 import type { AdminUserDetail } from "../types"
 

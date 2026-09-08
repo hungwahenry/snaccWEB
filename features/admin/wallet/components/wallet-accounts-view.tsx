@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select"
 import { formatNaira, formatNumber } from "@/lib/format"
 import { queryOf, useListParams } from "@/lib/use-list-params"
-import { UserCell } from "@/components/admin/user-cell"
+import { UserCell } from "@/features/admin/shell/ui/user-cell"
 import type { WalletAccountRow } from "../types"
 import { useWalletAccounts } from "../hooks/use-wallet"
 

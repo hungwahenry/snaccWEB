@@ -2,9 +2,9 @@
 
 import Link from "next/link"
 import type { ReactNode } from "react"
-import { ContentMedia } from "@/components/admin/content-media"
-import { Section } from "@/components/admin/detail"
-import { UserInline, type InlineUser } from "@/components/admin/user-inline"
+import { ContentMedia } from "@/features/admin/shell/ui/content-media"
+import { Section } from "@/features/admin/shell/ui/detail"
+import { UserInline, type InlineUser } from "@/features/admin/shell/ui/user-inline"
 import { Badge } from "@/components/ui/badge"
 import { SnaccView } from "@/features/admin/snaccs/components/snacc-view"
 import { formatDate, handleOf } from "@/lib/format"

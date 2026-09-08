@@ -1,40 +1,8 @@
-"use client"
+import type { Metadata } from "next"
+import { AuditScreen } from "@/features/admin/audit/screens/audit-screen"
 
-import { useState } from "react"
-import { PageHeader } from "@/components/page-header"
-import { Spinner } from "@/components/ui/spinner"
-import { AuditTable } from "@/features/admin/audit/components/audit-table"
-import { useAuditLogs } from "@/features/admin/audit/hooks/use-audit"
-import type { ListAuditParams } from "@/features/admin/audit/types"
+export const metadata: Metadata = { title: "Audit log" }
 
-export default function AuditPage() {
-  const [params, setParams] = useState<ListAuditParams>({
-    page: 1,
-    perPage: 30,
-  })
-  const query = useAuditLogs(params)
-
-  function patch(next: Partial<ListAuditParams>) {
-    setParams((prev) => ({ ...prev, ...next }))
-  }
-
-  return (
-    <>
-      <PageHeader
-        title="Audit log"
-        description="Every admin action, with before and after state."
-      />
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load the audit log.
-        </p>
-      ) : (
-        <AuditTable data={query.data} params={params} onParams={patch} />
-      )}
-    </>
-  )
+export default function Page() {
+  return <AuditScreen />
 }

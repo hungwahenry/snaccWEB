@@ -1,16 +1,8 @@
-"use client"
+import type { Metadata } from "next"
+import { MomentsScreen } from "@/features/admin/moments/screens/moments-screen"
 
-import { PageHeader } from "@/components/page-header"
-import { MomentsView } from "@/features/admin/moments/components/moments-view"
+export const metadata: Metadata = { title: "Moments" }
 
-export default function MomentsPage() {
-  return (
-    <>
-      <PageHeader
-        title="Moments"
-        description="Everything posted to a tray, including what a report is holding."
-      />
-      <MomentsView />
-    </>
-  )
+export default function Page() {
+  return <MomentsScreen />
 }

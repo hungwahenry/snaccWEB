@@ -1,11 +1,11 @@
 "use client"
 
 import { Snowflake, Sun } from "lucide-react"
-import { ConfirmAction } from "@/components/admin/confirm-action"
-import { DetailHeader, Stat, StatGrid } from "@/components/admin/detail"
-import { UserInline } from "@/components/admin/user-inline"
+import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
+import { DetailHeader, Stat, StatGrid } from "@/features/admin/shell/ui/detail"
+import { UserInline } from "@/features/admin/shell/ui/user-inline"
 import { TableFrame } from "@/components/data-table/table-frame"
-import { CanAct } from "@/components/rbac/can"
+import { CanAct } from "@/features/admin/auth/components/can"
 import { Badge } from "@/components/ui/badge"
 import {
   Table,

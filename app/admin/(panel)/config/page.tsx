@@ -1,38 +1,8 @@
-"use client"
+import type { Metadata } from "next"
+import { ConfigScreen } from "@/features/admin/config/screens/config-screen"
 
-import { PageHeader } from "@/components/page-header"
-import { Spinner } from "@/components/ui/spinner"
-import { ConfigTable } from "@/features/admin/config/components/config-table"
-import {
-  useConfig,
-  useUpdateConfig,
-} from "@/features/admin/config/hooks/use-config"
+export const metadata: Metadata = { title: "Config" }
 
-export default function ConfigPage() {
-  const query = useConfig()
-  const update = useUpdateConfig()
-
-  return (
-    <>
-      <PageHeader
-        title="Config"
-        description="Runtime configuration values. Changes apply within ~30s."
-      />
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load config.
-        </p>
-      ) : (
-        <ConfigTable
-          settings={query.data}
-          onUpdate={update.mutate}
-          pending={update.isPending}
-        />
-      )}
-    </>
-  )
+export default function Page() {
+  return <ConfigScreen />
 }

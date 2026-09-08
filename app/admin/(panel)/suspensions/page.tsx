@@ -1,16 +1,8 @@
-"use client"
+import type { Metadata } from "next"
+import { SuspensionsScreen } from "@/features/admin/users/screens/suspensions-screen"
 
-import { PageHeader } from "@/components/page-header"
-import { SuspensionsView } from "@/features/admin/users/components/suspensions-view"
+export const metadata: Metadata = { title: "Suspensions" }
 
-export default function SuspensionsPage() {
-  return (
-    <>
-      <PageHeader
-        title="Suspensions"
-        description="Who is currently suspended, why, and until when."
-      />
-      <SuspensionsView />
-    </>
-  )
+export default function Page() {
+  return <SuspensionsScreen />
 }

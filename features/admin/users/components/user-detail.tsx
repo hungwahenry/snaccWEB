@@ -1,6 +1,6 @@
 "use client"
 
-import { DetailHeader } from "@/components/admin/detail"
+import { DetailHeader } from "@/features/admin/shell/ui/detail"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"

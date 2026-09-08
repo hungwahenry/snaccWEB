@@ -1,12 +1,12 @@
 "use client"
 
-import { ConfirmAction } from "@/components/admin/confirm-action"
+import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
 import Link from "next/link"
 import { useState } from "react"
 import { TableFrame } from "@/components/data-table/table-frame"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { CanAct } from "@/components/rbac/can"
+import { CanAct } from "@/features/admin/auth/components/can"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,

@@ -28,7 +28,7 @@ import {
   Wallet,
   Wrench,
 } from "lucide-react"
-import { can, type AdminPermissions } from "./permissions"
+import { can, type AdminPermissions } from "@/lib/permissions"
 
 export interface NavItem {
   href: string

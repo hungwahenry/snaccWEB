@@ -1,6 +1,6 @@
 "use client"
 
-import { ConfirmAction } from "@/components/admin/confirm-action"
+import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
 
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"

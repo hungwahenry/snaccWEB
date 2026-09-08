@@ -6,21 +6,21 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { useMe } from "@/features/admin/auth/hooks/use-auth"
-import { can, canForCampus, type AdminPermissions } from "@/lib/permissions"
+import { can, canForCampus } from "@/lib/permissions"
+import { usePermissions } from "../hooks/use-can"
 
-export function usePermissions(): AdminPermissions | undefined {
-  return useMe().data?.permissions
+function allowedBy(
+  permissions: ReturnType<typeof usePermissions>,
+  permission: string,
+  campusId: string | null | undefined
+): boolean {
+  return campusId === undefined
+    ? can(permissions, permission)
+    : canForCampus(permissions, permission, campusId)
 }
 
-export function useCan(key: string): boolean {
-  return can(usePermissions(), key)
-}
-
-export function useCanForCampus(key: string, campusId: string | null): boolean {
-  return canForCampus(usePermissions(), key, campusId)
-}
-
+/// Renders its children only for someone holding the permission. For a control, prefer CanAct:
+/// a disabled button with a reason tells a moderator what to ask for; a missing one tells nobody.
 export function Can({
   permission,
   campusId,
@@ -33,14 +33,12 @@ export function Can({
   fallback?: ReactNode
 }) {
   const permissions = usePermissions()
-  const allowed =
-    campusId === undefined
-      ? can(permissions, permission)
-      : canForCampus(permissions, permission, campusId)
-
-  return <>{allowed ? children : fallback}</>
+  return (
+    <>{allowedBy(permissions, permission, campusId) ? children : fallback}</>
+  )
 }
 
+/// Leaves the control in place but disabled, with a tooltip naming what it would take.
 export function CanAct({
   permission,
   campusId,
@@ -51,12 +49,7 @@ export function CanAct({
   children: ReactElement<{ disabled?: boolean }>
 }) {
   const permissions = usePermissions()
-  const allowed =
-    campusId === undefined
-      ? can(permissions, permission)
-      : canForCampus(permissions, permission, campusId)
-
-  if (allowed) return children
+  if (allowedBy(permissions, permission, campusId)) return children
 
   const reason =
     campusId !== undefined && can(permissions, permission)

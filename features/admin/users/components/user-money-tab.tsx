@@ -2,10 +2,10 @@
 
 import { ExternalLink } from "lucide-react"
 import Link from "next/link"
-import { Fact, Facts, Section } from "@/components/admin/detail"
+import { Fact, Facts, Section } from "@/features/admin/shell/ui/detail"
 import { TableFrame } from "@/components/data-table/table-frame"
-import { CanAct } from "@/components/rbac/can"
-import { SettingRow } from "@/components/admin/setting-row"
+import { CanAct } from "@/features/admin/auth/components/can"
+import { SettingRow } from "@/features/admin/shell/ui/setting-row"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {

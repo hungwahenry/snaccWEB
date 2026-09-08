@@ -1,16 +1,8 @@
-"use client"
+import type { Metadata } from "next"
+import { ModerationScreen } from "@/features/admin/moderation/screens/moderation-screen"
 
-import { PageHeader } from "@/components/page-header"
-import { ModerationView } from "@/features/admin/moderation/components/moderation-view"
+export const metadata: Metadata = { title: "Automatic review" }
 
-export default function ModerationPage() {
-  return (
-    <>
-      <PageHeader
-        title="Automatic review"
-        description="What the classifier looks at, what its scores mean, and what it has decided so far."
-      />
-      <ModerationView />
-    </>
-  )
+export default function Page() {
+  return <ModerationScreen />
 }

@@ -1,9 +1,9 @@
 "use client"
 
-import { ConfirmAction } from "@/components/admin/confirm-action"
-import { Section } from "@/components/admin/detail"
+import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
+import { Section } from "@/features/admin/shell/ui/detail"
 import { TableFrame } from "@/components/data-table/table-frame"
-import { CanAct } from "@/components/rbac/can"
+import { CanAct } from "@/features/admin/auth/components/can"
 import { Badge } from "@/components/ui/badge"
 import {
   Select,

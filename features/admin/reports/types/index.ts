@@ -3,7 +3,7 @@ import type {
   MediaGif,
   MediaImage,
   MediaSticker,
-} from "@/components/admin/content-media"
+} from "@/features/admin/shell/ui/content-media"
 import type { AdminSnacc } from "@/features/admin/snaccs/types"
 
 export type ReportStatus = "open" | "actioned" | "dismissed"

@@ -2,8 +2,8 @@
 
 import { Radio, VenetianMask } from "lucide-react"
 import { useEffect, useState } from "react"
-import { ConfirmAction } from "@/components/admin/confirm-action"
-import { Stat, StatGrid } from "@/components/admin/detail"
+import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
+import { Stat, StatGrid } from "@/features/admin/shell/ui/detail"
 import { Badge } from "@/components/ui/badge"
 import { Spinner } from "@/components/ui/spinner"
 import { formatDate } from "@/lib/format"

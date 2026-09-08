@@ -2,7 +2,7 @@
 
 import { ACTION_VARIANT } from "../utils/actions"
 import Link from "next/link"
-import { Section } from "@/components/admin/detail"
+import { Section } from "@/features/admin/shell/ui/detail"
 import { TableFrame } from "@/components/data-table/table-frame"
 import { Badge } from "@/components/ui/badge"
 import {

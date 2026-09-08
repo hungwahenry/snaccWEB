@@ -1,24 +1,8 @@
-"use client"
+import type { Metadata } from "next"
+import { NewPageScreen } from "@/features/admin/pages/screens/new-page-screen"
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { PageEditor } from "@/features/admin/pages/components/page-editor"
-import { usePageMutations } from "@/features/admin/pages/hooks/use-pages"
+export const metadata: Metadata = { title: "New page" }
 
-export default function NewPagePage() {
-  const mutations = usePageMutations()
-
-  return (
-    <>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="mb-4 w-fit"
-        render={<Link href="/admin/pages" />}
-      >
-        ← Back to pages
-      </Button>
-      <PageEditor mutations={mutations} />
-    </>
-  )
+export default function Page() {
+  return <NewPageScreen />
 }

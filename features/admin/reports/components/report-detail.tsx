@@ -1,8 +1,8 @@
 "use client"
 
 import { STATUS_VARIANT } from "../utils/status"
-import { DetailHeader, Section } from "@/components/admin/detail"
-import { UserInline } from "@/components/admin/user-inline"
+import { DetailHeader, Section } from "@/features/admin/shell/ui/detail"
+import { UserInline } from "@/features/admin/shell/ui/user-inline"
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/format"
 import { ReportedContent } from "./reported-content"

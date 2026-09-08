@@ -1,7 +1,7 @@
 import type { MomentRow } from "../types"
 import { api } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
-import type { CellUser } from "@/components/admin/user-cell"
+import type { CellUser } from "@/features/admin/shell/ui/user-cell"
 
 export function listMoments(params: Record<string, string | number | boolean>) {
   return api.get<Paginated<MomentRow>>("/admin/moments", params)

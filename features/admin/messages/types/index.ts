@@ -3,7 +3,7 @@ import type {
   MediaGif,
   MediaImage,
   MediaSticker,
-} from "@/components/admin/content-media"
+} from "@/features/admin/shell/ui/content-media"
 
 export type MessageAuthor = UserRefWithCampus
 
