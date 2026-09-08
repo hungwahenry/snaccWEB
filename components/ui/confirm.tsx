@@ -89,24 +89,22 @@ export function ConfirmHost() {
           ) : null}
         </AlertDialogHeader>
 
-        <AlertDialogFooter className="flex flex-col gap-2">
-          <div
-            className={cn("grid gap-2", pair ? "grid-cols-2" : "grid-cols-1")}
-          >
-            {options.actions.map((action) => (
-              <Button
-                key={action.label}
-                size="lg"
-                variant={action.destructive ? "destructive" : "default"}
-                onClick={() => run(action)}
-              >
-                {action.label}
-              </Button>
-            ))}
-          </div>
+        {/* The footer is already a two-column grid, so a pair fills one row and Cancel spans both. */}
+        <AlertDialogFooter>
+          {options.actions.map((action) => (
+            <Button
+              key={action.label}
+              size="lg"
+              variant={action.destructive ? "destructive" : "default"}
+              onClick={() => run(action)}
+            >
+              {action.label}
+            </Button>
+          ))}
           <Button
             size="lg"
             variant="outline"
+            className={cn(pair && "col-span-2 w-full")}
             onClick={() => onOpenChange(false)}
           >
             {options.cancelLabel ?? "Cancel"}
