@@ -71,10 +71,12 @@ export function NamedIcon({
   name,
   color,
   className,
+  size,
 }: {
   name: string | null | undefined
   color?: string | null
   className?: string
+  size?: number
 }) {
   const icon = namedIcon(name)
   if (!icon) return null
@@ -82,6 +84,7 @@ export function NamedIcon({
   // createElement, not JSX: a capitalised local in JSX position reads as a component made in render.
   return createElement(icon, {
     className,
+    size,
     style: color ? { color } : undefined,
   })
 }

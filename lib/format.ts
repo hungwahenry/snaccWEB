@@ -14,12 +14,12 @@ export function formatNumber(value: number): string {
 
 export function compactCount(value: number): string {
   if (value < 1000) return String(value)
-  if (value < 1_000_000) return `${trimOne(value / 1000)}K`
-  return `${trimOne(value / 1_000_000)}M`
+  if (value < 1_000_000) return `${trimOne(value / 1000)}k`
+  return `${trimOne(value / 1_000_000)}m`
 }
 
 function trimOne(value: number): string {
-  return (Math.round(value * 10) / 10).toString()
+  return (Math.floor(value * 10) / 10).toString().replace(/\.0$/, "")
 }
 
 export function shortDate(iso: string): string {
@@ -75,4 +75,40 @@ export function handleOf(author: {
   return author.username
     ? `@${author.username}`
     : (author.display_name ?? "unknown")
+}
+
+export function editWindowClosesAt(
+  createdAt: string,
+  windowMinutes: number
+): number {
+  return Date.parse(createdAt) + windowMinutes * 60_000
+}
+
+function midnight(date: Date): number {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
+}
+
+export function sameDay(a: string, b: string): boolean {
+  return midnight(new Date(a)) === midnight(new Date(b))
+}
+
+export function clockTime(iso: string): string {
+  return upperMeridiem(
+    new Date(iso).toLocaleTimeString(LOCALE, {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    })
+  )
+}
+
+export function dayLabel(iso: string): string {
+  const date = new Date(iso)
+  const days = Math.round((midnight(new Date()) - midnight(date)) / 86_400_000)
+
+  if (days === 0) return "Today"
+  if (days === 1) return "Yesterday"
+  if (days < 7) return date.toLocaleDateString(LOCALE, { weekday: "long" })
+
+  return shortDate(iso)
 }

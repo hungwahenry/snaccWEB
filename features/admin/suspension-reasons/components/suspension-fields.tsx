@@ -12,8 +12,6 @@ import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { useSuspensionReasons } from "../hooks/use-suspension-reasons"
 import { DAY_MS } from "@/lib/duration"
 
-const DURATIONS_KEY = "moderation.suspension.durations_days"
-const DURATIONS_FALLBACK = ["1", "3", "7", "30"]
 const INDEFINITE = "0"
 
 function spanLabel(days: number): string {
@@ -50,7 +48,7 @@ export function SuspensionFields({
   onChange: (next: SuspensionDraft) => void
 }) {
   // The lengths on offer are policy, held once in config and read by the app as well.
-  const offered = useConfigValue<string[]>(DURATIONS_KEY, DURATIONS_FALLBACK)
+  const offered = useConfigValue("moderation.suspension.durations_days")
   const durations = [
     { value: INDEFINITE, label: "Indefinitely" },
     ...offered.map((days) => ({ value: days, label: spanLabel(Number(days)) })),

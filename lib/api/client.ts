@@ -8,6 +8,8 @@ export type QueryParams = Record<
   string | number | boolean | undefined | null
 >
 
+type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
+
 function buildUrl(path: string, params?: QueryParams): string {
   if (!params) return BASE + path
   const search = new URLSearchParams()
@@ -19,35 +21,21 @@ function buildUrl(path: string, params?: QueryParams): string {
   return BASE + path + (qs ? `?${qs}` : "")
 }
 
-async function request<T>(
-  method: string,
-  path: string,
-  options: { body?: unknown; params?: QueryParams } = {}
-): Promise<T> {
-  const res = await fetch(buildUrl(path, options.params), {
-    method,
-    headers:
-      options.body !== undefined
-        ? { "Content-Type": "application/json" }
-        : undefined,
-    body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
-    credentials: "same-origin",
-  })
+type ErrorBody = {
+  message?: string
+  code?: string
+  errors?: Record<string, string[]>
+}
 
+async function parse<T>(res: Response, fallback: string): Promise<T> {
   const json = (await res.json().catch(() => null)) as
-    | ApiResponse<T>
-    | { message?: string; code?: string; errors?: Record<string, string[]> }
-    | null
+    ApiResponse<T> | ErrorBody | null
 
   if (!res.ok) {
-    const err = json as {
-      message?: string
-      code?: string
-      errors?: Record<string, string[]>
-    } | null
+    const err = json as ErrorBody | null
     throw new ApiError(
       res.status,
-      err?.message ?? "Request failed",
+      err?.message ?? fallback,
       err?.code ?? null,
       err?.errors
     )
@@ -56,29 +44,60 @@ async function request<T>(
   return (json as ApiResponse<T>).data
 }
 
+async function request<T>(
+  method: Method,
+  path: string,
+  options: { body?: unknown; params?: QueryParams } = {}
+): Promise<T> {
+  let res: Response
+  try {
+    res = await fetch(buildUrl(path, options.params), {
+      method,
+      headers:
+        options.body !== undefined
+          ? { "Content-Type": "application/json" }
+          : undefined,
+      body:
+        options.body !== undefined ? JSON.stringify(options.body) : undefined,
+      credentials: "same-origin",
+    })
+  } catch {
+    throw ApiError.network()
+  }
+
+  return parse<T>(res, "Request failed")
+}
+
+async function upload<T>(
+  method: Method,
+  path: string,
+  form: FormData
+): Promise<T> {
+  let res: Response
+  try {
+    res = await fetch(buildUrl(path), {
+      method,
+      body: form,
+      credentials: "same-origin",
+    })
+  } catch {
+    throw ApiError.network()
+  }
+
+  return parse<T>(res, "Upload failed")
+}
+
 export const api = {
   get: <T>(path: string, params?: QueryParams) =>
     request<T>("GET", path, { params }),
   post: <T>(path: string, body?: unknown) => request<T>("POST", path, { body }),
-  upload: async <T>(path: string, form: FormData): Promise<T> => {
-    const res = await fetch(buildUrl(path), {
-      method: "POST",
-      body: form,
-      credentials: "same-origin",
-    })
-    const json = (await res.json().catch(() => null)) as ApiResponse<T> | null
-    if (!res.ok) {
-      const err = json as { message?: string; code?: string } | null
-      throw new ApiError(
-        res.status,
-        err?.message ?? "Upload failed",
-        err?.code ?? null
-      )
-    }
-    return (json as ApiResponse<T>).data
-  },
+  put: <T>(path: string, body?: unknown) => request<T>("PUT", path, { body }),
   patch: <T>(path: string, body?: unknown) =>
     request<T>("PATCH", path, { body }),
   del: <T>(path: string, body?: unknown) =>
     request<T>("DELETE", path, { body }),
+  upload: <T>(path: string, form: FormData) => upload<T>("POST", path, form),
+  uploadPut: <T>(path: string, form: FormData) => upload<T>("PUT", path, form),
+  uploadPatch: <T>(path: string, form: FormData) =>
+    upload<T>("PATCH", path, form),
 }

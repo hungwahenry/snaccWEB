@@ -1,0 +1,189 @@
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Spinner } from "@/components/ui/spinner"
+import { Switch } from "@/components/ui/switch"
+import { Textarea } from "@/components/ui/textarea"
+import { AvatarPicker } from "@/features/onboarding/components/avatar-picker"
+import { UsernameField } from "@/features/onboarding/components/username-field"
+import type { UsernameStatus } from "@/features/onboarding/schemas"
+import { GraduationYearSelect } from "@/features/users/components/graduation-year-select"
+import type { Gender } from "@/features/users/types"
+import { ProfilePhotos } from "./profile-photos"
+
+const GENDER_OPTIONS: { value: Gender; label: string }[] = [
+  { value: "male", label: "Male" },
+  { value: "female", label: "Female" },
+  { value: "non_binary", label: "Non-binary" },
+  { value: "prefer_not_to_say", label: "Prefer not to say" },
+]
+
+export type EditProfileFormProps = {
+  canUploadPhoto: boolean
+  displayNameMax: number
+  usernameMax: number
+  bioMax: number
+  campusName: string | null
+  avatarUri: string
+  pickAvatar: () => void
+  coverUri: string | null
+  pickCover: () => void
+  removeCover: () => void
+  displayName: string
+  setDisplayName: (next: string) => void
+  username: string
+  changeUsername: (next: string) => void
+  usernameStatus: UsernameStatus
+  bio: string
+  setBio: (next: string) => void
+  major: string
+  setMajor: (next: string) => void
+  graduated: boolean
+  toggleGraduated: (next: boolean) => void
+  graduationYear: number | null
+  setGraduationYear: (year: number) => void
+  gender: Gender | ""
+  setGender: (next: Gender | "") => void
+  valid: boolean
+  submitting: boolean
+  onSubmit: () => void
+}
+
+function Field({
+  label,
+  children,
+}: {
+  label: string
+  children: React.ReactNode
+}) {
+  return (
+    <label className="flex flex-col gap-2">
+      <span className="text-sm font-semibold text-foreground">{label}</span>
+      {children}
+    </label>
+  )
+}
+
+const INPUT = "h-14 rounded-full px-5 text-base md:text-base"
+
+export function EditProfileForm(form: EditProfileFormProps) {
+  return (
+    <form
+      className="flex flex-col gap-6 px-6 pt-4 pb-8"
+      onSubmit={(event) => {
+        event.preventDefault()
+        form.onSubmit()
+      }}
+    >
+      {form.canUploadPhoto ? (
+        <ProfilePhotos
+          coverUri={form.coverUri}
+          avatarUri={form.avatarUri}
+          onPickCover={form.pickCover}
+          onRemoveCover={form.removeCover}
+          onPickAvatar={form.pickAvatar}
+        />
+      ) : (
+        <AvatarPicker
+          uri={form.avatarUri}
+          onPick={form.pickAvatar}
+          editable={false}
+        />
+      )}
+
+      <Field label="Display name">
+        <Input
+          value={form.displayName}
+          onChange={(event) => form.setDisplayName(event.target.value)}
+          placeholder="Ada Lovelace"
+          maxLength={form.displayNameMax}
+          className={INPUT}
+        />
+      </Field>
+
+      <UsernameField
+        value={form.username}
+        status={form.usernameStatus}
+        maxLength={form.usernameMax}
+        onChange={form.changeUsername}
+      />
+
+      <Field label="Bio">
+        <Textarea
+          value={form.bio}
+          onChange={(event) => form.setBio(event.target.value)}
+          placeholder="Tell people about yourself."
+          maxLength={form.bioMax}
+          className="min-h-24 rounded-2xl px-5 py-4 text-base md:text-base"
+        />
+      </Field>
+
+      <Field label="Major">
+        <Input
+          value={form.major}
+          onChange={(event) => form.setMajor(event.target.value)}
+          placeholder="Computer Science"
+          maxLength={100}
+          className={INPUT}
+        />
+      </Field>
+
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center gap-3">
+          <div className="flex-1">
+            <p className="font-semibold text-foreground">
+              I&apos;ve already graduated 🎓
+            </p>
+            <p className="text-sm leading-5 text-muted-foreground">
+              Alumni are welcome. Add the year you finished.
+            </p>
+          </div>
+          <Switch
+            checked={form.graduated}
+            onCheckedChange={form.toggleGraduated}
+          />
+        </div>
+        {form.graduated ? (
+          <GraduationYearSelect
+            value={form.graduationYear}
+            onChange={form.setGraduationYear}
+          />
+        ) : null}
+      </div>
+
+      <Field label="Gender">
+        <select
+          value={form.gender}
+          onChange={(event) =>
+            form.setGender(event.target.value as Gender | "")
+          }
+          className="h-14 w-full appearance-none rounded-full bg-input px-5 text-base text-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/30"
+        >
+          <option value="">Select</option>
+          {GENDER_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </Field>
+
+      <Field label="Campus">
+        <div className="flex h-14 items-center rounded-full bg-input px-5 text-base text-muted-foreground">
+          {form.campusName ?? "No campus set"}
+          <span className="ml-auto text-xs font-semibold">
+            Change in the app
+          </span>
+        </div>
+      </Field>
+
+      <Button
+        type="submit"
+        size="lg"
+        className="h-14 text-base font-semibold"
+        disabled={!form.valid || form.submitting}
+      >
+        {form.submitting ? <Spinner /> : "Save changes"}
+      </Button>
+    </form>
+  )
+}

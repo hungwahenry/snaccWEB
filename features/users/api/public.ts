@@ -17,7 +17,7 @@ export interface PublicProfile {
   total_views_received: number
   official: boolean
   premium: boolean
-  accepts_public_messages: boolean
+  accepts_anonymous_messages: boolean
 }
 
 export function getPublicProfile(username: string) {

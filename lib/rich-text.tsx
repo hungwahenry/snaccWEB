@@ -5,7 +5,8 @@ import type { ReactNode } from "react"
 // "nice.Also" stays prose, and @mentions with the username rules.
 const URL_PATTERN =
   /(?<=^|[\s(])(?:https?:\/\/)?(?:[A-Za-z0-9-]+\.)+[a-z]{2,24}(?:\/\S*)?/g
-const MENTION_PATTERN = /(?<=^|\s)@([a-zA-Z][a-zA-Z0-9_]{2,29})(?![a-zA-Z0-9_])/gu
+const MENTION_PATTERN =
+  /(?<=^|\s)@([a-zA-Z][a-zA-Z0-9_]{2,29})(?![a-zA-Z0-9_])/gu
 
 interface Span {
   start: number
@@ -29,6 +30,7 @@ function spansOf(text: string): Span[] {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={(event) => event.stopPropagation()}
           className="font-extrabold hover:underline"
         >
           {raw}
@@ -44,7 +46,8 @@ function spansOf(text: string): Span[] {
       node: (
         <Link
           key={match.index}
-          href={`/profile/${match[1]}`}
+          href={`/@${match[1]}`}
+          onClick={(event) => event.stopPropagation()}
           className="font-extrabold hover:underline"
         >
           {match[0]}

@@ -1,3 +1,6 @@
+export const NETWORK_ERROR_MESSAGE =
+  "Could not reach Snacc. Check your connection and try again."
+
 export class ApiError extends Error {
   constructor(
     readonly status: number,
@@ -7,6 +10,10 @@ export class ApiError extends Error {
   ) {
     super(message)
     this.name = "ApiError"
+  }
+
+  static network(): ApiError {
+    return new ApiError(0, NETWORK_ERROR_MESSAGE, "network_error")
   }
 
   get firstFieldError(): string | null {
@@ -23,4 +30,12 @@ export function getErrorMessage(error: unknown): string {
 
 export function isApiError(error: unknown): error is ApiError {
   return error instanceof ApiError
+}
+
+export function isNotFound(error: unknown): boolean {
+  return isApiError(error) && error.status === 404
+}
+
+export function isUnauthenticated(error: unknown): boolean {
+  return isApiError(error) && error.status === 401
 }

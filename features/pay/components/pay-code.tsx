@@ -1,4 +1,8 @@
-import { finderOrigins, inFinder, payCodeMatrix } from "../pay-code"
+import {
+  finderOrigins,
+  inFinder,
+  payCodeMatrix,
+} from "@/features/pay/utils/pay-code"
 
 const INK = "#000000"
 const PAPER = "#ffffff"
@@ -46,7 +50,12 @@ export function PayCode({
           />
         ))}
         {finderOrigins(matrix.size).map(([row, col]) => (
-          <Finder key={`${row}-${col}`} x={col * cell} y={row * cell} cell={cell} />
+          <Finder
+            key={`${row}-${col}`}
+            x={col * cell}
+            y={row * cell}
+            cell={cell}
+          />
         ))}
       </svg>
       {avatarUrl ? (
@@ -54,7 +63,11 @@ export function PayCode({
           src={avatarUrl}
           alt=""
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
-          style={{ width: avatar, height: avatar, border: `4px solid ${PAPER}` }}
+          style={{
+            width: avatar,
+            height: avatar,
+            border: `4px solid ${PAPER}`,
+          }}
         />
       ) : null}
     </div>

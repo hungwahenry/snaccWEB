@@ -1,0 +1,11 @@
+import type { Snacc, SnaccReplyTo } from "../types"
+
+/// Under a thread you are already reading, naming its author again says nothing.
+export function addresseeOf(
+  reply: Snacc,
+  underAuthorId: string | undefined
+): SnaccReplyTo | null {
+  if (!reply.reply_to_user) return null
+  if (reply.reply_to_user.id === underAuthorId) return null
+  return reply.reply_to_user
+}

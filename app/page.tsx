@@ -1,9 +1,14 @@
+import Link from "next/link"
 import { DownloadButton } from "@/components/marketing/download-button"
 import { SiteFooter } from "@/components/marketing/site-footer"
 import { SiteHeader } from "@/components/marketing/site-header"
 import { SnaccDeck } from "@/components/marketing/snacc-deck"
+import { hasSession } from "@/lib/auth-server"
+import { redirect } from "next/navigation"
 
-export default function Home() {
+export default async function Home() {
+  if (await hasSession()) redirect("/home")
+
   return (
     <div className="flex min-h-dvh flex-col overflow-x-hidden">
       <SiteHeader />
@@ -21,10 +26,16 @@ export default function Home() {
             Share a thought, a pic, or a GIF, and see what your campus is really
             talking about right now.
           </p>
-          <div className="mt-8 flex justify-center">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href="/login"
+              className="inline-flex items-center rounded-full bg-foreground px-6 py-3 text-base font-semibold text-background transition-transform hover:scale-[1.02]"
+            >
+              Get started
+            </Link>
             <DownloadButton
               label="Get the app"
-              className="px-6 py-3 text-base"
+              className="bg-muted px-6 py-3 text-base text-foreground"
             />
           </div>
         </div>

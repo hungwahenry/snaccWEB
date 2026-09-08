@@ -1,16 +1,13 @@
 "use client"
 
-import { useQuery } from "@tanstack/react-query"
-import { getPublicConfig } from "../api"
+import { PUBLIC_CONFIG_DEFAULTS } from "../keys.generated"
+import type { ConfigKey, ConfigValue } from "@/features/config/types"
+import { useAppConfig } from "./use-app-config"
 
-export function useConfigValue<T>(key: string, fallback: T): T {
-  const { data } = useQuery({
-    queryKey: ["config", "public"],
-    queryFn: getPublicConfig,
-    staleTime: 5 * 60 * 1000,
-  })
-
-  const value = data?.[key]
-
-  return value === undefined ? fallback : (value as T)
+export function useConfigValue<K extends ConfigKey>(key: K): ConfigValue<K> {
+  const { data } = useAppConfig()
+  const value = data?.values[key]
+  return (
+    value === undefined ? PUBLIC_CONFIG_DEFAULTS[key] : value
+  ) as ConfigValue<K>
 }
