@@ -1,7 +1,11 @@
+import type { NextRequest } from "next/server"
+import { forbidden, isSameOrigin } from "@/lib/same-origin"
 import { getUserToken } from "@/lib/session"
 
 // The realtime socket connects straight to the API, so the browser needs the bearer token once.
-export async function GET() {
+export async function GET(request: NextRequest) {
+  if (!isSameOrigin(request)) return forbidden()
+
   const token = await getUserToken()
   if (!token) {
     return Response.json(

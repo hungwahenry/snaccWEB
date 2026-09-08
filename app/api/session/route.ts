@@ -1,4 +1,5 @@
 import type { NextRequest } from "next/server"
+import { forbidden, isSameOrigin } from "@/lib/same-origin"
 import {
   clearUserToken,
   getInstallId,
@@ -9,6 +10,8 @@ import {
 } from "@/lib/session"
 
 export async function POST(request: NextRequest) {
+  if (!isSameOrigin(request)) return forbidden()
+
   const { email, code } = (await request.json()) as {
     email?: string
     code?: string
@@ -44,7 +47,9 @@ export async function POST(request: NextRequest) {
   })
 }
 
-export async function DELETE() {
+export async function DELETE(request: NextRequest) {
+  if (!isSameOrigin(request)) return forbidden()
+
   const token = await getUserToken()
   if (token) {
     await fetch(`${SNACC_API_URL}/api/v1/auth/logout`, {

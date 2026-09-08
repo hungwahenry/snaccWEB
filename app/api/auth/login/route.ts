@@ -1,8 +1,11 @@
 import type { NextRequest } from "next/server"
+import { forbidden, isSameOrigin } from "@/lib/same-origin"
 import { hasAdminAccess, type AdminPermissions } from "@/lib/permissions"
 import { setSessionToken, SNACC_API_URL } from "@/lib/session"
 
 export async function POST(request: NextRequest) {
+  if (!isSameOrigin(request)) return forbidden()
+
   const { email, code } = (await request.json()) as {
     email?: string
     code?: string
