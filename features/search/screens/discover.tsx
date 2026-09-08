@@ -42,7 +42,9 @@ export function Discover({ compact = false }: { compact?: boolean }) {
   return (
     <div
       className={
-        compact ? "flex flex-col gap-5" : "flex flex-col gap-6 px-4 py-4"
+        compact
+          ? "flex flex-col gap-5 [--gutter:24px]"
+          : "flex flex-col gap-6 px-4 py-4 [--gutter:16px]"
       }
     >
       {ghost.visible ? (

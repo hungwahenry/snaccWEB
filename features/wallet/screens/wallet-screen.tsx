@@ -84,7 +84,7 @@ function MoneyScreen({
           earningsEnabled={earningsEnabled}
           badges={{ requests: openRequests }}
         />
-        <div className="pb-24 md:pb-8">
+        <div className="pb-[calc(var(--money-bar-height)+16px)] md:pb-8">
           {active === "home" ? (
             <Home
               onOpenTransactions={() => setSection("transactions")}

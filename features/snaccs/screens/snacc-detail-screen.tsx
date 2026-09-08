@@ -65,7 +65,7 @@ export function SnaccDetailScreen({ id }: { id: string }) {
   })
 
   return (
-    <>
+    <div className="flex min-h-[calc(100dvh-var(--tab-bar-height))] flex-col md:min-h-dvh">
       <BackHeader
         title={isPost === undefined ? "" : isPost ? "Snacc" : "Comment"}
         onBack={back}
@@ -166,7 +166,7 @@ export function SnaccDetailScreen({ id }: { id: string }) {
           />
           <ListFooter loading={comments.loadingMore} />
 
-          <div className="pointer-events-none sticky bottom-24 z-20 flex justify-end px-4 md:bottom-6">
+          <div className="pointer-events-none sticky bottom-[calc(var(--tab-bar-height)+12px)] z-20 mt-auto flex justify-end px-4 pt-4 md:bottom-6">
             <Button
               size="lg"
               className="pointer-events-auto h-12 gap-2 rounded-full px-5 shadow-lg"
@@ -189,6 +189,6 @@ export function SnaccDetailScreen({ id }: { id: string }) {
         }}
       />
       <SnaccSheets {...sheets} />
-    </>
+    </div>
   )
 }

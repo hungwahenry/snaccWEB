@@ -3,10 +3,10 @@ import { Skeleton } from "@/components/ui/skeleton"
 export function MatchdaySkeleton() {
   return (
     <div className="flex flex-col gap-2.5">
-      <div className="px-6">
+      <div className="px-1">
         <Skeleton className="h-3 w-20" />
       </div>
-      <div className="flex gap-2.5 overflow-hidden px-6">
+      <div className="flex gap-2.5 overflow-hidden px-1">
         {[0, 1, 2].map((i) => (
           <Skeleton
             key={i}

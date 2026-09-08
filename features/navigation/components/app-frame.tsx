@@ -22,7 +22,7 @@ export function AppFrame({
         <main
           className={cn(
             "min-h-dvh w-full max-w-[600px] min-w-0 md:border-x md:border-border md:pb-0",
-            tabBar ? "pb-20" : "pb-0"
+            tabBar ? "pb-(--tab-bar-height)" : "pb-0"
           )}
         >
           {children}

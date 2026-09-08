@@ -124,9 +124,9 @@ export function Matchday({
   if (matches.length === 0) return null
 
   return (
-    <div className="flex flex-col gap-2.5">
-      <Eyebrow className="px-6">Matchday</Eyebrow>
-      <div className="flex [scrollbar-width:none] gap-2.5 overflow-x-auto px-6 [&::-webkit-scrollbar]:hidden">
+    <section className="flex flex-col gap-2.5">
+      <Eyebrow className="px-1">Matchday</Eyebrow>
+      <div className="-mx-(--gutter) flex [scrollbar-width:none] gap-2.5 overflow-x-auto px-[calc(var(--gutter)+4px)] [&::-webkit-scrollbar]:hidden">
         {matches.map((match) => (
           <MatchCard
             key={match.id}
@@ -135,6 +135,6 @@ export function Matchday({
           />
         ))}
       </div>
-    </div>
+    </section>
   )
 }
