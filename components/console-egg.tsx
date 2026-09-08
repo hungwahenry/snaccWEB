@@ -2,31 +2,41 @@
 
 import { useEffect } from "react"
 
-const MARK = String.raw`
-   ____ ____  ____ ____ ____
-  / __// __ \/ __ '/ __// __/
- _\ \ / / / / /_/ / /__/ /__
-/___//_/ /_/\__,_/\___/\___/
+const MARK = `
+ ███████ ███    ██  █████   ██████  ██████
+ ██      ████   ██ ██   ██ ██      ██
+ ███████ ██ ██  ██ ███████ ██      ██
+      ██ ██  ██ ██ ██   ██ ██      ██
+ ███████ ██   ████ ██   ██  ██████  ██████
 `
+
+const SEEN = "snacc:egg"
+
+function firstLook(): boolean {
+  try {
+    if (window.sessionStorage.getItem(SEEN)) return false
+    window.sessionStorage.setItem(SEEN, "1")
+  } catch {
+    // Storage is blocked; say it once per page load instead of once per visit.
+  }
+  return true
+}
 
 export function ConsoleEgg() {
   useEffect(() => {
-    if (process.env.NODE_ENV !== "production") return
-    if (window.sessionStorage.getItem("snacc:egg")) return
-    try {
-      window.sessionStorage.setItem("snacc:egg", "1")
-    } catch {}
+    if (!firstLook()) return
 
+    console.log(`%c${MARK}`, "color:#ff6b00;font-weight:bold")
     console.log(
-      `%c${MARK}`,
-      "color:#ff6b00;font-family:monospace;font-weight:bold"
-    )
-    console.log(
-      "%cCurious, huh? 👀  The tokens live in httpOnly cookies, the API checks everything twice, and the only secret down here is that we think you'd fit right in.",
+      "%cCurious, huh? 👀 You won't find a session token down here — they live in httpOnly cookies the browser won't hand you, and the API checks everything twice anyway.",
       "color:#888;font-size:12px"
     )
     console.log(
-      "%cBuild with us → hello@snacc.fyi   ·   Found something? security@snacc.fyi",
+      "%cPoke around all you like. If you break something, we'd genuinely love to hear about it.",
+      "color:#888;font-size:12px"
+    )
+    console.log(
+      "%c  Build with us  →  hello@snacc.fyi\n  Found a hole    →  security@snacc.fyi",
       "color:#ff6b00;font-size:12px;font-weight:bold"
     )
   }, [])
