@@ -109,6 +109,111 @@ export async function pickImages(limit: number): Promise<PickedImage[]> {
   )
 }
 
+function loadFromUrl(uri: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image()
+    image.crossOrigin = "anonymous"
+    image.onload = () => resolve(image)
+    image.onerror = () => reject(new Error("Could not read that picture."))
+    image.src = uri
+  })
+}
+
+function fromCanvas(
+  canvas: HTMLCanvasElement,
+  type: string,
+  fileName: string
+): Promise<PickedImage> {
+  return toBlob(canvas, type).then((blob) => ({
+    file: blob,
+    uri: URL.createObjectURL(blob),
+    width: canvas.width,
+    height: canvas.height,
+    mimeType: type,
+    fileName,
+  }))
+}
+
+export interface CropRect {
+  originX: number
+  originY: number
+  width: number
+  height: number
+}
+
+/// Builds a picked image out of a blob that came from somewhere else (a draft, a download).
+export function fromBlob(
+  blob: Blob,
+  size: { width: number; height: number },
+  fileName: string
+): PickedImage {
+  return {
+    file: blob,
+    uri: URL.createObjectURL(blob),
+    width: size.width,
+    height: size.height,
+    mimeType: blob.type || "image/jpeg",
+    fileName,
+  }
+}
+
+export async function fromUrl(
+  uri: string,
+  fileName = "image.jpg"
+): Promise<PickedImage> {
+  const image = await loadFromUrl(uri)
+  const canvas = document.createElement("canvas")
+  canvas.width = image.naturalWidth
+  canvas.height = image.naturalHeight
+  canvas.getContext("2d")?.drawImage(image, 0, 0)
+  return fromCanvas(canvas, "image/jpeg", fileName)
+}
+
+export async function cropImage(
+  asset: PickedImage,
+  rect: CropRect
+): Promise<PickedImage> {
+  const image = await loadFromUrl(asset.uri)
+  const scale = Math.min(1, SNACC_MAX_EDGE / Math.max(rect.width, rect.height))
+  const canvas = document.createElement("canvas")
+  canvas.width = Math.max(1, Math.round(rect.width * scale))
+  canvas.height = Math.max(1, Math.round(rect.height * scale))
+  canvas
+    .getContext("2d")
+    ?.drawImage(
+      image,
+      rect.originX,
+      rect.originY,
+      rect.width,
+      rect.height,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    )
+  return fromCanvas(canvas, "image/jpeg", asset.fileName || "image.jpg")
+}
+
+export async function rotateImage(
+  asset: PickedImage,
+  degrees: number
+): Promise<PickedImage> {
+  const image = await loadFromUrl(asset.uri)
+  const quarter =
+    ((degrees % 360) + 360) % 360 === 90 ||
+    ((degrees % 360) + 360) % 360 === 270
+  const canvas = document.createElement("canvas")
+  canvas.width = quarter ? image.naturalHeight : image.naturalWidth
+  canvas.height = quarter ? image.naturalWidth : image.naturalHeight
+  const context = canvas.getContext("2d")
+  if (context) {
+    context.translate(canvas.width / 2, canvas.height / 2)
+    context.rotate((degrees * Math.PI) / 180)
+    context.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2)
+  }
+  return fromCanvas(canvas, "image/jpeg", asset.fileName || "image.jpg")
+}
+
 export function appendImage(
   form: FormData,
   field: string,

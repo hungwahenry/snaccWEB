@@ -5,10 +5,16 @@ import { toast } from "sonner"
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import type { Gif } from "@/features/giphy/types"
-import { pickImages } from "@/lib/media"
+import { useImageEditor } from "@/features/image-editor/hooks/use-image-editor"
+import type { DraftSticker } from "@/features/stickers/types"
+import {
+  useVoiceRecorder,
+  type VoiceDraft,
+} from "@/features/voice/hooks/use-voice-recorder"
+import { fromUrl, pickImages } from "@/lib/media"
 import type { SnaccVoiceNote } from "../../types"
 import { draftImageKey, type DraftImage } from "../../utils/draft-images"
-import { usePollDraft } from "./use-poll-draft"
+import { usePollDraft, type PollDraft } from "./use-poll-draft"
 
 const COUNTER_APPEARS_AT = 80
 
@@ -23,6 +29,9 @@ export interface DraftSeed {
   images: DraftImage[]
   gif: Gif | null
   spoiler: boolean
+  sticker?: DraftSticker | null
+  voice?: VoiceDraft | null
+  poll?: PollDraft | null
   storedVoice?: SnaccVoiceNote | null
 }
 
@@ -33,23 +42,36 @@ export const EMPTY_DRAFT: DraftSeed = {
   spoiler: false,
 }
 
-export function useSnaccDraft(seed: DraftSeed) {
+export function useSnaccDraft(
+  seed: DraftSeed,
+  options: { allowVoice?: boolean } = {}
+) {
   const bodyMax = useConfigValue("content.snacc.body_max_length")
   const maxImages = useConfigValue("content.snacc.max_images")
   const showGif = useFlag("snacc_gifs")
+  const stickersOn = useFlag("stickers")
+  const snaccStickersOn = useFlag("snacc_stickers")
+  const voiceOn = useFlag("voice_snaccs")
 
   const [body, setBody] = useState(seed.body)
   const [cursor, setCursor] = useState(seed.body.length)
   const [images, setImages] = useState<DraftImage[]>(seed.images)
   const [gif, setGif] = useState<Gif | null>(seed.gif)
+  const [sticker, setSticker] = useState<DraftSticker | null>(
+    seed.sticker ?? null
+  )
+  const [voice, setVoice] = useState<VoiceDraft | null>(seed.voice ?? null)
   const [spoiler, setSpoiler] = useState(seed.spoiler)
-  const pollDraft = usePollDraft()
+  const pollDraft = usePollDraft(seed.poll ?? null)
+  const recorder = useVoiceRecorder()
+  const editor = useImageEditor()
   const { poll, pollValid } = pollDraft
 
   const trimmed = body.trim()
   const remaining = bodyMax - trimmed.length
-  const hasMedia = images.length > 0 || gif !== null
+  const hasMedia = images.length > 0 || gif !== null || sticker !== null
   const storedVoice = seed.storedVoice ?? null
+  const hasVoice = voice !== null || storedVoice !== null
 
   function replaceRange(start: number, end: number, text: string) {
     setBody(`${body.slice(0, start)}${text}${body.slice(end)}`)
@@ -71,6 +93,33 @@ export function useSnaccDraft(seed: DraftSeed) {
     }
   }
 
+  async function editImage(key: string) {
+    const target = images.find((image) => draftImageKey(image) === key)
+    if (!target) return
+    try {
+      const asset =
+        target.kind === "picked"
+          ? target.asset
+          : await fromUrl(target.url, "snacc.jpg")
+      const edited = await editor.edit(asset)
+      if (!edited) return
+      setImages((current) =>
+        current.map((image) =>
+          draftImageKey(image) === key
+            ? { kind: "picked", asset: edited }
+            : image
+        )
+      )
+    } catch {
+      toast.error("Could not open that image.")
+    }
+  }
+
+  async function stopVoice() {
+    const take = await recorder.stop()
+    if (take) setVoice(take)
+  }
+
   return {
     body,
     setBody,
@@ -81,30 +130,52 @@ export function useSnaccDraft(seed: DraftSeed) {
 
     images,
     gif,
+    sticker,
     hasMedia,
     ...pollDraft,
     showPoll: pollDraft.pollsEnabled,
-    canStartPoll: !hasMedia && storedVoice === null,
+    canStartPoll: !hasMedia && !hasVoice,
     spoiler,
     toggleSpoiler: () => setSpoiler((current) => !current),
     addImages: () => void addImages(),
+    editImage: (key: string) => void editImage(key),
+    imageEditor: editor.sheet,
     removeImage: (key: string) =>
       setImages((current) =>
         current.filter((image) => draftImageKey(image) !== key)
       ),
     selectGif: (next: Gif) => setGif(next),
     removeGif: () => setGif(null),
+    selectSticker: (next: DraftSticker) => setSticker(next),
+    removeSticker: () => setSticker(null),
+
+    voice,
+    recording: recorder.recording,
+    recordingMs: recorder.durationMs,
+    recordingLevels: recorder.levels,
+    startVoice: () => void recorder.start(),
+    stopVoice: () => void stopVoice(),
+    discardVoice: () => setVoice(null),
+    showVoice: voiceOn && options.allowVoice !== false,
+    canRecordVoice: poll === null && !hasVoice && !recorder.recording,
 
     remaining,
     showCounter: remaining <= COUNTER_APPEARS_AT,
     storedVoice,
     withinLimits:
       remaining >= 0 &&
+      !recorder.recording &&
       (poll !== null
         ? trimmed.length > 0 && pollValid
-        : hasMedia || trimmed.length > 0 || storedVoice !== null),
-    canAddImages: poll === null && gif === null && images.length < maxImages,
-    canAddGif: poll === null && images.length === 0,
+        : hasMedia || trimmed.length > 0 || hasVoice),
+    canAddImages:
+      poll === null &&
+      gif === null &&
+      sticker === null &&
+      images.length < maxImages,
+    canAddGif: poll === null && images.length === 0 && sticker === null,
+    canAddSticker: poll === null && images.length === 0 && gif === null,
     showGif,
+    showSticker: stickersOn && snaccStickersOn,
   }
 }

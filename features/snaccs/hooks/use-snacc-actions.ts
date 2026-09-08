@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation"
 import { createElement, useEffect, useMemo, useRef } from "react"
 import { toast } from "sonner"
 import { signal } from "@/features/signals/utils/queue"
+import { useKeepSnaccSticker } from "@/features/stickers/hooks/use-keep-sticker"
+import { useStickerStudio } from "@/providers/sticker-studio-provider"
 import { useLightbox } from "@/providers/lightbox-provider"
 import { getErrorMessage } from "@/lib/api/errors"
 import { discardSnacc, retrySnacc } from "../cache/pending-snaccs"
@@ -32,6 +34,8 @@ export function useSnaccActions(overrides: Overrides = {}) {
   const menu = useSnaccMenu()
   const poll = useVotePoll()
   const lightbox = useLightbox()
+  const stickerStudio = useStickerStudio()
+  const keepSticker = useKeepSnaccSticker()
 
   const latest = useRef({
     react,
@@ -42,6 +46,8 @@ export function useSnaccActions(overrides: Overrides = {}) {
     lightbox,
     overrides,
     router,
+    stickerStudio,
+    keepSticker,
   })
 
   useEffect(() => {
@@ -54,6 +60,8 @@ export function useSnaccActions(overrides: Overrides = {}) {
       lightbox,
       overrides,
       router,
+      stickerStudio,
+      keepSticker,
     }
   })
 
@@ -134,6 +142,11 @@ export function useSnaccActions(overrides: Overrides = {}) {
       },
       onRetry: (snacc) => retrySnacc(snacc.id),
       onDiscard: (snacc) => discardSnacc(snacc.id),
+      onHoldImage: (snacc, index) => {
+        const image = snacc.images[index]
+        if (image) latest.current.stickerStudio?.(image)
+      },
+      onKeepSticker: (snacc) => latest.current.keepSticker?.(snacc.id),
     }
   }, [])
 

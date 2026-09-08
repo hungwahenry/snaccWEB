@@ -36,6 +36,8 @@ export type SnaccActionHandlers = {
   onDiscard: (snacc: Snacc) => void
   onPress?: (snacc: Snacc) => void
   onPressQuote?: (quote: EmbeddedSnacc) => void
+  onHoldImage?: (snacc: Snacc | EmbeddedSnacc, index: number) => void
+  onKeepSticker?: (snacc: Snacc | EmbeddedSnacc) => void
 }
 
 export type SnaccCardProps = SnaccActionHandlers & {
@@ -65,6 +67,8 @@ function SnaccCardComponent(props: SnaccCardProps) {
     onDiscard,
     onPress,
     onPressQuote,
+    onHoldImage,
+    onKeepSticker,
     addressee,
     inset = 0,
     flushTop = false,
@@ -107,6 +111,10 @@ function SnaccCardComponent(props: SnaccCardProps) {
     <SnaccMedia
       snacc={snacc}
       onPressImage={(index) => onOpenImages(snacc, index)}
+      onHoldImage={
+        onHoldImage ? (index) => onHoldImage(snacc, index) : undefined
+      }
+      onHoldSticker={onKeepSticker ? () => onKeepSticker(snacc) : undefined}
       poll={{
         voting: votingPollFor === snacc.id,
         onVote: (optionId) => onVote(snacc, optionId),

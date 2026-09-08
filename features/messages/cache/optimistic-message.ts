@@ -1,4 +1,6 @@
 import type { Gif } from "@/features/giphy/types"
+import type { DraftSticker } from "@/features/stickers/types"
+import type { VoiceDraft } from "@/features/voice/hooks/use-voice-recorder"
 import type { PickedImage } from "@/lib/media"
 import type { SendMessageInput } from "../api"
 import type { Message } from "../types"
@@ -10,6 +12,8 @@ export interface MessageDraft {
   replyingTo: Message | null
   viewOnce?: boolean
   gif?: Gif | null
+  sticker?: DraftSticker | null
+  voice?: VoiceDraft | null
 }
 
 export function draftToInput(
@@ -23,6 +27,8 @@ export function draftToInput(
     images: draft.images.length > 0 ? draft.images : undefined,
     viewOnce: draft.viewOnce === true ? true : undefined,
     giphyId: draft.gif?.id,
+    stickerId: draft.sticker?.id,
+    voice: draft.voice ?? undefined,
   }
 }
 
@@ -43,7 +49,13 @@ export function buildOptimisticMessage(
     created_at: new Date().toISOString(),
     reply_to: draft.replyingTo ? toReplyPreview(draft.replyingTo) : null,
     reactions: [],
-    voice: null,
+    voice: draft.voice
+      ? {
+          id: draft.voice.uri,
+          url: draft.voice.uri,
+          duration_ms: draft.voice.durationMs,
+        }
+      : null,
     images: draft.images.map((image, position) => ({
       id: image.uri,
       url: image.uri,
@@ -55,7 +67,15 @@ export function buildOptimisticMessage(
       opened: false,
       available: true,
     })),
-    sticker: null,
+    sticker: draft.sticker
+      ? {
+          sticker_id: draft.sticker.id,
+          url: draft.sticker.url,
+          preview_url: draft.sticker.preview_url,
+          width: draft.sticker.width,
+          height: draft.sticker.height,
+        }
+      : null,
     gif: draft.gif
       ? {
           giphy_id: draft.gif.id,

@@ -1,3 +1,5 @@
+import { ReceiptIcon } from "lucide-react"
+import type { RefObject } from "react"
 import { ActionSheet } from "@/components/ui/action-sheet"
 import { Button } from "@/components/ui/button"
 import { Eyebrow } from "@/components/ui/eyebrow"
@@ -35,6 +37,7 @@ export function TransactionDetailSheet({
   failed,
   onRetry,
   onSendAgain,
+  receipt,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -43,6 +46,11 @@ export function TransactionDetailSheet({
   failed: boolean
   onRetry: () => void
   onSendAgain: (username: string) => void
+  receipt?: {
+    cardRef: RefObject<HTMLDivElement | null>
+    busy: boolean
+    onShare: () => void
+  }
 }) {
   const look = detail ? transactionLook(detail) : null
 
@@ -61,75 +69,83 @@ export function TransactionDetailSheet({
         </div>
       ) : (
         <div className="flex flex-col gap-6 pt-2">
-          <div className="flex flex-col items-center gap-3">
-            {detail.counterparty ? (
-              <UserAvatar
-                alt={detail.counterparty.display_name ?? "User"}
-                className="size-16"
-                textClassName="text-2xl"
-                avatarUrl={detail.counterparty.avatar_url}
-                name={detail.counterparty.username}
-              />
-            ) : (
-              <span
-                className={cn(
-                  "flex size-16 items-center justify-center rounded-full",
-                  look?.tile
-                )}
-              >
-                {look ? (
-                  <look.icon className={cn("size-7", look.glyph)} />
-                ) : null}
-              </span>
-            )}
-            <div className="flex flex-col items-center gap-0.5">
-              <span
-                className={cn(
-                  "text-4xl font-extrabold tabular-nums",
-                  look?.amount
-                )}
-              >
-                {detail.direction === "out" ? "−" : "+"}
-                {formatNaira(detail.amount)}
-              </span>
-              <span className="font-bold text-foreground">{detail.label}</span>
-              <span className="text-sm text-muted-foreground">
-                {shortDate(detail.created_at)} · {clockTime(detail.created_at)}
-              </span>
+          <div
+            ref={receipt?.cardRef}
+            className="flex flex-col gap-6 bg-background"
+          >
+            <div className="flex flex-col items-center gap-3">
+              {detail.counterparty ? (
+                <UserAvatar
+                  alt={detail.counterparty.display_name ?? "User"}
+                  className="size-16"
+                  textClassName="text-2xl"
+                  avatarUrl={detail.counterparty.avatar_url}
+                  name={detail.counterparty.username}
+                />
+              ) : (
+                <span
+                  className={cn(
+                    "flex size-16 items-center justify-center rounded-full",
+                    look?.tile
+                  )}
+                >
+                  {look ? (
+                    <look.icon className={cn("size-7", look.glyph)} />
+                  ) : null}
+                </span>
+              )}
+              <div className="flex flex-col items-center gap-0.5">
+                <span
+                  className={cn(
+                    "text-4xl font-extrabold tabular-nums",
+                    look?.amount
+                  )}
+                >
+                  {detail.direction === "out" ? "−" : "+"}
+                  {formatNaira(detail.amount)}
+                </span>
+                <span className="font-bold text-foreground">
+                  {detail.label}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  {shortDate(detail.created_at)} ·{" "}
+                  {clockTime(detail.created_at)}
+                </span>
+              </div>
+              <StatusPill {...transactionStatus(detail.status)} />
             </div>
-            <StatusPill {...transactionStatus(detail.status)} />
+
+            <DetailLines>
+              {detail.context?.kind === "request" ? (
+                <DetailLine
+                  label="For"
+                  value={detail.context.note ?? "A request"}
+                />
+              ) : null}
+              {detail.context?.kind === "conversation" ? (
+                <DetailLine label="Sent from" value="A DM" />
+              ) : null}
+              {detail.channel ? (
+                <DetailLine
+                  label="Via"
+                  value={CHANNEL_LABEL[detail.channel] ?? detail.channel}
+                />
+              ) : null}
+              {detail.fee > 0 ? (
+                <DetailLine label="Fee" value={formatNaira(detail.fee)} />
+              ) : null}
+              {detail.fee > 0 ? (
+                <DetailLine label="Total" value={formatNaira(detail.total)} />
+              ) : null}
+              <DetailLine
+                label="Balance after"
+                value={formatNaira(detail.balance_after)}
+              />
+              <DetailLine label="Reference" value={detail.reference} mono />
+            </DetailLines>
+
+            {detail.delivery ? <Delivery delivery={detail.delivery} /> : null}
           </div>
-
-          <DetailLines>
-            {detail.context?.kind === "request" ? (
-              <DetailLine
-                label="For"
-                value={detail.context.note ?? "A request"}
-              />
-            ) : null}
-            {detail.context?.kind === "conversation" ? (
-              <DetailLine label="Sent from" value="A DM" />
-            ) : null}
-            {detail.channel ? (
-              <DetailLine
-                label="Via"
-                value={CHANNEL_LABEL[detail.channel] ?? detail.channel}
-              />
-            ) : null}
-            {detail.fee > 0 ? (
-              <DetailLine label="Fee" value={formatNaira(detail.fee)} />
-            ) : null}
-            {detail.fee > 0 ? (
-              <DetailLine label="Total" value={formatNaira(detail.total)} />
-            ) : null}
-            <DetailLine
-              label="Balance after"
-              value={formatNaira(detail.balance_after)}
-            />
-            <DetailLine label="Reference" value={detail.reference} mono />
-          </DetailLines>
-
-          {detail.delivery ? <Delivery delivery={detail.delivery} /> : null}
 
           {detail.counterparty?.username ? (
             <Button
@@ -138,6 +154,17 @@ export function TransactionDetailSheet({
               onClick={() => onSendAgain(detail.counterparty!.username!)}
             >
               {detail.direction === "out" ? "Send again" : "Send back"}
+            </Button>
+          ) : null}
+          {receipt ? (
+            <Button
+              variant="ghost"
+              size="lg"
+              className="h-12 text-base"
+              disabled={receipt.busy}
+              onClick={receipt.onShare}
+            >
+              {receipt.busy ? <Spinner /> : <ReceiptIcon />} Share receipt
             </Button>
           ) : null}
         </div>

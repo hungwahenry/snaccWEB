@@ -1,9 +1,14 @@
 "use client"
 
-import { GhostIcon } from "lucide-react"
+import { FileTextIcon, GhostIcon } from "lucide-react"
+import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { GifPickerSheet } from "@/features/giphy/components/gif-picker-sheet"
+import { ImageEditorSheet } from "@/features/image-editor/components/image-editor-sheet"
+import { StickerCreator } from "@/features/stickers/components/sticker-creator"
+import { StickerTraySheet } from "@/features/stickers/components/sticker-tray-sheet"
 import { cn } from "@/lib/utils"
+import { hydrateDrafts, useDrafts } from "../drafts/store"
 import { QuoteCurve } from "../components/card/quote/quote-connector"
 import { QuotedSnacc } from "../components/card/quote/quoted-snacc"
 import { ComposerAttachments } from "../components/composer/composer-attachments"
@@ -12,6 +17,7 @@ import { ComposerHeader } from "../components/composer/composer-header"
 import { ComposerInput } from "../components/composer/composer-input"
 import { ComposerSuggestions } from "../components/composer/composer-suggestions"
 import { ComposerToolbar } from "../components/composer/composer-toolbar"
+import { DraftsSheet } from "../components/composer/drafts-sheet"
 import { PollEditor } from "../components/composer/poll-editor"
 import { ReplyTo } from "../components/composer/reply-to"
 import { useComposer, type ComposerMode } from "../hooks/composer/use-composer"
@@ -23,23 +29,54 @@ const COPY: Record<ComposerMode, { title: string; placeholder: string }> = {
   new: { title: "New snacc", placeholder: "What's happening on campus?" },
 }
 
-export function ComposeScreen({
-  parentId,
-  resnaccOfId,
-  initialBody,
-}: {
+type ComposeScreenProps = {
   parentId?: string
   resnaccOfId?: string
   initialBody?: string
-}) {
-  const composer = useComposer({ parentId, resnaccOfId, initialBody })
+  draftId?: string
+}
+
+/// A draft has to be read from storage before the composer seeds itself from it.
+export function ComposeScreen(props: ComposeScreenProps) {
+  const { hydrated } = useDrafts()
+
+  useEffect(() => {
+    void hydrateDrafts()
+  }, [])
+
+  if (props.draftId && !hydrated) return null
+  return <ComposeBody {...props} />
+}
+
+function ComposeBody({
+  parentId,
+  resnaccOfId,
+  initialBody,
+  draftId,
+}: ComposeScreenProps) {
+  const composer = useComposer({ parentId, resnaccOfId, initialBody, draftId })
   const parent = useSnacc(parentId ?? "")
   const quoting = useSnacc(resnaccOfId ?? "")
   const copy = COPY[composer.mode]
 
   return (
     <div className="flex min-h-dvh flex-col md:min-h-0">
-      <ComposerHeader title={copy.title} onClose={composer.close} />
+      <ComposerHeader
+        title={copy.title}
+        onClose={composer.close}
+        right={
+          composer.drafts.length > 0 ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="font-bold"
+              onClick={composer.openDrafts}
+            >
+              <FileTextIcon /> Drafts · {composer.drafts.length}
+            </Button>
+          ) : undefined
+        }
+      />
 
       <div className="flex flex-1 flex-col gap-4 px-4 pt-4 pb-6">
         {composer.ghost ? (
@@ -116,9 +153,20 @@ export function ComposeScreen({
           <ComposerAttachments
             images={composer.images}
             gif={composer.gif}
+            sticker={composer.sticker}
             storedVoice={composer.storedVoice}
+            voice={{
+              recording: composer.recording,
+              durationMs: composer.recordingMs,
+              levels: composer.recordingLevels,
+              draft: composer.voice,
+              onStop: composer.stopVoice,
+              onDiscard: composer.discardVoice,
+            }}
             onRemoveImage={composer.removeImage}
+            onEditImage={composer.editImage}
             onRemoveGif={composer.removeGif}
+            onRemoveSticker={composer.removeSticker}
           />
         )}
         <ComposerToolbar
@@ -127,6 +175,12 @@ export function ComposeScreen({
           showGif={composer.showGif}
           canAddGif={composer.canAddGif}
           onOpenGif={composer.openGifPicker}
+          showSticker={composer.showSticker}
+          canAddSticker={composer.canAddSticker}
+          onOpenStickers={composer.openStickerTray}
+          showVoice={composer.showVoice}
+          canRecordVoice={composer.canRecordVoice}
+          onRecordVoice={composer.startVoice}
           showPoll={composer.showPoll}
           pollActive={composer.poll !== null}
           canStartPoll={composer.canStartPoll}
@@ -150,6 +204,10 @@ export function ComposeScreen({
       </div>
 
       <GifPickerSheet {...composer.gifPicker} />
+      <StickerTraySheet {...composer.stickerTray} />
+      <StickerCreator {...composer.stickerCreator} />
+      <ImageEditorSheet {...composer.imageEditor} />
+      <DraftsSheet {...composer.draftsSheet} />
     </div>
   )
 }

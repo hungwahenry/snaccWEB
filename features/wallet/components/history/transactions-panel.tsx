@@ -9,6 +9,7 @@ import { LoadMore } from "@/components/ui/load-more"
 import { Spinner } from "@/components/ui/spinner"
 import { useSummary } from "../../hooks/history/use-summary"
 import { useTransactionDetail } from "../../hooks/history/use-transaction-detail"
+import { useReceiptShare } from "../../hooks/history/use-receipt-share"
 import { useWalletTransactions } from "../../hooks/history/use-wallet-transactions"
 import type { WalletTransaction } from "../../types"
 import { currentMonth } from "../../utils/format"
@@ -33,6 +34,7 @@ export function TransactionsPanel({
   const [detailId, setDetailId] = useState<string | null>(null)
   const [detailOpen, setDetailOpen] = useState(false)
   const detail = useTransactionDetail(detailOpen ? detailId : null)
+  const receipt = useReceiptShare()
 
   const rows = useMemo(
     () => toHistoryRows(transactions.items),
@@ -93,6 +95,7 @@ export function TransactionsPanel({
         loading={detail.isLoading}
         failed={detail.isError}
         onRetry={() => void detail.refetch()}
+        receipt={receipt}
         onSendAgain={(username) => {
           setDetailOpen(false)
           onSendAgain(username)

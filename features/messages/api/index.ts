@@ -1,5 +1,9 @@
 import { api } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
+import {
+  voiceFileName,
+  type VoiceDraft,
+} from "@/features/voice/hooks/use-voice-recorder"
 import { appendImage, type PickedImage } from "@/lib/media"
 import type {
   Conversation,
@@ -40,6 +44,8 @@ export interface SendMessageInput {
   images?: PickedImage[]
   viewOnce?: boolean
   giphyId?: string
+  stickerId?: string
+  voice?: VoiceDraft
 }
 
 export function sendMessage(
@@ -48,12 +54,13 @@ export function sendMessage(
 ): Promise<Message> {
   const path = `/conversations/${conversationId}/messages`
 
-  if (!input.images?.length) {
+  if (!input.images?.length && !input.voice) {
     return api.post<Message>(path, {
       id: input.id,
       body: input.body,
       replyToId: input.replyToId,
       giphyId: input.giphyId,
+      stickerId: input.stickerId,
     })
   }
 
@@ -63,13 +70,20 @@ export function sendMessage(
     ["body", input.body],
     ["replyToId", input.replyToId],
     ["viewOnce", input.viewOnce ? "true" : undefined],
+    ["stickerId", input.stickerId],
+    [
+      "voiceDurationMs",
+      input.voice ? String(input.voice.durationMs) : undefined,
+    ],
   ]
   fields.forEach(([name, value]) => {
     if (value) form.append(name, value)
   })
-  input.images.forEach((image, index) =>
+  input.images?.forEach((image, index) =>
     appendImage(form, "images", image, `message-${index}`)
   )
+  if (input.voice)
+    form.append("voice", input.voice.file, voiceFileName(input.voice.mimeType))
 
   return api.upload<Message>(path, form)
 }

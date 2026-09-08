@@ -9,6 +9,7 @@ import { LightboxProvider } from "@/providers/lightbox-provider"
 import { PinPromptProvider } from "./pin-prompt-provider"
 import { RealtimeProvider } from "./realtime-provider"
 import { StepUpProvider } from "./step-up-provider"
+import { StickerStudioProvider } from "./sticker-studio-provider"
 import { TiersProvider } from "./tiers-provider"
 
 export function AppProviders({ children }: { children: ReactNode }) {
@@ -21,9 +22,11 @@ export function AppProviders({ children }: { children: ReactNode }) {
           <LightboxProvider>
             <StepUpProvider>
               <PinPromptProvider>
-                <AccentStyle />
-                {children}
-                <ConfirmHost />
+                <StickerStudioProvider>
+                  <AccentStyle />
+                  {children}
+                  <ConfirmHost />
+                </StickerStudioProvider>
               </PinPromptProvider>
             </StepUpProvider>
           </LightboxProvider>

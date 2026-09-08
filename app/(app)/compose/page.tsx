@@ -11,21 +11,23 @@ type Props = {
     resnaccOfId?: string
     initialBody?: string
     edit?: string
+    draft?: string
   }>
 }
 
 export default async function ComposePage({ searchParams }: Props) {
   await requireSession("/compose")
-  const { parentId, resnaccOfId, initialBody, edit } = await searchParams
+  const { parentId, resnaccOfId, initialBody, edit, draft } = await searchParams
 
   if (edit) return <EditSnaccScreen id={edit} />
 
   return (
     <ComposeScreen
-      key={`${parentId ?? ""}:${resnaccOfId ?? ""}`}
+      key={`${parentId ?? ""}:${resnaccOfId ?? ""}:${draft ?? ""}`}
       parentId={parentId || undefined}
       resnaccOfId={resnaccOfId || undefined}
       initialBody={initialBody || undefined}
+      draftId={draft || undefined}
     />
   )
 }

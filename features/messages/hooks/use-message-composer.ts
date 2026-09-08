@@ -1,6 +1,10 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import {
+  useVoiceRecorder,
+  type VoiceDraft,
+} from "@/features/voice/hooks/use-voice-recorder"
 import type { PickedImage } from "@/lib/media"
 import type { Message } from "../types"
 import { replyPreview, toReplyPreview } from "../utils/preview"
@@ -25,6 +29,18 @@ export interface MessageComposerInput {
   onType?: () => void
   images?: PickedImage[]
   maxImages?: number
+  canSendVoice?: boolean
+  onSendVoice?: (voice: VoiceDraft) => void
+}
+
+export interface VoiceControls {
+  recording: boolean
+  durationMs: number
+  levels: number[]
+  slide: number
+  onStart: () => void
+  onSlide: (translationX: number) => void
+  onFinish: (cancelled: boolean) => void
 }
 
 export function useMessageComposer({
@@ -37,8 +53,12 @@ export function useMessageComposer({
   onType,
   images = [],
   maxImages = 0,
+  canSendVoice = false,
+  onSendVoice,
 }: MessageComposerInput) {
   const [body, setBody] = useState("")
+  const [slide, setSlide] = useState(0)
+  const recorder = useVoiceRecorder()
   const stash = useRef("")
   const wasEditing = useRef(false)
   const trimmed = body.trim()
@@ -61,6 +81,26 @@ export function useMessageComposer({
 
   const canAttach = !editing && maxImages > 0 && images.length < maxImages
   const hasContent = trimmed.length > 0 || images.length > 0
+  const voice: VoiceControls | null = canSendVoice
+    ? {
+        recording: recorder.recording,
+        durationMs: recorder.durationMs,
+        levels: recorder.levels,
+        slide,
+        onStart: () => void recorder.start(),
+        onSlide: setSlide,
+        onFinish: (cancelled) => {
+          setSlide(0)
+          if (cancelled) {
+            void recorder.cancel()
+            return
+          }
+          void recorder.stop().then((draft) => {
+            if (draft) onSendVoice?.(draft)
+          })
+        },
+      }
+    : null
   const canSend =
     hasContent && !sending && (!editing || trimmed !== editing.body)
 
@@ -94,6 +134,8 @@ export function useMessageComposer({
     canSend,
     sending: Boolean(sending),
     canAttach,
+    voice,
+    offerVoice: voice !== null && !hasContent && !editing,
     context,
     editing: Boolean(editing),
     remaining: MESSAGE_MAX_LENGTH - body.length,

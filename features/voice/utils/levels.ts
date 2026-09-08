@@ -1,4 +1,15 @@
+const FLOOR_DB = -50
+
 const MIN_LEVEL = 0.12
+
+export function levelFromMetering(metering: number | undefined): number {
+  if (metering === undefined || Number.isNaN(metering)) return MIN_LEVEL
+
+  const clamped = Math.max(FLOOR_DB, Math.min(0, metering))
+  const linear = (clamped - FLOOR_DB) / -FLOOR_DB
+
+  return MIN_LEVEL + (1 - MIN_LEVEL) * Math.pow(linear, 0.45)
+}
 
 export function levelsFor(id: string, count: number): number[] {
   let seed = 0

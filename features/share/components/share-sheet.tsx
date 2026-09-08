@@ -1,4 +1,5 @@
-import { CopyIcon, SendIcon, ShareIcon } from "lucide-react"
+import { CopyIcon, ImageIcon, SendIcon, ShareIcon } from "lucide-react"
+import type { RefObject } from "react"
 import { ActionSheet } from "@/components/ui/action-sheet"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -6,6 +7,7 @@ import { Spinner } from "@/components/ui/spinner"
 import type { Conversation } from "@/features/messages/types"
 import type { ShareSubject } from "../types"
 import { RecipientGrid } from "./recipient-grid"
+import { ShareSubjectCard } from "./share-subject-card"
 
 export type ShareSheetProps = {
   open: boolean
@@ -15,6 +17,8 @@ export type ShareSheetProps = {
   canShareNative: boolean
   onCopyLink: () => void
   onShareLink: () => void
+  image: { busy: boolean; onShare: () => void }
+  cardRef: RefObject<HTMLDivElement | null>
   recipients: {
     enabled: boolean
     conversations: Conversation[]
@@ -36,6 +40,8 @@ export function ShareSheet({
   canShareNative,
   onCopyLink,
   onShareLink,
+  image,
+  cardRef,
   recipients,
 }: ShareSheetProps) {
   const sending = recipients.enabled && recipients.picked.length > 0
@@ -73,6 +79,14 @@ export function ShareSheet({
           </div>
         ) : subject ? (
           <div className="flex gap-3">
+            <Button
+              variant="ghost"
+              className="flex-1"
+              disabled={image.busy}
+              onClick={image.onShare}
+            >
+              {image.busy ? <Spinner /> : <ImageIcon />} Image
+            </Button>
             <Button variant="ghost" className="flex-1" onClick={onCopyLink}>
               <CopyIcon /> Copy link
             </Button>
@@ -86,6 +100,17 @@ export function ShareSheet({
       }
       tall={recipients.enabled}
     >
+      {subject ? (
+        // Off screen but in the document: the card has to lay out to be rasterised.
+        <div
+          aria-hidden
+          className="pointer-events-none fixed top-0 -left-[9999px]"
+        >
+          <div ref={cardRef}>
+            <ShareSubjectCard subject={subject} />
+          </div>
+        </div>
+      ) : null}
       {recipients.enabled ? (
         <div className="px-4 pb-2">
           <RecipientGrid

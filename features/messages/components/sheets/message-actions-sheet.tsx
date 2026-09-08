@@ -1,4 +1,11 @@
-import { FlagIcon, PencilIcon, ReplyIcon, Trash2Icon } from "lucide-react"
+import {
+  FlagIcon,
+  HeartIcon,
+  PencilIcon,
+  ReplyIcon,
+  Trash2Icon,
+  WandSparklesIcon,
+} from "lucide-react"
 import { ActionSheet, ActionSheetChoice } from "@/components/ui/action-sheet"
 import type { Message } from "../../types"
 
@@ -12,6 +19,8 @@ export type MessageActionsSheetProps = {
   onEdit: () => void
   onDelete: () => void
   onReport: () => void
+  onKeepSticker?: () => void
+  onMakeSticker?: () => void
 }
 
 export function MessageActionsSheet({
@@ -24,6 +33,8 @@ export function MessageActionsSheet({
   onEdit,
   onDelete,
   onReport,
+  onKeepSticker,
+  onMakeSticker,
 }: MessageActionsSheetProps) {
   return (
     <ActionSheet open={open} onOpenChange={onOpenChange} title="Message">
@@ -33,6 +44,22 @@ export function MessageActionsSheet({
         hint="Quote this message"
         onPress={onReply}
       />
+      {onKeepSticker ? (
+        <ActionSheetChoice
+          icon={HeartIcon}
+          label="Save sticker"
+          hint="Keep it in your tray"
+          onPress={onKeepSticker}
+        />
+      ) : null}
+      {onMakeSticker ? (
+        <ActionSheetChoice
+          icon={WandSparklesIcon}
+          label="Make a sticker"
+          hint="Cut one out of this photo"
+          onPress={onMakeSticker}
+        />
+      ) : null}
       {canEdit ? (
         <ActionSheetChoice
           icon={PencilIcon}

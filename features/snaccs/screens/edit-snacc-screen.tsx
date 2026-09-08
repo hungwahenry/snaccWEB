@@ -11,6 +11,7 @@ import { ComposerFrame } from "../components/composer/composer-frame"
 import { ComposerHeader } from "../components/composer/composer-header"
 import { ComposerInput } from "../components/composer/composer-input"
 import { ComposerToolbar } from "../components/composer/composer-toolbar"
+import { ImageEditorSheet } from "@/features/image-editor/components/image-editor-sheet"
 import { useSnaccEditor } from "../hooks/composer/use-snacc-editor"
 import { useSnacc } from "../hooks/use-snacc"
 import type { Snacc } from "../types"
@@ -66,6 +67,7 @@ function Editor({ snacc }: { snacc: Snacc }) {
           gif={editor.gif}
           storedVoice={editor.storedVoice}
           onRemoveImage={editor.removeImage}
+          onEditImage={editor.editImage}
           onRemoveGif={editor.removeGif}
         />
         <ComposerToolbar
@@ -95,6 +97,7 @@ function Editor({ snacc }: { snacc: Snacc }) {
           }
         />
       </div>
+      <ImageEditorSheet {...editor.imageEditor} />
     </div>
   )
 }

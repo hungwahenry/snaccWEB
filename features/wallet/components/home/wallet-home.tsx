@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { Spinner } from "@/components/ui/spinner"
 import { useTransactionDetail } from "../../hooks/history/use-transaction-detail"
+import { useReceiptShare } from "../../hooks/history/use-receipt-share"
 import type { WalletHome as WalletHomeState } from "../../hooks/home/use-wallet-home"
 import { toHistoryRows } from "../../utils/history-sections"
 import { RequestDetailSheet } from "../requests/request-detail-sheet"
@@ -34,6 +35,7 @@ export function WalletHome({
     [home.transactions.items]
   )
   const detail = useTransactionDetail(home.detail.open ? home.detail.id : null)
+  const receipt = useReceiptShare()
   const more =
     home.transactions.hasMore || home.transactions.items.length > RECENT
 
@@ -166,6 +168,7 @@ export function WalletHome({
         loading={detail.isLoading}
         failed={detail.isError}
         onRetry={() => void detail.refetch()}
+        receipt={receipt}
         onSendAgain={(username) => {
           home.detail.onOpenChange(false)
           onSendAgain(username)

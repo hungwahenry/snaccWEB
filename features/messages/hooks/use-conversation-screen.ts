@@ -5,9 +5,15 @@ import { useCallback, useMemo, useState, type RefObject } from "react"
 import { confirm } from "@/components/ui/confirm"
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { useFlag } from "@/features/config/hooks/use-flag"
-import { useGifPicker } from "@/features/giphy/hooks/use-gif-picker"
+import type { Gif } from "@/features/giphy/types"
+import { useKeepMessageSticker } from "@/features/stickers/hooks/use-keep-sticker"
+import { useStickerCreator } from "@/features/stickers/hooks/use-sticker-creator"
+import type { Sticker } from "@/features/stickers/types"
+import type { VoiceDraft } from "@/features/voice/hooks/use-voice-recorder"
+import { useStickerStudio } from "@/providers/sticker-studio-provider"
 import { useLightbox } from "@/providers/lightbox-provider"
 import { useReportSheet } from "@/features/reports/hooks/use-report-sheet"
+import { useReceiptShare } from "@/features/wallet/hooks/history/use-receipt-share"
 import { useTransactionDetail } from "@/features/wallet/hooks/history/use-transaction-detail"
 import { useRequestActions } from "@/features/wallet/hooks/requests/use-request-actions"
 import { payPath } from "@/features/wallet/routes"
@@ -17,6 +23,7 @@ import {
   retryMessage,
   submitMessage,
 } from "../cache/pending-messages"
+import type { MessageDraft } from "../cache/optimistic-message"
 import type { Message, MessageImage } from "../types"
 import { canDeleteMessage, canEditMessage } from "../utils/editing"
 import { shownImagesOf } from "../utils/images"
@@ -57,7 +64,12 @@ export function useConversationScreen(
   )
   const editingEnabled = useFlag("message_editing")
   const gifsEnabled = useFlag("message_gifs")
+  const stickersEnabled = useFlag("message_stickers")
+  const voiceEnabled = useFlag("voice_notes")
   const walletEnabled = useFlag("wallet")
+  const keepSticker = useKeepMessageSticker()
+  const stickerStudio = useStickerStudio()
+  const [trayOpen, setTrayOpen] = useState(false)
   const router = useRouter()
   const requestActions = useRequestActions({ enabled: walletEnabled })
   const [moneyDetailId, setMoneyDetailId] = useState<string | null>(null)
@@ -65,6 +77,7 @@ export function useConversationScreen(
   const moneyDetail = useTransactionDetail(
     moneyDetailOpen ? moneyDetailId : null
   )
+  const receipt = useReceiptShare()
 
   const [active, setActive] = useState<Message | null>(null)
   const [actionsOpen, setActionsOpen] = useState(false)
@@ -91,11 +104,19 @@ export function useConversationScreen(
   const other = data?.other ?? null
   const menu = useConversationMenu(id, other, report)
 
-  const gifPicker = useGifPicker((gif) => {
-    submitMessage(id, { body: null, images: [], replyingTo, gif })
+  function sendAttachment(
+    attachment: Partial<Pick<MessageDraft, "gif" | "sticker" | "voice">>
+  ) {
+    submitMessage(id, { body: null, images: [], replyingTo, ...attachment })
     setReplyingTo(null)
     scroll.scrollToBottom()
-  })
+  }
+
+  const sendSticker = (sticker: Sticker) => sendAttachment({ sticker })
+  const sendGif = (gif: Gif) => sendAttachment({ gif })
+  const stickerCreator = useStickerCreator(sendSticker)
+  const canSendVoice =
+    voiceEnabled && !!data && (!data.you_are_ghost || data.revealed)
 
   const focusComposer = useCallback(() => inputRef.current?.focus(), [inputRef])
 
@@ -193,7 +214,25 @@ export function useConversationScreen(
     maxImages: attachments.maxImages,
     onAddImages: attachments.onAddImages,
     onRemoveImage: attachments.onRemoveImage,
-    gifPicker: gifsEnabled ? gifPicker : null,
+    canSendVoice,
+    onSendVoice: (voice: VoiceDraft) => sendAttachment({ voice }),
+    stickerTray:
+      stickersEnabled || gifsEnabled
+        ? {
+            open: trayOpen,
+            onOpenChange: setTrayOpen,
+            onPickSticker: stickersEnabled ? sendSticker : undefined,
+            onPickGif: gifsEnabled ? sendGif : undefined,
+            onCreateSticker: stickersEnabled
+              ? () => {
+                  setTrayOpen(false)
+                  stickerCreator.begin()
+                }
+              : undefined,
+          }
+        : null,
+    openStickerTray: () => setTrayOpen(true),
+    stickerCreator,
 
     sending: edit.isPending,
     onSubmit,
@@ -252,6 +291,25 @@ export function useConversationScreen(
         if (active)
           report.open({ type: "message", id: active.id, conversationId: id })
       },
+      onKeepSticker:
+        keepSticker && active?.sticker && !active.removed
+          ? () => {
+              setActionsOpen(false)
+              keepSticker(active.id)
+            }
+          : undefined,
+      onMakeSticker:
+        stickerStudio && active && shownImagesOf(active).length > 0
+          ? () => {
+              setActionsOpen(false)
+              const [image] = shownImagesOf(active)
+              stickerStudio({
+                url: image.url,
+                width: image.width,
+                height: image.height,
+              })
+            }
+          : undefined,
     },
 
     menu,
@@ -271,6 +329,7 @@ export function useConversationScreen(
       loading: moneyDetail.isLoading,
       failed: moneyDetail.isError,
       onRetry: () => void moneyDetail.refetch(),
+      receipt,
       onSendAgain: (username: string) => {
         setMoneyDetailOpen(false)
         router.push(payPath({ mode: "send", to: username, conversation: id }))

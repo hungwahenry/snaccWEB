@@ -7,6 +7,7 @@ import { useFlag } from "@/features/config/hooks/use-flag"
 import { sendMessage } from "@/features/messages/api"
 import { useConversations } from "@/features/messages/hooks/use-conversations"
 import { signal } from "@/features/signals/utils/queue"
+import { useShareCapture } from "@/hooks/use-share-capture"
 import { getErrorMessage } from "@/lib/api/errors"
 import { newId } from "@/lib/ids"
 import { copyLink, shareOrCopy } from "@/lib/share-links"
@@ -20,6 +21,7 @@ export function useShare() {
   const [note, setNote] = useState("")
   const messagesEnabled = useFlag("anon_messages")
   const conversations = useConversations()
+  const capture = useShareCapture("snacc-card.png")
 
   function noteShare(detail: string) {
     if (subject?.kind === "snacc")
@@ -77,6 +79,14 @@ export function useShare() {
         noteShare("copy")
         void copyLink(linkFor(subject), `${labelFor(subject)} link`)
         setOpen(false)
+      },
+      cardRef: capture.cardRef,
+      image: {
+        busy: capture.busy,
+        onShare: () => {
+          noteShare("image")
+          capture.share()
+        },
       },
       onShareLink: () => {
         if (!subject) return

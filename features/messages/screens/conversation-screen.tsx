@@ -15,9 +15,10 @@ import { IconButton } from "@/components/ui/icon-button"
 import { ListFooter } from "@/components/ui/list-footer"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { LoadMore } from "@/components/ui/load-more"
-import { GifPickerSheet } from "@/features/giphy/components/gif-picker-sheet"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { ReportSheet } from "@/features/reports/components/report-sheet"
+import { StickerCreator } from "@/features/stickers/components/sticker-creator"
+import { StickerTraySheet } from "@/features/stickers/components/sticker-tray-sheet"
 import { profilePath } from "@/features/users/routes"
 import { TransactionDetailSheet } from "@/features/wallet/components/home/transaction-detail-sheet"
 import { useBack } from "@/hooks/use-back"
@@ -53,6 +54,8 @@ export function ConversationScreen({ id }: { id: string }) {
     onType: screen.notifyTyping,
     images: screen.draft,
     maxImages: screen.maxImages,
+    canSendVoice: screen.canSendVoice,
+    onSendVoice: screen.onSendVoice,
   })
 
   const actions: ComposerAction[] = [
@@ -67,14 +70,14 @@ export function ConversationScreen({ id }: { id: string }) {
           },
         ]
       : []),
-    ...(screen.gifPicker && !composer.editing
+    ...(screen.stickerTray && !composer.editing
       ? [
           {
-            key: "gif",
+            key: "stickers",
             icon: StickerIcon,
-            label: "GIF",
-            hint: "Search GIPHY",
-            onPress: screen.gifPicker.show,
+            label: screen.stickerTray.onPickSticker ? "Sticker or GIF" : "GIF",
+            hint: "From the tray",
+            onPress: screen.openStickerTray,
           },
         ]
       : []),
@@ -227,6 +230,8 @@ export function ConversationScreen({ id }: { id: string }) {
             viewOnce={screen.viewOnce}
             onToggleViewOnce={screen.onToggleViewOnce}
             actions={actions}
+            voice={composer.voice}
+            offerVoice={composer.offerVoice}
           />
         </>
       )}
@@ -247,7 +252,8 @@ export function ConversationScreen({ id }: { id: string }) {
         url={screen.viewOnceUrl}
         onClose={screen.onCloseViewOnce}
       />
-      {screen.gifPicker ? <GifPickerSheet {...screen.gifPicker.sheet} /> : null}
+      {screen.stickerTray ? <StickerTraySheet {...screen.stickerTray} /> : null}
+      <StickerCreator {...screen.stickerCreator} />
       <ReportSheet {...screen.report} />
       <TransactionDetailSheet {...screen.moneyDetail} />
     </div>

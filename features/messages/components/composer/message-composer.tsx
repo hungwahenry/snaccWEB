@@ -1,9 +1,14 @@
 import { ArrowUpIcon, CheckIcon } from "lucide-react"
 import { useCallback, useState, type RefObject } from "react"
 import { Spinner } from "@/components/ui/spinner"
+import { VoiceRecordButton } from "@/features/voice/components/voice-record-button"
+import { VoiceRecordingBar } from "@/features/voice/components/voice-recording-bar"
 import type { PickedImage } from "@/lib/media"
 import { cn } from "@/lib/utils"
-import type { ComposerContext } from "../../hooks/use-message-composer"
+import type {
+  ComposerContext,
+  VoiceControls,
+} from "../../hooks/use-message-composer"
 import {
   ComposerActionsMenu,
   type ComposerAction,
@@ -36,6 +41,8 @@ export type MessageComposerProps = {
   onDark?: boolean
   onFocus?: () => void
   onBlur?: () => void
+  voice?: VoiceControls | null
+  offerVoice?: boolean
 }
 
 export function MessageComposer({
@@ -59,7 +66,11 @@ export function MessageComposer({
   onDark = false,
   onFocus,
   onBlur,
+  voice = null,
+  offerVoice = false,
 }: MessageComposerProps) {
+  const recording = voice?.recording ?? false
+  const showMic = offerVoice && voice !== null
   const showDrafts = images.length > 0 && Boolean(onRemoveImage)
   const showViewOnce = images.length === 1 && Boolean(onToggleViewOnce)
   const [tall, setTall] = useState(false)
@@ -104,7 +115,9 @@ export function MessageComposer({
           onSend()
         }}
       >
-        {actions.length > 0 ? <ComposerActionsMenu actions={actions} /> : null}
+        {actions.length > 0 && !recording ? (
+          <ComposerActionsMenu actions={actions} />
+        ) : null}
 
         <div
           className={cn(
@@ -113,60 +126,77 @@ export function MessageComposer({
             onDark && "border border-white/40 bg-black/35"
           )}
         >
-          <textarea
-            ref={(node) => {
-              watchHeight(node)
-              if (inputRef) inputRef.current = node
-            }}
-            value={body}
-            rows={1}
-            maxLength={maxLength}
-            placeholder={editing ? "Edit message…" : placeholder}
-            onChange={(event) => onChange(event.target.value)}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            onKeyDown={(event) => {
-              if (
-                event.key === "Enter" &&
-                !event.shiftKey &&
-                !event.nativeEvent.isComposing
-              ) {
-                event.preventDefault()
-                onSend()
-              }
-            }}
-            className={cn(
-              "field-sizing-content max-h-32 flex-1 resize-none self-center bg-transparent py-2 text-base leading-5 outline-none",
-              onDark
-                ? "text-white placeholder:text-white/50"
-                : "text-foreground placeholder:text-muted-foreground/50"
-            )}
-            style={{ minHeight: INPUT_REST_HEIGHT }}
-          />
-          <button
-            type="submit"
-            disabled={!canSend}
-            aria-label={editing ? "Save edit" : "Send"}
-            className={cn(
-              "flex size-11 shrink-0 items-center justify-center rounded-full transition-colors",
-              onDark
-                ? canSend || sending
-                  ? "bg-white text-black hover:opacity-90"
-                  : "bg-white/25 text-white/60"
-                : canSend || sending
-                  ? "bg-primary text-primary-foreground hover:opacity-90"
-                  : "bg-muted text-muted-foreground",
-              tall && "mb-1.5"
-            )}
-          >
-            {sending ? (
-              <Spinner className="size-5" />
-            ) : editing ? (
-              <CheckIcon className="size-6" />
-            ) : (
-              <ArrowUpIcon className="size-6" />
-            )}
-          </button>
+          {recording && voice ? (
+            <VoiceRecordingBar
+              durationMs={voice.durationMs}
+              levels={voice.levels}
+              slide={voice.slide}
+            />
+          ) : (
+            <textarea
+              ref={(node) => {
+                watchHeight(node)
+                if (inputRef) inputRef.current = node
+              }}
+              value={body}
+              rows={1}
+              maxLength={maxLength}
+              placeholder={editing ? "Edit message…" : placeholder}
+              onChange={(event) => onChange(event.target.value)}
+              onFocus={onFocus}
+              onBlur={onBlur}
+              onKeyDown={(event) => {
+                if (
+                  event.key === "Enter" &&
+                  !event.shiftKey &&
+                  !event.nativeEvent.isComposing
+                ) {
+                  event.preventDefault()
+                  onSend()
+                }
+              }}
+              className={cn(
+                "field-sizing-content max-h-32 flex-1 resize-none self-center bg-transparent py-2 text-base leading-5 outline-none",
+                onDark
+                  ? "text-white placeholder:text-white/50"
+                  : "text-foreground placeholder:text-muted-foreground/50"
+              )}
+              style={{ minHeight: INPUT_REST_HEIGHT }}
+            />
+          )}
+          {showMic && voice ? (
+            <VoiceRecordButton
+              recording={voice.recording}
+              onStart={voice.onStart}
+              onSlide={voice.onSlide}
+              onFinish={voice.onFinish}
+            />
+          ) : (
+            <button
+              type="submit"
+              disabled={!canSend}
+              aria-label={editing ? "Save edit" : "Send"}
+              className={cn(
+                "flex size-11 shrink-0 items-center justify-center rounded-full transition-colors",
+                onDark
+                  ? canSend || sending
+                    ? "bg-white text-black hover:opacity-90"
+                    : "bg-white/25 text-white/60"
+                  : canSend || sending
+                    ? "bg-primary text-primary-foreground hover:opacity-90"
+                    : "bg-muted text-muted-foreground",
+                tall && "mb-1.5"
+              )}
+            >
+              {sending ? (
+                <Spinner className="size-5" />
+              ) : editing ? (
+                <CheckIcon className="size-6" />
+              ) : (
+                <ArrowUpIcon className="size-6" />
+              )}
+            </button>
+          )}
         </div>
       </form>
     </div>

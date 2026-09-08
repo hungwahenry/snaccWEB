@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { signal } from "@/features/signals/utils/queue"
+import { useHoldAction } from "@/hooks/use-hold-action"
 import { aspectRatio } from "@/lib/aspect"
 import { cn } from "@/lib/utils"
 import type { SnaccImage } from "../../../types"
@@ -14,6 +15,7 @@ type SnaccImagesProps = {
   spoiler?: boolean
   snaccId?: string
   onPressImage?: (index: number) => void
+  onHoldImage?: (index: number) => void
 }
 
 export function SnaccImages({
@@ -21,6 +23,7 @@ export function SnaccImages({
   spoiler,
   snaccId,
   onPressImage,
+  onHoldImage,
 }: SnaccImagesProps) {
   const [revealed, setRevealed] = useState(false)
   if (images.length === 0) return null
@@ -37,12 +40,15 @@ export function SnaccImages({
     onPressImage?.(index)
   }
 
+  const hold = (index: number) =>
+    onHoldImage && !hidden ? () => onHoldImage(index) : undefined
+
   if (images.length === 1) {
     const image = images[0]
     return (
-      <button
-        type="button"
+      <ImageTile
         onClick={(event) => press(event, 0)}
+        onHold={hold(0)}
         aria-label={hidden ? "Reveal sensitive content" : "Open image"}
         className="relative block w-full overflow-hidden rounded-2xl bg-muted"
         style={{ aspectRatio: Math.max(aspectRatio(image), SINGLE_MIN_RATIO) }}
@@ -58,7 +64,7 @@ export function SnaccImages({
           )}
         />
         {hidden ? <SpoilerVeil /> : null}
-      </button>
+      </ImageTile>
     )
   }
 
@@ -77,10 +83,10 @@ export function SnaccImages({
       )}
     >
       {images.slice(0, 4).map((image, index) => (
-        <button
+        <ImageTile
           key={image.position}
-          type="button"
           onClick={(event) => press(event, index)}
+          onHold={hold(index)}
           aria-label={
             hidden ? "Reveal sensitive content" : `Open image ${index + 1}`
           }
@@ -102,8 +108,28 @@ export function SnaccImages({
             </span>
           ) : null}
           {hidden && index === 0 ? <SpoilerVeil /> : null}
-        </button>
+        </ImageTile>
       ))}
     </div>
+  )
+}
+
+function ImageTile({
+  onHold,
+  className,
+  ...props
+}: React.ComponentProps<"button"> & { onHold?: () => void }) {
+  const hold = useHoldAction(onHold)
+  return (
+    <button
+      type="button"
+      {...hold}
+      {...props}
+      className={cn(
+        className,
+        onHold &&
+          "[@media(pointer:coarse)]:select-none [@media(pointer:coarse)]:[-webkit-touch-callout:none]"
+      )}
+    />
   )
 }

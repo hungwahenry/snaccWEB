@@ -21,10 +21,18 @@ type SnaccMediaProps = {
     | "mine"
   >
   onPressImage?: (index: number) => void
+  onHoldImage?: (index: number) => void
+  onHoldSticker?: () => void
   poll?: Omit<PollViewProps, "poll" | "disabled">
 }
 
-export function SnaccMedia({ snacc, onPressImage, poll }: SnaccMediaProps) {
+export function SnaccMedia({
+  snacc,
+  onPressImage,
+  onHoldImage,
+  onHoldSticker,
+  poll,
+}: SnaccMediaProps) {
   const hasAny =
     snacc.poll ||
     snacc.voice ||
@@ -54,6 +62,7 @@ export function SnaccMedia({ snacc, onPressImage, poll }: SnaccMediaProps) {
         spoiler={snacc.spoiler}
         snaccId={snacc.id}
         onPressImage={onPressImage}
+        onHoldImage={onHoldImage}
       />
 
       {snacc.gif ? (
@@ -65,7 +74,11 @@ export function SnaccMedia({ snacc, onPressImage, poll }: SnaccMediaProps) {
       ) : null}
 
       {snacc.sticker ? (
-        <StickerAttachmentView sticker={snacc.sticker} size={STICKER_SIZE} />
+        <StickerAttachmentView
+          sticker={snacc.sticker}
+          size={STICKER_SIZE}
+          onHold={onHoldSticker}
+        />
       ) : null}
     </div>
   )

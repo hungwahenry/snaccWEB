@@ -30,14 +30,14 @@ export function pollMinutes(poll: PollDraft): number {
   return poll.days * 1440 + poll.hours * 60 + poll.minutes
 }
 
-export function usePollDraft() {
+export function usePollDraft(seed: PollDraft | null = null) {
   const pollsEnabled = useFlag("polls")
   const maxPollOptions = useConfigValue("content.poll.max_options")
   const pollOptionMax = useConfigValue("content.poll.option_max_length")
   const pollMinMinutes = useConfigValue("content.poll.min_minutes")
   const pollMaxMinutes = useConfigValue("content.poll.max_minutes")
 
-  const [poll, setPoll] = useState<PollDraft | null>(null)
+  const [poll, setPoll] = useState<PollDraft | null>(seed)
 
   const filled =
     poll?.options.filter((option) => option.text.trim().length > 0) ?? []

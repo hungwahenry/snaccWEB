@@ -1,5 +1,9 @@
 import { api } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
+import {
+  voiceFileName,
+  type VoiceDraft,
+} from "@/features/voice/hooks/use-voice-recorder"
 import { appendImage, type PickedImage } from "@/lib/media"
 import type {
   CommentSort,
@@ -21,6 +25,7 @@ export interface CreateSnaccInput {
   resnaccOfId?: string
   poll?: { options: string[]; images?: PickedImage[]; durationMinutes: number }
   spoiler?: boolean
+  voice?: VoiceDraft
 }
 
 function pollField(poll: CreateSnaccInput["poll"]): string | undefined {
@@ -34,7 +39,9 @@ function pollField(poll: CreateSnaccInput["poll"]): string | undefined {
 
 export function createSnacc(input: CreateSnaccInput): Promise<Snacc> {
   const multipart =
-    (input.images?.length ?? 0) > 0 || (input.poll?.images?.length ?? 0) > 0
+    (input.images?.length ?? 0) > 0 ||
+    (input.poll?.images?.length ?? 0) > 0 ||
+    input.voice !== undefined
 
   if (!multipart) {
     return api.post<Snacc>("/snaccs", {
@@ -56,12 +63,19 @@ export function createSnacc(input: CreateSnaccInput): Promise<Snacc> {
     ["parentId", input.parentId],
     ["resnaccOfId", input.resnaccOfId],
     ["giphyId", input.giphyId],
+    ["stickerId", input.stickerId],
     ["spoiler", input.spoiler ? "true" : undefined],
     ["poll", pollField(input.poll)],
+    [
+      "voiceDurationMs",
+      input.voice ? String(input.voice.durationMs) : undefined,
+    ],
   ]
   fields.forEach(([name, value]) => {
     if (value) form.append(name, value)
   })
+  if (input.voice)
+    form.append("voice", input.voice.file, voiceFileName(input.voice.mimeType))
   input.poll?.images?.forEach((image, index) =>
     appendImage(form, "pollImages", image, `poll-${index}`)
   )

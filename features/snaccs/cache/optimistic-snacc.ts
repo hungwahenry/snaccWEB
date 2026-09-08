@@ -1,4 +1,6 @@
 import type { Gif } from "@/features/giphy/types"
+import type { DraftSticker } from "@/features/stickers/types"
+import type { VoiceDraft } from "@/features/voice/hooks/use-voice-recorder"
 import type { User } from "@/features/users/types"
 import type { PickedImage } from "@/lib/media"
 import type { CreateSnaccInput } from "../api"
@@ -10,6 +12,8 @@ export interface SnaccDraft {
   body: string | null
   images: PickedImage[]
   gif: Gif | null
+  sticker: DraftSticker | null
+  voice: VoiceDraft | null
   parentId?: string
   resnaccOfId?: string
   poll?: { options: string[]; images?: PickedImage[]; durationMinutes: number }
@@ -45,6 +49,8 @@ export function draftToInput(id: string, draft: SnaccDraft): CreateSnaccInput {
     body: draft.body ?? undefined,
     images: draft.images.length > 0 ? draft.images : undefined,
     giphyId: draft.gif?.id,
+    stickerId: draft.sticker?.id,
+    voice: draft.voice ?? undefined,
     parentId: draft.parentId,
     resnaccOfId: draft.resnaccOfId,
     poll: draft.poll,
@@ -96,7 +102,13 @@ export function buildOptimisticSnacc(
     edited_at: null,
     author,
     entities: [],
-    voice: null,
+    voice: draft.voice
+      ? {
+          id: draft.voice.uri,
+          url: draft.voice.uri,
+          duration_ms: draft.voice.durationMs,
+        }
+      : null,
     poll: draft.poll ? optimisticPoll(id, draft.poll) : null,
     images: draft.images.map((image, position) => ({
       id: image.uri,
@@ -115,7 +127,15 @@ export function buildOptimisticSnacc(
           height: draft.gif.height,
         }
       : null,
-    sticker: null,
+    sticker: draft.sticker
+      ? {
+          sticker_id: draft.sticker.id,
+          url: draft.sticker.url,
+          preview_url: draft.sticker.preview_url,
+          width: draft.sticker.width,
+          height: draft.sticker.height,
+        }
+      : null,
     reactions: [],
     reactions_count: 0,
     my_reaction: null,

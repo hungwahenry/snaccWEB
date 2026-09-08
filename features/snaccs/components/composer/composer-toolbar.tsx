@@ -1,7 +1,9 @@
 import {
   ChartBarBigIcon,
   EyeOffIcon,
+  FilmIcon,
   ImageIcon,
+  MicIcon,
   StickerIcon,
 } from "lucide-react"
 import type { ReactNode } from "react"
@@ -14,6 +16,12 @@ type ComposerToolbarProps = {
   showGif: boolean
   canAddGif: boolean
   onOpenGif: () => void
+  showSticker?: boolean
+  canAddSticker?: boolean
+  onOpenStickers?: () => void
+  showVoice?: boolean
+  canRecordVoice?: boolean
+  onRecordVoice?: () => void
   showPoll: boolean
   pollActive: boolean
   canStartPoll: boolean
@@ -32,6 +40,12 @@ export function ComposerToolbar({
   showGif,
   canAddGif,
   onOpenGif,
+  showSticker = false,
+  canAddSticker = false,
+  onOpenStickers,
+  showVoice = false,
+  canRecordVoice = false,
+  onRecordVoice,
   showPoll,
   pollActive,
   canStartPoll,
@@ -54,10 +68,26 @@ export function ComposerToolbar({
         />
         {showGif ? (
           <IconButton
-            icon={StickerIcon}
+            icon={FilmIcon}
             label="Add a GIF"
             disabled={!canAddGif}
             onClick={onOpenGif}
+          />
+        ) : null}
+        {showSticker ? (
+          <IconButton
+            icon={StickerIcon}
+            label="Add a sticker"
+            disabled={!canAddSticker}
+            onClick={onOpenStickers}
+          />
+        ) : null}
+        {showVoice ? (
+          <IconButton
+            icon={MicIcon}
+            label="Record a voice note"
+            disabled={!canRecordVoice}
+            onClick={onRecordVoice}
           />
         ) : null}
         {showPoll ? (
