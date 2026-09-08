@@ -45,7 +45,7 @@ export function MomentComposeScreen() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col md:min-h-0">
+    <div className="flex min-h-dvh flex-col">
       <ComposerHeader title="New moment" onClose={close} />
 
       <div className="flex flex-1 flex-col gap-4 px-4 pt-4 pb-6">
@@ -61,7 +61,7 @@ export function MomentComposeScreen() {
         </ComposerFrame>
       </div>
 
-      <div className="sticky bottom-0 z-20 border-t border-border bg-background pb-[env(safe-area-inset-bottom)] md:static">
+      <div className="sticky bottom-0 z-20 border-t border-border bg-background pb-[env(safe-area-inset-bottom)]">
         {bar}
       </div>
     </div>

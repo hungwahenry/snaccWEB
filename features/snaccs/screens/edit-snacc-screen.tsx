@@ -43,7 +43,7 @@ function Editor({ snacc }: { snacc: Snacc }) {
   const editor = useSnaccEditor(snacc)
 
   return (
-    <div className="flex min-h-dvh flex-col md:min-h-0">
+    <div className="flex min-h-dvh flex-col">
       <ComposerHeader title="Edit snacc" onClose={editor.close} />
 
       <div className="flex-1 px-4 pt-4 pb-6">
@@ -61,7 +61,7 @@ function Editor({ snacc }: { snacc: Snacc }) {
         </ComposerFrame>
       </div>
 
-      <div className="sticky bottom-0 z-20 border-t border-border bg-background md:static">
+      <div className="sticky bottom-0 z-20 border-t border-border bg-background">
         <ComposerAttachments
           images={editor.images}
           gif={editor.gif}

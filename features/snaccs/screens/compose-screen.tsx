@@ -58,7 +58,7 @@ function ComposeBody({
   const copy = COPY[composer.mode]
 
   return (
-    <div className="flex min-h-dvh flex-col md:min-h-0">
+    <div className="flex min-h-dvh flex-col">
       <ComposerHeader
         title={copy.title}
         onClose={composer.close}
@@ -140,7 +140,7 @@ function ComposeBody({
         </div>
       </div>
 
-      <div className="sticky bottom-0 z-20 border-t border-border bg-background pb-[env(safe-area-inset-bottom)] md:static">
+      <div className="sticky bottom-0 z-20 border-t border-border bg-background pb-[env(safe-area-inset-bottom)]">
         {composer.typeahead.open ? (
           <ComposerSuggestions
             suggestions={composer.typeahead.suggestions}
