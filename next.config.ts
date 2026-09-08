@@ -56,7 +56,9 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return {
-      beforeFiles: [{ source: "/@:username", destination: "/profile/:username" }],
+      beforeFiles: [
+        { source: "/@:username", destination: "/profile/:username" },
+      ],
     }
   },
 }
