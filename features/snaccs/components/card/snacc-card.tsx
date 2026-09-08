@@ -184,7 +184,7 @@ function SnaccCardComponent(props: SnaccCardProps) {
       </div>
 
       {snacc.resnacc_of ? (
-        <div className="flex gap-3">
+        <div className="-mt-3 flex gap-3">
           <div className="w-11 shrink-0">
             <QuoteCurve />
           </div>

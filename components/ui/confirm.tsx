@@ -9,6 +9,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import { useRef, useSyncExternalStore } from "react"
 
 export type ConfirmAction = {
@@ -59,6 +60,9 @@ export function ConfirmHost() {
 
   if (!options) return null
 
+  // Two choices read as a pair; more than that would not fit across, so they stack.
+  const pair = options.actions.length === 2
+
   function run(action: ConfirmAction) {
     acted.current = true
     set({ options, open: false })
@@ -85,17 +89,21 @@ export function ConfirmHost() {
           ) : null}
         </AlertDialogHeader>
 
-        <AlertDialogFooter className="grid grid-cols-1 gap-2">
-          {options.actions.map((action) => (
-            <Button
-              key={action.label}
-              size="lg"
-              variant={action.destructive ? "destructive" : "default"}
-              onClick={() => run(action)}
-            >
-              {action.label}
-            </Button>
-          ))}
+        <AlertDialogFooter className="flex flex-col gap-2">
+          <div
+            className={cn("grid gap-2", pair ? "grid-cols-2" : "grid-cols-1")}
+          >
+            {options.actions.map((action) => (
+              <Button
+                key={action.label}
+                size="lg"
+                variant={action.destructive ? "destructive" : "default"}
+                onClick={() => run(action)}
+              >
+                {action.label}
+              </Button>
+            ))}
+          </div>
           <Button
             size="lg"
             variant="outline"

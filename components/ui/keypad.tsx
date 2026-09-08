@@ -28,7 +28,12 @@ export function Keypad({
   className?: string
 }) {
   return (
-    <div className={cn("grid grid-cols-3 px-4", className)}>
+    <div
+      className={cn(
+        "mx-auto grid w-full max-w-xs grid-cols-3 px-4 md:max-w-sm",
+        className
+      )}
+    >
       {KEYS.map((key) =>
         key === "." && !decimal ? (
           <span key={key} className="h-16" />

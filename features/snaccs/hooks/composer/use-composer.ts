@@ -218,6 +218,7 @@ export function useComposer(params: {
       onDelete: (stored: StoredDraft) =>
         confirm({
           title: "Delete this draft?",
+          message: "It goes for good. Nothing you already posted changes.",
           actions: [
             {
               label: "Delete",

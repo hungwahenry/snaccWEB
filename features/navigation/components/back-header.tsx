@@ -9,6 +9,8 @@ type BackHeaderProps = {
   onBack: () => void
   right?: ReactNode
   divider?: boolean
+  /** Sits over the content with no background, with its buttons on a scrim to stay legible. */
+  floating?: boolean
   className?: string
 }
 
@@ -18,19 +20,28 @@ export function BackHeader({
   onBack,
   right,
   divider = true,
+  floating = false,
   className,
 }: BackHeaderProps) {
   return (
     <header
       className={cn(
-        "sticky top-0 z-30 flex h-14 items-center gap-3 bg-background/90 px-3 backdrop-blur",
-        divider && "border-b border-border",
+        "sticky top-0 z-30 flex h-14 items-center gap-3 px-3 transition-colors",
+        floating
+          ? "bg-transparent [&_button]:bg-black/40 [&_button]:text-white [&_button:hover]:bg-black/60"
+          : "bg-background/90 backdrop-blur",
+        divider && !floating && "border-b border-border",
         className
       )}
     >
       <IconButton icon={ArrowLeftIcon} label="Back" onClick={onBack} />
       <div className="min-w-0 flex-1">
-        <h1 className="truncate text-lg font-extrabold tracking-tight text-foreground">
+        <h1
+          className={cn(
+            "truncate text-lg font-extrabold tracking-tight text-foreground transition-opacity",
+            floating && "opacity-0"
+          )}
+        >
           {title}
         </h1>
         {subtitle ? (

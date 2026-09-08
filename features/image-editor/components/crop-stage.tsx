@@ -2,21 +2,35 @@
 
 import { useEffect, useMemo, useState, type PointerEvent } from "react"
 import type { PickedImage } from "@/lib/media"
+import { cn } from "@/lib/utils"
 import { HANDLE } from "../types"
 import {
   boxToSource,
   containBox,
-  cornerAt,
+  gripAt,
   moveBox,
   resizeBox,
   startingBox,
   type Box,
-  type Corner,
   type CropRect,
+  type Grip,
   type Size,
 } from "../utils/geometry"
 
-const CORNERS: Corner[] = ["tl", "tr", "bl", "br"]
+const CORNERS: Grip[] = ["tl", "tr", "bl", "br"]
+const EDGES: Grip[] = ["t", "r", "b", "l"]
+const THIRDS = [1 / 3, 2 / 3]
+
+const CURSOR: Record<Grip, string> = {
+  tl: "cursor-nwse-resize",
+  br: "cursor-nwse-resize",
+  tr: "cursor-nesw-resize",
+  bl: "cursor-nesw-resize",
+  t: "cursor-ns-resize",
+  b: "cursor-ns-resize",
+  l: "cursor-ew-resize",
+  r: "cursor-ew-resize",
+}
 
 type CropStageProps = {
   image: PickedImage
@@ -25,7 +39,7 @@ type CropStageProps = {
   onChange: (rect: CropRect) => void
 }
 
-type Drag = { kind: "move" } | { kind: "corner"; corner: Corner }
+type Drag = { kind: "move" } | { kind: "grip"; grip: Grip }
 
 export function CropStage({ image, stage, aspect, onChange }: CropStageProps) {
   const source = useMemo(
@@ -36,7 +50,7 @@ export function CropStage({ image, stage, aspect, onChange }: CropStageProps) {
     () => containBox(source, { width: stage.width, height: stage.height }),
     [source, stage.width, stage.height]
   )
-  const [box, setBox] = useState<Box>(display)
+  const [box, setBox] = useState<Box>(() => startingBox(display, aspect))
   const [drag, setDrag] = useState<{ mode: Drag; x: number; y: number } | null>(
     null
   )
@@ -76,11 +90,19 @@ export function CropStage({ image, stage, aspect, onChange }: CropStageProps) {
     setBox((current) =>
       drag.mode.kind === "move"
         ? moveBox(current, dx, dy, display)
-        : resizeBox(current, drag.mode.corner, dx, dy, display, aspect)
+        : resizeBox(current, drag.mode.grip, dx, dy, display, aspect)
     )
   }
 
   const release = () => setDrag(null)
+  const frame = {
+    left: box.x,
+    top: box.y,
+    width: box.width,
+    height: box.height,
+  }
+  // A locked ratio has one degree of freedom, so an edge would fight the corners for it.
+  const grips = aspect === null ? [...CORNERS, ...EDGES] : CORNERS
 
   return (
     <div
@@ -96,18 +118,14 @@ export function CropStage({ image, stage, aspect, onChange }: CropStageProps) {
       <div className="pointer-events-none absolute inset-0 bg-black/55" />
       <div
         className="pointer-events-none absolute overflow-hidden"
-        style={{
-          left: box.x,
-          top: box.y,
-          width: box.width,
-          height: box.height,
-        }}
+        style={frame}
       >
         <img
           src={image.uri}
           alt=""
           draggable={false}
-          className="absolute object-contain"
+          // Preflight caps every image at 100% of its parent, which here is the crop window.
+          className="absolute max-w-none object-contain"
           style={{
             width: stage.width,
             height: stage.height,
@@ -123,24 +141,40 @@ export function CropStage({ image, stage, aspect, onChange }: CropStageProps) {
         onPointerUp={release}
         onPointerCancel={release}
         className="absolute cursor-move border border-white/90"
-        style={{
-          left: box.x,
-          top: box.y,
-          width: box.width,
-          height: box.height,
-        }}
+        style={frame}
       />
 
-      {CORNERS.map((corner) => {
-        const at = cornerAt(corner, box, HANDLE)
+      <div className="pointer-events-none absolute" style={frame}>
+        {THIRDS.map((at) => (
+          <span
+            key={`v${at}`}
+            className="absolute inset-y-0 w-px bg-white/25"
+            style={{ left: `${at * 100}%` }}
+          />
+        ))}
+        {THIRDS.map((at) => (
+          <span
+            key={`h${at}`}
+            className="absolute inset-x-0 h-px bg-white/25"
+            style={{ top: `${at * 100}%` }}
+          />
+        ))}
+      </div>
+
+      {grips.map((grip) => {
+        const at = gripAt(grip, box, HANDLE)
+        const corner = grip.length === 2
         return (
           <div
-            key={corner}
-            onPointerDown={grab({ kind: "corner", corner })}
+            key={grip}
+            onPointerDown={grab({ kind: "grip", grip })}
             onPointerMove={move}
             onPointerUp={release}
             onPointerCancel={release}
-            className="absolute flex cursor-nwse-resize items-center justify-center"
+            className={cn(
+              "absolute flex items-center justify-center",
+              CURSOR[grip]
+            )}
             style={{
               left: at.x,
               top: at.y,
@@ -148,7 +182,12 @@ export function CropStage({ image, stage, aspect, onChange }: CropStageProps) {
               height: at.height,
             }}
           >
-            <span className="size-4 rounded-sm border-2 border-white bg-white/25" />
+            <span
+              className={cn(
+                "rounded-full bg-white shadow",
+                corner ? "size-3.5" : "size-2.5"
+              )}
+            />
           </div>
         )
       })}

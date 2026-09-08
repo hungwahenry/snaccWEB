@@ -40,7 +40,7 @@ export const TEXT_SIZES = [24, 36, 52] as const
 
 export const BLUR_SIGMA = 14
 
-export const HANDLE = 28
+export const HANDLE = 36
 
 export const LINE_HEIGHT = 1.25
 export const TEXT_PAD = 12

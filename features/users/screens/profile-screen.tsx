@@ -32,6 +32,7 @@ import { useSnaccActions } from "@/features/snaccs/hooks/use-snacc-actions"
 import { snaccPath } from "@/features/snaccs/routes"
 import { useViewTracker } from "@/features/views/hooks/use-view-tracker"
 import { useBack } from "@/hooks/use-back"
+import { useScrolledPast } from "@/hooks/use-scrolled-past"
 import { isNotFound } from "@/lib/api/errors"
 import {
   ProfileHeader,
@@ -44,6 +45,8 @@ import { useUserSnaccs } from "../hooks/use-user-snaccs"
 import { followsPath } from "../routes"
 import type { ProfileTab } from "../types"
 import { DEFAULT_PROFILE_TAB, PROFILE_TABS } from "../utils/profile-tabs"
+
+const COVER_DROP = 96
 
 const EMPTY: Record<ProfileTab, string> = {
   snaccs: "No snaccs yet",
@@ -66,6 +69,8 @@ export function ProfileScreen({ username }: { username: string }) {
   const tracker = useViewTracker()
   const lightbox = useLightbox()
   const messageUser = useMessageUser()
+  // The cover runs to the top of the page; the bar only arrives once it has scrolled away.
+  const scrolled = useScrolledPast(COVER_DROP)
 
   const profile = query.data
   const isMe = !!profile && me.data?.id === profile.id
@@ -87,6 +92,7 @@ export function ProfileScreen({ username }: { username: string }) {
       <BackHeader
         title={profile?.display_name ?? profile?.username ?? ""}
         onBack={back}
+        floating={!scrolled}
         right={
           profile ? (
             <IconButton
@@ -114,12 +120,12 @@ export function ProfileScreen({ username }: { username: string }) {
           />
         </div>
       ) : !profile ? (
-        <>
+        <div className="-mt-14">
           <ProfileHeaderSkeleton />
           <SkeletonRows count={5} item={SnaccCardSkeleton} />
-        </>
+        </div>
       ) : (
-        <>
+        <div className="-mt-14">
           <ProfileHeader
             profile={profile}
             tier={tier}
@@ -192,7 +198,7 @@ export function ProfileScreen({ username }: { username: string }) {
             disabled={timeline.loading || timeline.loadingMore}
           />
           <ListFooter loading={timeline.loadingMore} />
-        </>
+        </div>
       )}
 
       <SnaccSheets {...sheets} />

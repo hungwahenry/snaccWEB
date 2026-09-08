@@ -13,6 +13,8 @@ export interface Box extends Size {
 }
 
 export type Corner = "tl" | "tr" | "bl" | "br"
+export type Edge = "t" | "r" | "b" | "l"
+export type Grip = Corner | Edge
 
 const MIN_CROP = 48
 
@@ -75,7 +77,7 @@ export function moveBox(box: Box, dx: number, dy: number, bounds: Box): Box {
 
 export function resizeBox(
   box: Box,
-  corner: Corner,
+  grip: Grip,
   dx: number,
   dy: number,
   bounds: Box,
@@ -83,44 +85,85 @@ export function resizeBox(
 ): Box {
   const right = box.x + box.width
   const bottom = box.y + box.height
-  const holdsLeft = corner === "tr" || corner === "br"
-  const holdsTop = corner === "bl" || corner === "br"
+  const pullsLeft = grip.includes("l")
+  const pullsRight = grip.includes("r")
+  const pullsTop = grip.includes("t")
+  const pullsBottom = grip.includes("b")
 
-  let x = holdsLeft ? box.x : clamp(box.x + dx, bounds.x, right - MIN_CROP)
-  let y = holdsTop ? box.y : clamp(box.y + dy, bounds.y, bottom - MIN_CROP)
-  let width = holdsLeft
-    ? clamp(box.width + dx, MIN_CROP, bounds.x + bounds.width - box.x)
-    : right - x
-  let height = holdsTop
-    ? clamp(box.height + dy, MIN_CROP, bounds.y + bounds.height - box.y)
-    : bottom - y
+  let x = pullsLeft ? clamp(box.x + dx, bounds.x, right - MIN_CROP) : box.x
+  let y = pullsTop ? clamp(box.y + dy, bounds.y, bottom - MIN_CROP) : box.y
+  let width = pullsLeft
+    ? right - x
+    : pullsRight
+      ? clamp(box.width + dx, MIN_CROP, bounds.x + bounds.width - box.x)
+      : box.width
+  let height = pullsTop
+    ? bottom - y
+    : pullsBottom
+      ? clamp(box.height + dy, MIN_CROP, bounds.y + bounds.height - box.y)
+      : box.height
 
   if (aspect !== null) {
-    height = width / aspect
+    // An edge drives the side it cannot see; a corner always drives from the width.
+    if (!pullsLeft && !pullsRight) width = height * aspect
+    else height = width / aspect
 
-    // Whatever the width asked for has to fit; if it cannot, the width gives way instead.
-    const room = holdsTop ? bounds.y + bounds.height - y : bottom - bounds.y
-    if (height > room) {
-      height = room
+    // Whatever was asked for has to fit; if it cannot, the other side gives way instead.
+    const roomDown = pullsTop ? bottom - bounds.y : bounds.y + bounds.height - y
+    if (height > roomDown) {
+      height = roomDown
       width = height * aspect
     }
+    const roomAcross = pullsLeft
+      ? right - bounds.x
+      : bounds.x + bounds.width - x
+    if (width > roomAcross) {
+      width = roomAcross
+      height = width / aspect
+    }
 
-    if (!holdsLeft) x = right - width
-    if (!holdsTop) y = bottom - height
+    if (pullsLeft) x = right - width
+    if (pullsTop) y = bottom - height
+    if (!pullsLeft && !pullsRight)
+      x = clamp(
+        box.x + (box.width - width) / 2,
+        bounds.x,
+        bounds.x + bounds.width - width
+      )
+    if (!pullsTop && !pullsBottom)
+      y = clamp(
+        box.y + (box.height - height) / 2,
+        bounds.y,
+        bounds.y + bounds.height - height
+      )
   }
 
   return { x, y, width, height }
 }
 
-export function cornerAt(corner: Corner, box: Box, handle: number): Box {
-  const left = corner === "tl" || corner === "bl"
-  const top = corner === "tl" || corner === "tr"
+export function gripAt(grip: Grip, box: Box, handle: number): Box {
+  const half = handle / 2
+  const left = grip.includes("l")
+  const right = grip.includes("r")
+  const top = grip.includes("t")
+  const bottom = grip.includes("b")
+
+  const x = left
+    ? box.x - half
+    : right
+      ? box.x + box.width - half
+      : box.x + half
+  const y = top
+    ? box.y - half
+    : bottom
+      ? box.y + box.height - half
+      : box.y + half
 
   return {
-    x: (left ? box.x : box.x + box.width) - handle / 2,
-    y: (top ? box.y : box.y + box.height) - handle / 2,
-    width: handle,
-    height: handle,
+    x,
+    y,
+    width: left || right ? handle : Math.max(box.width - handle, 0),
+    height: top || bottom ? handle : Math.max(box.height - handle, 0),
   }
 }
 

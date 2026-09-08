@@ -6,6 +6,7 @@ import { useBack } from "@/hooks/use-back"
 import { MessageComposer } from "../components/composer/message-composer"
 import { useMessageComposer } from "../hooks/use-message-composer"
 import { useStartConversation } from "../hooks/use-start-conversation"
+import { useVerifiedHandle } from "../hooks/use-verified-handle"
 
 export function NewMessageScreen({
   targetId,
@@ -16,6 +17,7 @@ export function NewMessageScreen({
 }) {
   const back = useBack()
   const start = useStartConversation()
+  const handle = useVerifiedHandle(targetId, username)
   const composer = useMessageComposer({
     onSend: (body) => start.mutate({ targetId, body }),
     sending: start.isPending,
@@ -24,7 +26,7 @@ export function NewMessageScreen({
   return (
     <div className="flex h-dvh flex-col">
       <BackHeader
-        title={username ? `Message @${username}` : "Anonymous message"}
+        title={handle ? `Message @${handle}` : "Anonymous message"}
         onBack={back}
       />
 
