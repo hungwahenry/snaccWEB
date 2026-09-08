@@ -1,3 +1,4 @@
+import { onEarningsWallet } from "@/features/earnings/realtime"
 import { onGhostWindow } from "@/features/ghost/realtime"
 import {
   onConversationRead,
@@ -7,6 +8,12 @@ import {
 } from "@/features/messages/realtime"
 import { onNotification } from "@/features/notifications/realtime"
 import { onScoreChanged } from "@/features/score/realtime"
+import {
+  onMoneyRequest,
+  onVirtualAccount,
+  onWalletBalance,
+  onWithdrawal,
+} from "@/features/wallet/realtime"
 import {
   onSnaccComment,
   onSnaccDeleted,
@@ -31,4 +38,11 @@ export const REALTIME_HANDLERS = {
   "message.updated": onMessageUpdated,
   "conversation.revealed": onConversationRevealed,
   "conversation.read": onConversationRead,
+  wallet: (payload: { balance: number }) => {
+    onEarningsWallet(payload)
+    onWalletBalance(payload)
+  },
+  withdrawal: onWithdrawal,
+  money_request: onMoneyRequest,
+  virtual_account: onVirtualAccount,
 } satisfies Record<string, (payload: never) => void>

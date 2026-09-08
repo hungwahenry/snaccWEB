@@ -38,6 +38,9 @@ export type MessageRowProps = {
   onOpenViewOnce: (message: Message, photo: MessageImage) => void
   onOpenImages: (message: Message, index: number) => void
   openingViewOnce: boolean
+  onOpenMoney?: (transactionId: string) => void
+  onPayRequest?: (request: { id: string; amount: number }) => void
+  payingRequestId?: string | null
 }
 
 function MessageRowComponent({
@@ -55,6 +58,9 @@ function MessageRowComponent({
   onOpenViewOnce,
   onOpenImages,
   openingViewOnce,
+  onOpenMoney,
+  onPayRequest,
+  payingRequestId,
 }: MessageRowProps) {
   const settled = canActOnMessage(message)
   const mine = message.mine
@@ -122,6 +128,9 @@ function MessageRowComponent({
               openingViewOnce={openingViewOnce}
               onRetry={() => onRetry(message)}
               onDiscard={() => onDiscard(message)}
+              onOpenMoney={onOpenMoney}
+              onPayRequest={onPayRequest}
+              payingRequestId={payingRequestId}
             />
           </div>
           {mine ? null : tools}

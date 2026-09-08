@@ -1,8 +1,10 @@
 import type { Metadata } from "next"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import { LandingShell } from "@/components/marketing/landing-shell"
 import { PayEntry } from "@/features/pay/components/pay-entry"
 import { getPublicProfile } from "@/features/users/api/public"
+import { payPath } from "@/features/wallet/routes"
+import { hasSession } from "@/lib/auth-server"
 
 type Props = { params: Promise<{ username: string }> }
 
@@ -38,6 +40,8 @@ export default async function PayPage({ params }: Props) {
   const { username } = await params
   const profile = await getPublicProfile(username)
   if (!profile?.username) notFound()
+  if (await hasSession())
+    redirect(payPath({ mode: "send", to: profile.username }))
 
   return (
     <LandingShell cta="Get Snacc to send and receive money">

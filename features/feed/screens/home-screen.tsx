@@ -17,6 +17,7 @@ import { SnaccSheets } from "@/features/snaccs/components/sheets/snacc-sheets"
 import { SnaccList } from "@/features/snaccs/components/snacc-list"
 import { useSnaccActions } from "@/features/snaccs/hooks/use-snacc-actions"
 import { useViewTracker } from "@/features/views/hooks/use-view-tracker"
+import { MoneyFab } from "@/features/wallet/components/money-fab"
 import { FeedSortMenu } from "../components/feed-sort-menu"
 import { FeedTabs } from "../components/feed-tabs"
 import { NewSnaccsPill } from "../components/new-snaccs-pill"
@@ -46,6 +47,7 @@ export function HomeScreen() {
   const moments = useMomentsStrip()
   const searchEnabled = useFlag("search")
   const messagesEnabled = useFlag("anon_messages")
+  const walletEnabled = useFlag("wallet")
   // When messages are off, Explore already sits in the phone's tab bar; the header stays clean.
   const searchInHeader = searchEnabled && messagesEnabled
 
@@ -134,6 +136,7 @@ export function HomeScreen() {
         onDismiss={screen.closeSortMenu}
       />
       <SnaccSheets {...sheets} />
+      {walletEnabled ? <MoneyFab /> : null}
     </>
   )
 }

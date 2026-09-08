@@ -15,15 +15,22 @@ const REQUEST_STATUS: Record<string, string> = {
   expired: "Expired",
 }
 
-/// Read-only on web: paying a request and opening a receipt live in the app's wallet.
 export function MessageMoney({
   money,
   note,
   mine,
+  onOpen,
+  onPay,
+  paying = false,
 }: {
   money: Money
   note?: string | null
   mine: boolean
+  /** Opens the receipt behind a settled transfer. */
+  onOpen?: () => void
+  /** Pays an open request that was sent to you. */
+  onPay?: () => void
+  paying?: boolean
 }) {
   const request = money.kind === "request"
   const received = !request && !mine
@@ -46,10 +53,12 @@ export function MessageMoney({
   const status = request
     ? (REQUEST_STATUS[money.request?.status ?? ""] ?? money.request?.status)
     : null
-  const payHint = request && !mine && money.request?.status === "pending"
+  const payable =
+    request && !mine && money.request?.status === "pending" && Boolean(onPay)
+  const openable = !request && Boolean(money.transaction_id) && Boolean(onOpen)
 
-  return (
-    <div className="min-w-52 px-4 pt-3 pb-3" aria-label={`${label} ${amount}`}>
+  const body = (
+    <>
       <div className="flex items-center gap-1.5">
         <Icon className={cn("size-3.5", accent)} />
         <span
@@ -80,11 +89,59 @@ export function MessageMoney({
               mine ? "bg-background/20" : "bg-foreground/10"
             )}
           />
-          <p className={cn("mt-2 text-xs font-bold", soft)}>
-            {payHint ? "Pay in the app" : status}
+          <p className={cn("mt-2 text-xs font-bold", payable ? strong : soft)}>
+            {payable ? (paying ? "Paying…" : "Tap to pay") : status}
           </p>
         </>
       ) : null}
+    </>
+  )
+
+  const className = "min-w-52 px-4 pt-3 pb-3 text-left"
+  const aria = `${label} ${amount}`
+
+  if (payable) {
+    return (
+      <button
+        type="button"
+        disabled={paying}
+        onClick={(event) => {
+          event.stopPropagation()
+          onPay?.()
+        }}
+        aria-label={`${aria}. Pay this request`}
+        className={cn(
+          className,
+          "block w-full transition-opacity active:opacity-70"
+        )}
+      >
+        {body}
+      </button>
+    )
+  }
+
+  if (openable) {
+    return (
+      <button
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation()
+          onOpen?.()
+        }}
+        aria-label={`${aria}. Open the receipt`}
+        className={cn(
+          className,
+          "block w-full transition-opacity active:opacity-70"
+        )}
+      >
+        {body}
+      </button>
+    )
+  }
+
+  return (
+    <div className={className} aria-label={aria}>
+      {body}
     </div>
   )
 }

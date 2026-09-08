@@ -17,6 +17,7 @@ import { useToggleFollow } from "@/features/follows/hooks/use-toggle-follow"
 import { useMessageUser } from "@/features/messages/hooks/use-message-user"
 import { momentsPath } from "@/features/moments/routes"
 import { useVisitorSummary } from "@/features/profile-views/hooks/use-visitor-summary"
+import { payPath } from "@/features/wallet/routes"
 import { useLightbox } from "@/providers/lightbox-provider"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { ReportSheet } from "@/features/reports/components/report-sheet"
@@ -140,7 +141,11 @@ export function ProfileScreen({ username }: { username: string }) {
             onMessage={() =>
               messageUser.mutate({ id: profile.id, username: profile.username })
             }
-            onPay={() => router.push(`/pay/${profile.username ?? ""}`)}
+            onPay={() =>
+              router.push(
+                payPath({ mode: "send", to: profile.username ?? undefined })
+              )
+            }
             onEdit={() => router.push("/edit-profile")}
             onOpenAvatar={() =>
               lightbox.open({ images: [{ url: profile.avatar_url }], index: 0 })

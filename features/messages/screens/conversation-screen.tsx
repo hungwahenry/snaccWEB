@@ -1,7 +1,9 @@
 "use client"
 
 import {
+  BanknoteIcon,
   EllipsisIcon,
+  HandCoinsIcon,
   ImageIcon,
   MessageCircleDashedIcon,
   StickerIcon,
@@ -17,6 +19,7 @@ import { GifPickerSheet } from "@/features/giphy/components/gif-picker-sheet"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { ReportSheet } from "@/features/reports/components/report-sheet"
 import { profilePath } from "@/features/users/routes"
+import { TransactionDetailSheet } from "@/features/wallet/components/home/transaction-detail-sheet"
 import { useBack } from "@/hooks/use-back"
 import { MessageComposer } from "../components/composer/message-composer"
 import type { ComposerAction } from "../components/composer/composer-actions-menu"
@@ -72,6 +75,24 @@ export function ConversationScreen({ id }: { id: string }) {
             label: "GIF",
             hint: "Search GIPHY",
             onPress: screen.gifPicker.show,
+          },
+        ]
+      : []),
+    ...(screen.moneyActions && !composer.editing
+      ? [
+          {
+            key: "send",
+            icon: BanknoteIcon,
+            label: "Send money",
+            hint: "From your wallet",
+            onPress: screen.moneyActions.onSendMoney,
+          },
+          {
+            key: "request",
+            icon: HandCoinsIcon,
+            label: "Request money",
+            hint: "Ask for an amount",
+            onPress: screen.moneyActions.onRequestMoney,
           },
         ]
       : []),
@@ -179,6 +200,9 @@ export function ConversationScreen({ id }: { id: string }) {
                     onOpenViewOnce={screen.onOpenViewOnce}
                     onOpenImages={screen.onOpenImages}
                     openingViewOnce={screen.openingViewOnce}
+                    onOpenMoney={screen.onOpenMoney}
+                    onPayRequest={screen.onPayRequest}
+                    payingRequestId={screen.payingRequestId}
                   />
                 ))}
                 {screen.typing ? <TypingIndicator /> : null}
@@ -225,6 +249,7 @@ export function ConversationScreen({ id }: { id: string }) {
       />
       {screen.gifPicker ? <GifPickerSheet {...screen.gifPicker.sheet} /> : null}
       <ReportSheet {...screen.report} />
+      <TransactionDetailSheet {...screen.moneyDetail} />
     </div>
   )
 }

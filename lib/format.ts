@@ -8,6 +8,21 @@ export function formatNaira(kobo: number): string {
   return `₦${(kobo / 100).toLocaleString(LOCALE, { maximumFractionDigits: 2 })}`
 }
 
+export function koboToInput(kobo: number): string {
+  const whole = Math.floor(kobo / 100)
+  const minor = kobo % 100
+  return minor === 0
+    ? String(whole)
+    : `${whole}.${String(minor).padStart(2, "0")}`
+}
+
+export function nairaToKobo(raw: string): number {
+  const [whole = "", fraction = ""] = raw.split(".")
+  if (!/^\d*$/.test(whole) || !/^\d*$/.test(fraction)) return 0
+
+  return Number(whole || "0") * 100 + Number((fraction + "00").slice(0, 2))
+}
+
 export function formatNumber(value: number): string {
   return value.toLocaleString(LOCALE)
 }

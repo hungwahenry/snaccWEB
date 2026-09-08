@@ -6,6 +6,7 @@ import {
   HeartIcon,
   SendHorizontalIcon,
   UserRoundIcon,
+  WalletIcon,
 } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { useMe } from "@/features/auth/hooks/use-me"
@@ -23,6 +24,12 @@ function isActive(pathname: string, href: string, ownProfile: string): boolean {
     return pathname === `/profile/${ownProfile.slice(2)}` || pathname === href
   if (href === "/search")
     return pathname.startsWith("/search") || pathname.startsWith("/hashtag")
+  if (href === "/wallet")
+    return (
+      pathname.startsWith("/wallet") ||
+      pathname.startsWith("/pay") ||
+      pathname === "/earnings"
+    )
   return pathname === href || pathname.startsWith(`${href}/`)
 }
 
@@ -32,6 +39,7 @@ export function useAppNav() {
   const profile = me.data?.profile
   const searchEnabled = useFlag("search")
   const messagesEnabled = useFlag("anon_messages")
+  const walletEnabled = useFlag("wallet")
   const unreadNotifications = useUnreadCount().data ?? 0
   const unreadMessages = useUnreadMessages().data ?? 0
 
@@ -68,6 +76,12 @@ export function useAppNav() {
     icon: SendHorizontalIcon,
     badge: unreadMessages,
   }
+  const money: NavItem = {
+    key: "money",
+    href: "/wallet",
+    label: "Money",
+    icon: WalletIcon,
+  }
   const account: NavItem = {
     key: "profile",
     href: own,
@@ -84,6 +98,7 @@ export function useAppNav() {
     ...(searchEnabled ? [search] : []),
     notifications,
     ...(messagesEnabled ? [messages] : []),
+    ...(walletEnabled ? [money] : []),
     account,
   ]
   const tabItems: NavItem[] = [

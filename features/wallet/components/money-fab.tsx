@@ -1,0 +1,16 @@
+import { WalletIcon } from "lucide-react"
+import Link from "next/link"
+import { WALLET_PATH } from "../routes"
+
+/// The phone's way into the wallet from the feed; the sidebar carries it on wide screens.
+export function MoneyFab() {
+  return (
+    <Link
+      href={WALLET_PATH}
+      aria-label="Open your wallet"
+      className="fixed bottom-24 left-4 z-30 flex h-12 items-center gap-2 rounded-full bg-primary px-5 text-base font-extrabold text-primary-foreground shadow-lg transition-transform active:scale-95 md:hidden"
+    >
+      <WalletIcon className="size-5" /> Money
+    </Link>
+  )
+}

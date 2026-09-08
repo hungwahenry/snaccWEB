@@ -18,7 +18,13 @@ import { useAppNav } from "../hooks/use-app-nav"
 
 // Screens that own the full height of the phone (a chat thread, the composer) take the tab bar's
 // place, the way they push it away in the app.
-const IMMERSIVE = [/^\/messages\/[^/]+/, /^\/compose/, /^\/moments/]
+const IMMERSIVE = [
+  /^\/messages\/[^/]+/,
+  /^\/compose/,
+  /^\/moments/,
+  /^\/wallet/,
+  /^\/pay$/,
+]
 
 function Gate({ children }: { children: ReactNode }) {
   const router = useRouter()

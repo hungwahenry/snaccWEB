@@ -1,67 +1,42 @@
-"use client"
-
 import {
   BanIcon,
   BookmarkIcon,
-  ChevronRightIcon,
+  CoinsIcon,
   DownloadIcon,
   FileTextIcon,
   FlagIcon,
   GhostIcon,
+  HandCoinsIcon,
   HeartIcon,
   InfoIcon,
   MailIcon,
   PaletteIcon,
   ShieldCheckIcon,
   UserRoundIcon,
-  type LucideIcon,
+  WalletIcon,
 } from "lucide-react"
 import Link from "next/link"
-import type { ReactNode } from "react"
 import { Button } from "@/components/ui/button"
 import { confirm } from "@/components/ui/confirm"
-import { Eyebrow } from "@/components/ui/eyebrow"
 import { Spinner } from "@/components/ui/spinner"
 import { useLogout } from "@/features/auth/hooks/use-logout"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { BackHeader } from "@/features/navigation/components/back-header"
+import {
+  EARNINGS_PATH,
+  MONEY_SETTINGS_PATH,
+  WALLET_PATH,
+} from "@/features/wallet/routes"
 import { useBack } from "@/hooks/use-back"
-
-function Section({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="flex flex-col gap-1">
-      <Eyebrow className="px-1 pb-1">{title}</Eyebrow>
-      {children}
-    </section>
-  )
-}
-
-function Row({
-  icon: Icon,
-  label,
-  href,
-}: {
-  icon: LucideIcon
-  label: string
-  href: string
-}) {
-  return (
-    <Link
-      href={href}
-      className="flex items-center gap-3 rounded-2xl py-3.5 transition-colors hover:bg-accent/40 active:opacity-60"
-    >
-      <Icon className="size-5 text-muted-foreground" />
-      <span className="flex-1 text-base text-foreground">{label}</span>
-      <ChevronRightIcon className="size-5 text-muted-foreground" />
-    </Link>
-  )
-}
+import { Row, Section } from "../components/rows"
 
 export function SettingsScreen() {
   const back = useBack()
   const logout = useLogout()
   const messagesEnabled = useFlag("anon_messages")
   const accentsEnabled = useFlag("accent_colors")
+  const earningsEnabled = useFlag("earnings")
+  const walletEnabled = useFlag("wallet")
 
   function confirmLogout() {
     confirm({
@@ -78,6 +53,23 @@ export function SettingsScreen() {
       <BackHeader title="Settings" onBack={back} />
 
       <div className="flex flex-col gap-5 px-6 py-6">
+        {earningsEnabled || walletEnabled ? (
+          <Section title="Money">
+            {earningsEnabled && walletEnabled ? (
+              <Row icon={CoinsIcon} label="Monetisation" href={EARNINGS_PATH} />
+            ) : null}
+            {walletEnabled ? (
+              <Row
+                icon={HandCoinsIcon}
+                label="Money settings"
+                href={MONEY_SETTINGS_PATH}
+              />
+            ) : (
+              <Row icon={WalletIcon} label="Wallet" href={WALLET_PATH} />
+            )}
+          </Section>
+        ) : null}
+
         <Section title="Content">
           <Row icon={BookmarkIcon} label="Saved snaccs" href="/saved" />
           {accentsEnabled ? (

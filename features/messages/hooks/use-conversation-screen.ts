@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { useCallback, useMemo, useState, type RefObject } from "react"
 import { confirm } from "@/components/ui/confirm"
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
@@ -7,6 +8,9 @@ import { useFlag } from "@/features/config/hooks/use-flag"
 import { useGifPicker } from "@/features/giphy/hooks/use-gif-picker"
 import { useLightbox } from "@/providers/lightbox-provider"
 import { useReportSheet } from "@/features/reports/hooks/use-report-sheet"
+import { useTransactionDetail } from "@/features/wallet/hooks/history/use-transaction-detail"
+import { useRequestActions } from "@/features/wallet/hooks/requests/use-request-actions"
+import { payPath } from "@/features/wallet/routes"
 import { isNotFound } from "@/lib/api/errors"
 import {
   discardMessage,
@@ -53,6 +57,14 @@ export function useConversationScreen(
   )
   const editingEnabled = useFlag("message_editing")
   const gifsEnabled = useFlag("message_gifs")
+  const walletEnabled = useFlag("wallet")
+  const router = useRouter()
+  const requestActions = useRequestActions({ enabled: walletEnabled })
+  const [moneyDetailId, setMoneyDetailId] = useState<string | null>(null)
+  const [moneyDetailOpen, setMoneyDetailOpen] = useState(false)
+  const moneyDetail = useTransactionDetail(
+    moneyDetailOpen ? moneyDetailId : null
+  )
 
   const [active, setActive] = useState<Message | null>(null)
   const [actionsOpen, setActionsOpen] = useState(false)
@@ -134,6 +146,21 @@ export function useConversationScreen(
       photo.open({ messageId: message.id, photo: image }),
     [photo.open] // eslint-disable-line react-hooks/exhaustive-deps
   )
+
+  const otherUsername = other?.username ?? null
+  const moneyActions =
+    walletEnabled && otherUsername
+      ? {
+          onSendMoney: () =>
+            router.push(
+              payPath({ mode: "send", to: otherUsername, conversation: id })
+            ),
+          onRequestMoney: () =>
+            router.push(
+              payPath({ mode: "request", to: otherUsername, conversation: id })
+            ),
+        }
+      : null
 
   return {
     conversation: data ?? null,
@@ -229,5 +256,25 @@ export function useConversationScreen(
 
     menu,
     report: report.sheet,
+
+    moneyActions,
+    onOpenMoney: (transactionId: string) => {
+      setMoneyDetailId(transactionId)
+      setMoneyDetailOpen(true)
+    },
+    onPayRequest: requestActions.pay,
+    payingRequestId: requestActions.busyId,
+    moneyDetail: {
+      open: moneyDetailOpen,
+      onOpenChange: setMoneyDetailOpen,
+      detail: moneyDetail.data ?? null,
+      loading: moneyDetail.isLoading,
+      failed: moneyDetail.isError,
+      onRetry: () => void moneyDetail.refetch(),
+      onSendAgain: (username: string) => {
+        setMoneyDetailOpen(false)
+        router.push(payPath({ mode: "send", to: username, conversation: id }))
+      },
+    },
   }
 }

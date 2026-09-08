@@ -27,6 +27,9 @@ export type MessageBubbleProps = {
   openingViewOnce: boolean
   onRetry: () => void
   onDiscard: () => void
+  onOpenMoney?: (transactionId: string) => void
+  onPayRequest?: (request: { id: string; amount: number }) => void
+  payingRequestId?: string | null
 }
 
 export function MessageBubble({
@@ -38,6 +41,9 @@ export function MessageBubble({
   openingViewOnce,
   onRetry,
   onDiscard,
+  onOpenMoney,
+  onPayRequest,
+  payingRequestId,
 }: MessageBubbleProps) {
   const mine = message.mine
   const shownBody = message.body ? withoutShareLinks(message.body) : null
@@ -119,6 +125,23 @@ export function MessageBubble({
                     money={money}
                     note={message.removed ? null : message.body}
                     mine={mine}
+                    onOpen={
+                      money.transaction_id && onOpenMoney
+                        ? () => onOpenMoney(money.transaction_id!)
+                        : undefined
+                    }
+                    onPay={
+                      money.request && onPayRequest
+                        ? () =>
+                            onPayRequest({
+                              id: money.request!.id,
+                              amount: money.amount,
+                            })
+                        : undefined
+                    }
+                    paying={
+                      !!money.request && payingRequestId === money.request.id
+                    }
                   />
                 ) : null}
 
