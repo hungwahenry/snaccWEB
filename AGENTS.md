@@ -19,3 +19,18 @@ Every folder under `features/` (the public app; `features/admin/*` for the admin
 - Allowed at the slice root only: `routes.ts` (path builders), `realtime.ts` (socket handlers), `cache/` (query-cache patchers, snaccs only) and generated files.
 
 App-wide providers live in `providers/`, shared hooks in `hooks/`, shared primitives in `components/ui/`.
+
+# The admin panel is a known exception
+
+`features/admin/*` follows the slice shape above for `api`/`types`/`hooks`/`components`, but deviates in four
+ways. This is a deliberate, deferred choice, not a pattern to copy: a full refactor is planned once the web
+app has shipped. Do not extend the deviations, and do not patch around them piecemeal.
+
+- No `screens/`. The page under `app/admin/(panel)/` does the composition, and ten of them hold their own
+  query params in `useState` rather than in a `use-*-screen` hook.
+- No server gating. Every admin page is `"use client"` and nothing reads a cookie on the server, so the shell
+  prerenders at build time and anyone can fetch it. The backend is the real gate; the client guards are
+  cosmetic.
+- Admin-only modules live in shared roots: `components/app-sidebar.tsx`, `components/auth-guard.tsx`,
+  `components/rbac/` and `lib/nav.ts` all belong under `features/admin/`.
+- The panel has its own session cookie (`snacc_admin_token`) and login, separate from the app's.
