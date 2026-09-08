@@ -15,7 +15,7 @@ export function NavAvatar({
   return (
     <span
       className={cn(
-        "rounded-full border-2",
+        "inline-flex rounded-full border-2",
         active ? "border-foreground" : "border-transparent",
         className
       )}
