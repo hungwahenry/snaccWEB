@@ -1,3 +1,4 @@
+import { ComposerBar } from "@/components/ui/composer-bar"
 import { XIcon } from "lucide-react"
 import type { ReactNode } from "react"
 import { Button } from "@/components/ui/button"
@@ -38,9 +39,7 @@ export function MomentTextShell({
         {children}
       </div>
 
-      <div className="sticky bottom-0 z-20 border-t border-border bg-background pb-[env(safe-area-inset-bottom)]">
-        {bar}
-      </div>
+      <ComposerBar>{bar}</ComposerBar>
     </div>
   )
 }

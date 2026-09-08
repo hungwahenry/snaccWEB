@@ -1,5 +1,6 @@
 "use client"
 
+import { ComposerBar } from "@/components/ui/composer-bar"
 import { ComposerFrame } from "@/features/snaccs/components/composer/composer-frame"
 import { ComposerHeader } from "@/features/snaccs/components/composer/composer-header"
 import { MomentComposeBar } from "../components/composer/moment-compose-bar"
@@ -61,9 +62,7 @@ export function MomentComposeScreen() {
         </ComposerFrame>
       </div>
 
-      <div className="sticky bottom-0 z-20 border-t border-border bg-background pb-[env(safe-area-inset-bottom)]">
-        {bar}
-      </div>
+      <ComposerBar>{bar}</ComposerBar>
     </div>
   )
 }

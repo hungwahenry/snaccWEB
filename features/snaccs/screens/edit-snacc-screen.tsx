@@ -1,5 +1,6 @@
 "use client"
 
+import { ComposerBar } from "@/components/ui/composer-bar"
 import { MessageSquareDashedIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -61,7 +62,7 @@ function Editor({ snacc }: { snacc: Snacc }) {
         </ComposerFrame>
       </div>
 
-      <div className="sticky bottom-0 z-20 border-t border-border bg-background">
+      <ComposerBar>
         <ComposerAttachments
           images={editor.images}
           gif={editor.gif}
@@ -93,7 +94,7 @@ function Editor({ snacc }: { snacc: Snacc }) {
             </Button>
           }
         />
-      </div>
+      </ComposerBar>
       <ImageEditorSheet {...editor.imageEditor} />
     </div>
   )

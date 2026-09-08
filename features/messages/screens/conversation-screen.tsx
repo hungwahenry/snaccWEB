@@ -22,6 +22,7 @@ import { StickerTraySheet } from "@/features/stickers/components/sticker-tray-sh
 import { profilePath } from "@/features/users/routes"
 import { TransactionDetailSheet } from "@/features/wallet/components/home/transaction-detail-sheet"
 import { useBack } from "@/hooks/use-back"
+import { useKeyboardInset } from "@/hooks/use-keyboard-inset"
 import { MessageComposer } from "../components/composer/message-composer"
 import type { ComposerAction } from "../components/composer/composer-actions-menu"
 import { MessageAvatar } from "../components/conversations/message-avatar"
@@ -42,6 +43,7 @@ export function ConversationScreen({ id }: { id: string }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const screen = useConversationScreen(id, { scrollRef, inputRef })
+  const keyboard = useKeyboardInset()
   const { conversation, messages } = screen
 
   const composer = useMessageComposer({
@@ -102,7 +104,11 @@ export function ConversationScreen({ id }: { id: string }) {
   ]
 
   return (
-    <div className="flex h-dvh flex-col">
+    <div
+      // Shrinks with the keyboard so the composer sits above it and the thread stays visible.
+      style={{ height: `calc(100dvh - ${keyboard}px)` }}
+      className="flex flex-col"
+    >
       <BackHeader
         title={screen.title}
         subtitle={screen.otherUsername ? `@${screen.otherUsername}` : undefined}

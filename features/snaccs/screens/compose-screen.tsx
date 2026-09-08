@@ -1,5 +1,6 @@
 "use client"
 
+import { ComposerBar } from "@/components/ui/composer-bar"
 import { FileTextIcon, GhostIcon } from "lucide-react"
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
@@ -140,7 +141,7 @@ function ComposeBody({
         </div>
       </div>
 
-      <div className="sticky bottom-0 z-20 border-t border-border bg-background pb-[env(safe-area-inset-bottom)]">
+      <ComposerBar>
         {composer.typeahead.open ? (
           <ComposerSuggestions
             suggestions={composer.typeahead.suggestions}
@@ -196,7 +197,7 @@ function ComposeBody({
             </Button>
           }
         />
-      </div>
+      </ComposerBar>
 
       <StickerTraySheet {...composer.stickerTray} />
       <StickerCreator {...composer.stickerCreator} />
