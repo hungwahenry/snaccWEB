@@ -22,6 +22,9 @@ export interface NewPoster {
 
 const POSTERS_SHOWN = 3
 
+type SortMenu = { open: boolean; anchor: HTMLElement | null }
+const CLOSED: SortMenu = { open: false, anchor: null }
+
 export function useFeedScreen() {
   const [scope, setScope] = useState<FeedScope>(DEFAULT_FEED_SCOPE)
   // Lazy so the remembered choice is read once; this screen only ever mounts in the browser.
@@ -30,7 +33,7 @@ export function useFeedScreen() {
   )
   const [hasNew, setHasNew] = useState(false)
   const [newPosters, setNewPosters] = useState<NewPoster[]>([])
-  const [sortMenuOpen, setSortMenuOpen] = useState(false)
+  const [sortMenu, setSortMenu] = useState<SortMenu>(CLOSED)
 
   const followingEnabled = useFlag("feed_following")
   const globalEnabled = useFlag("feed_global")
@@ -75,7 +78,7 @@ export function useFeedScreen() {
   }
 
   const pickScope = useCallback((next: FeedScope) => {
-    setSortMenuOpen(false)
+    setSortMenu(CLOSED)
     setScope((current) => {
       if (next === current) return current
       signal("feed_scope", { detail: next })
@@ -86,7 +89,7 @@ export function useFeedScreen() {
 
   const pickSort = useCallback(
     (next: FeedSort) => {
-      setSortMenuOpen(false)
+      setSortMenu(CLOSED)
       setSort((current) => {
         if (next === current) return current
         rememberFeedSort(next)
@@ -110,13 +113,13 @@ export function useFeedScreen() {
     sortable,
     hasNew,
     newPosters,
-    sortMenuOpen,
+    sortMenu,
     tabs: { following: followingEnabled, global: globalEnabled },
     feed,
     pickScope,
     pickSort,
-    openSortMenu: () => setSortMenuOpen(true),
-    setSortMenuOpen,
+    openSortMenu: (anchor: HTMLElement) => setSortMenu({ open: true, anchor }),
+    closeSortMenu: () => setSortMenu(CLOSED),
     refresh,
   }
 }

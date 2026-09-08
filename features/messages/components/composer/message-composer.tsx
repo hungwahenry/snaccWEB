@@ -1,5 +1,5 @@
 import { ArrowUpIcon, CheckIcon } from "lucide-react"
-import type { RefObject } from "react"
+import { useCallback, useState, type RefObject } from "react"
 import { Spinner } from "@/components/ui/spinner"
 import type { PickedImage } from "@/lib/media"
 import { cn } from "@/lib/utils"
@@ -11,6 +11,9 @@ import {
 import { ComposerContextRow } from "./composer-context-row"
 import { MessageDraftImages } from "./message-draft-images"
 import { ViewOnceToggle } from "./view-once-toggle"
+
+/// One line of text at rest; past this the pill squares off, as on the phone.
+const INPUT_REST_HEIGHT = 36
 
 export type MessageComposerProps = {
   inputRef?: RefObject<HTMLTextAreaElement | null>
@@ -53,6 +56,15 @@ export function MessageComposer({
 }: MessageComposerProps) {
   const showDrafts = images.length > 0 && Boolean(onRemoveImage)
   const showViewOnce = images.length === 1 && Boolean(onToggleViewOnce)
+  const [tall, setTall] = useState(false)
+  const watchHeight = useCallback((node: HTMLTextAreaElement | null) => {
+    if (!node) return
+    const observer = new ResizeObserver(([entry]) =>
+      setTall(entry.contentRect.height > INPUT_REST_HEIGHT + 2)
+    )
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <div className="border-t border-border bg-background px-3 py-2 pb-[max(env(safe-area-inset-bottom),8px)]">
@@ -83,9 +95,17 @@ export function MessageComposer({
       >
         {actions.length > 0 ? <ComposerActionsMenu actions={actions} /> : null}
 
-        <div className="flex min-h-11 flex-1 items-end gap-2 rounded-3xl bg-input py-1 pr-1 pl-4">
+        <div
+          className={cn(
+            "flex min-h-14 flex-1 items-end gap-3 bg-input py-1.5 pr-1.5 pl-5",
+            tall ? "rounded-2xl" : "rounded-full"
+          )}
+        >
           <textarea
-            ref={inputRef}
+            ref={(node) => {
+              watchHeight(node)
+              if (inputRef) inputRef.current = node
+            }}
             value={body}
             rows={1}
             maxLength={maxLength}
@@ -101,25 +121,27 @@ export function MessageComposer({
                 onSend()
               }
             }}
-            className="field-sizing-content max-h-32 min-h-9 flex-1 resize-none self-center bg-transparent py-2 text-base leading-5 text-foreground outline-none placeholder:text-muted-foreground/50"
+            className="field-sizing-content max-h-32 flex-1 resize-none self-center bg-transparent py-2 text-base leading-5 text-foreground outline-none placeholder:text-muted-foreground/50"
+            style={{ minHeight: INPUT_REST_HEIGHT }}
           />
           <button
             type="submit"
             disabled={!canSend}
             aria-label={editing ? "Save edit" : "Send"}
             className={cn(
-              "flex size-9 shrink-0 items-center justify-center rounded-full transition-colors",
+              "flex size-11 shrink-0 items-center justify-center rounded-full transition-colors",
               canSend || sending
                 ? "bg-primary text-primary-foreground hover:opacity-90"
-                : "bg-muted text-muted-foreground"
+                : "bg-muted text-muted-foreground",
+              tall && "mb-1.5"
             )}
           >
             {sending ? (
-              <Spinner />
+              <Spinner className="size-5" />
             ) : editing ? (
-              <CheckIcon className="size-5" />
+              <CheckIcon className="size-6" />
             ) : (
-              <ArrowUpIcon className="size-5" />
+              <ArrowUpIcon className="size-6" />
             )}
           </button>
         </div>

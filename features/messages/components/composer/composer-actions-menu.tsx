@@ -1,10 +1,8 @@
+"use client"
+
 import { PlusIcon, type LucideIcon } from "lucide-react"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { useState } from "react"
+import { ActionSheet, ActionSheetChoice } from "@/components/ui/action-sheet"
 
 export interface ComposerAction {
   key: string
@@ -19,31 +17,35 @@ export function ComposerActionsMenu({
 }: {
   actions: ComposerAction[]
 }) {
+  const [open, setOpen] = useState(false)
+
+  function select(action: ComposerAction) {
+    setOpen(false)
+    action.onPress()
+  }
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
         aria-label="Add to message"
-        className="flex size-11 shrink-0 items-center justify-center rounded-full bg-input text-foreground transition-colors hover:bg-accent"
+        className="flex size-14 shrink-0 items-center justify-center rounded-full bg-input text-foreground transition-colors hover:bg-accent active:opacity-60"
       >
         <PlusIcon className="size-6" />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent side="top" align="start" className="min-w-56">
+      </button>
+
+      <ActionSheet open={open} onOpenChange={setOpen} title="Add to message">
         {actions.map((action) => (
-          <DropdownMenuItem
+          <ActionSheetChoice
             key={action.key}
-            onClick={action.onPress}
-            className="items-start py-2.5"
-          >
-            <action.icon className="mt-0.5" />
-            <span className="flex flex-col">
-              <span className="font-bold">{action.label}</span>
-              <span className="text-xs font-normal text-muted-foreground">
-                {action.hint}
-              </span>
-            </span>
-          </DropdownMenuItem>
+            icon={action.icon}
+            label={action.label}
+            hint={action.hint}
+            onPress={() => select(action)}
+          />
         ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </ActionSheet>
+    </>
   )
 }

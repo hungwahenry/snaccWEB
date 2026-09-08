@@ -85,7 +85,7 @@ function Shell({ children }: { children: ReactNode }) {
       tabBar={
         immersive ? null : (
           <BottomTabBar
-            items={nav.items}
+            items={nav.tabItems}
             activeKey={nav.activeKey}
             ghostActive={ghost.active}
             onCompose={openCompose}

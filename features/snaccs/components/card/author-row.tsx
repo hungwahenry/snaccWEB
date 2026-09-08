@@ -24,6 +24,7 @@ export function AuthorRow({
       ) : (
         <ProfileLink
           username={author.username}
+          fromSnaccId={snacc.id}
           className="flex min-w-0 shrink items-center gap-1.5 hover:underline"
         >
           <TierName

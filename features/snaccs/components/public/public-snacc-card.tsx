@@ -12,7 +12,7 @@ import { compactCount, timeAgo } from "@/lib/format"
 import { richText } from "@/lib/rich-text"
 import { AuthorBadges } from "@/features/users/components/public/author-badges"
 import type { PublicQuotedSnacc, PublicSnacc } from "../../api/public"
-import { VoiceNote } from "./voice-note"
+import { VoiceNotePlayer } from "@/features/voice/components/voice-note-player"
 
 export function PublicSnaccCard({
   snacc,
@@ -108,10 +108,14 @@ export function PublicSnaccCard({
           }}
         />
       ) : snacc.voice ? (
-        <div className="ml-14">
-          <VoiceNote
-            url={snacc.voice.url}
-            durationMs={snacc.voice.duration_ms}
+        <div className="ml-14 rounded-2xl border border-border px-3 py-2">
+          <VoiceNotePlayer
+            note={{
+              id: snacc.id,
+              url: snacc.voice.url,
+              duration_ms: snacc.voice.duration_ms,
+            }}
+            fill
           />
         </div>
       ) : snacc.poll ? (

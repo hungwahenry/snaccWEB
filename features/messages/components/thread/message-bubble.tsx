@@ -1,19 +1,22 @@
 import { LinkPreviews } from "@/features/links/containers/link-previews"
-import { VoiceNote } from "@/features/snaccs/components/card/media/voice-note"
+import { StickerAttachmentView } from "@/features/stickers/components/sticker-attachment-view"
+import { VoiceNotePlayer } from "@/features/voice/components/voice-note-player"
 import { withoutShareLinks } from "@/lib/share-links"
 import { cn } from "@/lib/utils"
 import type { Message, MessageGif, MessageImage } from "../../types"
 import { shownImagesOf, viewOnceOf } from "../../utils/images"
 import { removedLabel, replyPreview } from "../../utils/preview"
+import { BubbleTail, TAIL_DROP, TAIL_REACH } from "./bubble-tail"
 import { MessageImages } from "./message-images"
 import { MessageMoney } from "./message-money"
 import { QuotedMomentCard } from "./quoted-moment"
 import { ViewOnceCard } from "./view-once-card"
 
+const REACTION_CLEARANCE = TAIL_REACH + 8
+const STICKER_SIZE = 140
 const GIF_WIDTH = 220
 const GIF_MIN_RATIO = 3 / 4
 const GIF_MAX_RATIO = 16 / 9
-const STICKER_SIZE = 140
 
 export type MessageBubbleProps = {
   message: Message
@@ -58,143 +61,159 @@ export function MessageBubble({
     ? cn(!firstInBurst && "rounded-tr-md", !lastInBurst && "rounded-br-md")
     : cn(!firstInBurst && "rounded-tl-md", !lastInBurst && "rounded-bl-md")
 
+  const tail = bubbled && lastInBurst && message.status !== "failed"
+
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-1",
-        mine ? "items-end" : "items-start",
-        message.status === "sending" && "opacity-60"
-      )}
-    >
-      {shown.length > 0 ? (
-        <MessageImages images={shown} onPressImage={onPressImage} />
-      ) : null}
-
-      {message.removed || !message.sticker ? null : (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={message.sticker.url}
-          alt="Sticker"
-          style={{ height: STICKER_SIZE }}
-          className="object-contain"
-        />
-      )}
-
-      {message.removed || !message.gif ? null : (
-        <MessageGifView gif={message.gif} />
-      )}
-
-      {bubbled ? (
+    <div className={cn("flex flex-col", mine ? "items-end" : "items-start")}>
+      <div
+        className={cn("flex flex-col", mine ? "items-end" : "items-start")}
+        style={{
+          [mine ? "paddingRight" : "paddingLeft"]: TAIL_REACH,
+          paddingBottom: tail ? TAIL_DROP : undefined,
+        }}
+      >
         <div
           className={cn(
-            "overflow-hidden rounded-2xl",
-            corners,
-            mine ? "bg-primary" : "bg-muted"
+            "flex flex-col gap-1",
+            mine ? "items-end" : "items-start",
+            message.status === "sending" && "opacity-60"
           )}
         >
-          {viewOnce ? (
-            <ViewOnceCard
-              photo={viewOnce}
-              mine={mine}
-              opening={openingViewOnce}
-              onPress={() => onOpenViewOnce(viewOnce)}
+          {shown.length > 0 ? (
+            <MessageImages images={shown} onPressImage={onPressImage} />
+          ) : null}
+
+          {message.removed || !message.sticker ? null : (
+            <StickerAttachmentView
+              sticker={message.sticker}
+              size={STICKER_SIZE}
             />
-          ) : null}
+          )}
 
-          {money ? (
-            <MessageMoney
-              money={money}
-              note={message.removed ? null : message.body}
-              mine={mine}
-            />
-          ) : null}
+          {message.removed || !message.gif ? null : (
+            <MessageGifView gif={message.gif} />
+          )}
 
-          {message.moment ? (
-            <QuotedMomentCard moment={message.moment} mine={mine} />
-          ) : null}
+          {bubbled ? (
+            <div className="relative">
+              {tail ? <BubbleTail mine={mine} /> : null}
 
-          {message.reply_to ? (
-            <p
-              className={cn(
-                "line-clamp-2 px-3.5 pt-2.5 text-xs",
-                message.reply_to.removed && "italic",
-                mine ? "text-primary-foreground/55" : "text-muted-foreground"
-              )}
-            >
-              {replyPreview(message.reply_to)}
-            </p>
-          ) : null}
-
-          {voice ? (
-            <div
-              className={cn(
-                "px-3 pt-3",
-                message.reply_to && "pt-1.5",
-                hasText ? "pb-1" : "pb-3"
-              )}
-            >
-              <VoiceNote
-                url={voice.url}
-                durationMs={voice.duration_ms}
-                tone={mine ? "inverted" : "default"}
-              />
-            </div>
-          ) : null}
-
-          {hasText ? (
-            <div
-              className={cn(
-                "px-3.5 pb-2.5",
-                message.reply_to || message.moment || voice
-                  ? "pt-1.5"
-                  : "pt-2.5"
-              )}
-            >
-              {message.removed ? (
-                <p
-                  className={cn(
-                    "text-base leading-6 italic",
-                    mine
-                      ? "text-primary-foreground/60"
-                      : "text-muted-foreground"
-                  )}
-                >
-                  {removedLabel(message)}
-                </p>
-              ) : (
-                <>
-                  {shownBody ? (
-                    <p
-                      className={cn(
-                        "text-base leading-6 break-words whitespace-pre-wrap",
-                        mine ? "text-primary-foreground" : "text-foreground"
-                      )}
-                    >
-                      {shownBody}
-                    </p>
-                  ) : null}
-                  <LinkPreviews
-                    body={message.body}
-                    className={cn("w-64 max-w-full", shownBody && "mt-1.5")}
+              <div
+                className={cn(
+                  "overflow-hidden rounded-2xl",
+                  corners,
+                  mine ? "bg-primary" : "bg-muted"
+                )}
+              >
+                {viewOnce ? (
+                  <ViewOnceCard
+                    photo={viewOnce}
+                    mine={mine}
+                    opening={openingViewOnce}
+                    onPress={() => onOpenViewOnce(viewOnce)}
                   />
-                  {message.edited ? (
-                    <p
-                      className={cn(
-                        "mt-0.5 text-[11px]",
-                        mine
-                          ? "text-primary-foreground/50"
-                          : "text-muted-foreground"
-                      )}
-                    >
-                      Edited
-                    </p>
-                  ) : null}
-                </>
-              )}
+                ) : null}
+
+                {money ? (
+                  <MessageMoney
+                    money={money}
+                    note={message.removed ? null : message.body}
+                    mine={mine}
+                  />
+                ) : null}
+
+                {message.moment ? (
+                  <QuotedMomentCard moment={message.moment} mine={mine} />
+                ) : null}
+
+                {message.reply_to ? (
+                  <p
+                    className={cn(
+                      "line-clamp-2 px-3.5 pt-2.5 text-xs",
+                      message.reply_to.removed && "italic",
+                      mine
+                        ? "text-primary-foreground/55"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {replyPreview(message.reply_to)}
+                  </p>
+                ) : null}
+
+                {voice ? (
+                  <div
+                    className={cn(
+                      "px-3 pt-3",
+                      message.reply_to && "pt-1.5",
+                      hasText ? "pb-1" : "pb-3"
+                    )}
+                  >
+                    <VoiceNotePlayer note={voice} onDark={mine} />
+                  </div>
+                ) : null}
+
+                {hasText ? (
+                  <div
+                    className={cn(
+                      "px-3.5 pb-2.5",
+                      message.reply_to || message.moment || voice
+                        ? "pt-1.5"
+                        : "pt-2.5"
+                    )}
+                  >
+                    {message.removed ? (
+                      <p
+                        className={cn(
+                          "text-base leading-6 italic",
+                          mine
+                            ? "text-primary-foreground/60"
+                            : "text-muted-foreground"
+                        )}
+                      >
+                        {removedLabel(message)}
+                      </p>
+                    ) : (
+                      <>
+                        {shownBody ? (
+                          <p
+                            className={cn(
+                              "text-base leading-6 break-words whitespace-pre-wrap",
+                              mine
+                                ? "text-primary-foreground"
+                                : "text-foreground"
+                            )}
+                          >
+                            {shownBody}
+                          </p>
+                        ) : null}
+                        <LinkPreviews
+                          body={message.body}
+                          className={cn(
+                            "w-64 max-w-full",
+                            shownBody && "mt-1.5"
+                          )}
+                        />
+                        {message.edited ? (
+                          <p
+                            className={cn(
+                              "mt-0.5 text-[11px]",
+                              mine
+                                ? "text-primary-foreground/50"
+                                : "text-muted-foreground"
+                            )}
+                          >
+                            Edited
+                          </p>
+                        ) : null}
+                      </>
+                    )}
+                  </div>
+                ) : null}
+              </div>
             </div>
           ) : null}
         </div>
-      ) : null}
+      </div>
 
       {message.status === "failed" ? (
         <div className="mt-1 flex items-center gap-3 pr-1 text-[11px]">
@@ -220,14 +239,17 @@ export function MessageBubble({
         <div
           className={cn(
             "-mt-2 flex gap-1",
-            mine ? "justify-end pr-3" : "justify-start pl-3"
+            mine ? "justify-end" : "justify-start"
           )}
+          style={{
+            [mine ? "paddingRight" : "paddingLeft"]: REACTION_CLEARANCE,
+          }}
         >
           {message.reactions.map((reaction) => (
             <span
               key={`${reaction.emoji}-${String(reaction.mine)}`}
               className={cn(
-                "rounded-full border bg-background px-1.5 py-0.5 text-xs",
+                "animate-in rounded-full border bg-background px-1.5 py-0.5 text-xs duration-200 zoom-in-50 fade-in",
                 reaction.mine ? "border-foreground/40" : "border-border"
               )}
             >

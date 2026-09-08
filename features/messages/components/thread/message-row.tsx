@@ -1,3 +1,5 @@
+"use client"
+
 import {
   CheckCheckIcon,
   CheckIcon,
@@ -6,6 +8,7 @@ import {
 } from "lucide-react"
 import { memo } from "react"
 import { ReactionPicker } from "@/features/reactions/components/reaction-picker"
+import { useLongPress } from "@/hooks/use-long-press"
 import { cn } from "@/lib/utils"
 import type { Message, MessageImage } from "../../types"
 import { canActOnMessage } from "../../utils/editing"
@@ -55,34 +58,38 @@ function MessageRowComponent({
 }: MessageRowProps) {
   const settled = canActOnMessage(message)
   const mine = message.mine
+  const longPress = useLongPress(
+    settled ? () => onOpenActions(message) : undefined
+  )
 
+  // Sits inboard of the bubble on both sides, as on the phone, so neither edge of the thread
+  // gets ragged. A finger sees the reaction trigger and long-presses for the rest; a mouse gets
+  // everything on hover.
   const tools = settled ? (
-    <span
-      className={cn(
-        "flex shrink-0 items-center gap-0.5 self-center transition-opacity md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100"
-      )}
-    >
+    <span className="flex shrink-0 items-center gap-0.5 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100 md:has-[[data-popup-open]]:opacity-100">
       <ReactionPicker
         mine={myReaction(message)}
         onSelect={(emoji) => onReact(message, emoji)}
         align={mine ? "end" : "start"}
       />
-      <button
-        type="button"
-        onClick={() => onReply(message)}
-        aria-label="Reply"
-        className="flex size-8 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
-      >
-        <ReplyIcon className="size-4" />
-      </button>
-      <button
-        type="button"
-        onClick={() => onOpenActions(message)}
-        aria-label="Message options"
-        className="flex size-8 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
-      >
-        <EllipsisIcon className="size-4" />
-      </button>
+      <span className="hidden items-center gap-0.5 md:flex">
+        <button
+          type="button"
+          onClick={() => onReply(message)}
+          aria-label="Reply"
+          className="flex size-8 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
+        >
+          <ReplyIcon className="size-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => onOpenActions(message)}
+          aria-label="Message options"
+          className="flex size-8 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
+        >
+          <EllipsisIcon className="size-4" />
+        </button>
+      </span>
     </span>
   ) : null
 
@@ -97,12 +104,15 @@ function MessageRowComponent({
       >
         <div
           className={cn(
-            "flex items-end gap-1",
+            "flex items-center gap-1",
             mine ? "justify-end" : "justify-start"
           )}
         >
           {mine ? tools : null}
-          <div className="max-w-[80%] shrink">
+          <div
+            {...longPress}
+            className="max-w-[80%] min-w-0 shrink [@media(pointer:coarse)]:select-none [@media(pointer:coarse)]:[-webkit-touch-callout:none]"
+          >
             <MessageBubble
               message={message}
               firstInBurst={firstInBurst}

@@ -1,9 +1,9 @@
-import { aspectRatio } from "@/lib/aspect"
+import { StickerAttachmentView } from "@/features/stickers/components/sticker-attachment-view"
+import { VoiceNotePlayer } from "@/features/voice/components/voice-note-player"
 import type { Snacc } from "../../../types"
 import { PollView, type PollViewProps } from "../poll-view"
 import { SnaccGifView } from "./snacc-gif"
 import { SnaccImages } from "./snacc-images"
-import { VoiceNote } from "./voice-note"
 
 const STICKER_SIZE = 160
 
@@ -44,7 +44,9 @@ export function SnaccMedia({ snacc, onPressImage, poll }: SnaccMediaProps) {
       ) : null}
 
       {snacc.voice ? (
-        <VoiceNote url={snacc.voice.url} durationMs={snacc.voice.duration_ms} />
+        <div className="rounded-2xl border border-border px-3 py-2">
+          <VoiceNotePlayer note={snacc.voice} fill />
+        </div>
       ) : null}
 
       <SnaccImages
@@ -63,16 +65,7 @@ export function SnaccMedia({ snacc, onPressImage, poll }: SnaccMediaProps) {
       ) : null}
 
       {snacc.sticker ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={snacc.sticker.url}
-          alt="Sticker"
-          className="self-start object-contain"
-          style={{
-            height: STICKER_SIZE,
-            aspectRatio: aspectRatio(snacc.sticker),
-          }}
-        />
+        <StickerAttachmentView sticker={snacc.sticker} size={STICKER_SIZE} />
       ) : null}
     </div>
   )

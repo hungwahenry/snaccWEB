@@ -42,48 +42,60 @@ export function useAppNav() {
     "?"
   ).toUpperCase()
 
+  const home: NavItem = {
+    key: "home",
+    href: "/home",
+    label: "Home",
+    icon: CakeSliceIcon,
+  }
+  const search: NavItem = {
+    key: "search",
+    href: "/search",
+    label: "Explore",
+    icon: CompassIcon,
+  }
+  const notifications: NavItem = {
+    key: "notifications",
+    href: "/notifications",
+    label: "Notifications",
+    icon: HeartIcon,
+    badge: unreadNotifications,
+  }
+  const messages: NavItem = {
+    key: "messages",
+    href: "/messages",
+    label: "Messages",
+    icon: SendHorizontalIcon,
+    badge: unreadMessages,
+  }
+  const account: NavItem = {
+    key: "profile",
+    href: own,
+    label: "Profile",
+    icon: UserRoundIcon,
+    avatarUrl: profile?.avatar_url ?? null,
+    avatarFallback: fallback,
+  }
+
+  // The wide sidebar has room for Explore. The phone bar mirrors the app: four tabs, and Explore
+  // only borrows the Messages slot when messages are off.
   const items: NavItem[] = [
-    { key: "home", href: "/home", label: "Home", icon: CakeSliceIcon },
-    ...(searchEnabled
-      ? [
-          {
-            key: "search",
-            href: "/search",
-            label: "Explore",
-            icon: CompassIcon,
-          },
-        ]
-      : []),
-    {
-      key: "notifications",
-      href: "/notifications",
-      label: "Notifications",
-      icon: HeartIcon,
-      badge: unreadNotifications,
-    },
-    ...(messagesEnabled
-      ? [
-          {
-            key: "messages",
-            href: "/messages",
-            label: "Messages",
-            icon: SendHorizontalIcon,
-            badge: unreadMessages,
-          },
-        ]
-      : []),
-    {
-      key: "profile",
-      href: own,
-      label: "Profile",
-      icon: UserRoundIcon,
-      avatarUrl: profile?.avatar_url ?? null,
-      avatarFallback: fallback,
-    },
+    home,
+    ...(searchEnabled ? [search] : []),
+    notifications,
+    ...(messagesEnabled ? [messages] : []),
+    account,
+  ]
+  const tabItems: NavItem[] = [
+    home,
+    notifications,
+    ...(messagesEnabled ? [messages] : searchEnabled ? [search] : []),
+    account,
   ]
 
   return {
     items,
+    tabItems,
     activeKey:
       items.find((item) => isActive(pathname, item.href, own))?.key ?? null,
     user: me.data ?? null,

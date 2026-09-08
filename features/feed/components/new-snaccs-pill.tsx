@@ -43,8 +43,7 @@ export function NewSnaccsPill({
             ))}
           </span>
         ) : null}
-        <ArrowUpIcon className="size-4" />
-        <span className="text-sm font-bold">New snaccs</span>
+        <ArrowUpIcon className="size-[18px]" />
       </button>
     </div>
   )

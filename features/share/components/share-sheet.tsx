@@ -1,10 +1,9 @@
 import { CopyIcon, SendIcon, ShareIcon } from "lucide-react"
-import { ActionSheet, ActionSheetChoice } from "@/components/ui/action-sheet"
+import { ActionSheet } from "@/components/ui/action-sheet"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import type { Conversation } from "@/features/messages/types"
-import { bareLink } from "@/lib/share-links"
 import type { ShareSubject } from "../types"
 import { RecipientGrid } from "./recipient-grid"
 
@@ -12,7 +11,6 @@ export type ShareSheetProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   subject: ShareSubject | null
-  link: string
   label: string
   canShareNative: boolean
   onCopyLink: () => void
@@ -34,7 +32,6 @@ export function ShareSheet({
   open,
   onOpenChange,
   subject,
-  link,
   label,
   canShareNative,
   onCopyLink,
@@ -74,8 +71,20 @@ export function ShareSheet({
               )}
             </Button>
           </div>
+        ) : subject ? (
+          <div className="flex gap-3">
+            <Button variant="ghost" className="flex-1" onClick={onCopyLink}>
+              <CopyIcon /> Copy link
+            </Button>
+            {canShareNative ? (
+              <Button variant="ghost" className="flex-1" onClick={onShareLink}>
+                <ShareIcon /> More
+              </Button>
+            ) : null}
+          </div>
         ) : undefined
       }
+      tall={recipients.enabled}
     >
       {recipients.enabled ? (
         <div className="px-4 pb-2">
@@ -86,25 +95,6 @@ export function ShareSheet({
             onToggle={recipients.onToggle}
           />
         </div>
-      ) : null}
-      {link ? (
-        <p className="truncate px-5 pb-1 text-xs text-muted-foreground">
-          {bareLink(link)}
-        </p>
-      ) : null}
-      <ActionSheetChoice
-        icon={CopyIcon}
-        label="Copy link"
-        hint="Paste it anywhere"
-        onPress={onCopyLink}
-      />
-      {canShareNative ? (
-        <ActionSheetChoice
-          icon={ShareIcon}
-          label="Share to…"
-          hint="Messages, WhatsApp, and more"
-          onPress={onShareLink}
-        />
       ) : null}
     </ActionSheet>
   )

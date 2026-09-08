@@ -97,8 +97,8 @@ export function SettingsScreen() {
         </Section>
 
         <Section title="Account">
-          <Row icon={UserRoundIcon} label="Edit profile" href="/edit-profile" />
           <Row icon={MailIcon} label="Change email" href="/settings/email" />
+          <Row icon={UserRoundIcon} label="Edit profile" href="/edit-profile" />
         </Section>
 
         {messagesEnabled ? (

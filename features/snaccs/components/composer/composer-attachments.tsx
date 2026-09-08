@@ -7,7 +7,7 @@ import {
   type DraftImage,
 } from "../../utils/draft-images"
 import type { SnaccVoiceNote } from "../../types"
-import { VoiceNote } from "../card/media/voice-note"
+import { VoiceNotePlayer } from "@/features/voice/components/voice-note-player"
 
 function RemoveButton({
   onPress,
@@ -46,7 +46,9 @@ export function ComposerAttachments({
   return (
     <div className="flex flex-col gap-3 px-4 pt-3">
       {storedVoice ? (
-        <VoiceNote url={storedVoice.url} durationMs={storedVoice.duration_ms} />
+        <div className="rounded-2xl border border-border px-3 py-2">
+          <VoiceNotePlayer note={storedVoice} fill />
+        </div>
       ) : null}
 
       {gif ? (

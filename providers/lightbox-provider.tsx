@@ -22,6 +22,7 @@ export interface LightboxImage {
 interface LightboxRequest {
   images: LightboxImage[]
   index: number
+  footer?: ReactNode
 }
 
 interface LightboxApi {
@@ -108,10 +109,16 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
                 onClick={() => step(1)}
                 className="absolute top-1/2 right-4 -translate-y-1/2 bg-white/10 text-white hover:bg-white/20"
               />
-              <span className="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-white">
+              <span className="absolute top-5 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-white">
                 {index + 1} / {count}
               </span>
             </>
+          ) : null}
+
+          {request?.footer ? (
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-5 pt-6 pb-[max(env(safe-area-inset-bottom),1.25rem)]">
+              {request.footer}
+            </div>
           ) : null}
         </DialogContent>
       </Dialog>

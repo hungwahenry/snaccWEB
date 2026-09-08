@@ -1,15 +1,52 @@
 "use client"
 
-import { EmojiPicker } from "frimousse"
-import { SearchIcon, SmilePlusIcon, ZapIcon } from "lucide-react"
+import {
+  FlagIcon,
+  HandIcon,
+  HashIcon,
+  LeafIcon,
+  LightbulbIcon,
+  PizzaIcon,
+  PlaneIcon,
+  SmileIcon,
+  SmilePlusIcon,
+  VolleyballIcon,
+  ZapIcon,
+  type LucideIcon,
+} from "lucide-react"
 import { useState, type ReactNode } from "react"
+import { EmptyState } from "@/components/ui/empty-state"
+import { Input } from "@/components/ui/input"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Spinner } from "@/components/ui/spinner"
 import { cn } from "@/lib/utils"
-import { QUICK_REACTIONS } from "../utils/quick"
+import { useReactionPicker } from "../hooks/use-reaction-picker"
+import { QUICK_CATEGORY, type PickerCategory } from "../utils/emoji"
+import { ReactionGrid } from "./reaction-grid"
+
+const REACTION_CATEGORIES: { key: PickerCategory; icon: LucideIcon }[] = [
+  { key: QUICK_CATEGORY, icon: ZapIcon },
+  { key: "smileys_emotion", icon: SmileIcon },
+  { key: "people_body", icon: HandIcon },
+  { key: "animals_nature", icon: LeafIcon },
+  { key: "food_drink", icon: PizzaIcon },
+  { key: "activities", icon: VolleyballIcon },
+  { key: "travel_places", icon: PlaneIcon },
+  { key: "objects", icon: LightbulbIcon },
+  { key: "symbols", icon: HashIcon },
+  { key: "flags", icon: FlagIcon },
+]
+
+const POPOVER_WIDTH = 288
+const GRID_HEIGHT = 200
+const GRID_PADDING = 8
+const COLUMNS = 7
+const CELL_SIZE = (POPOVER_WIDTH - GRID_PADDING * 2) / COLUMNS
+const EMOJI_SIZE = 24
 
 type ReactionPickerProps = {
   mine: string | null
@@ -26,21 +63,14 @@ export function ReactionPicker({
   align = "start",
 }: ReactionPickerProps) {
   const [open, setOpen] = useState(false)
-  const [mode, setMode] = useState<"quick" | "all">("quick")
 
-  function pick(emoji: string) {
+  function select(emoji: string) {
     onSelect(emoji)
     setOpen(false)
   }
 
   return (
-    <Popover
-      open={open}
-      onOpenChange={(next) => {
-        setOpen(next)
-        if (!next) setMode("quick")
-      }}
-    >
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         aria-label={mine ? `Change your ${mine} reaction` : "React"}
         className="flex h-9 items-center justify-center rounded-full px-1 text-muted-foreground transition-colors hover:text-foreground active:opacity-70"
@@ -57,91 +87,83 @@ export function ReactionPicker({
       <PopoverContent
         align={align}
         sideOffset={8}
-        className="w-72 gap-0 overflow-hidden p-0"
+        className="gap-0 overflow-hidden rounded-2xl p-0"
+        style={{ width: POPOVER_WIDTH }}
       >
-        {mode === "quick" ? (
-          <div className="flex flex-col">
-            <div className="grid grid-cols-7 gap-0.5 p-2">
-              {QUICK_REACTIONS.map((emoji) => (
-                <button
-                  key={emoji}
-                  type="button"
-                  onClick={() => pick(emoji)}
-                  className={cn(
-                    "flex size-9 items-center justify-center rounded-xl text-2xl transition-colors hover:bg-accent",
-                    mine === emoji && "bg-accent"
-                  )}
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={() => setMode("all")}
-              className="flex items-center justify-center gap-2 border-t border-border py-2 text-sm font-bold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-            >
-              <SearchIcon className="size-4" /> Search all emoji
-            </button>
-          </div>
-        ) : (
-          <EmojiPicker.Root
-            columns={7}
-            onEmojiSelect={({ emoji }) => pick(emoji)}
-            className="isolate flex h-[300px] w-full flex-col"
-          >
-            <div className="flex items-center gap-2 border-b border-border p-2">
-              <button
-                type="button"
-                onClick={() => setMode("quick")}
-                aria-label="Quick reactions"
-                className="flex size-9 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
-              >
-                <ZapIcon className="size-4" />
-              </button>
-              <EmojiPicker.Search
-                autoFocus
-                placeholder="Search emoji"
-                className="h-9 flex-1 rounded-full bg-input px-3 text-sm outline-none placeholder:text-muted-foreground"
-              />
-            </div>
-            <EmojiPicker.Viewport className="relative flex-1 outline-hidden">
-              <EmojiPicker.Loading className="absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">
-                Loading…
-              </EmojiPicker.Loading>
-              <EmojiPicker.Empty className="absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">
-                No emoji found.
-              </EmojiPicker.Empty>
-              <EmojiPicker.List
-                className="pb-1.5 select-none"
-                components={{
-                  CategoryHeader: ({ category, ...props }) => (
-                    <div
-                      {...props}
-                      className="bg-popover px-3 pt-3 pb-1.5 text-xs font-bold text-muted-foreground"
-                    >
-                      {category.label}
-                    </div>
-                  ),
-                  Row: ({ children, ...props }) => (
-                    <div {...props} className="scroll-my-1.5 px-1.5">
-                      {children}
-                    </div>
-                  ),
-                  Emoji: ({ emoji, ...props }) => (
-                    <button
-                      {...props}
-                      className="flex size-9 items-center justify-center rounded-xl text-2xl data-[active]:bg-accent"
-                    >
-                      {emoji.emoji}
-                    </button>
-                  ),
-                }}
-              />
-            </EmojiPicker.Viewport>
-          </EmojiPicker.Root>
-        )}
+        <ReactionPickerContent onSelect={select} />
       </PopoverContent>
     </Popover>
+  )
+}
+
+function ReactionPickerContent({
+  onSelect,
+}: {
+  onSelect: (emoji: string) => void
+}) {
+  const picker = useReactionPicker()
+
+  return (
+    <>
+      <div className="border-b border-border p-2">
+        <Input
+          value={picker.query}
+          onChange={(event) => picker.setQuery(event.target.value)}
+          placeholder="Search emoji"
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="none"
+          className="h-9"
+        />
+      </div>
+
+      <div
+        className="overflow-y-auto"
+        style={{ height: GRID_HEIGHT, paddingInline: GRID_PADDING }}
+      >
+        {picker.loading ? (
+          <div className="flex h-full items-center justify-center">
+            <Spinner className="text-muted-foreground" />
+          </div>
+        ) : picker.searching && picker.emojis.length === 0 ? (
+          <EmptyState compact title="No emoji found." className="h-full" />
+        ) : (
+          <ReactionGrid
+            emojis={picker.emojis}
+            columns={COLUMNS}
+            cellSize={CELL_SIZE}
+            emojiSize={EMOJI_SIZE}
+            onSelect={onSelect}
+          />
+        )}
+      </div>
+
+      {picker.searching ? null : (
+        <div className="flex items-center justify-between border-t border-border px-2 py-2">
+          {REACTION_CATEGORIES.map(({ key, icon: Icon }) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => picker.setCategory(key)}
+              aria-label={key === QUICK_CATEGORY ? "Quick reactions" : key}
+              aria-pressed={picker.category === key}
+              className={cn(
+                "flex size-6 items-center justify-center rounded-full transition-colors",
+                picker.category === key && "bg-primary"
+              )}
+            >
+              <Icon
+                className={cn(
+                  "size-4",
+                  picker.category === key
+                    ? "text-primary-foreground"
+                    : "text-muted-foreground"
+                )}
+              />
+            </button>
+          ))}
+        </div>
+      )}
+    </>
   )
 }

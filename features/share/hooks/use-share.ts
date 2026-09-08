@@ -68,7 +68,6 @@ export function useShare() {
       open,
       onOpenChange: setOpen,
       subject,
-      link: subject ? linkFor(subject) : "",
       label: subject ? labelFor(subject) : "",
       canShareNative:
         typeof navigator !== "undefined" &&

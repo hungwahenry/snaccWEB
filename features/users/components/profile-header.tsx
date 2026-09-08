@@ -3,12 +3,12 @@
 import {
   BellIcon,
   BellRingIcon,
-  EllipsisIcon,
   FootprintsIcon,
   HandCoinsIcon,
   SendHorizontalIcon,
 } from "lucide-react"
 import Link from "next/link"
+import { Bump } from "@/components/motion/bump"
 import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
 import { UserAvatar } from "@/components/ui/user-avatar"
@@ -34,7 +34,6 @@ type ProfileHeaderProps = {
   onMessage: () => void
   onPay: () => void
   onEdit: () => void
-  onOpenMenu: () => void
   onOpenAvatar: () => void
   followingHref: string
   followersHref: string
@@ -54,7 +53,6 @@ export function ProfileHeader({
   onMessage,
   onPay,
   onEdit,
-  onOpenMenu,
   onOpenAvatar,
   followingHref,
   followersHref,
@@ -163,21 +161,16 @@ export function ProfileHeader({
                   variant={profile.is_following ? "outline" : "default"}
                   onClick={onToggleFollow}
                 >
-                  {profile.is_following
-                    ? "Following"
-                    : profile.follows_you
-                      ? "Follow back"
-                      : "Follow"}
+                  <Bump value={profile.is_following}>
+                    {profile.is_following
+                      ? "Following"
+                      : profile.follows_you
+                        ? "Follow back"
+                        : "Follow"}
+                  </Bump>
                 </Button>
               </>
             )}
-            <IconButton
-              icon={EllipsisIcon}
-              label="More"
-              onClick={onOpenMenu}
-              className="border border-border"
-              iconClassName="size-5"
-            />
           </div>
         </div>
 
@@ -258,9 +251,11 @@ function Stat({
 }) {
   const content = (
     <>
-      <span className="text-base font-extrabold text-foreground">
-        {compactCount(count)}
-      </span>
+      <Bump value={count}>
+        <span className="text-base font-extrabold text-foreground">
+          {compactCount(count)}
+        </span>
+      </Bump>
       <span className="text-xs text-muted-foreground">{label}</span>
     </>
   )

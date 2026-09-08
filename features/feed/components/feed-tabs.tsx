@@ -21,7 +21,7 @@ const FOLLOWING: PillTab<FeedScope> = {
 type FeedTabsProps = {
   value: FeedScope
   onChange: (scope: FeedScope) => void
-  onReselect?: (scope: FeedScope) => void
+  onReselect?: (scope: FeedScope, anchor: HTMLElement) => void
   following?: boolean
   global?: boolean
 }

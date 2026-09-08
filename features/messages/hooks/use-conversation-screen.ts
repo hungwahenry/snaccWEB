@@ -85,7 +85,7 @@ export function useConversationScreen(
     scroll.scrollToBottom()
   })
 
-  const focusComposer = () => inputRef.current?.focus()
+  const focusComposer = useCallback(() => inputRef.current?.focus(), [inputRef])
 
   function onSubmit(body: string) {
     if (editing) {
@@ -108,12 +108,15 @@ export function useConversationScreen(
     scroll.scrollToBottom()
   }
 
-  const onStartReply = useCallback((message: Message) => {
-    setActionsOpen(false)
-    setEditing(null)
-    setReplyingTo(message)
-    focusComposer()
-  }, [])
+  const onStartReply = useCallback(
+    (message: Message) => {
+      setActionsOpen(false)
+      setEditing(null)
+      setReplyingTo(message)
+      focusComposer()
+    },
+    [focusComposer]
+  )
 
   const onOpenActions = useCallback((message: Message) => {
     setActive(message)

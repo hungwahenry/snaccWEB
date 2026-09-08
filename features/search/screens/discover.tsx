@@ -34,11 +34,6 @@ export function Discover({ compact = false }: { compact?: boolean }) {
       {ghost.visible ? (
         <GhostHourCard active={ghost.active} subtitle={ghost.subtitle} />
       ) : null}
-      {hashtags.isLoading ? (
-        <TrendingTagsSkeleton />
-      ) : (
-        <TrendingTags tags={tags} />
-      )}
       {suggestions.loading ? (
         <FollowSuggestionsSkeleton />
       ) : (
@@ -46,6 +41,11 @@ export function Discover({ compact = false }: { compact?: boolean }) {
           users={suggestions.users}
           onToggleFollow={suggestions.onToggleFollow}
         />
+      )}
+      {hashtags.isLoading ? (
+        <TrendingTagsSkeleton />
+      ) : (
+        <TrendingTags tags={tags} />
       )}
       {quiet && !compact ? (
         <EmptyState

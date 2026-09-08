@@ -24,6 +24,7 @@ import { SnaccPendingBar } from "./snacc-pending-bar"
 export type SnaccActionHandlers = {
   onReact: (snacc: Snacc, emoji: string) => void
   onOpenBreakdown: (snacc: Snacc) => void
+  onOpenResnaccs: (snacc: Snacc) => void
   onComment: (snacc: Snacc) => void
   onResnacc: (snacc: Snacc) => void
   onShare: (snacc: Snacc) => void
@@ -52,6 +53,7 @@ function SnaccCardComponent(props: SnaccCardProps) {
     snacc,
     onReact,
     onOpenBreakdown,
+    onOpenResnaccs,
     onComment,
     onResnacc,
     onShare,
@@ -88,7 +90,11 @@ function SnaccCardComponent(props: SnaccCardProps) {
   const avatar = snacc.anonymous ? (
     <GhostAvatar />
   ) : (
-    <ProfileLink username={author.username} className="shrink-0">
+    <ProfileLink
+      username={author.username}
+      fromSnaccId={snacc.id}
+      className="shrink-0"
+    >
       <UserAvatar
         alt={author.display_name ?? "Snacc author"}
         avatarUrl={author.avatar_url}
@@ -126,6 +132,7 @@ function SnaccCardComponent(props: SnaccCardProps) {
       anonymous={snacc.anonymous}
       onReact={(emoji) => onReact(snacc, emoji)}
       onOpenBreakdown={() => onOpenBreakdown(snacc)}
+      onOpenResnaccs={() => onOpenResnaccs(snacc)}
       onComment={() => onComment(snacc)}
       onResnacc={() => onResnacc(snacc)}
       onShare={() => onShare(snacc)}

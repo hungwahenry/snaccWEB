@@ -1,9 +1,12 @@
 import Link from "next/link"
 import type { ComponentProps, ReactNode } from "react"
+import { signal } from "@/features/signals/utils/queue"
 import { profilePath } from "../routes"
 
 type ProfileLinkProps = Omit<ComponentProps<typeof Link>, "href"> & {
   username: string | null | undefined
+  /** The snacc whose author was tapped, so the feed learns what drew the eye. */
+  fromSnaccId?: string
   children: ReactNode
 }
 
@@ -11,6 +14,7 @@ type ProfileLinkProps = Omit<ComponentProps<typeof Link>, "href"> & {
 /// nowhere to go, so it renders inert.
 export function ProfileLink({
   username,
+  fromSnaccId,
   children,
   className,
   ...props
@@ -20,7 +24,10 @@ export function ProfileLink({
   return (
     <Link
       href={profilePath(username)}
-      onClick={(event) => event.stopPropagation()}
+      onClick={(event) => {
+        event.stopPropagation()
+        if (fromSnaccId) signal("author_tap", { subjectId: fromSnaccId })
+      }}
       className={className}
       {...props}
     >

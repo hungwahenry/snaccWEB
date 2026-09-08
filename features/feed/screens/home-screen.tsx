@@ -14,7 +14,7 @@ import { SnaccSheets } from "@/features/snaccs/components/sheets/snacc-sheets"
 import { SnaccList } from "@/features/snaccs/components/snacc-list"
 import { useSnaccActions } from "@/features/snaccs/hooks/use-snacc-actions"
 import { useViewTracker } from "@/features/views/hooks/use-view-tracker"
-import { FeedSortSheet } from "../components/feed-sort-sheet"
+import { FeedSortMenu } from "../components/feed-sort-menu"
 import { FeedTabs } from "../components/feed-tabs"
 import { NewSnaccsPill } from "../components/new-snaccs-pill"
 import { useFeedScreen } from "../hooks/use-feed-screen"
@@ -41,6 +41,9 @@ export function HomeScreen() {
   const { handlers, votingPollFor, sheets } = useSnaccActions()
   const tracker = useViewTracker()
   const searchEnabled = useFlag("search")
+  const messagesEnabled = useFlag("anon_messages")
+  // When messages are off, Explore already sits in the phone's tab bar; the header stays clean.
+  const searchInHeader = searchEnabled && messagesEnabled
 
   const empty = EMPTY[screen.scope]
 
@@ -48,7 +51,7 @@ export function HomeScreen() {
     <>
       <AppHeader
         left={
-          searchEnabled ? (
+          searchInHeader ? (
             <Link href="/search" aria-label="Explore">
               <IconButton icon={CompassIcon} label="Explore" />
             </Link>
@@ -60,7 +63,11 @@ export function HomeScreen() {
         <FeedTabs
           value={screen.scope}
           onChange={screen.pickScope}
-          onReselect={screen.sortable ? screen.openSortMenu : undefined}
+          onReselect={
+            screen.sortable
+              ? (_, anchor) => screen.openSortMenu(anchor)
+              : undefined
+          }
           following={screen.tabs.following}
           global={screen.tabs.global}
         />
@@ -101,11 +108,12 @@ export function HomeScreen() {
         }}
       />
 
-      <FeedSortSheet
-        open={screen.sortMenuOpen}
-        onOpenChange={screen.setSortMenuOpen}
+      <FeedSortMenu
+        open={screen.sortMenu.open}
+        anchor={screen.sortMenu.anchor}
         value={screen.sort}
         onSelect={screen.pickSort}
+        onDismiss={screen.closeSortMenu}
       />
       <SnaccSheets {...sheets} />
     </>

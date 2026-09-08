@@ -1,13 +1,15 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useEffect, useMemo, useRef } from "react"
+import { createElement, useEffect, useMemo, useRef } from "react"
 import { toast } from "sonner"
+import { signal } from "@/features/signals/utils/queue"
 import { useLightbox } from "@/providers/lightbox-provider"
 import { getErrorMessage } from "@/lib/api/errors"
 import { discardSnacc, retrySnacc } from "../cache/pending-snaccs"
+import { LightboxActions } from "../components/card/lightbox-actions"
 import type { SnaccActionHandlers } from "../components/card/snacc-card"
-import { snaccPath } from "../routes"
+import { resnaccsPath, snaccPath } from "../routes"
 import type { EmbeddedSnacc, Snacc, SnaccPollOption } from "../types"
 import { useBreakdownSheet } from "./reactions/use-breakdown-sheet"
 import { useReactToSnacc } from "./reactions/use-react-to-snacc"
@@ -55,8 +57,14 @@ export function useSnaccActions(overrides: Overrides = {}) {
     }
   })
 
-  const handlers = useMemo<SnaccActionHandlers>(
-    () => ({
+  const handlers = useMemo<SnaccActionHandlers>(() => {
+    const onComment = (snacc: Snacc) => {
+      const { onComment: override } = latest.current.overrides
+      if (override) override(snacc)
+      else latest.current.router.push(snaccPath(snacc.id))
+    }
+
+    return {
       onReact: (snacc, emoji) =>
         latest.current.react.mutate(
           {
@@ -66,14 +74,12 @@ export function useSnaccActions(overrides: Overrides = {}) {
           { onError: (error) => toast.error(getErrorMessage(error)) }
         ),
       onOpenBreakdown: (snacc) => latest.current.breakdown.onOpen(snacc),
+      onOpenResnaccs: (snacc) =>
+        latest.current.router.push(resnaccsPath(snacc.id)),
       onResnacc: (snacc) => latest.current.resnacc.onOpen(snacc),
       onOpenActions: (snacc) => latest.current.menu.onOpen(snacc),
       onShare: (snacc) => latest.current.menu.onShare(snacc),
-      onComment: (snacc) => {
-        const { onComment } = latest.current.overrides
-        if (onComment) onComment(snacc)
-        else latest.current.router.push(snaccPath(snacc.id))
-      },
+      onComment,
       onPress: (snacc) => {
         const { onPress } = latest.current.overrides
         if (onPress) {
@@ -83,8 +89,33 @@ export function useSnaccActions(overrides: Overrides = {}) {
       },
       onPressQuote: (quote: EmbeddedSnacc) =>
         latest.current.router.push(snaccPath(quote.id)),
-      onOpenImages: (snacc, index) =>
-        latest.current.lightbox.open({ images: snacc.images, index }),
+      onOpenImages: (snacc, index) => {
+        const { lightbox } = latest.current
+        signal("image_open", { subjectId: snacc.id, value: index })
+        // A quoted snacc carries no counts, so only a full card gets the action bar.
+        const footer =
+          "resnacc_of" in snacc
+            ? createElement(LightboxActions, {
+                reactions: snacc.reactions,
+                reactionsCount: snacc.reactions_count,
+                commentsCount: snacc.comments_count,
+                resnaccsCount: snacc.resnaccs_count,
+                onOpenBreakdown: () => {
+                  lightbox.close()
+                  latest.current.breakdown.onOpen(snacc)
+                },
+                onComment: () => {
+                  lightbox.close()
+                  onComment(snacc)
+                },
+                onResnacc: () => {
+                  lightbox.close()
+                  latest.current.resnacc.onOpen(snacc)
+                },
+              })
+            : undefined
+        lightbox.open({ images: snacc.images, index, footer })
+      },
       onVote: (snacc, optionId) => latest.current.poll.vote(snacc.id, optionId),
       onOpenPollImage: (snacc, option: SnaccPollOption) => {
         const gallery =
@@ -103,9 +134,8 @@ export function useSnaccActions(overrides: Overrides = {}) {
       },
       onRetry: (snacc) => retrySnacc(snacc.id),
       onDiscard: (snacc) => discardSnacc(snacc.id),
-    }),
-    []
-  )
+    }
+  }, [])
 
   return {
     handlers,

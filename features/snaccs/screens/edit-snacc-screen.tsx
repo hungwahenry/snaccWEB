@@ -43,20 +43,7 @@ function Editor({ snacc }: { snacc: Snacc }) {
 
   return (
     <div className="flex min-h-dvh flex-col md:min-h-0">
-      <ComposerHeader
-        title="Edit snacc"
-        onClose={editor.close}
-        right={
-          <Button
-            size="sm"
-            className="h-9 px-5 font-extrabold"
-            disabled={!editor.canSave}
-            onClick={editor.submit}
-          >
-            {editor.saving ? <Spinner /> : "Save"}
-          </Button>
-        }
-      />
+      <ComposerHeader title="Edit snacc" onClose={editor.close} />
 
       <div className="flex-1 px-4 pt-4 pb-6">
         <ComposerFrame
@@ -96,7 +83,16 @@ function Editor({ snacc }: { snacc: Snacc }) {
           onToggleSpoiler={editor.toggleSpoiler}
           remaining={editor.remaining}
           showCounter={editor.showCounter}
-          right={null}
+          right={
+            <Button
+              size="sm"
+              className="h-10 px-5 font-extrabold"
+              disabled={!editor.canSave}
+              onClick={editor.submit}
+            >
+              {editor.saving ? <Spinner /> : "Save"}
+            </Button>
+          }
         />
       </div>
     </div>

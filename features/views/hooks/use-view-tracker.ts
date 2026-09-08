@@ -9,8 +9,6 @@ const MIN_DWELL_MS = 1000
 const MAX_DWELL_MS = 300_000
 const VISIBLE_SHARE = 0.6
 
-/// Watches which snaccs are actually on screen and reports the time spent on each.
-/// Hand `ref(id)` to every list row; the same tracker serves the whole list.
 export function useViewTracker() {
   const observer = useRef<IntersectionObserver | null>(null)
   const ids = useRef<Map<Element, string>>(new Map())

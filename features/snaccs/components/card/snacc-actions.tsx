@@ -4,6 +4,7 @@ import {
   SendIcon,
   type LucideIcon,
 } from "lucide-react"
+import { Bump } from "@/components/motion/bump"
 import { ReactionPicker } from "@/features/reactions/components/reaction-picker"
 import { compactCount } from "@/lib/format"
 import type { SnaccReaction } from "../../types"
@@ -20,6 +21,7 @@ type SnaccActionsProps = {
   anonymous?: boolean
   onReact: (emoji: string) => void
   onOpenBreakdown: () => void
+  onOpenResnaccs: () => void
   onComment: () => void
   onResnacc: () => void
   onShare: () => void
@@ -35,6 +37,7 @@ export function SnaccActions({
   anonymous,
   onReact,
   onOpenBreakdown,
+  onOpenResnaccs,
   onComment,
   onResnacc,
   onShare,
@@ -76,6 +79,7 @@ export function SnaccActions({
             count={resnaccsCount}
             mine={myResnacc}
             onPress={onResnacc}
+            onLongPress={resnaccsCount > 0 ? onOpenResnaccs : undefined}
           />
         )}
         <Action icon={SendIcon} label="Share" count={0} onPress={onShare} />
@@ -104,7 +108,9 @@ function Action({
     >
       <Icon className="size-[22px]" />
       {count > 0 ? (
-        <span className="text-sm font-bold">{compactCount(count)}</span>
+        <Bump value={count}>
+          <span className="text-sm font-bold">{compactCount(count)}</span>
+        </Bump>
       ) : null}
     </button>
   )

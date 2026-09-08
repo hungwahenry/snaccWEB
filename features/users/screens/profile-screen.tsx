@@ -1,9 +1,10 @@
 "use client"
 
-import { UserRoundXIcon } from "lucide-react"
+import { EllipsisIcon, UserRoundXIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { EmptyState } from "@/components/ui/empty-state"
+import { IconButton } from "@/components/ui/icon-button"
 import { ListFooter } from "@/components/ui/list-footer"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { LoadMore } from "@/components/ui/load-more"
@@ -80,8 +81,16 @@ export function ProfileScreen({ username }: { username: string }) {
     <>
       <BackHeader
         title={profile?.display_name ?? profile?.username ?? ""}
-        subtitle={profile ? `${profile.snaccs_count} snaccs` : undefined}
         onBack={back}
+        right={
+          profile ? (
+            <IconButton
+              icon={EllipsisIcon}
+              label="More"
+              onClick={menu.onOpen}
+            />
+          ) : undefined
+        }
       />
 
       {notFound ? (
@@ -122,7 +131,6 @@ export function ProfileScreen({ username }: { username: string }) {
             }
             onPay={() => router.push(`/pay/${profile.username ?? ""}`)}
             onEdit={() => router.push("/edit-profile")}
-            onOpenMenu={menu.onOpen}
             onOpenAvatar={() =>
               lightbox.open({ images: [{ url: profile.avatar_url }], index: 0 })
             }

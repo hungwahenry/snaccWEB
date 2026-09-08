@@ -13,7 +13,7 @@ type PillTabsProps<T extends string> = {
   tabs: PillTab<T>[]
   value: T
   onChange: (value: T) => void
-  onReselect?: (value: T) => void
+  onReselect?: (value: T, anchor: HTMLElement) => void
   divider?: boolean
   className?: string
 }
@@ -45,8 +45,10 @@ export function PillTabs<T extends string>({
             type="button"
             role="tab"
             aria-selected={active}
-            onClick={() =>
-              active && onReselect ? onReselect(tab.value) : onChange(tab.value)
+            onClick={(event) =>
+              active && onReselect
+                ? onReselect(tab.value, event.currentTarget)
+                : onChange(tab.value)
             }
             className={cn(
               "flex h-9 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-sm font-extrabold transition-opacity active:opacity-70",

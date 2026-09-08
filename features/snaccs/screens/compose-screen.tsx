@@ -39,20 +39,7 @@ export function ComposeScreen({
 
   return (
     <div className="flex min-h-dvh flex-col md:min-h-0">
-      <ComposerHeader
-        title={copy.title}
-        onClose={composer.close}
-        right={
-          <Button
-            size="sm"
-            className="h-9 px-5 font-extrabold"
-            disabled={!composer.canPost}
-            onClick={composer.post}
-          >
-            Snacc
-          </Button>
-        }
-      />
+      <ComposerHeader title={copy.title} onClose={composer.close} />
 
       <div className="flex flex-1 flex-col gap-4 px-4 pt-4 pb-6">
         {composer.ghost ? (
@@ -149,7 +136,16 @@ export function ComposeScreen({
           onToggleSpoiler={composer.toggleSpoiler}
           remaining={composer.remaining}
           showCounter={composer.showCounter}
-          right={null}
+          right={
+            <Button
+              size="sm"
+              className="h-10 px-5 font-extrabold"
+              disabled={!composer.canPost}
+              onClick={composer.post}
+            >
+              Snacc
+            </Button>
+          }
         />
       </div>
 
