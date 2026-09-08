@@ -45,7 +45,9 @@ const nextConfig: NextConfig = {
     return [
       { source: "/(.*)", headers: securityHeaders },
       {
-        source: "/api/(.*)",
+        // Everything the API proxy returns is per-account. Media is the exception: it is public,
+        // immutable and sets its own long cache, so the edge may keep it.
+        source: "/api/:path((?!media$|media/).*)",
         headers: [{ key: "Cache-Control", value: "no-store" }],
       },
       {

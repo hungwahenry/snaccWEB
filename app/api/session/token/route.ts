@@ -13,5 +13,8 @@ export async function GET(request: NextRequest) {
       { status: 401 }
     )
   }
-  return Response.json({ status: "success", message: "OK", data: { token } })
+  return Response.json(
+    { status: "success", message: "OK", data: { token } },
+    { headers: { "Cache-Control": "no-store" } }
+  )
 }
