@@ -154,7 +154,8 @@ function SnaccCardComponent(props: SnaccCardProps) {
       className={cn(
         "flex flex-col gap-3 border-b border-border pr-4 pb-4",
         flushTop ? "pt-0" : "pt-4",
-        clickable && "cursor-pointer transition-colors hover:bg-accent/30",
+        clickable &&
+          "cursor-pointer transition-colors hover:bg-accent/30 active:bg-accent/50",
         snacc.status === "sending" && "opacity-60"
       )}
       style={{ paddingLeft: 16 + inset }}

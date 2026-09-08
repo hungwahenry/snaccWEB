@@ -130,6 +130,28 @@
 }
 
 @layer base {
+  /* iOS paints its own grey box over anything tappable; the app's own press states read better. */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:not(:disabled),
+  a[href],
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  /* A press has to show something on touch, where there is no hover to fall back on. */
+  @media (pointer: coarse) {
+    button:not(:disabled):active,
+    a[href]:active,
+    [role="button"]:not([aria-disabled="true"]):active {
+      opacity: 0.6;
+    }
+  }
+}
+
+@layer base {
   * {
     @apply border-border outline-ring/50;
   }
@@ -209,5 +231,14 @@
   100% {
     transform: translateY(110vh) rotate(calc(var(--tilt) * 8));
     opacity: 0;
+  }
+}
+
+@keyframes nav-progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
   }
 }
