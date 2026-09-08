@@ -51,7 +51,10 @@ export default async function CampusPage({ params }: Props) {
   const snaccs = await getCampusSnaccs(campus.slug)
 
   return (
-    <LandingShell cta="See all snaccs in the app">
+    <LandingShell
+      cta="See what your campus is saying"
+      next={`/campus/${campus.slug}`}
+    >
       <CampusHeader campus={campus} />
       {snaccs.map((snacc) => (
         <PublicSnaccCard

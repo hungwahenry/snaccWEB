@@ -7,9 +7,12 @@ import { StoreBanner } from "./store-banner"
 export function LandingShell({
   children,
   cta,
+  next,
 }: {
   children: ReactNode
   cta: string
+  /** Where logging in should land, so a shared link carries on where it left off. */
+  next: string
 }) {
   return (
     <div className="flex min-h-dvh justify-center">
@@ -17,7 +20,7 @@ export function LandingShell({
         <SiteHeader />
         <main className="flex-1">
           {children}
-          <AppCTA title={cta} />
+          <AppCTA title={cta} next={next} />
         </main>
         <SiteFooter />
       </div>

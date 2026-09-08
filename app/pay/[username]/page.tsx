@@ -44,7 +44,10 @@ export default async function PayPage({ params }: Props) {
     redirect(payPath({ mode: "send", to: profile.username }))
 
   return (
-    <LandingShell cta="Get Snacc to send and receive money">
+    <LandingShell
+      cta="Send and receive money on Snacc"
+      next={`/pay/${username}`}
+    >
       <PayEntry profile={profile} />
     </LandingShell>
   )

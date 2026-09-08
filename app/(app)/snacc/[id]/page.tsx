@@ -53,7 +53,7 @@ export default async function SnaccPage({ params }: Props) {
   if (!snacc) notFound()
 
   return (
-    <LandingShell cta="See the comments in the app">
+    <LandingShell cta="Join the conversation" next={`/snacc/${id}`}>
       <PublicSnaccCard snacc={snacc} />
     </LandingShell>
   )

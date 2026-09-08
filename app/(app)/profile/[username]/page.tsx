@@ -53,7 +53,10 @@ export default async function ProfilePage({ params }: Props) {
   const snaccs = profile.username ? await getUserSnaccs(profile.username) : []
 
   return (
-    <LandingShell cta="See all snaccs in the app">
+    <LandingShell
+      cta={`See everything ${profile.display_name ?? `@${profile.username}`} posts`}
+      next={`/profile/${username}`}
+    >
       <PublicProfileHeader profile={profile} />
       {profile.username ? (
         <MessageCta
