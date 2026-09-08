@@ -15,13 +15,13 @@ export function AppFrame({
   return (
     <div className="min-h-dvh bg-background">
       <div className="mx-auto flex w-full max-w-[1265px] justify-center">
-        <aside className="sticky top-0 hidden h-dvh w-[76px] shrink-0 md:block xl:w-[275px]">
+        <aside className="sticky top-0 hidden h-dvh w-[76px] shrink-0 wide:w-[260px] md:block">
           {sidebar}
         </aside>
 
         <main
           className={cn(
-            "min-h-dvh w-full max-w-[600px] min-w-0 md:border-x md:border-border md:pb-0",
+            "min-h-dvh w-full max-w-[600px] min-w-0 md:max-w-[680px] md:border-x md:border-border md:pb-0 lg:max-w-[600px]",
             tabBar ? "pb-(--tab-bar-height)" : "pb-0"
           )}
         >

@@ -43,8 +43,8 @@ export function Sidebar({
   onLogout,
 }: SidebarProps) {
   return (
-    <div className="flex h-full flex-col items-center gap-1 px-2 py-3 xl:items-stretch xl:px-3">
-      <div className="flex h-12 items-center justify-center xl:justify-start xl:px-3">
+    <div className="flex h-full flex-col items-center gap-1 px-2 py-3 wide:items-stretch wide:px-3">
+      <div className="flex h-12 items-center justify-center wide:justify-start wide:px-3">
         <Wordmark href="/home" height={26} />
       </div>
 
@@ -60,7 +60,7 @@ export function Sidebar({
               aria-current={active ? "page" : undefined}
               aria-label={item.label}
               className={cn(
-                "group flex h-12 items-center gap-4 rounded-full px-3 transition-colors hover:bg-accent xl:pr-6",
+                "group flex h-12 items-center gap-4 rounded-full px-3 transition-colors hover:bg-accent wide:pr-6",
                 active ? "text-foreground" : "text-muted-foreground"
               )}
             >
@@ -78,7 +78,7 @@ export function Sidebar({
               </span>
               <span
                 className={cn(
-                  "hidden text-lg xl:block",
+                  "hidden text-lg wide:block",
                   active ? "font-extrabold" : "font-medium"
                 )}
               >
@@ -95,14 +95,16 @@ export function Sidebar({
         aria-label={
           ghostActive ? "Post anonymously. Ghost Hour is live" : "Post a snacc"
         }
-        className="mt-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm transition-transform hover:scale-[1.02] active:scale-95 xl:w-full xl:gap-2 xl:px-6"
+        className="mt-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm transition-transform hover:scale-[1.02] active:scale-95 wide:w-full wide:gap-2 wide:px-6"
       >
         {ghostActive ? (
           <GhostIcon className="size-6" />
         ) : (
           <PlusIcon className="size-6" />
         )}
-        <span className="hidden text-base font-extrabold xl:block">Snacc</span>
+        <span className="hidden text-base font-extrabold wide:block">
+          Snacc
+        </span>
       </button>
 
       <div className="flex-1" />
@@ -111,7 +113,7 @@ export function Sidebar({
         <DropdownMenu>
           <DropdownMenuTrigger
             aria-label="Account menu"
-            className="flex h-14 items-center gap-3 rounded-full px-2 transition-colors hover:bg-accent xl:px-3"
+            className="flex h-14 items-center gap-3 rounded-full px-2 transition-colors hover:bg-accent wide:px-3"
           >
             <UserAvatar
               alt={user.name ?? "You"}
@@ -119,7 +121,7 @@ export function Sidebar({
               name={user.username}
               className="size-9"
             />
-            <span className="hidden min-w-0 flex-1 flex-col text-left xl:flex">
+            <span className="hidden min-w-0 flex-1 flex-col text-left wide:flex">
               <span className="truncate text-sm font-extrabold text-foreground">
                 {user.name ?? user.username}
               </span>
@@ -129,7 +131,7 @@ export function Sidebar({
                 </span>
               ) : null}
             </span>
-            <EllipsisIcon className="hidden size-5 text-muted-foreground xl:block" />
+            <EllipsisIcon className="hidden size-5 text-muted-foreground wide:block" />
           </DropdownMenuTrigger>
           <DropdownMenuContent side="top" align="start" className="min-w-56">
             <DropdownMenuItem onClick={onSettings}>

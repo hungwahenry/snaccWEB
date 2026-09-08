@@ -63,7 +63,7 @@ export function VerifyOtpForm({
               <InputOTPSlot
                 key={index}
                 index={index}
-                className="h-14 flex-1 rounded-2xl border-0 bg-input text-xl font-bold first:rounded-2xl last:rounded-2xl"
+                className="h-14 flex-1 rounded-2xl border-0 bg-input text-xl font-bold first:rounded-2xl last:rounded-2xl data-[active=true]:bg-accent"
               />
             ))}
           </InputOTPGroup>
