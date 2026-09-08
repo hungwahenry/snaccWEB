@@ -33,7 +33,7 @@ export function MoneyTabBar({
     : TABS.filter((tab) => tab.key !== "earnings")
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center border-t border-border bg-background/95 px-2 pt-2 pb-[max(env(safe-area-inset-bottom),8px)] backdrop-blur md:sticky md:top-14 md:z-20 md:border-t-0 md:border-b md:py-0">
+    <nav className="fixed inset-x-0 bottom-0 z-40 flex h-(--money-bar-height) items-center border-t border-border bg-background/95 px-2 pt-2 pb-(--bar-inset) backdrop-blur md:sticky md:top-14 md:z-20 md:h-auto md:border-t-0 md:border-b md:py-0">
       {tabs.map((tab) => {
         const active = section === tab.key
         const badge = badges?.[tab.key] ?? 0

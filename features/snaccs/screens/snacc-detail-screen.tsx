@@ -166,7 +166,7 @@ export function SnaccDetailScreen({ id }: { id: string }) {
           />
           <ListFooter loading={comments.loadingMore} />
 
-          <div className="pointer-events-none sticky bottom-[calc(var(--tab-bar-height)+12px)] z-20 mt-auto flex justify-end px-4 pt-4 md:bottom-6">
+          <div className="pointer-events-none sticky bottom-(--fab-bottom) z-20 mt-auto flex justify-end px-4 pt-4 md:bottom-6">
             <Button
               size="lg"
               className="pointer-events-auto h-12 gap-2 rounded-full px-5 shadow-lg"

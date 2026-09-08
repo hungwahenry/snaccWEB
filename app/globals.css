@@ -49,8 +49,11 @@
 }
 
 :root {
-  --tab-bar-height: calc(52px + max(env(safe-area-inset-bottom), 8px));
-  --money-bar-height: calc(68px + max(env(safe-area-inset-bottom), 8px));
+  /* Both bars set their own height from these, so nothing can drift out of step. */
+  --bar-inset: max(env(safe-area-inset-bottom), 8px);
+  --tab-bar-height: calc(57px + var(--bar-inset));
+  --money-bar-height: calc(65px + var(--bar-inset));
+  --fab-bottom: calc(var(--tab-bar-height) + 16px);
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0 0 0);

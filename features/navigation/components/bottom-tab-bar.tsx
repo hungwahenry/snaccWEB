@@ -55,7 +55,7 @@ export function BottomTabBar({
   return (
     <nav
       className={cn(
-        "fixed inset-x-0 bottom-0 z-40 flex items-center border-t border-border bg-background/95 px-2 pt-2 pb-[max(env(safe-area-inset-bottom),8px)] backdrop-blur md:hidden"
+        "fixed inset-x-0 bottom-0 z-40 flex h-(--tab-bar-height) items-center border-t border-border bg-background/95 px-2 pt-2 pb-(--bar-inset) backdrop-blur md:hidden"
       )}
     >
       {items.slice(0, middle).map(tab)}
