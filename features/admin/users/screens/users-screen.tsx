@@ -1,22 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useUsersScreen } from "@/features/admin/users/hooks/use-users-screen"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
 import { UsersTable } from "@/features/admin/users/components/users-table"
-import { useUsers } from "@/features/admin/users/hooks/use-users"
-import type { ListUsersParams } from "@/features/admin/users/types"
 
 export function UsersScreen() {
-  const [params, setParams] = useState<ListUsersParams>({
-    page: 1,
-    perPage: 20,
-  })
-  const query = useUsers(params)
-
-  function patch(next: Partial<ListUsersParams>) {
-    setParams((prev) => ({ ...prev, ...next }))
-  }
+  const { params, patch, query } = useUsersScreen()
 
   return (
     <>

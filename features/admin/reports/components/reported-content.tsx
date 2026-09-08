@@ -4,7 +4,10 @@ import Link from "next/link"
 import type { ReactNode } from "react"
 import { ContentMedia } from "@/features/admin/shell/ui/content-media"
 import { Section } from "@/features/admin/shell/ui/detail"
-import { UserInline, type InlineUser } from "@/features/admin/shell/ui/user-inline"
+import {
+  UserInline,
+  type InlineUser,
+} from "@/features/admin/shell/ui/user-inline"
 import { Badge } from "@/components/ui/badge"
 import { SnaccView } from "@/features/admin/snaccs/components/snacc-view"
 import { formatDate, handleOf } from "@/lib/format"

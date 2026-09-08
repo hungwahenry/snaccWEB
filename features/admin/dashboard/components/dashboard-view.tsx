@@ -1,7 +1,13 @@
 "use client"
 
 import { Area, AreaChart } from "recharts"
-import { Fact, Facts, Section, Stat, StatGrid } from "@/features/admin/shell/ui/detail"
+import {
+  Fact,
+  Facts,
+  Section,
+  Stat,
+  StatGrid,
+} from "@/features/admin/shell/ui/detail"
 import { TableFrame } from "@/components/data-table/table-frame"
 import { Badge } from "@/components/ui/badge"
 import {

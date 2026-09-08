@@ -1,23 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useWithdrawalsScreen } from "@/features/admin/withdrawals/hooks/use-withdrawals-screen"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
 import { WithdrawalsSummary } from "@/features/admin/withdrawals/components/withdrawals-summary"
 import { WithdrawalsTable } from "@/features/admin/withdrawals/components/withdrawals-table"
-import { useWithdrawals } from "@/features/admin/withdrawals/hooks/use-withdrawals"
-import type { ListWithdrawalsParams } from "@/features/admin/withdrawals/types"
 
 export function WithdrawalsScreen() {
-  const [params, setParams] = useState<ListWithdrawalsParams>({
-    page: 1,
-    perPage: 20,
-  })
-  const query = useWithdrawals(params)
-
-  function patch(next: Partial<ListWithdrawalsParams>) {
-    setParams((prev) => ({ ...prev, ...next }))
-  }
+  const { params, patch, query } = useWithdrawalsScreen()
 
   return (
     <>

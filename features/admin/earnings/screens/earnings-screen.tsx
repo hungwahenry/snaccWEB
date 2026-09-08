@@ -1,31 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useEarningsScreen } from "@/features/admin/earnings/hooks/use-earnings-screen"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
 import { EarningsLedger } from "@/features/admin/earnings/components/earnings-ledger"
 import { FundsPanel } from "@/features/admin/earnings/components/funds-panel"
-import {
-  useEarnings,
-  useFundMutations,
-  useFunds,
-} from "@/features/admin/earnings/hooks/use-earnings"
-import { useAllUniversities } from "@/features/admin/universities/hooks/use-universities"
-import type { ListEarningsParams } from "@/features/admin/earnings/types"
 
 export function EarningsScreen() {
-  const [params, setParams] = useState<ListEarningsParams>({
-    page: 1,
-    perPage: 20,
-  })
-  const earnings = useEarnings(params)
-  const funds = useFunds()
-  const universities = useAllUniversities()
-  const fundMutations = useFundMutations()
-
-  function patch(next: Partial<ListEarningsParams>) {
-    setParams((prev) => ({ ...prev, ...next }))
-  }
+  const { params, patch, earnings, funds, universities, fundMutations } =
+    useEarningsScreen()
 
   return (
     <>

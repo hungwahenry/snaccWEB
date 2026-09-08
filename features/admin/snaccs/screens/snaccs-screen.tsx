@@ -1,26 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useSnaccsScreen } from "@/features/admin/snaccs/hooks/use-snaccs-screen"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
 import { SnaccsTable } from "@/features/admin/snaccs/components/snaccs-table"
-import {
-  useSnaccMutations,
-  useSnaccs,
-} from "@/features/admin/snaccs/hooks/use-snaccs"
-import type { ListSnaccsParams } from "@/features/admin/snaccs/types"
+import { useSnaccMutations } from "@/features/admin/snaccs/hooks/use-snaccs"
 
 export function SnaccsScreen() {
-  const [params, setParams] = useState<ListSnaccsParams>({
-    page: 1,
-    perPage: 20,
-  })
-  const query = useSnaccs(params)
+  const { params, patch, query } = useSnaccsScreen()
   const actions = useSnaccMutations()
-
-  function patch(next: Partial<ListSnaccsParams>) {
-    setParams((prev) => ({ ...prev, ...next }))
-  }
 
   return (
     <>

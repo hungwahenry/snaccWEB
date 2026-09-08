@@ -1,26 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useUniversitiesScreen } from "@/features/admin/universities/hooks/use-universities-screen"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
 import { UniversitiesTable } from "@/features/admin/universities/components/universities-table"
-import {
-  useUniversities,
-  useUniversityMutations,
-} from "@/features/admin/universities/hooks/use-universities"
-import type { ListUniversitiesParams } from "@/features/admin/universities/types"
+import { useUniversityMutations } from "@/features/admin/universities/hooks/use-universities"
 
 export function UniversitiesScreen() {
-  const [params, setParams] = useState<ListUniversitiesParams>({
-    page: 1,
-    perPage: 20,
-  })
-  const query = useUniversities(params)
+  const { params, patch, query } = useUniversitiesScreen()
   const mutations = useUniversityMutations()
-
-  function patch(next: Partial<ListUniversitiesParams>) {
-    setParams((prev) => ({ ...prev, ...next }))
-  }
 
   return (
     <>

@@ -1,22 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useConversationsScreen } from "@/features/admin/messages/hooks/use-conversations-screen"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
 import { ConversationsTable } from "@/features/admin/messages/components/conversations-table"
-import { useConversations } from "@/features/admin/messages/hooks/use-messages"
-import type { ListConversationsParams } from "@/features/admin/messages/types"
 
 export function ConversationsScreen() {
-  const [params, setParams] = useState<ListConversationsParams>({
-    page: 1,
-    perPage: 20,
-  })
-  const query = useConversations(params)
-
-  function patch(next: Partial<ListConversationsParams>) {
-    setParams((prev) => ({ ...prev, ...next }))
-  }
+  const { patch, query } = useConversationsScreen()
 
   return (
     <>

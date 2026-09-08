@@ -1,22 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useAuditScreen } from "@/features/admin/audit/hooks/use-audit-screen"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
 import { AuditTable } from "@/features/admin/audit/components/audit-table"
-import { useAuditLogs } from "@/features/admin/audit/hooks/use-audit"
-import type { ListAuditParams } from "@/features/admin/audit/types"
 
 export function AuditScreen() {
-  const [params, setParams] = useState<ListAuditParams>({
-    page: 1,
-    perPage: 30,
-  })
-  const query = useAuditLogs(params)
-
-  function patch(next: Partial<ListAuditParams>) {
-    setParams((prev) => ({ ...prev, ...next }))
-  }
+  const { params, patch, query } = useAuditScreen()
 
   return (
     <>

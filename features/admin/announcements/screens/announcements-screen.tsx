@@ -1,28 +1,16 @@
 "use client"
 
-import { useState } from "react"
+import { useAnnouncementsScreen } from "@/features/admin/announcements/hooks/use-announcements-screen"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
 import { AnnouncementsTable } from "@/features/admin/announcements/components/announcements-table"
-import {
-  useAnnouncementMutations,
-  useAnnouncements,
-} from "@/features/admin/announcements/hooks/use-announcements"
+import { useAnnouncementMutations } from "@/features/admin/announcements/hooks/use-announcements"
 import { useAllUniversities } from "@/features/admin/universities/hooks/use-universities"
-import type { ListAnnouncementsParams } from "@/features/admin/announcements/types"
 
 export function AnnouncementsScreen() {
-  const [params, setParams] = useState<ListAnnouncementsParams>({
-    page: 1,
-    perPage: 20,
-  })
-  const query = useAnnouncements(params)
+  const { patch, query } = useAnnouncementsScreen()
   const universities = useAllUniversities()
   const mutations = useAnnouncementMutations()
-
-  function patch(next: Partial<ListAnnouncementsParams>) {
-    setParams((prev) => ({ ...prev, ...next }))
-  }
 
   return (
     <>

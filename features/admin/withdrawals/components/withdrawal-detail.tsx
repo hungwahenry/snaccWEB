@@ -1,7 +1,12 @@
 "use client"
 
 import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
-import { DetailHeader, Fact, Facts, Section } from "@/features/admin/shell/ui/detail"
+import {
+  DetailHeader,
+  Fact,
+  Facts,
+  Section,
+} from "@/features/admin/shell/ui/detail"
 import { UserInline } from "@/features/admin/shell/ui/user-inline"
 import { Badge } from "@/components/ui/badge"
 import { formatDate, formatNaira } from "@/lib/format"

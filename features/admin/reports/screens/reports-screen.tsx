@@ -1,27 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useReportsScreen } from "@/features/admin/reports/hooks/use-reports-screen"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
 import { ReportsTable } from "@/features/admin/reports/components/reports-table"
-import {
-  useReports,
-  useResolveReport,
-} from "@/features/admin/reports/hooks/use-reports"
-import type { ListReportsParams } from "@/features/admin/reports/types"
+import { useResolveReport } from "@/features/admin/reports/hooks/use-reports"
 
 export function ReportsScreen() {
-  const [params, setParams] = useState<ListReportsParams>({
-    page: 1,
-    perPage: 20,
-    status: "open",
-  })
-  const query = useReports(params)
+  const { params, patch, query } = useReportsScreen()
   const resolve = useResolveReport()
-
-  function patch(next: Partial<ListReportsParams>) {
-    setParams((prev) => ({ ...prev, ...next }))
-  }
 
   return (
     <>
