@@ -1,3 +1,5 @@
+import { ChevronRightIcon } from "lucide-react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
@@ -7,7 +9,9 @@ import { AvatarPicker } from "@/features/onboarding/components/avatar-picker"
 import { UsernameField } from "@/features/onboarding/components/username-field"
 import type { UsernameStatus } from "@/features/onboarding/schemas"
 import { GraduationYearSelect } from "@/features/users/components/graduation-year-select"
-import type { Gender } from "@/features/users/types"
+import { MONTH_SHORT } from "@/features/birthdays/utils/options"
+import type { Birthday, Gender } from "@/features/users/types"
+import { cn } from "@/lib/utils"
 import { ProfilePhotos } from "./profile-photos"
 
 const GENDER_OPTIONS: { value: Gender; label: string }[] = [
@@ -23,6 +27,7 @@ export type EditProfileFormProps = {
   usernameMax: number
   bioMax: number
   campusName: string | null
+  birthday: Birthday | null
   avatarUri: string
   pickAvatar: () => void
   coverUri: string | null
@@ -167,14 +172,43 @@ export function EditProfileForm(form: EditProfileFormProps) {
         </select>
       </Field>
 
-      <Field label="Campus">
-        <div className="flex h-14 items-center rounded-full bg-input px-5 text-base text-muted-foreground">
-          {form.campusName ?? "No campus set"}
-          <span className="ml-auto text-xs font-semibold">
-            Change in the app
+      <div className="flex flex-col gap-2">
+        <span className="text-sm font-semibold text-foreground">Campus</span>
+        <Link
+          href="/edit-university"
+          className="flex h-14 items-center justify-between gap-2 rounded-full bg-input px-4 transition-opacity active:opacity-70"
+        >
+          <span
+            className={cn(
+              "flex-1 truncate text-base",
+              form.campusName ? "text-foreground" : "text-muted-foreground"
+            )}
+          >
+            {form.campusName ?? "Pick your campus"}
           </span>
-        </div>
-      </Field>
+          <ChevronRightIcon className="size-5 text-muted-foreground" />
+        </Link>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <span className="text-sm font-semibold text-foreground">Birthday</span>
+        <Link
+          href="/edit-birthday"
+          className="flex h-14 items-center justify-between gap-2 rounded-full bg-input px-4 transition-opacity active:opacity-70"
+        >
+          <span
+            className={cn(
+              "text-base",
+              form.birthday ? "text-foreground" : "text-muted-foreground"
+            )}
+          >
+            {form.birthday
+              ? `${form.birthday.day} ${MONTH_SHORT[form.birthday.month - 1]}`
+              : "Add your birthday"}
+          </span>
+          <ChevronRightIcon className="size-5 text-muted-foreground" />
+        </Link>
+      </div>
 
       <Button
         type="submit"

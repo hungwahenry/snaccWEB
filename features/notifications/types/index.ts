@@ -25,3 +25,12 @@ export interface Notification {
   seen_at: string | null
   created_at: string
 }
+
+export interface NotificationPreference {
+  category: string
+  label: string
+  push: boolean
+  email: boolean
+  emailable: boolean
+  locked: boolean
+}

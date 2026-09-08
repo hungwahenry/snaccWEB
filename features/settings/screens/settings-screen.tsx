@@ -4,11 +4,14 @@ import {
   BanIcon,
   BookmarkIcon,
   ChevronRightIcon,
+  DownloadIcon,
   FileTextIcon,
   FlagIcon,
   GhostIcon,
+  HeartIcon,
   InfoIcon,
   MailIcon,
+  PaletteIcon,
   ShieldCheckIcon,
   UserRoundIcon,
   type LucideIcon,
@@ -37,37 +40,19 @@ function Row({
   icon: Icon,
   label,
   href,
-  external,
 }: {
   icon: LucideIcon
   label: string
   href: string
-  external?: boolean
 }) {
-  const className =
-    "flex items-center gap-3 rounded-2xl py-3.5 transition-colors hover:bg-accent/40 active:opacity-60"
-  const body = (
-    <>
+  return (
+    <Link
+      href={href}
+      className="flex items-center gap-3 rounded-2xl py-3.5 transition-colors hover:bg-accent/40 active:opacity-60"
+    >
       <Icon className="size-5 text-muted-foreground" />
       <span className="flex-1 text-base text-foreground">{label}</span>
       <ChevronRightIcon className="size-5 text-muted-foreground" />
-    </>
-  )
-  if (external) {
-    return (
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={className}
-      >
-        {body}
-      </a>
-    )
-  }
-  return (
-    <Link href={href} className={className}>
-      {body}
     </Link>
   )
 }
@@ -76,6 +61,7 @@ export function SettingsScreen() {
   const back = useBack()
   const logout = useLogout()
   const messagesEnabled = useFlag("anon_messages")
+  const accentsEnabled = useFlag("accent_colors")
 
   function confirmLogout() {
     confirm({
@@ -94,11 +80,23 @@ export function SettingsScreen() {
       <div className="flex flex-col gap-5 px-6 py-6">
         <Section title="Content">
           <Row icon={BookmarkIcon} label="Saved snaccs" href="/saved" />
+          {accentsEnabled ? (
+            <Row
+              icon={PaletteIcon}
+              label="Appearance"
+              href="/settings/appearance"
+            />
+          ) : null}
         </Section>
 
         <Section title="Account">
           <Row icon={MailIcon} label="Change email" href="/settings/email" />
           <Row icon={UserRoundIcon} label="Edit profile" href="/edit-profile" />
+          <Row
+            icon={DownloadIcon}
+            label="Download your data"
+            href="/settings/export"
+          />
         </Section>
 
         {messagesEnabled ? (
@@ -120,8 +118,16 @@ export function SettingsScreen() {
           <Row icon={FlagIcon} label="Your reports" href="/settings/reports" />
         </Section>
 
+        <Section title="Preferences">
+          <Row
+            icon={HeartIcon}
+            label="Notifications"
+            href="/settings/notifications"
+          />
+        </Section>
+
         <Section title="About">
-          <Row icon={InfoIcon} label="About Snacc" href="/" />
+          <Row icon={InfoIcon} label="About Snacc" href="/settings/about" />
           <Row icon={FileTextIcon} label="Terms of Use" href="/terms" />
           <Row icon={ShieldCheckIcon} label="Privacy Policy" href="/privacy" />
         </Section>
@@ -135,6 +141,13 @@ export function SettingsScreen() {
         >
           {logout.isPending ? <Spinner /> : "Log out"}
         </Button>
+
+        <Link
+          href="/settings/delete"
+          className="py-3 text-center text-base font-bold text-destructive transition-opacity active:opacity-60"
+        >
+          Delete account
+        </Link>
       </div>
     </>
   )

@@ -44,6 +44,7 @@ function Editor({ profile }: { profile: Profile }) {
       usernameMax={usernameMax}
       bioMax={bioMax}
       campusName={profile.university?.name ?? null}
+      birthday={profile.birthday}
     />
   )
 }

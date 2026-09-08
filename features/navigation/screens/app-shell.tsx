@@ -8,7 +8,7 @@ import { useMe } from "@/features/auth/hooks/use-me"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { useGhostWindow } from "@/features/ghost/hooks/use-ghost-window"
 import { DiscoverRail } from "@/features/search/screens/discover-rail"
-import { isUnauthenticated } from "@/lib/api/errors"
+import { isSuspended, isUnauthenticated } from "@/lib/api/errors"
 import { AppProviders } from "@/providers/app-providers"
 import { AppFrame } from "../components/app-frame"
 import { BottomTabBar } from "../components/bottom-tab-bar"
@@ -18,7 +18,7 @@ import { useAppNav } from "../hooks/use-app-nav"
 
 // Screens that own the full height of the phone (a chat thread, the composer) take the tab bar's
 // place, the way they push it away in the app.
-const IMMERSIVE = [/^\/messages\/[^/]+/, /^\/compose/]
+const IMMERSIVE = [/^\/messages\/[^/]+/, /^\/compose/, /^\/moments/]
 
 function Gate({ children }: { children: ReactNode }) {
   const router = useRouter()
@@ -26,14 +26,16 @@ function Gate({ children }: { children: ReactNode }) {
   const me = useMe()
 
   const signedOut = me.isError && isUnauthenticated(me.error)
+  const suspended = me.isError && isSuspended(me.error)
   const incomplete = !!me.data && !me.data.profile?.completed_at
 
   useEffect(() => {
     if (signedOut) router.replace(`/login?next=${encodeURIComponent(pathname)}`)
+    else if (suspended) router.replace("/suspended")
     else if (incomplete) router.replace("/complete-profile")
-  }, [signedOut, incomplete, pathname, router])
+  }, [signedOut, suspended, incomplete, pathname, router])
 
-  if (me.isPending || signedOut || incomplete) {
+  if (me.isPending || signedOut || suspended || incomplete) {
     return (
       <div className="flex min-h-dvh items-center justify-center">
         <Spinner className="size-6 text-muted-foreground" />

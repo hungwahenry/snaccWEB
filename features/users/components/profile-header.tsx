@@ -3,7 +3,6 @@
 import {
   BellIcon,
   BellRingIcon,
-  FootprintsIcon,
   HandCoinsIcon,
   SendHorizontalIcon,
 } from "lucide-react"
@@ -12,12 +11,14 @@ import { Bump } from "@/components/motion/bump"
 import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
 import { UserAvatar } from "@/components/ui/user-avatar"
+import { StoryRing } from "@/features/moments/components/moment-ring"
+import { VisitorsButton } from "@/features/profile-views/components/visitors-button"
 import { ScorePill } from "@/features/score/components/score-pill"
 import type { ScoreStanding, ScoreTier } from "@/features/score/types"
 import { compactCount } from "@/lib/format"
 import { richText } from "@/lib/rich-text"
 import { cn } from "@/lib/utils"
-import type { PublicProfile } from "../types"
+import type { MomentRing, PublicProfile } from "../types"
 import { OgBadge, TierName } from "./flair"
 
 type ProfileHeaderProps = {
@@ -26,7 +27,7 @@ type ProfileHeaderProps = {
   isMe: boolean
   myStanding: ScoreStanding | null
   showScore: boolean
-  showVisitors: boolean
+  visitors: { count: number; loading: boolean } | null
   showMessage: boolean
   showPay: boolean
   onToggleFollow: () => void
@@ -35,6 +36,8 @@ type ProfileHeaderProps = {
   onPay: () => void
   onEdit: () => void
   onOpenAvatar: () => void
+  ring: MomentRing | null
+  onOpenMoments: () => void
   followingHref: string
   followersHref: string
 }
@@ -45,7 +48,7 @@ export function ProfileHeader({
   isMe,
   myStanding,
   showScore,
-  showVisitors,
+  visitors,
   showMessage,
   showPay,
   onToggleFollow,
@@ -54,6 +57,8 @@ export function ProfileHeader({
   onPay,
   onEdit,
   onOpenAvatar,
+  ring,
+  onOpenMoments,
   followingHref,
   followersHref,
 }: ProfileHeaderProps) {
@@ -87,32 +92,38 @@ export function ProfileHeader({
 
       <div className="flex flex-col gap-3 px-4 pb-4 sm:px-6">
         <div className="flex items-start justify-between gap-3">
-          <button
-            type="button"
-            onClick={onOpenAvatar}
-            aria-label={`${profile.display_name ?? profile.username ?? "Their"} profile photo`}
-            className="-mt-10 shrink-0 rounded-full ring-4 ring-background transition-opacity active:opacity-80"
-          >
-            <UserAvatar
-              alt={profile.display_name ?? "Avatar"}
-              avatarUrl={profile.avatar_url}
-              name={profile.username}
-              className="size-20"
-              textClassName="text-2xl"
-            />
-          </button>
+          <div className="relative -mt-10 shrink-0">
+            {ring ? (
+              <StoryRing ring={ring} color={tier?.color ?? null} />
+            ) : null}
+            <button
+              type="button"
+              onClick={ring ? onOpenMoments : onOpenAvatar}
+              aria-label={
+                ring
+                  ? `${profile.display_name ?? profile.username ?? "Their"} moments`
+                  : `${profile.display_name ?? profile.username ?? "Their"} profile photo`
+              }
+              className="block rounded-full ring-4 ring-background transition-opacity active:opacity-80"
+            >
+              <UserAvatar
+                alt={profile.display_name ?? "Avatar"}
+                avatarUrl={profile.avatar_url}
+                name={profile.username}
+                className="size-20"
+                textClassName="text-2xl"
+              />
+            </button>
+          </div>
 
           <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
             {isMe ? (
               <>
-                {showVisitors ? (
-                  <Link
-                    href="/visitors"
-                    aria-label="See who visited your profile"
-                    className="flex size-9 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-accent"
-                  >
-                    <FootprintsIcon className="size-5" />
-                  </Link>
+                {visitors ? (
+                  <VisitorsButton
+                    count={visitors.count}
+                    loading={visitors.loading}
+                  />
                 ) : null}
                 <Button variant="outline" onClick={onEdit}>
                   Edit profile

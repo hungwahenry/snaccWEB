@@ -1,7 +1,15 @@
 "use client"
 
 import { CompassIcon } from "lucide-react"
+import { useState } from "react"
 import { EmptyState } from "@/components/ui/empty-state"
+import { BirthdaysToday } from "@/features/birthdays/components/birthdays-today"
+import { useCampusBirthdays } from "@/features/birthdays/hooks/use-campus-birthdays"
+import { MatchDetailSheet } from "@/features/football/components/match-detail-sheet"
+import { Matchday } from "@/features/football/components/matchday"
+import { MatchdaySkeleton } from "@/features/football/components/matchday-skeleton"
+import { useMatchDetail } from "@/features/football/hooks/use-match-detail"
+import { useScoreboard } from "@/features/football/hooks/use-scoreboard"
 import {
   FollowSuggestions,
   FollowSuggestionsSkeleton,
@@ -15,13 +23,20 @@ import { TrendingTags, TrendingTagsSkeleton } from "../components/trending-tags"
 /// What the search page shows before a query: what's trending and who to follow.
 export function Discover({ compact = false }: { compact?: boolean }) {
   const ghost = useGhostHourCard()
+  const scoreboard = useScoreboard()
+  const birthdays = useCampusBirthdays()
   const hashtags = usePopularHashtags()
   const suggestions = useFollowSuggestions()
+  const [matchId, setMatchId] = useState<string | null>(null)
+  const match = useMatchDetail(matchId)
 
+  const matches = scoreboard.data?.matches ?? []
   const tags = hashtags.data ?? []
   const quiet =
+    !scoreboard.isLoading &&
     !hashtags.isLoading &&
     !suggestions.loading &&
+    matches.length === 0 &&
     tags.length === 0 &&
     suggestions.users.length === 0
 
@@ -34,6 +49,15 @@ export function Discover({ compact = false }: { compact?: boolean }) {
       {ghost.visible ? (
         <GhostHourCard active={ghost.active} subtitle={ghost.subtitle} />
       ) : null}
+      {compact ? null : scoreboard.isLoading ? (
+        <MatchdaySkeleton />
+      ) : (
+        <Matchday
+          matches={matches}
+          onPressMatch={(entry) => setMatchId(entry.id)}
+        />
+      )}
+      <BirthdaysToday celebrants={birthdays.data ?? []} />
       {suggestions.loading ? (
         <FollowSuggestionsSkeleton />
       ) : (
@@ -55,6 +79,16 @@ export function Discover({ compact = false }: { compact?: boolean }) {
           className="py-10"
         />
       ) : null}
+
+      {compact ? null : (
+        <MatchDetailSheet
+          open={matchId !== null}
+          onOpenChange={(open) => !open && setMatchId(null)}
+          detail={match.data ?? null}
+          loading={match.isLoading}
+          failed={match.isError}
+        />
+      )}
     </div>
   )
 }

@@ -33,6 +33,9 @@ export type MessageComposerProps = {
   viewOnce?: boolean
   onToggleViewOnce?: () => void
   actions?: ComposerAction[]
+  onDark?: boolean
+  onFocus?: () => void
+  onBlur?: () => void
 }
 
 export function MessageComposer({
@@ -53,6 +56,9 @@ export function MessageComposer({
   viewOnce = false,
   onToggleViewOnce,
   actions = [],
+  onDark = false,
+  onFocus,
+  onBlur,
 }: MessageComposerProps) {
   const showDrafts = images.length > 0 && Boolean(onRemoveImage)
   const showViewOnce = images.length === 1 && Boolean(onToggleViewOnce)
@@ -67,7 +73,12 @@ export function MessageComposer({
   }, [])
 
   return (
-    <div className="border-t border-border bg-background px-3 py-2 pb-[max(env(safe-area-inset-bottom),8px)]">
+    <div
+      className={cn(
+        "px-3 py-2 pb-[max(env(safe-area-inset-bottom),8px)]",
+        !onDark && "border-t border-border bg-background"
+      )}
+    >
       {context || showDrafts ? (
         <div className="mb-2 rounded-2xl bg-input">
           {context ? <ComposerContextRow context={context} /> : null}
@@ -98,7 +109,8 @@ export function MessageComposer({
         <div
           className={cn(
             "flex min-h-14 flex-1 items-end gap-3 bg-input py-1.5 pr-1.5 pl-5",
-            tall ? "rounded-2xl" : "rounded-full"
+            tall ? "rounded-2xl" : "rounded-full",
+            onDark && "border border-white/40 bg-black/35"
           )}
         >
           <textarea
@@ -111,6 +123,8 @@ export function MessageComposer({
             maxLength={maxLength}
             placeholder={editing ? "Edit message…" : placeholder}
             onChange={(event) => onChange(event.target.value)}
+            onFocus={onFocus}
+            onBlur={onBlur}
             onKeyDown={(event) => {
               if (
                 event.key === "Enter" &&
@@ -121,7 +135,12 @@ export function MessageComposer({
                 onSend()
               }
             }}
-            className="field-sizing-content max-h-32 flex-1 resize-none self-center bg-transparent py-2 text-base leading-5 text-foreground outline-none placeholder:text-muted-foreground/50"
+            className={cn(
+              "field-sizing-content max-h-32 flex-1 resize-none self-center bg-transparent py-2 text-base leading-5 outline-none",
+              onDark
+                ? "text-white placeholder:text-white/50"
+                : "text-foreground placeholder:text-muted-foreground/50"
+            )}
             style={{ minHeight: INPUT_REST_HEIGHT }}
           />
           <button
@@ -130,9 +149,13 @@ export function MessageComposer({
             aria-label={editing ? "Save edit" : "Send"}
             className={cn(
               "flex size-11 shrink-0 items-center justify-center rounded-full transition-colors",
-              canSend || sending
-                ? "bg-primary text-primary-foreground hover:opacity-90"
-                : "bg-muted text-muted-foreground",
+              onDark
+                ? canSend || sending
+                  ? "bg-white text-black hover:opacity-90"
+                  : "bg-white/25 text-white/60"
+                : canSend || sending
+                  ? "bg-primary text-primary-foreground hover:opacity-90"
+                  : "bg-muted text-muted-foreground",
               tall && "mb-1.5"
             )}
           >

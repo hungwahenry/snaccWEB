@@ -9,6 +9,9 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
 import { useFlag } from "@/features/config/hooks/use-flag"
+import { MomentTray } from "@/features/moments/components/moment-tray"
+import { MomentTraySkeleton } from "@/features/moments/components/moment-tray-skeleton"
+import { useMomentsStrip } from "@/features/moments/hooks/use-moments-strip"
 import { AppHeader } from "@/features/navigation/components/app-header"
 import { SnaccSheets } from "@/features/snaccs/components/sheets/snacc-sheets"
 import { SnaccList } from "@/features/snaccs/components/snacc-list"
@@ -40,6 +43,7 @@ export function HomeScreen() {
   const screen = useFeedScreen()
   const { handlers, votingPollFor, sheets } = useSnaccActions()
   const tracker = useViewTracker()
+  const moments = useMomentsStrip()
   const searchEnabled = useFlag("search")
   const messagesEnabled = useFlag("anon_messages")
   // When messages are off, Explore already sits in the phone's tab bar; the header stays clean.
@@ -87,6 +91,20 @@ export function HomeScreen() {
         handlers={handlers}
         votingPollFor={votingPollFor}
         itemRef={tracker.ref}
+        header={
+          moments.show ? (
+            moments.loading ? (
+              <MomentTraySkeleton />
+            ) : (
+              <MomentTray
+                mine={moments.mine}
+                others={moments.others}
+                onOpen={moments.open}
+                onCompose={moments.compose}
+              />
+            )
+          ) : undefined
+        }
         failedTitle={
           screen.scope === "campus"
             ? "Could not load your campus"

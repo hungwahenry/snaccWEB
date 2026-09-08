@@ -39,3 +39,7 @@ export function isNotFound(error: unknown): boolean {
 export function isUnauthenticated(error: unknown): boolean {
   return isApiError(error) && error.status === 401
 }
+
+export function isSuspended(error: unknown): boolean {
+  return isApiError(error) && error.code === "account_suspended"
+}

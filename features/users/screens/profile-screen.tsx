@@ -15,6 +15,8 @@ import { useFlag } from "@/features/config/hooks/use-flag"
 import { usePostNotifications } from "@/features/follows/hooks/use-post-notifications"
 import { useToggleFollow } from "@/features/follows/hooks/use-toggle-follow"
 import { useMessageUser } from "@/features/messages/hooks/use-message-user"
+import { momentsPath } from "@/features/moments/routes"
+import { useVisitorSummary } from "@/features/profile-views/hooks/use-visitor-summary"
 import { useLightbox } from "@/providers/lightbox-provider"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { ReportSheet } from "@/features/reports/components/report-sheet"
@@ -73,6 +75,8 @@ export function ProfileScreen({ username }: { username: string }) {
   const visitorsEnabled = useFlag("profile_visitors")
   const messagesEnabled = useFlag("anon_messages")
   const walletEnabled = useFlag("wallet")
+  const momentsEnabled = useFlag("moments")
+  const visitorSummary = useVisitorSummary(isMe && visitorsEnabled)
 
   const tabIcon =
     PROFILE_TABS.find((entry) => entry.value === tab)?.icon ?? UserRoundXIcon
@@ -121,7 +125,14 @@ export function ProfileScreen({ username }: { username: string }) {
             isMe={isMe}
             myStanding={isMe && scoreEnabled ? (myScore.data ?? null) : null}
             showScore={scoreEnabled}
-            showVisitors={visitorsEnabled}
+            visitors={
+              isMe && visitorsEnabled
+                ? {
+                    count: visitorSummary.summary?.total ?? 0,
+                    loading: visitorSummary.loading,
+                  }
+                : null
+            }
             showMessage={messagesEnabled}
             showPay={walletEnabled}
             onToggleFollow={() => toggle.mutate(profile)}
@@ -134,6 +145,8 @@ export function ProfileScreen({ username }: { username: string }) {
             onOpenAvatar={() =>
               lightbox.open({ images: [{ url: profile.avatar_url }], index: 0 })
             }
+            ring={momentsEnabled ? profile.moments : null}
+            onOpenMoments={() => router.push(momentsPath(profile.id))}
             followingHref={followsPath(profile.username ?? "", "following")}
             followersHref={followsPath(profile.username ?? "", "followers")}
           />

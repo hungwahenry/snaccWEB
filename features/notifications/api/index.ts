@@ -1,6 +1,6 @@
 import { api } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
-import type { Notification } from "../types"
+import type { Notification, NotificationPreference } from "../types"
 
 export function listNotifications(
   page: number
@@ -24,3 +24,15 @@ export async function markAllNotificationsRead(): Promise<void> {
 export async function markNotificationsSeen(): Promise<void> {
   await api.post("/notifications/seen")
 }
+
+export const getNotificationPreferences = () =>
+  api.get<NotificationPreference[]>("/notifications/preferences")
+
+export interface UpdatePreferenceInput {
+  category: string
+  push: boolean
+  email: boolean
+}
+
+export const updateNotificationPreference = (input: UpdatePreferenceInput) =>
+  api.put<NotificationPreference[]>("/notifications/preferences", input)

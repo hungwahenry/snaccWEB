@@ -1,0 +1,47 @@
+import { XIcon } from "lucide-react"
+import type { ReactNode } from "react"
+import { Button } from "@/components/ui/button"
+
+/// The colour is the moment, so it stops where the moment does: at the bar, not behind it.
+export function MomentTextShell({
+  background,
+  onClose,
+  children,
+  bar,
+}: {
+  background: string
+  onClose: () => void
+  children: ReactNode
+  bar: ReactNode
+}) {
+  return (
+    <div className="flex min-h-dvh flex-col">
+      <div
+        className="flex flex-1 flex-col pt-[env(safe-area-inset-top)]"
+        style={{ backgroundColor: background }}
+      >
+        <div className="relative flex h-16 items-center justify-center">
+          <h1 className="truncate px-16 text-center text-xl font-extrabold tracking-tight text-white">
+            New moment
+          </h1>
+          <div className="absolute inset-y-0 left-4 flex items-center">
+            <Button
+              variant="secondary"
+              size="icon"
+              onClick={onClose}
+              aria-label="Close"
+            >
+              <XIcon className="size-6" />
+            </Button>
+          </div>
+        </div>
+
+        {children}
+      </div>
+
+      <div className="sticky bottom-0 z-20 border-t border-border bg-background pb-[env(safe-area-inset-bottom)]">
+        {bar}
+      </div>
+    </div>
+  )
+}
