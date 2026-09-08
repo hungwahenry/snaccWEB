@@ -7,7 +7,6 @@ import { conversationPath, newMessagePath } from "../routes"
 
 type Target = { id: string; username: string | null }
 
-/// "Message" from a profile: reopen the thread you already have, or start an anonymous one.
 export function useMessageUser() {
   const router = useRouter()
 

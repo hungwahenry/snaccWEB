@@ -24,8 +24,6 @@ type Overrides = {
   onPress?: (snacc: Snacc) => void | false
 }
 
-/// Everything a snacc card can do, wired once per screen. The handlers are stable so memoised
-/// cards do not re-render when unrelated state changes.
 export function useSnaccActions(overrides: Overrides = {}) {
   const router = useRouter()
   const react = useReactToSnacc()
@@ -100,7 +98,6 @@ export function useSnaccActions(overrides: Overrides = {}) {
       onOpenImages: (snacc, index) => {
         const { lightbox } = latest.current
         signal("image_open", { subjectId: snacc.id, value: index })
-        // A quoted snacc carries no counts, so only a full card gets the action bar.
         const footer =
           "resnacc_of" in snacc
             ? createElement(LightboxActions, {

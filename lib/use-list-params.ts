@@ -27,8 +27,6 @@ export function useListParams<T extends Record<string, string>>(extra?: {
 
   const set = useCallback(
     (patch: Record<string, string | number | null>) =>
-      // Any change to a filter puts you back on the first page; staying on page 7 of a result
-      // set that no longer has seven pages is how a list looks broken.
       void setState({ page: 1, ...patch }),
     [setState]
   )

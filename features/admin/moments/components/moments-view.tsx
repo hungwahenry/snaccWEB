@@ -45,7 +45,6 @@ export function MomentsView() {
         cell: ({ row }) => (
           <div className="flex items-center gap-3">
             {row.original.image_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={row.original.image_url}
                 alt=""

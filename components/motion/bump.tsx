@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils"
 const BUMP_SCALE = 1.25
 const BUMP_MS = 120
 
-/// Pops its children when `value` changes, never on first paint, so a fresh list stays still.
 export function Bump({
   value,
   children,

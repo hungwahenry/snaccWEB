@@ -2,7 +2,6 @@ import type { MomentRing } from "@/features/users/types"
 import { cn } from "@/lib/utils"
 import { ringColors, ringGradient } from "../utils/ring"
 
-/// Sits around a profile avatar. The parent is relative; this floats 5px outside it.
 export function StoryRing({
   ring,
   color,

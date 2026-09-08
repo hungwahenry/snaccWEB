@@ -1,7 +1,6 @@
 import type { LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-/// The big icon, title and one-liner at the top of an account action screen.
 export function SettingsIntro({
   icon: Icon,
   title,

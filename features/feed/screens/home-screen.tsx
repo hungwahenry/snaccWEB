@@ -48,7 +48,6 @@ export function HomeScreen() {
   const searchEnabled = useFlag("search")
   const messagesEnabled = useFlag("anon_messages")
   const walletEnabled = useFlag("wallet")
-  // When messages are off, Explore already sits in the phone's tab bar; the header stays clean.
   const searchInHeader = searchEnabled && messagesEnabled
 
   const empty = EMPTY[screen.scope]

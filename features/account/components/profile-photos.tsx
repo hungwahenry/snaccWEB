@@ -18,7 +18,6 @@ export function ProfilePhotos({
     <div className="-mx-6 flex flex-col">
       <div className="relative h-32 bg-muted">
         {coverUri ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img src={coverUri} alt="" className="size-full object-cover" />
         ) : null}
         <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/20">

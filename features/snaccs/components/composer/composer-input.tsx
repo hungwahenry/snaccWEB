@@ -10,7 +10,6 @@ type ComposerInputProps = {
   autoFocus?: boolean
 }
 
-/// A growing textarea that also reports where the caret is, so @ and # typeahead can follow it.
 export function ComposerInput({
   value,
   onChange,

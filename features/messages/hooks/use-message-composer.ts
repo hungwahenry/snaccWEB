@@ -63,7 +63,6 @@ export function useMessageComposer({
   const wasEditing = useRef(false)
   const trimmed = body.trim()
 
-  // Editing borrows the box: the draft you were typing comes back once the edit is done.
   useEffect(() => {
     if (editing && !wasEditing.current) {
       setBody((current) => {

@@ -15,7 +15,6 @@ export function MessageDraftImages({
           key={image.uri}
           className="relative size-20 shrink-0 overflow-hidden rounded-xl bg-muted"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={image.uri} alt="" className="size-full object-cover" />
           <button
             type="button"

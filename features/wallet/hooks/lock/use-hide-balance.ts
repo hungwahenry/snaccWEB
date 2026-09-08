@@ -26,9 +26,7 @@ export function useHideBalance() {
   const toggle = useCallback(() => {
     try {
       window.localStorage.setItem(KEY, read() ? "off" : "on")
-    } catch {
-      // Storage refused; the choice simply will not persist.
-    }
+    } catch {}
     listeners.forEach((listener) => listener())
   }, [])
 

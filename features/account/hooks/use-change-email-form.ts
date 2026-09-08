@@ -36,9 +36,7 @@ export function useChangeEmailForm() {
         newEmail: newEmail.trim(),
       })
       change.mutate(challengeId)
-    } catch {
-      // Dismissed the code sheet; nothing to do.
-    }
+    } catch {}
   }
 
   return {

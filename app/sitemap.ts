@@ -24,9 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         })
       }
     }
-  } catch {
-    // backend unreachable at build — ship the static entries only
-  }
+  } catch {}
 
   return entries
 }

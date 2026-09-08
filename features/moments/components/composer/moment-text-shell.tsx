@@ -2,7 +2,6 @@ import { XIcon } from "lucide-react"
 import type { ReactNode } from "react"
 import { Button } from "@/components/ui/button"
 
-/// The colour is the moment, so it stops where the moment does: at the bar, not behind it.
 export function MomentTextShell({
   background,
   onClose,

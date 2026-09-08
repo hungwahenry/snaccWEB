@@ -132,7 +132,9 @@ export function UserManagePanel({
         <SettingRow
           label="Campus"
           state={
-            <Badge variant="outline">{user.university?.acronym ?? "None"}</Badge>
+            <Badge variant="outline">
+              {user.university?.acronym ?? "None"}
+            </Badge>
           }
           description="Which university the account belongs to. Posts keep the campus they were posted from."
           action={

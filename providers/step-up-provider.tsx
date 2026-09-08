@@ -22,8 +22,6 @@ type StepUpFn = (
 
 const StepUpContext = createContext<StepUpFn | null>(null)
 
-/// Re-confirms a sensitive action with an emailed code. Resolves with the challenge id the API
-/// wants back, or rejects with "cancelled" when the sheet is dismissed.
 export function useStepUp(): StepUpFn {
   const stepUp = useContext(StepUpContext)
   if (!stepUp) throw new Error("useStepUp must be used within StepUpProvider")

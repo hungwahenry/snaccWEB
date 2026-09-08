@@ -13,7 +13,6 @@ export function MomentAttachment({
   return (
     <div className="flex gap-3 px-2">
       <div className="relative size-28 overflow-hidden rounded-2xl bg-muted">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={image.uri} alt="" className="size-full object-cover" />
         <button
           type="button"

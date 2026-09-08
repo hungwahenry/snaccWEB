@@ -3,8 +3,6 @@
 import { MessageComposer } from "@/features/messages/components/composer/message-composer"
 import { useMessageComposer } from "@/features/messages/hooks/use-message-composer"
 
-/// The DM composer with everything it can attach left switched off. Reusing it rather than
-/// rebuilding a growing text field is the point.
 export function MomentReplyComposer({
   onReply,
   replying,

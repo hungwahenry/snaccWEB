@@ -136,7 +136,6 @@ function PermissionsDialog({
   )
 
   function onOpenChange(next: boolean) {
-    // Re-seed the checklist from the role's current permissions each time it opens.
     if (next) setChecked(new Set(role.permission_keys))
     setOpen(next)
   }

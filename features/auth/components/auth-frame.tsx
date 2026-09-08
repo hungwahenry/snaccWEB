@@ -3,7 +3,6 @@ import type { ReactNode } from "react"
 import { Wordmark } from "@/components/marketing/wordmark"
 import { IconButton } from "@/components/ui/icon-button"
 
-/// The narrow column every signed-out screen sits in, on a phone and on a desktop alike.
 export function AuthFrame({
   children,
   onBack,

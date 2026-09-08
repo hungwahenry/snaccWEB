@@ -4,7 +4,6 @@ export function editorFont(size: number): string {
 
 let scratch: CanvasRenderingContext2D | null = null
 
-/// Text width in the editor's font, for wrapping and hit-testing. Runs on one hidden canvas.
 export function measureLine(line: string, size: number): number {
   if (!scratch) scratch = document.createElement("canvas").getContext("2d")
   if (!scratch) return line.length * size * 0.5

@@ -16,7 +16,5 @@ export function rememberedFeedSort(): FeedSort | null {
 export function rememberFeedSort(sort: FeedSort): void {
   try {
     window.localStorage.setItem(SORT_KEY, sort)
-  } catch {
-    // Storage may be unavailable; the choice just does not survive the tab.
-  }
+  } catch {}
 }

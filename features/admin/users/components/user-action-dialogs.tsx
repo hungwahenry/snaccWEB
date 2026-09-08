@@ -457,7 +457,10 @@ export function CampusDialog({
         ) : (
           <Field>
             <FieldLabel>University</FieldLabel>
-            <Select value={selected} onValueChange={(value) => setSelected(value ?? "")}>
+            <Select
+              value={selected}
+              onValueChange={(value) => setSelected(value ?? "")}
+            >
               <SelectTrigger>
                 <SelectValue
                   placeholder={user.university?.name ?? "Pick a campus"}

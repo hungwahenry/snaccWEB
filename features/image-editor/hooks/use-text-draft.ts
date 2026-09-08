@@ -44,7 +44,6 @@ export function useTextDraft(bounds: Size, defaultSize: number) {
     setDraft(null)
   }
 
-  // A settled block drags anywhere within the picture.
   const drag = {
     onPointerDown(event: PointerEvent<HTMLElement>) {
       if (!draft || draft.editing) return

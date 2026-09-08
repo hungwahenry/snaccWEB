@@ -295,7 +295,6 @@ function MessageGifView({ gif }: { gif: MessageGif }) {
       className="overflow-hidden rounded-2xl bg-muted"
       style={{ width: GIF_WIDTH, aspectRatio: ratio }}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={gif.url}
         alt="GIF"

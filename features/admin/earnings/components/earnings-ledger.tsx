@@ -20,11 +20,7 @@ import {
 import { useEngagement } from "@/features/admin/engagement/hooks/use-engagement"
 import { formatDate, formatNaira } from "@/lib/format"
 import type { Paginated } from "@/lib/api/types"
-import type {
-  AdminEarning,
-  EarningParty,
-  ListEarningsParams,
-} from "../types"
+import type { AdminEarning, EarningParty, ListEarningsParams } from "../types"
 
 function handle(party: EarningParty | null) {
   if (!party) return null

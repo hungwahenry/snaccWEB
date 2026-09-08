@@ -44,7 +44,6 @@ function Frame({
       className="block overflow-hidden rounded-lg border bg-muted/40 transition-opacity hover:opacity-90"
       title="Open the original"
     >
-      {/* eslint-disable-next-line @next/next/no-img-element -- user media on arbitrary hosts */}
       <img
         src={url}
         alt={alt}

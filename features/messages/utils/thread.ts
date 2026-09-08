@@ -12,8 +12,6 @@ export interface ThreadItem {
   lastInBurst: boolean
 }
 
-/// Messages arrive newest first. This returns them oldest first, the way a thread reads on a page,
-/// with day labels and burst edges worked out.
 export function decorateThread(
   newestFirst: Message[],
   hasOlder: boolean

@@ -13,7 +13,6 @@ export function draftPreview(draft: StoredDraft): string {
   return "Empty draft"
 }
 
-/// A remote URL when the draft has one, or the blob that needs an object URL made for it.
 export function draftThumb(
   draft: StoredDraft
 ): { url: string } | { blob: Blob } | null {

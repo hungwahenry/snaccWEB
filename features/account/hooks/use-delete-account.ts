@@ -25,9 +25,7 @@ export function useDeleteAccount() {
     try {
       const challengeId = await stepUp("account_delete")
       mutation.mutate(challengeId)
-    } catch {
-      // Dismissed the code sheet; nothing to do.
-    }
+    } catch {}
   }
 
   return {

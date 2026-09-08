@@ -30,7 +30,6 @@ function OptionThumb({
       aria-label={`${option.label} image`}
       className="shrink-0 transition-opacity active:opacity-80"
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={option.image.thumb_url ?? option.image.url}
         alt=""

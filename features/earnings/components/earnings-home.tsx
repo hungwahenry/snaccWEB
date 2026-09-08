@@ -9,7 +9,6 @@ import { EarningsSkeleton } from "./earnings-skeleton"
 import { FundBar } from "./fund-bar"
 import { MilestoneList } from "./milestone-list"
 
-/// Earnings on their own, for when the wallet is switched off.
 export function EarningsHome() {
   const wallet = useEarningsWallet()
   const fund = useCampusFund()

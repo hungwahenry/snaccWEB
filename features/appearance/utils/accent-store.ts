@@ -21,8 +21,6 @@ export function readAccent(): Accent {
 export function writeAccent(accent: Accent): void {
   try {
     window.localStorage.setItem(STORAGE_KEY, accent.key)
-  } catch {
-    // Storage refused the write; the colour lasts for this visit only.
-  }
+  } catch {}
   listeners.forEach((listener) => listener())
 }

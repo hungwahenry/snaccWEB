@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react"
 
-/// Sits at the end of a list and asks for the next page as it scrolls into view.
 export function LoadMore({
   onReach,
   disabled = false,

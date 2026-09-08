@@ -2,7 +2,6 @@ import { GhostIcon } from "lucide-react"
 import Link from "next/link"
 import { newMessagePath } from "@/features/messages/routes"
 
-/// The signed-out profile's way in: log in, then land straight in an anonymous message to them.
 export function MessageCta({
   id,
   username,

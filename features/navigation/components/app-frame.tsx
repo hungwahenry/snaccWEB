@@ -1,7 +1,6 @@
 import type { ReactNode } from "react"
 import { cn } from "@/lib/utils"
 
-/// Three columns on a wide screen, one on a phone: rail, the 600px feed column, and a side rail.
 export function AppFrame({
   sidebar,
   rail,

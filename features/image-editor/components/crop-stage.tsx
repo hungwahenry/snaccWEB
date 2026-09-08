@@ -87,7 +87,6 @@ export function CropStage({ image, stage, aspect, onChange }: CropStageProps) {
       className="relative touch-none select-none"
       style={{ width: stage.width, height: stage.height }}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={image.uri}
         alt=""
@@ -104,7 +103,6 @@ export function CropStage({ image, stage, aspect, onChange }: CropStageProps) {
           height: box.height,
         }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={image.uri}
           alt=""

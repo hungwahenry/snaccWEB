@@ -10,8 +10,6 @@ type ProfileLinkProps = Omit<ComponentProps<typeof Link>, "href"> & {
   children: ReactNode
 }
 
-/// Wraps whatever names a person so a click lands on their profile. Without a username there is
-/// nowhere to go, so it renders inert.
 export function ProfileLink({
   username,
   fromSnaccId,

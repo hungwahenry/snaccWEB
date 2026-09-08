@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils"
 
-/// The thread line down from an avatar, the way a quote hangs off the post that made it.
 export function QuoteRail({ className }: { className?: string }) {
   return (
     <div

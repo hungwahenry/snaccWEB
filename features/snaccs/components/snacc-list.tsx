@@ -31,8 +31,6 @@ export type SnaccListProps = {
   renderItem?: (snacc: Snacc) => ReactNode
 }
 
-/// A column of snaccs with its loading, failed and empty states. The rows are memoised cards;
-/// screens decide what happens on each action.
 export function SnaccList({
   snaccs,
   loading,

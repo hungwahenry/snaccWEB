@@ -15,7 +15,6 @@ function load(uri: string): Promise<HTMLImageElement> {
   })
 }
 
-/// Flattens the layers into the picture at its own resolution, not the size it was drawn at.
 export async function exportScene(
   original: PickedImage,
   drawn: Size,

@@ -24,7 +24,6 @@ export function onMoneyRequest(): void {
 export function onVirtualAccount(): void {
   const queryClient = getQueryClient()
   void queryClient.invalidateQueries({ queryKey: VIRTUAL_ACCOUNT_KEY })
-  // An active account number is what makes the tier verified, which raises every daily limit.
   void queryClient.invalidateQueries({ queryKey: LIMITS_KEY })
 }
 

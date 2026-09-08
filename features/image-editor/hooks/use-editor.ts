@@ -40,7 +40,6 @@ export function useEditor(
 
   const text = useTextDraft(size, layers.textSize)
 
-  // A new picture is the only thing that resets the editor; settled on the render it arrives on.
   const [openedFor, setOpenedFor] = useState(image?.uri)
   if (image?.uri !== openedFor) {
     setOpenedFor(image?.uri)

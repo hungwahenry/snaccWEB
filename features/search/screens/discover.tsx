@@ -20,7 +20,6 @@ import { useGhostHourCard } from "@/features/ghost/hooks/use-ghost-hour-card"
 import { usePopularHashtags } from "@/features/hashtags/hooks/use-popular-hashtags"
 import { TrendingTags, TrendingTagsSkeleton } from "../components/trending-tags"
 
-/// What the search page shows before a query: what's trending and who to follow.
 export function Discover({ compact = false }: { compact?: boolean }) {
   const ghost = useGhostHourCard()
   const scoreboard = useScoreboard()

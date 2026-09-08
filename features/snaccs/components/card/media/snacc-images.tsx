@@ -53,7 +53,6 @@ export function SnaccImages({
         className="relative block w-full overflow-hidden rounded-2xl bg-muted"
         style={{ aspectRatio: Math.max(aspectRatio(image), SINGLE_MIN_RATIO) }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={image.thumb_url ?? image.url}
           alt=""
@@ -95,7 +94,6 @@ export function SnaccImages({
             images.length === 3 && index === 0 && "row-span-2"
           )}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={image.thumb_url ?? image.url}
             alt=""

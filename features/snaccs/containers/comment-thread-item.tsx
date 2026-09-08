@@ -10,7 +10,6 @@ type CommentThreadItemProps = SnaccActionHandlers & {
   votingPollFor: string | null
 }
 
-/// One comment plus its unfolding replies. Owns only the open/closed state of that fold.
 export function CommentThreadItem({
   comment,
   votingPollFor,

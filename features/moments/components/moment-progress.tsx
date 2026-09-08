@@ -30,7 +30,6 @@ export function MomentProgress({
   )
 }
 
-/// Animates itself from the clock's snapshot, so a pause freezes exactly where the card is.
 function RunningBar({ clock }: { clock: MomentClock }) {
   const bar = useRef<HTMLSpanElement>(null)
   const { running, restartKey, duration, snapshot } = clock

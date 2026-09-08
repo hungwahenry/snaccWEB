@@ -45,7 +45,6 @@ function subscribe(listener: () => void): () => void {
 const getSnapshot = () => state
 const getServerSnapshot = (): ConfirmState => ({ options: null, open: false })
 
-// Callable from hooks and plain modules, so a confirmation never needs component plumbing.
 export function confirm(options: ConfirmOptions): void {
   set({ options, open: true })
 }

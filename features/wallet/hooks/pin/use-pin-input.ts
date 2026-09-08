@@ -4,7 +4,6 @@ import { useState } from "react"
 
 export const PIN_LENGTH = 6
 
-/// A six-digit entry. `onComplete` fires from the key press that fills it, with the box wiped.
 export function usePinInput(onComplete?: (pin: string) => void) {
   const [value, setValue] = useState("")
 

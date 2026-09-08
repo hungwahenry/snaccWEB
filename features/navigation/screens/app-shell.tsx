@@ -16,8 +16,6 @@ import { RightRail } from "../components/right-rail"
 import { Sidebar } from "../components/sidebar"
 import { useAppNav } from "../hooks/use-app-nav"
 
-// Screens that own the full height of the phone (a chat thread, the composer) take the tab bar's
-// place, the way they push it away in the app.
 const IMMERSIVE = [
   /^\/messages\/[^/]+/,
   /^\/compose/,

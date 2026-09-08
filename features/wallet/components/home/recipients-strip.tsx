@@ -30,7 +30,6 @@ export function RecipientsStrip({
   )
 }
 
-/// Tap to send again; hold or right-click to forget them.
 function RecipientChip({
   recipient,
   onPress,

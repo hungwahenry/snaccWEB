@@ -17,7 +17,6 @@ export function ViewOnceViewer({
       >
         <DialogTitle className="sr-only">View once photo</DialogTitle>
         {url ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={url}
             alt=""

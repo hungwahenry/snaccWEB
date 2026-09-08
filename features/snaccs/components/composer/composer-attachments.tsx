@@ -111,7 +111,6 @@ export function ComposerAttachments({
                 maxWidth: "100%",
               }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={gif.url} alt="GIF" className="size-full object-cover" />
               <CornerButton
                 onPress={onRemoveGif}
@@ -129,7 +128,6 @@ export function ComposerAttachments({
                     key={key}
                     className="relative size-28 shrink-0 overflow-hidden rounded-2xl bg-muted"
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={draftImageUri(image)}
                       alt=""

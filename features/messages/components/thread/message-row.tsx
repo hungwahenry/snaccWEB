@@ -68,9 +68,6 @@ function MessageRowComponent({
     settled ? () => onOpenActions(message) : undefined
   )
 
-  // Sits inboard of the bubble on both sides, as on the phone, so neither edge of the thread
-  // gets ragged. A finger sees the reaction trigger and long-presses for the rest; a mouse gets
-  // everything on hover.
   const tools = settled ? (
     <span className="flex shrink-0 items-center gap-0.5 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100 md:has-[[data-popup-open]]:opacity-100">
       <ReactionPicker

@@ -160,7 +160,6 @@ export function searchEmojis(catalog: Catalog, query: string): ReactionEmoji[] {
     .map((hit) => hit.emoji)
 }
 
-/// The quick set needs no catalog, so the picker opens instantly; every other tab waits for it.
 export function emojisFor(
   catalog: Catalog | null,
   category: PickerCategory

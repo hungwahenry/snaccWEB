@@ -61,7 +61,6 @@ export function usePinSetup(mode: "setup" | "change", onDone: () => void) {
       stepUpId.current = await stepUp("wallet_pin")
       setStage("enter")
     } catch {
-      // Dismissed the code sheet.
     } finally {
       starting.current = false
     }

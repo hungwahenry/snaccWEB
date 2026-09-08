@@ -128,7 +128,6 @@ export function RichTextEditor({
   return (
     <div className="flex h-[60vh] flex-col overflow-hidden rounded-xl border border-input">
       <Toolbar editor={editor} />
-      {/* The body scrolls inside the frame: a long page must not push the toolbar and Save away. */}
       <EditorContent
         editor={editor}
         className="min-h-0 flex-1 overflow-y-auto overscroll-contain"

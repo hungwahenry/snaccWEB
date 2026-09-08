@@ -17,7 +17,6 @@ const TABS: { key: MoneySection; label: string; icon: LucideIcon }[] = [
   { key: "earnings", label: "Earnings", icon: SparklesIcon },
 ]
 
-/// The app's money tabs: a bottom bar on a phone, a row under the header on a wide screen.
 export function MoneyTabBar({
   section,
   onChange,

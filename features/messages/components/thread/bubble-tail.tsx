@@ -6,7 +6,6 @@ export const TAIL_DROP = 6
 const BIG = 10
 const SMALL = 6
 
-/// Two dots trailing off the last bubble of a burst, like a speech cloud. The parent is relative.
 export function BubbleTail({ mine }: { mine: boolean }) {
   const tone = mine ? "bg-primary" : "bg-muted"
   const side = (offset: number) =>

@@ -53,7 +53,6 @@ export async function clearUserToken(): Promise<void> {
   store.delete(USER_COOKIE)
 }
 
-/// The token any authenticated request rides on: the user session first, the admin one otherwise.
 export async function getBearerToken(): Promise<string | undefined> {
   return (await getUserToken()) ?? (await getSessionToken())
 }

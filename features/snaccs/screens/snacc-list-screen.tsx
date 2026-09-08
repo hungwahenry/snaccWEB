@@ -29,7 +29,6 @@ type SnaccListScreenProps = {
   header?: ReactNode
 }
 
-/// The shape shared by saved, hashtag and campus pages: a header and a column of snaccs.
 export function SnaccListScreen({
   title,
   subtitle,

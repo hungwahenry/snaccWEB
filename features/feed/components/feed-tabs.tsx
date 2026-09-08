@@ -39,7 +39,6 @@ export function FeedTabs({
     ...(global ? [GLOBAL] : []),
   ]
 
-  // Campus alone is not a choice, so the row of one is noise unless that pill also opens sorting.
   if (tabs.length < 2 && !onReselect) return null
 
   return (

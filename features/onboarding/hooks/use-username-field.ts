@@ -10,7 +10,6 @@ import {
 } from "../schemas"
 import { useUsernameAvailability } from "./use-username-availability"
 
-/// A username input with live availability. A name you already own is always "available".
 export function useUsernameField(initial = "", current = "") {
   const [username, setUsername] = useState(initial)
   const debounced = useDebouncedValue(username, 400)

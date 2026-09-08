@@ -70,7 +70,6 @@ export interface LiveStroke {
   width: number
 }
 
-/// Paints the picture and every layer at the given display size. Export scales the context first.
 export function drawScene(
   context: CanvasRenderingContext2D,
   image: CanvasImageSource,

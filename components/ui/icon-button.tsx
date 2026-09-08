@@ -8,7 +8,6 @@ type IconButtonProps = Omit<ComponentProps<"button">, "children"> & {
   iconClassName?: string
 }
 
-/// A bare tappable glyph. The label is read out for the icon, which announces as nothing.
 export function IconButton({
   icon: Icon,
   label,

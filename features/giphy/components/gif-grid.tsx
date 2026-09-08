@@ -23,7 +23,6 @@ export function GifGrid({
               className="w-full overflow-hidden rounded-2xl bg-muted transition-opacity hover:opacity-80"
               style={{ aspectRatio: aspectRatio(gif) }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={gif.preview_url ?? gif.url}
                 alt={gif.title ?? "GIF"}

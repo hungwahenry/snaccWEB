@@ -27,7 +27,6 @@ export function MessageImages({
         className="block overflow-hidden transition-opacity active:opacity-80"
         style={card}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={images[0].thumb_url ?? images[0].url}
           alt=""
@@ -49,7 +48,6 @@ export function MessageImages({
       style={{ width: WIDTH + 24, height: height + 24 }}
     >
       {behind.map((image, index) => (
-        // eslint-disable-next-line @next/next/no-img-element
         <img
           key={image.id}
           src={image.thumb_url ?? image.url}
@@ -62,7 +60,6 @@ export function MessageImages({
           loading="lazy"
         />
       ))}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={images[0].thumb_url ?? images[0].url}
         alt=""

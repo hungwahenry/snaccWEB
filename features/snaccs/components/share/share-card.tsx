@@ -56,7 +56,6 @@ function SharedVoiceNote({
   )
 }
 
-/// The card behind "share as image": the snacc, its author and its counts, signed with the mark.
 export function ShareCard({ snacc }: { snacc: Snacc }) {
   const { author } = snacc
   const image = snacc.images[0]
@@ -135,7 +134,6 @@ export function ShareCard({ snacc }: { snacc: Snacc }) {
               className="flex h-10 items-center gap-2 rounded-full border border-border px-2"
             >
               {option.image ? (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={option.image.thumb_url}
                   alt=""
@@ -165,7 +163,6 @@ export function ShareCard({ snacc }: { snacc: Snacc }) {
             </span>
           </div>
         ) : (
-          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={
               "thumb_url" in media && media.thumb_url

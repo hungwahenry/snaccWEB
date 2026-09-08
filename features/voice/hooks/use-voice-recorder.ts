@@ -27,7 +27,6 @@ function pickMimeType(): string | undefined {
   return CANDIDATES.find((type) => MediaRecorder.isTypeSupported(type))
 }
 
-/// Records from the microphone with a live level trail, the way the phone does with its metering.
 export function useVoiceRecorder() {
   const [recording, setRecording] = useState(false)
   const [preparing, setPreparing] = useState(false)

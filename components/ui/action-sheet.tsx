@@ -25,11 +25,9 @@ type ActionSheetProps = {
   children: ReactNode
   footer?: ReactNode
   className?: string
-  /// Sheets that hold a long list scroll inside instead of growing past the screen.
   tall?: boolean
 }
 
-/// The app's bottom sheet: a drawer on a phone, a centered dialog on a wide screen.
 export function ActionSheet({
   open,
   onOpenChange,

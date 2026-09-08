@@ -24,7 +24,6 @@ export function MomentCard({
 
   return (
     <div className="relative flex flex-1 items-center justify-center overflow-hidden bg-black">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={moment.image.url}
         alt=""

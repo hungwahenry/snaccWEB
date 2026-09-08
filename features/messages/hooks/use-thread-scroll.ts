@@ -4,8 +4,6 @@ import { useLayoutEffect, useRef, type RefObject } from "react"
 
 const NEAR_BOTTOM_PX = 120
 
-/// Keeps a chat pane pinned to the newest message: jumps to the bottom on load and when something
-/// new arrives while you are already there, and holds your place when older messages load on top.
 export function useThreadScroll(
   ref: RefObject<HTMLDivElement | null>,
   edges: {

@@ -5,7 +5,6 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import type { Gif } from "../types"
 import { useGifSearch, useGifTrending } from "./use-gifs"
 
-/// Everything the GIF picker sheet needs: open state, a debounced search, trending as the default.
 export function useGifPicker(onPick: (gif: Gif) => void) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState("")

@@ -5,7 +5,6 @@ import type { DraftContent, StoredDraft } from "./types"
 const KEY = "snacc_drafts"
 export const MAX_DRAFTS = 20
 
-/// Drafts live in IndexedDB because they carry pictures and voice notes as blobs.
 export async function readDrafts(): Promise<StoredDraft[]> {
   try {
     const stored = await idbGet<StoredDraft[]>(KEY)

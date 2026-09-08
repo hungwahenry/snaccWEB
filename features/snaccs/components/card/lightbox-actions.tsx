@@ -13,7 +13,6 @@ type LightboxActionsProps = {
   onResnacc: () => void
 }
 
-/// The card's counts under a full-screen image, so acting on a snacc never means leaving it.
 export function LightboxActions({
   reactions,
   reactionsCount,

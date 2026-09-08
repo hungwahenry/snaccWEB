@@ -51,7 +51,6 @@ export function TrayGrid({ grid }: { grid: Grid }) {
   )
 }
 
-/// Tap to send; hold or right-click for the keep and remove actions.
 function Tile({
   tile,
   onPick,
@@ -71,7 +70,6 @@ function Tile({
       className="w-full overflow-hidden rounded-2xl bg-muted transition-opacity hover:opacity-80 [@media(pointer:coarse)]:select-none"
       style={{ aspectRatio: aspectRatio(tile) }}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={tile.preview_url ?? tile.url}
         alt=""

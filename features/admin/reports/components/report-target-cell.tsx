@@ -59,7 +59,6 @@ export function ReportTargetCell({ report }: { report: AdminReport }) {
     <div className="flex items-center gap-3">
       <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted/40 text-muted-foreground">
         {thumb ? (
-          // eslint-disable-next-line @next/next/no-img-element -- user media on arbitrary hosts
           <img src={thumb} alt="" className="size-full object-cover" />
         ) : (
           (FALLBACK_ICON[report.target?.type ?? "user"] ?? null)

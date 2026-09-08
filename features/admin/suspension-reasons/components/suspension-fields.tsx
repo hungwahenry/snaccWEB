@@ -47,7 +47,6 @@ export function SuspensionFields({
   value: SuspensionDraft
   onChange: (next: SuspensionDraft) => void
 }) {
-  // The lengths on offer are policy, held once in config and read by the app as well.
   const offered = useConfigValue("moderation.suspension.durations_days")
   const durations = [
     { value: INDEFINITE, label: "Indefinitely" },

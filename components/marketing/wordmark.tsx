@@ -19,7 +19,6 @@ export function Wordmark({
         className
       )}
     >
-      {/* Snacc mark: black on light, white on dark */}
       <img
         src="/1.png"
         alt="Snacc"

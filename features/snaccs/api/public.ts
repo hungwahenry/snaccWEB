@@ -46,7 +46,12 @@ export interface PublicSnacc {
       id: string
       label: string
       votes_count: number | null
-      image: { url: string; thumb_url: string; width: number; height: number } | null
+      image: {
+        url: string
+        thumb_url: string
+        width: number
+        height: number
+      } | null
     }[]
   } | null
   reactions: { emoji: string; count: number }[]

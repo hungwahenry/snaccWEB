@@ -77,7 +77,6 @@ export function RuleDialog({
     note: rule?.note ?? "",
   })
 
-  // The categories the classifier has actually returned, so the list grows with theirs.
   const categories = useCategories().data ?? []
   const chosen = categories.find((entry) => entry.category === form.category)
   const editing = Boolean(rule)

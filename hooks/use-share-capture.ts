@@ -4,8 +4,6 @@ import { domToBlob } from "modern-screenshot"
 import { useRef, useState } from "react"
 import { toast } from "sonner"
 
-/// Renders a card node to a PNG and hands it to the system share sheet, or downloads it where
-/// the browser cannot share files.
 export function useShareCapture(fileName = "snacc.png") {
   const cardRef = useRef<HTMLDivElement>(null)
   const [busy, setBusy] = useState(false)

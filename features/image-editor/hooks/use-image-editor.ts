@@ -10,7 +10,6 @@ type Pending = {
   resolve: (result: PickedImage | null) => void
 }
 
-/// Opens the editor over a picture and resolves with the edited copy, or null when dismissed.
 export function useImageEditor() {
   const [pending, setPending] = useState<Pending | null>(null)
 

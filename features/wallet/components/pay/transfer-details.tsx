@@ -18,9 +18,7 @@ export function TransferDetails({ flow }: { flow: PayFlow }) {
       await navigator.clipboard.writeText(transfer.account_number)
       setCopied(true)
       window.setTimeout(() => setCopied(false), 1600)
-    } catch {
-      // Clipboard refused; the number is on screen to retype.
-    }
+    } catch {}
   }
 
   if (timer.expired) {

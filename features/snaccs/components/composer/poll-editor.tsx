@@ -74,7 +74,6 @@ export function PollEditor({
                 aria-label={`Remove image from option ${index + 1}`}
                 className="relative shrink-0"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={option.image.uri}
                   alt=""

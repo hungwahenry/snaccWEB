@@ -2,7 +2,6 @@ import { WalletIcon } from "lucide-react"
 import Link from "next/link"
 import { WALLET_PATH } from "../routes"
 
-/// The phone's way into the wallet from the feed; the sidebar carries it on wide screens.
 export function MoneyFab() {
   return (
     <Link

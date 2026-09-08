@@ -34,7 +34,6 @@ export function ReplyTo({ snacc }: { snacc: Snacc }) {
           </p>
         ) : null}
         {snacc.gif ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={snacc.gif.url}
             alt="GIF"
@@ -44,7 +43,6 @@ export function ReplyTo({ snacc }: { snacc: Snacc }) {
         ) : snacc.images.length > 0 ? (
           <div className="flex gap-1.5">
             {snacc.images.slice(0, 4).map((image) => (
-              // eslint-disable-next-line @next/next/no-img-element
               <img
                 key={image.position}
                 src={image.thumb_url ?? image.url}

@@ -11,7 +11,6 @@ type Handlers = {
 
 const TAP_SLOP = 6
 
-/// Draw and blur are drags; text is a tap. All in the canvas's own coordinates.
 export function useEditorGestures(tool: Tool, handlers: Handlers) {
   const [live, setLive] = useState<string | null>(null)
   const path = useRef("")

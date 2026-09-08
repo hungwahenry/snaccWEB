@@ -15,8 +15,6 @@ export interface MoneyMove {
 
 export type Credential = { pin?: string; stepUpId?: string }
 
-/// Every move of money confirms with the PIN, or with an emailed code past the configured
-/// thresholds and whenever the API insists. Returns null when the person backs out.
 export function useMoneyConfirm() {
   const router = useRouter()
   const stepUp = useStepUp()

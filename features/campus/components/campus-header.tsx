@@ -6,7 +6,6 @@ export function CampusHeader({ campus }: { campus: UniversityDetail }) {
   return (
     <div className="flex items-center gap-4 border-b border-border px-4 py-4">
       {campus.logo_url ? (
-        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={campus.logo_url}
           alt=""

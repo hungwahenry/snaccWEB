@@ -17,7 +17,6 @@ export function useSuspension() {
     staleTime: 0,
   })
 
-  // Nothing to show means it lifted: forget the failed session read and go back in.
   const lapsed = query.isSuccess && query.data === null
   useEffect(() => {
     if (!lapsed) return

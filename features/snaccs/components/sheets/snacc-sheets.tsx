@@ -5,7 +5,6 @@ import { ReactionBreakdownSheet } from "../card/reactions/reaction-breakdown-she
 import { ResnaccSheet } from "./resnacc-sheet"
 import { SnaccActionsSheet } from "./snacc-actions-sheet"
 
-/// Every sheet a list of snaccs can open, mounted once per screen.
 export function SnaccSheets({
   breakdown,
   resnacc,

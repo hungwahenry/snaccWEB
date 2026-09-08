@@ -1,6 +1,5 @@
 import type { Snacc, SnaccReplyTo } from "../types"
 
-/// Under a thread you are already reading, naming its author again says nothing.
 export function addresseeOf(
   reply: Snacc,
   underAuthorId: string | undefined

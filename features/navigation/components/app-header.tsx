@@ -1,8 +1,6 @@
 import type { ReactNode } from "react"
 import { Wordmark } from "@/components/marketing/wordmark"
 
-/// The home header: the mark centred, one action on each side. Only the phone shows it; the
-/// sidebar already carries the mark on a wide screen.
 export function AppHeader({
   left,
   right,

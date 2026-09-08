@@ -54,11 +54,9 @@ export function useMomentScreen(startAuthorId: string) {
     [at, authors.length, flip]
   )
 
-  // Swiping is navigation: it goes to whoever is next in the tray, watched or not.
   const nextAuthor = useCallback(() => stepTo(at + 1), [at, stepTo])
   const previousAuthor = useCallback(() => stepTo(at - 1), [at, stepTo])
 
-  // Running out on its own skips whoever has nothing new and stops at the end.
   const advanceAuthor = useCallback(() => {
     const to = nextUnseen(authors, at)
     if (to === -1) {

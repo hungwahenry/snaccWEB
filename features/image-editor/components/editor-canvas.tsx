@@ -5,7 +5,6 @@ import type { Layer } from "../types"
 import type { Size } from "../utils/geometry"
 import { drawScene, type LiveStroke } from "../utils/render"
 
-/// The picture with every layer painted on, at display size. Redraws on any change.
 export function EditorCanvas({
   uri,
   size,

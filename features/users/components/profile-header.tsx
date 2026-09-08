@@ -75,7 +75,6 @@ export function ProfileHeader({
     <div className="flex flex-col">
       <div className="relative h-32 bg-muted sm:h-40">
         {profile.cover_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={profile.cover_url}
             alt=""

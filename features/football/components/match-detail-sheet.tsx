@@ -12,7 +12,6 @@ function TeamBadge({ team }: { team: MatchTeam }) {
   return (
     <div className="flex flex-1 flex-col items-center gap-2">
       {team.crest ? (
-        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={team.crest}
           alt=""

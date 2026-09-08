@@ -19,8 +19,6 @@ function read(key: string): boolean {
   }
 }
 
-/// A once-only flag kept in the browser (a nudge seen, an intro dismissed). Reads as "already
-/// set" on the server and wherever storage is unavailable, so nothing nags where it cannot remember.
 export function useLocalFlag(key: string): [boolean, () => void] {
   const value = useSyncExternalStore(
     subscribe,
@@ -31,9 +29,7 @@ export function useLocalFlag(key: string): [boolean, () => void] {
   const mark = useCallback(() => {
     try {
       window.localStorage.setItem(key, "1")
-    } catch {
-      // Storage refused the write; the flag simply will not persist.
-    }
+    } catch {}
     listeners.forEach((listener) => listener())
   }, [key])
 

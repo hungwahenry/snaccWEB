@@ -38,7 +38,6 @@ export function StickerTraySheet({
       tall
       className="pb-4"
     >
-      {/* Inside the sheet on purpose: nothing here mounts or fetches until the tray opens. */}
       <TrayBody
         onPickSticker={onPickSticker}
         onPickGif={onPickGif}

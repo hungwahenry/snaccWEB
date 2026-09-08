@@ -12,7 +12,6 @@ type ReplyContextProps = {
   onPress?: () => void
 }
 
-/// The post a reply hangs under, drawn small with a line running down to the reply.
 export function ReplyContext({ snacc, onPress }: ReplyContextProps) {
   const { author } = snacc
   const preview = snaccPreview(snacc)

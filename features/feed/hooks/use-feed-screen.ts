@@ -27,7 +27,6 @@ const CLOSED: SortMenu = { open: false, anchor: null }
 
 export function useFeedScreen() {
   const [scope, setScope] = useState<FeedScope>(DEFAULT_FEED_SCOPE)
-  // Lazy so the remembered choice is read once; this screen only ever mounts in the browser.
   const [sort, setSort] = useState<FeedSort>(
     () => rememberedFeedSort() ?? "top"
   )

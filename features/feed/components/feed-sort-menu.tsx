@@ -35,7 +35,6 @@ type FeedSortMenuProps = {
   onDismiss: () => void
 }
 
-/// Drops down from the selected pill, the way it does in the app.
 export function FeedSortMenu({
   open,
   anchor,

@@ -17,7 +17,6 @@ import { ComposerContextRow } from "./composer-context-row"
 import { MessageDraftImages } from "./message-draft-images"
 import { ViewOnceToggle } from "./view-once-toggle"
 
-/// One line of text at rest; past this the pill squares off, as on the phone.
 const INPUT_REST_HEIGHT = 36
 
 export type MessageComposerProps = {

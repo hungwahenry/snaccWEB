@@ -27,7 +27,6 @@ export function MomentReplyBar({
 }) {
   return (
     <div>
-      {/* Wraps rather than overflows: the set comes from config, so it can grow past one row. */}
       <div className="flex flex-wrap items-center justify-center gap-2 px-3 pb-1">
         {quick.map((emoji) => (
           <Pill

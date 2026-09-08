@@ -5,7 +5,6 @@ import type { ShareRef } from "@/lib/share-links"
 import { LinkCard } from "../components/link-card"
 import { useResolvedLink } from "../hooks/use-resolved-link"
 
-/// Resolves one shared Snacc link and hands the result to the card.
 export function ResolvedLinkCard({
   link,
   onOpenSnacc,

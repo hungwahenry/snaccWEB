@@ -40,9 +40,7 @@ export default async function OpengraphImage() {
       { name: "Inter Tight", data: extraBold, weight: 800, style: "normal" },
       { name: "Inter Tight", data: medium, weight: 500, style: "normal" },
     ]
-  } catch {
-    // Fall back to the built-in font if Google Fonts is unreachable at render time.
-  }
+  } catch {}
 
   return new ImageResponse(
     <div
@@ -71,7 +69,6 @@ export default async function OpengraphImage() {
 
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={markSrc} width={150} height={150} alt="" />
           <div
             style={{

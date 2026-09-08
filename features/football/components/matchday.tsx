@@ -12,7 +12,6 @@ function Crest({ url, size }: { url: string | null; size: number }) {
       />
     )
   return (
-    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={url}
       alt=""

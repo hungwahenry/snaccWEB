@@ -36,7 +36,6 @@ type ComposeScreenProps = {
   draftId?: string
 }
 
-/// A draft has to be read from storage before the composer seeds itself from it.
 export function ComposeScreen(props: ComposeScreenProps) {
   const { hydrated } = useDrafts()
 

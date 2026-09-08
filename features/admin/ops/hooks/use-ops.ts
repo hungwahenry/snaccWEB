@@ -38,8 +38,6 @@ export function useOpsMutations() {
   const qc = useQueryClient()
   const onError = (error: unknown) => toast.error(getErrorMessage(error))
   return {
-    // Repair is manual on purpose: nothing corrects these on a schedule any more, so reaching
-    // for this button should follow working out what moved the numbers.
     repair: useMutation({
       mutationFn: async () => {
         await runTask("repair-counters")

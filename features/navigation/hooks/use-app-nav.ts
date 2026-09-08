@@ -91,8 +91,6 @@ export function useAppNav() {
     avatarFallback: fallback,
   }
 
-  // The wide sidebar has room for Explore. The phone bar mirrors the app: four tabs, and Explore
-  // only borrows the Messages slot when messages are off.
   const items: NavItem[] = [
     home,
     ...(searchEnabled ? [search] : []),

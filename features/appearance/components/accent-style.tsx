@@ -3,7 +3,6 @@
 import { useAccent } from "../hooks/use-accent"
 import { INK } from "../utils/accents"
 
-/// Paints the chosen accent over the theme's primary colour, in both light and dark.
 export function AccentStyle() {
   const [accent] = useAccent()
   if (accent.key === INK.key) return null

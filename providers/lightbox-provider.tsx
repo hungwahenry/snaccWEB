@@ -79,7 +79,6 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
         >
           <DialogTitle className="sr-only">Image</DialogTitle>
           {image ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={image.url}
               alt=""

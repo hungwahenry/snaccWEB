@@ -99,7 +99,6 @@ function SnaccMock({
   return (
     <div className="flex flex-col gap-2.5">
       <div className="flex gap-2.5">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={avatar(seed)}
           alt=""
@@ -133,7 +132,6 @@ function SnaccMock({
           className="overflow-hidden rounded-xl bg-muted"
           style={{ aspectRatio: "16 / 10" }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={media} alt="" className="size-full object-cover" />
         </div>
       ) : null}

@@ -33,7 +33,13 @@ import type { useEggMutations } from "../hooks/use-eggs"
 
 type Mutations = ReturnType<typeof useEggMutations>
 
-const RARITIES: EggRarity[] = ["common", "uncommon", "rare", "epic", "legendary"]
+const RARITIES: EggRarity[] = [
+  "common",
+  "uncommon",
+  "rare",
+  "epic",
+  "legendary",
+]
 
 function triggerText(trigger: unknown): string {
   return trigger ? JSON.stringify(trigger, null, 2) : ""
@@ -247,7 +253,6 @@ function ArtDialog({
         </DialogHeader>
         <div className="flex items-center gap-4">
           {egg.image_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={egg.image_url}
               alt={egg.name}
@@ -324,7 +329,6 @@ export function EggsTable({
               <TableCell className="font-medium">
                 <span className="inline-flex items-center gap-2">
                   {egg.image_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={egg.image_url}
                       alt=""
@@ -338,7 +342,7 @@ export function EggsTable({
                   )}
                   <span>
                     {egg.name}
-                    <span className="text-muted-foreground ml-2 text-xs">
+                    <span className="ml-2 text-xs text-muted-foreground">
                       {egg.slug}
                     </span>
                   </span>

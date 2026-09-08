@@ -26,7 +26,6 @@ export function SnaccBody({
 
   if (!body) return null
 
-  // A mention wears its author's tier colour; the backend returns null when the score flag is off.
   function entityColor(entity: SnaccEntity): string | undefined {
     if (entity.type === "mention")
       return tierOf(entity.user.tier)?.color || undefined

@@ -8,8 +8,6 @@ type TierLookup = (key: string | null | undefined) => ScoreTier | null
 
 const TiersContext = createContext<TierLookup>(() => null)
 
-/// Tier flair is design data (label, icon, colour) fetched once and read anywhere a name renders,
-/// the way a theme is. Presentational components read it through context instead of fetching.
 export function TiersProvider({ children }: { children: ReactNode }) {
   const tiers = useTiers().data
 

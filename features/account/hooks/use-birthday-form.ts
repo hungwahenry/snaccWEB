@@ -27,7 +27,6 @@ export function useBirthdayForm(profile: Profile) {
     onError: (error) => toast.error(getErrorMessage(error)),
   })
 
-  // Set once, so an existing birthday is shown rather than offered.
   const locked = profile.birthday !== null
   const [birthday, setBirthday] = useState<BirthdayDraft>(
     profile.birthday ?? EMPTY_BIRTHDAY

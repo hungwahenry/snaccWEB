@@ -24,9 +24,7 @@ export function AccountCard({ account }: { account: VirtualAccount }) {
       await navigator.clipboard.writeText(accountNumber)
       setCopied(true)
       window.setTimeout(() => setCopied(false), 1600)
-    } catch {
-      // Clipboard refused; the number is on screen.
-    }
+    } catch {}
   }
 
   return (

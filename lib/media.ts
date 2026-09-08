@@ -141,7 +141,6 @@ export interface CropRect {
   height: number
 }
 
-/// Builds a picked image out of a blob that came from somewhere else (a draft, a download).
 export function fromBlob(
   blob: Blob,
   size: { width: number; height: number },

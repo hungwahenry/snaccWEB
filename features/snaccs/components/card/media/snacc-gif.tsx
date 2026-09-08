@@ -34,7 +34,6 @@ export function SnaccGifView({
       className="relative w-full overflow-hidden rounded-2xl bg-muted"
       style={{ aspectRatio: aspectRatio(gif) }}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={gif.url}
         alt="GIF"
