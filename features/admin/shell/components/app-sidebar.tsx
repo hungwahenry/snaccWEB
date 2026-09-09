@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { ArrowLeft, CircleUser, LogOut } from "lucide-react"
+import { ArrowLeft, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Sidebar,
@@ -62,15 +62,6 @@ export function AppSidebar() {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="justify-start"
-          render={<Link href="/admin/profile" />}
-        >
-          <CircleUser />
-          Your access
-        </Button>
         <Button
           variant="ghost"
           size="sm"

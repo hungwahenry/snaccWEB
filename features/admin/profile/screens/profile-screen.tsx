@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { useMe } from "@/features/auth/hooks/use-me"
+import { usePermissions } from "@/features/admin/roles/hooks/use-roles"
 import { useUserRoles } from "@/features/admin/roles/hooks/use-user-roles"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
 import { Fact, Facts, Section } from "@/features/admin/shell/ui/detail"
@@ -15,6 +16,7 @@ import { PermissionList } from "../components/permission-list"
 export function AdminProfileScreen() {
   const me = useMe()
   const grants = useUserRoles(me.data?.id ?? "")
+  const catalog = usePermissions()
 
   if (me.isPending || !me.data) {
     return (
@@ -91,11 +93,17 @@ export function AdminProfileScreen() {
           title="Permissions"
           description={
             permissions.all
-              ? "Full access: every permission, including any added later."
+              ? "Full access. Every permission below, including any added later."
               : `${permissions.keys.length} permission${permissions.keys.length === 1 ? "" : "s"}, and only these.`
           }
         >
-          {permissions.all ? null : <PermissionList keys={permissions.keys} />}
+          <PermissionList
+            keys={
+              permissions.all
+                ? (catalog.data ?? []).map((permission) => permission.key)
+                : permissions.keys
+            }
+          />
         </Section>
       </div>
     </>
