@@ -22,6 +22,7 @@ import {
   Tags,
   ToggleRight,
   type LucideIcon,
+  UserCog,
   Users,
   UserX,
   VenetianMask,
@@ -115,6 +116,12 @@ export const NAV: NavSection[] = [
         label: "Suspensions",
         icon: UserX,
         permission: "users.read",
+      },
+      {
+        href: "/admin/admins",
+        label: "Admins",
+        icon: UserCog,
+        permission: "roles.read",
       },
       {
         href: "/admin/roles",
