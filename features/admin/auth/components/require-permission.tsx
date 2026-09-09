@@ -9,7 +9,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { Spinner } from "@/components/ui/spinner"
-import { useMe } from "@/features/admin/auth/hooks/use-auth"
+import { useMe } from "@/features/auth/hooks/use-me"
 import { can } from "@/lib/permissions"
 
 export function RequirePermission({

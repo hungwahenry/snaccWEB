@@ -1,7 +1,7 @@
 "use client"
 
 import { can, canForCampus, type AdminPermissions } from "@/lib/permissions"
-import { useMe } from "./use-auth"
+import { useMe } from "@/features/auth/hooks/use-me"
 
 export function usePermissions(): AdminPermissions | undefined {
   return useMe().data?.permissions

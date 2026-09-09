@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
-import { useMe } from "@/features/admin/auth/hooks/use-auth"
+import { useMe } from "@/features/auth/hooks/use-me"
 import { DashboardView } from "@/features/admin/dashboard/components/dashboard-view"
 import { useDashboard } from "@/features/admin/dashboard/hooks/use-dashboard"
 import { firstAllowedHref } from "@/features/admin/shell/nav"
@@ -18,7 +18,7 @@ export function DashboardScreen() {
 
   useEffect(() => {
     if (me.data && !allowed) {
-      router.replace(firstAllowedHref(me.data.permissions) ?? "/admin/login")
+      router.replace(firstAllowedHref(me.data.permissions) ?? "/home")
     }
   }, [me.data, allowed, router])
 

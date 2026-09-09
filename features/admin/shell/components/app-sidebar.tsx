@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { LogOut } from "lucide-react"
+import { ArrowLeft, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Sidebar,
@@ -16,7 +16,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { useLogout, useMe } from "@/features/admin/auth/hooks/use-auth"
+import { useLogout } from "@/features/auth/hooks/use-logout"
+import { useMe } from "@/features/auth/hooks/use-me"
 import { visibleNav } from "@/features/admin/shell/nav"
 
 export function AppSidebar() {
@@ -65,10 +66,17 @@ export function AppSidebar() {
           variant="ghost"
           size="sm"
           className="justify-start"
+          render={<Link href="/home" />}
+        >
+          <ArrowLeft />
+          Back to Snacc
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="justify-start"
           onClick={() =>
-            logout.mutate(undefined, {
-              onSuccess: () => router.replace("/admin/login"),
-            })
+            logout.mutate(undefined, { onSuccess: () => router.replace("/") })
           }
         >
           <LogOut />

@@ -2,10 +2,11 @@
 
 import { useRouter } from "next/navigation"
 import { useEffect, type ReactNode } from "react"
-import { Spinner } from "@/components/ui/spinner"
-import { useMe } from "@/features/admin/auth/hooks/use-auth"
+import { useMe } from "@/features/auth/hooks/use-me"
 import { hasAdminAccess } from "@/lib/permissions"
 
+/// The panel layout already refused anyone without a role before rendering. This only catches a
+/// role revoked mid-session, and sends them back to the app rather than to a login they have.
 export function AuthGuard({ children }: { children: ReactNode }) {
   const router = useRouter()
   const me = useMe()
@@ -13,17 +14,8 @@ export function AuthGuard({ children }: { children: ReactNode }) {
     me.isError || (!!me.data && !hasAdminAccess(me.data.permissions))
 
   useEffect(() => {
-    if (denied) router.replace("/admin/login")
+    if (denied) router.replace("/home")
   }, [denied, router])
-
-  if (me.isPending) {
-    return (
-      <div className="flex min-h-svh items-center justify-center">
-        <Spinner />
-      </div>
-    )
-  }
-  if (denied || !me.data) return null
 
   return <>{children}</>
 }

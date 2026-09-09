@@ -1,11 +1,9 @@
 import "server-only"
 import { cookies } from "next/headers"
 
-const ADMIN_COOKIE = "snacc_admin_token"
 const USER_COOKIE = "snacc_session"
 const INSTALL_COOKIE = "snacc_install_id"
 
-const MONTH_S = 60 * 60 * 24 * 30
 const YEAR_S = 60 * 60 * 24 * 365
 
 export const SNACC_API_URL =
@@ -21,21 +19,6 @@ function cookieOptions(maxAge: number) {
     path: "/",
     maxAge,
   }
-}
-
-export async function getSessionToken(): Promise<string | undefined> {
-  const store = await cookies()
-  return store.get(ADMIN_COOKIE)?.value
-}
-
-export async function setSessionToken(token: string): Promise<void> {
-  const store = await cookies()
-  store.set(ADMIN_COOKIE, token, cookieOptions(MONTH_S))
-}
-
-export async function clearSessionToken(): Promise<void> {
-  const store = await cookies()
-  store.delete(ADMIN_COOKIE)
 }
 
 export async function getUserToken(): Promise<string | undefined> {
@@ -54,7 +37,7 @@ export async function clearUserToken(): Promise<void> {
 }
 
 export async function getBearerToken(): Promise<string | undefined> {
-  return (await getUserToken()) ?? (await getSessionToken())
+  return getUserToken()
 }
 
 export async function getInstallId(): Promise<string> {

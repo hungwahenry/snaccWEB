@@ -1,6 +1,7 @@
 import "server-only"
 import { redirect } from "next/navigation"
-import { getSessionToken, getUserToken } from "./session"
+import { hasAdminAccess, type AdminPermissions } from "./permissions"
+import { getUserToken, SNACC_API_URL, WEB_CLIENT_INFO } from "./session"
 
 export async function hasSession(): Promise<boolean> {
   return (await getUserToken()) !== undefined
@@ -11,13 +12,26 @@ export async function requireSession(next?: string): Promise<void> {
   redirect(next ? `/login?next=${encodeURIComponent(next)}` : "/login")
 }
 
-export async function hasAdminSession(): Promise<boolean> {
-  return (await getSessionToken()) !== undefined
-}
-
-/// The panel's own gate. It only proves a session exists; which sections that session may open is
-/// the API's call, checked on every request it serves.
+/// The panel needs a session and a role. Permissions come from the API, which is also the only
+/// thing enforcing them, so this is about landing somewhere sensible rather than about access.
 export async function requireAdminSession(): Promise<void> {
-  if (await hasAdminSession()) return
-  redirect("/admin/login")
+  const token = await getUserToken()
+  if (!token) redirect(`/login?next=${encodeURIComponent("/admin")}`)
+
+  const res = await fetch(`${SNACC_API_URL}/api/v1/auth/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "X-Client-Info": WEB_CLIENT_INFO,
+      Accept: "application/json",
+    },
+    cache: "no-store",
+  }).catch(() => null)
+
+  if (!res?.ok) redirect(`/login?next=${encodeURIComponent("/admin")}`)
+
+  const body = (await res.json().catch(() => null)) as {
+    data?: { permissions?: AdminPermissions }
+  } | null
+
+  if (!hasAdminAccess(body?.data?.permissions)) redirect("/home")
 }
