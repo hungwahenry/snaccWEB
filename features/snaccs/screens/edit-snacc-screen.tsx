@@ -12,6 +12,7 @@ import { ComposerAttachments } from "../components/composer/composer-attachments
 import { ComposerFrame } from "../components/composer/composer-frame"
 import { ComposerHeader } from "../components/composer/composer-header"
 import { ComposerInput } from "../components/composer/composer-input"
+import { ComposerNudges } from "../components/composer/composer-nudges"
 import { ComposerToolbar } from "../components/composer/composer-toolbar"
 import { ImageEditorSheet } from "@/features/image-editor/components/image-editor-sheet"
 import { useSnaccEditor } from "../hooks/composer/use-snacc-editor"
@@ -72,6 +73,7 @@ function Editor({ snacc }: { snacc: Snacc }) {
           onEditImage={editor.editImage}
           onRemoveGif={editor.removeGif}
         />
+        <ComposerNudges body={editor.upgrade} image={editor.imageUpgrade} />
         <ComposerToolbar
           canAddImages={editor.canAddImages}
           onAddImages={editor.addImages}

@@ -227,6 +227,7 @@ export function ConversationScreen({ id }: { id: string }) {
             remaining={composer.remaining}
             showCounter={composer.showCounter}
             upgrade={composer.upgrade}
+            imageUpgrade={screen.imageUpgrade}
             images={screen.draft}
             onRemoveImage={screen.onRemoveImage}
             viewOnce={screen.viewOnce}

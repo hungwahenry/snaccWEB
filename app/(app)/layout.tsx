@@ -1,9 +1,21 @@
+import { HydrationBoundary } from "@tanstack/react-query"
 import type { ReactNode } from "react"
 import { AppShell } from "@/features/navigation/screens/app-shell"
 import { hasSession } from "@/lib/auth-server"
+import { prefetchAppConfig } from "@/lib/config-server"
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
-  if (!(await hasSession())) return <>{children}</>
+  const [session, config] = await Promise.all([
+    hasSession(),
+    prefetchAppConfig(),
+  ])
 
-  return <AppShell>{children}</AppShell>
+  // Seeded before anything renders, so a flag-gated screen never shows its off state first.
+  const withConfig = (
+    <HydrationBoundary state={config}>{children}</HydrationBoundary>
+  )
+
+  if (!session) return withConfig
+
+  return <AppShell>{withConfig}</AppShell>
 }

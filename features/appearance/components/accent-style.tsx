@@ -1,14 +1,26 @@
 "use client"
 
+import { useEffect } from "react"
 import { useAccent } from "../hooks/use-accent"
-import { INK } from "../utils/accents"
+import { accentCss, ACCENT_STYLE_ID } from "../utils/accent-css"
 
+/**
+ * Keeps the accent in step after boot. It writes into the node AccentScript already put in the
+ * head rather than rendering a second one, so there is only ever one answer in the document and
+ * switching back to the default actually clears the old colour.
+ */
 export function AccentStyle() {
   const [accent] = useAccent()
-  if (accent.key === INK.key) return null
 
-  const css = `:root{--primary:${accent.light.primary};--primary-foreground:${accent.light.foreground};--ring:${accent.light.primary}}
-.dark{--primary:${accent.dark.primary};--primary-foreground:${accent.dark.foreground};--ring:${accent.dark.primary}}`
+  useEffect(() => {
+    let node = document.getElementById(ACCENT_STYLE_ID)
+    if (!node) {
+      node = document.createElement("style")
+      node.id = ACCENT_STYLE_ID
+      document.head.appendChild(node)
+    }
+    node.textContent = accentCss(accent)
+  }, [accent])
 
-  return <style>{css}</style>
+  return null
 }

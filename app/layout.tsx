@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Geist_Mono, Inter_Tight } from "next/font/google"
 
 import "./globals.css"
+import { AccentScript } from "@/features/appearance/components/accent-script"
 import { Providers } from "@/providers"
 import { cn } from "@/lib/utils"
 
@@ -58,6 +59,8 @@ export default function RootLayout({
       )}
     >
       <body>
+        {/* Before anything paints, so a saved accent never flashes the default first. */}
+        <AccentScript />
         <Providers>{children}</Providers>
       </body>
     </html>

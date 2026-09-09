@@ -212,6 +212,7 @@ export function useConversationScreen(
       ? attachments.onToggleViewOnce
       : undefined,
     maxImages: attachments.maxImages,
+    imageUpgrade: attachments.imageUpgrade,
     onAddImages: attachments.onAddImages,
     onRemoveImage: attachments.onRemoveImage,
     canSendVoice,

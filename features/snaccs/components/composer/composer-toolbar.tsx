@@ -7,7 +7,6 @@ import {
 } from "lucide-react"
 import type { ReactNode } from "react"
 import { IconButton } from "@/components/ui/icon-button"
-import { PremiumNudge } from "@/features/premium/components/premium-nudge"
 import { cn } from "@/lib/utils"
 
 type ComposerToolbarProps = {
@@ -99,20 +98,18 @@ export function ComposerToolbar({
 
       <div className="flex items-center gap-3 pr-2">
         {showCounter ? (
-          <PremiumNudge show={upgrade.show} label={upgrade.label}>
-            <span
-              className={cn(
-                "text-sm font-bold tabular-nums",
-                upgrade.show
-                  ? "text-premium"
-                  : remaining < 0
-                    ? "text-destructive"
-                    : "text-muted-foreground"
-              )}
-            >
-              {remaining}
-            </span>
-          </PremiumNudge>
+          <span
+            className={cn(
+              "text-sm font-bold tabular-nums",
+              upgrade.show
+                ? "text-premium"
+                : remaining < 0
+                  ? "text-destructive"
+                  : "text-muted-foreground"
+            )}
+          >
+            {remaining}
+          </span>
         ) : null}
         {right}
       </div>

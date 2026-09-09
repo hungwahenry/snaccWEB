@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { useFlag } from "@/features/config/hooks/use-flag"
+import { usePremiumNudge } from "@/features/premium/hooks/use-premium-limit"
 import { pickImages, type PickedImage } from "@/lib/media"
 
 export function useMessageAttachments() {
@@ -11,8 +11,12 @@ export function useMessageAttachments() {
   const [viewOnce, setViewOnce] = useState(false)
   const imagesEnabled = useFlag("message_images")
   const viewOnceEnabled = useFlag("message_view_once")
-  const imageCap = useConfigValue("content.message.max_images")
-  const maxImages = imagesEnabled ? imageCap : 0
+  const imageLimit = usePremiumNudge(
+    "content.message.max_images",
+    (max) => draft.length >= max,
+    (upgrade) => `${upgrade} photos with Premium`
+  )
+  const maxImages = imagesEnabled ? imageLimit.value : 0
 
   async function onAddImages() {
     try {
@@ -29,6 +33,7 @@ export function useMessageAttachments() {
     viewOnce,
     viewOnceEnabled,
     maxImages,
+    imageUpgrade: imageLimit,
     onAddImages: () => void onAddImages(),
     onToggleViewOnce: () => setViewOnce((current) => !current),
     onRemoveImage: (uri: string) => {

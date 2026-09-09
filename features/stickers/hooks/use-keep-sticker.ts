@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { confirm } from "@/components/ui/confirm"
 import { useFlag } from "@/features/config/hooks/use-flag"
+import { toastError } from "@/features/premium/utils/limit-toast"
 import { getErrorMessage } from "@/lib/api/errors"
 import {
   deleteSticker,
@@ -20,7 +21,7 @@ function stickerKept() {
 
 const feedback = {
   onSuccess: stickerKept,
-  onError: (error: unknown) => toast.error(getErrorMessage(error)),
+  onError: (error: unknown) => toastError(error),
 }
 
 export function useSaveGiphySticker() {

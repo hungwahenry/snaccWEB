@@ -17,6 +17,7 @@ import { ComposerFrame } from "../components/composer/composer-frame"
 import { ComposerHeader } from "../components/composer/composer-header"
 import { ComposerInput } from "../components/composer/composer-input"
 import { ComposerSuggestions } from "../components/composer/composer-suggestions"
+import { ComposerNudges } from "../components/composer/composer-nudges"
 import { ComposerToolbar } from "../components/composer/composer-toolbar"
 import { DraftsSheet } from "../components/composer/drafts-sheet"
 import { PollEditor } from "../components/composer/poll-editor"
@@ -169,6 +170,7 @@ function ComposeBody({
             onRemoveSticker={composer.removeSticker}
           />
         )}
+        <ComposerNudges body={composer.upgrade} image={composer.imageUpgrade} />
         <ComposerToolbar
           canAddImages={composer.canAddImages}
           onAddImages={composer.addImages}

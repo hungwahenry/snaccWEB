@@ -33,6 +33,7 @@ export type MessageComposerProps = {
   maxLength: number
   remaining: number
   upgrade: { show: boolean; label: string }
+  imageUpgrade?: { show: boolean; label: string }
   showCounter: boolean
   images?: PickedImage[]
   onRemoveImage?: (uri: string) => void
@@ -59,6 +60,7 @@ export function MessageComposer({
   maxLength,
   remaining,
   upgrade,
+  imageUpgrade,
   showCounter,
   images = [],
   onRemoveImage,
@@ -97,6 +99,11 @@ export function MessageComposer({
           {context ? <ComposerContextRow context={context} /> : null}
           {showDrafts ? (
             <MessageDraftImages images={images} onRemove={onRemoveImage!} />
+          ) : null}
+          {showDrafts && imageUpgrade?.show ? (
+            <div className="flex justify-center pb-2">
+              <PremiumNudge show label={imageUpgrade.label} />
+            </div>
           ) : null}
           {showViewOnce ? (
             <ViewOnceToggle checked={viewOnce} onToggle={onToggleViewOnce!} />
