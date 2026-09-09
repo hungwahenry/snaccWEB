@@ -1,4 +1,5 @@
 "use client"
+import { CanAct } from "@/features/admin/auth/components/can"
 import { TableFrame } from "@/components/data-table/table-frame"
 
 import { useMemo, useState } from "react"
@@ -39,7 +40,9 @@ function HoldDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button size="sm">Hold a name</Button>} />
+      <CanAct permission="reserved_usernames.write">
+        <DialogTrigger render={<Button size="sm">Hold a name</Button>} />
+      </CanAct>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Hold a username</DialogTitle>

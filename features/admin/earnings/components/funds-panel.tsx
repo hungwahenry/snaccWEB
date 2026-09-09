@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { CanAct } from "@/features/admin/auth/components/can"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -63,7 +64,9 @@ function ProvisionDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button size="sm">Provision fund</Button>} />
+      <CanAct permission="earnings.manage_funds">
+        <DialogTrigger render={<Button size="sm">Provision fund</Button>} />
+      </CanAct>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Provision campus fund</DialogTitle>
@@ -131,13 +134,15 @@ function AdjustDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          <Button variant="outline" size="sm">
-            Adjust cap
-          </Button>
-        }
-      />
+      <CanAct permission="earnings.manage_funds">
+        <DialogTrigger
+          render={
+            <Button variant="outline" size="sm">
+              Adjust cap
+            </Button>
+          }
+        />
+      </CanAct>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{fund.university.name}</DialogTitle>

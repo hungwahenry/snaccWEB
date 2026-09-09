@@ -1,5 +1,6 @@
 "use client"
 
+import { CanAct } from "@/features/admin/auth/components/can"
 import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
 import { Fact, Facts, Section } from "@/features/admin/shell/ui/detail"
 import { TableFrame } from "@/components/data-table/table-frame"
@@ -189,19 +190,21 @@ export function OpsView() {
       <Section
         title="Paystack settlement"
         action={
-          <ConfirmAction
-            label={
-              mutations.reconcile.isPending ? "Reconciling…" : "Reconcile now"
-            }
-            confirmVariant="default"
-            title="Ask Paystack about everything unsettled?"
-            description="Withdrawals and top-ups still in flight are checked one by one, and any that have settled are applied. This moves money, so run it when you actually suspect a missed webhook."
-            confirmLabel="Reconcile now"
-            pending={mutations.reconcile.isPending}
-            onConfirm={(close) =>
-              mutations.reconcile.mutate(undefined, { onSuccess: close })
-            }
-          />
+          <CanAct permission="ops.run">
+            <ConfirmAction
+              label={
+                mutations.reconcile.isPending ? "Reconciling…" : "Reconcile now"
+              }
+              confirmVariant="default"
+              title="Ask Paystack about everything unsettled?"
+              description="Withdrawals and top-ups still in flight are checked one by one, and any that have settled are applied. This moves money, so run it when you actually suspect a missed webhook."
+              confirmLabel="Reconcile now"
+              pending={mutations.reconcile.isPending}
+              onConfirm={(close) =>
+                mutations.reconcile.mutate(undefined, { onSuccess: close })
+              }
+            />
+          </CanAct>
         }
       >
         <p className="text-sm text-pretty text-muted-foreground">
@@ -216,16 +219,18 @@ export function OpsView() {
         title="Drift"
         description="A nightly check (04:00 WAT) reads these and raises an alarm if any is non-zero. Nothing repairs them on a schedule — a counter that heals itself overnight hides the bug that moved it. Repair by hand once you know what did."
         action={
-          <ConfirmAction
-            label={mutations.repair.isPending ? "Repairing…" : "Repair now"}
-            title="Rewrite these counters from source?"
-            description="Every counter listed is recomputed and overwritten. Do this once you know what moved them — repairing first throws away the evidence."
-            confirmLabel="Repair now"
-            pending={mutations.repair.isPending}
-            onConfirm={(close) =>
-              mutations.repair.mutate(undefined, { onSuccess: close })
-            }
-          />
+          <CanAct permission="ops.run">
+            <ConfirmAction
+              label={mutations.repair.isPending ? "Repairing…" : "Repair now"}
+              title="Rewrite these counters from source?"
+              description="Every counter listed is recomputed and overwritten. Do this once you know what moved them — repairing first throws away the evidence."
+              confirmLabel="Repair now"
+              pending={mutations.repair.isPending}
+              onConfirm={(close) =>
+                mutations.repair.mutate(undefined, { onSuccess: close })
+              }
+            />
+          </CanAct>
         }
       >
         {drift.isPending ? (

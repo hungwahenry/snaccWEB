@@ -1,5 +1,6 @@
 "use client"
 
+import { CanAct } from "@/features/admin/auth/components/can"
 import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
 import {
   DetailHeader,
@@ -41,18 +42,20 @@ export function WithdrawalDetail({
         }
         actions={
           withdrawal.status === "pending" ? (
-            <ConfirmAction
-              label="Send to Paystack again"
-              variant="default"
-              confirmVariant="default"
-              title="Re-attempt this transfer?"
-              description="Paystack is asked to move the money again. If the first attempt actually succeeded, this could pay twice — check the timeline before confirming."
-              confirmLabel="Send again"
-              pending={actions.retry.isPending}
-              onConfirm={(close) =>
-                actions.retry.mutate(undefined, { onSuccess: close })
-              }
-            />
+            <CanAct permission="withdrawals.process">
+              <ConfirmAction
+                label="Send to Paystack again"
+                variant="default"
+                confirmVariant="default"
+                title="Re-attempt this transfer?"
+                description="Paystack is asked to move the money again. If the first attempt actually succeeded, this could pay twice — check the timeline before confirming."
+                confirmLabel="Send again"
+                pending={actions.retry.isPending}
+                onConfirm={(close) =>
+                  actions.retry.mutate(undefined, { onSuccess: close })
+                }
+              />
+            </CanAct>
           ) : null
         }
       />

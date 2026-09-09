@@ -1,4 +1,5 @@
 "use client"
+import { CanAct } from "@/features/admin/auth/components/can"
 import { TableFrame } from "@/components/data-table/table-frame"
 
 import { useState } from "react"
@@ -204,13 +205,15 @@ export function EngagementTable({
                           onUpdate={onUpdate}
                           pending={pending}
                         />
-                        <Switch
-                          checked={kind.enabled}
-                          disabled={pending}
-                          onCheckedChange={(enabled) =>
-                            onUpdate({ key: kind.key, enabled })
-                          }
-                        />
+                        <CanAct permission="engagement.write">
+                          <Switch
+                            checked={kind.enabled}
+                            disabled={pending}
+                            onCheckedChange={(enabled) =>
+                              onUpdate({ key: kind.key, enabled })
+                            }
+                          />
+                        </CanAct>
                       </div>
                     </TableCell>
                   </TableRow>

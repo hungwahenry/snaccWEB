@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useState } from "react"
+import { CanAct } from "@/features/admin/auth/components/can"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -107,13 +108,15 @@ export function ResolveDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          <Button variant="outline" size="sm">
-            Resolve
-          </Button>
-        }
-      />
+      <CanAct permission="reports.resolve">
+        <DialogTrigger
+          render={
+            <Button variant="outline" size="sm">
+              Resolve
+            </Button>
+          }
+        />
+      </CanAct>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Resolve reports</DialogTitle>

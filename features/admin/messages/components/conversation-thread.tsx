@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { CanAct } from "@/features/admin/auth/components/can"
 import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
 import { ContentMedia } from "@/features/admin/shell/ui/content-media"
 import { DetailHeader, Section } from "@/features/admin/shell/ui/detail"
@@ -35,13 +36,15 @@ function DeleteMessageDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          <Button variant="ghost" size="sm" className="text-destructive">
-            Remove
-          </Button>
-        }
-      />
+      <CanAct permission="messages.delete">
+        <DialogTrigger
+          render={
+            <Button variant="ghost" size="sm" className="text-destructive">
+              Remove
+            </Button>
+          }
+        />
+      </CanAct>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Remove this message?</DialogTitle>
@@ -146,18 +149,20 @@ function MessageRow({
 
       <div className="shrink-0">
         {removed ? (
-          <ConfirmAction
-            label="Restore"
-            variant="ghost"
-            confirmVariant="default"
-            title="Put this message back?"
-            description="Both people in the thread will see it again."
-            confirmLabel="Restore message"
-            pending={actions.restore.isPending}
-            onConfirm={(close) =>
-              actions.restore.mutate(message.id, { onSuccess: close })
-            }
-          />
+          <CanAct permission="messages.restore">
+            <ConfirmAction
+              label="Restore"
+              variant="ghost"
+              confirmVariant="default"
+              title="Put this message back?"
+              description="Both people in the thread will see it again."
+              confirmLabel="Restore message"
+              pending={actions.restore.isPending}
+              onConfirm={(close) =>
+                actions.restore.mutate(message.id, { onSuccess: close })
+              }
+            />
+          </CanAct>
         ) : (
           <DeleteMessageDialog message={message} actions={actions} />
         )}

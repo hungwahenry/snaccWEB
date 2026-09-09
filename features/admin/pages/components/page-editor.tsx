@@ -1,5 +1,6 @@
 "use client"
 
+import { CanAct } from "@/features/admin/auth/components/can"
 import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -58,40 +59,45 @@ export function PageEditor({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           {editing && page && (
-            <ConfirmAction
-              label={page.status === "published" ? "Unpublish" : "Publish"}
-              title={
-                page.status === "published"
-                  ? "Take this page down?"
-                  : "Publish this page?"
-              }
-              description={
-                page.status === "published"
-                  ? "Anyone who opens the link will get a not-found instead. The draft is kept."
-                  : "It goes live on the site straight away, exactly as written here."
-              }
-              confirmLabel={
-                page.status === "published" ? "Unpublish" : "Publish it"
-              }
-              confirmVariant={
-                page.status === "published" ? "destructive" : "default"
-              }
-              pending={mutations.setStatus.isPending}
-              onConfirm={(close) =>
-                mutations.setStatus.mutate(
-                  {
-                    pageId: page.id,
-                    status: page.status === "published" ? "draft" : "published",
-                  },
-                  { onSuccess: close }
-                )
-              }
-            />
+            <CanAct permission="pages.publish">
+              <ConfirmAction
+                label={page.status === "published" ? "Unpublish" : "Publish"}
+                title={
+                  page.status === "published"
+                    ? "Take this page down?"
+                    : "Publish this page?"
+                }
+                description={
+                  page.status === "published"
+                    ? "Anyone who opens the link will get a not-found instead. The draft is kept."
+                    : "It goes live on the site straight away, exactly as written here."
+                }
+                confirmLabel={
+                  page.status === "published" ? "Unpublish" : "Publish it"
+                }
+                confirmVariant={
+                  page.status === "published" ? "destructive" : "default"
+                }
+                pending={mutations.setStatus.isPending}
+                onConfirm={(close) =>
+                  mutations.setStatus.mutate(
+                    {
+                      pageId: page.id,
+                      status:
+                        page.status === "published" ? "draft" : "published",
+                    },
+                    { onSuccess: close }
+                  )
+                }
+              />
+            </CanAct>
           )}
         </div>
-        <Button disabled={!valid || pending} onClick={save}>
-          {editing ? "Save changes" : "Create page"}
-        </Button>
+        <CanAct permission="pages.write">
+          <Button disabled={!valid || pending} onClick={save}>
+            {editing ? "Save changes" : "Create page"}
+          </Button>
+        </CanAct>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

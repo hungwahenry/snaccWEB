@@ -1,5 +1,6 @@
 "use client"
 
+import { CanAct } from "@/features/admin/auth/components/can"
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -74,7 +75,9 @@ function ReasonDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={trigger} />
+      <CanAct permission="suspension_reasons.write">
+        <DialogTrigger render={trigger} />
+      </CanAct>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{editing ? "Edit reason" : "New reason"}</DialogTitle>

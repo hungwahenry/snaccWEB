@@ -4,6 +4,7 @@ import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
 
 import { useMemo, useState } from "react"
 import { Badge } from "@/components/ui/badge"
+import { CanAct } from "@/features/admin/auth/components/can"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -229,10 +230,12 @@ export function RolesTable({
     <TableFrame
       toolbar={
         <div className="flex justify-end">
-          <RoleDialog
-            mutations={mutations}
-            trigger={<Button size="sm">New role</Button>}
-          />
+          <CanAct permission="roles.write">
+            <RoleDialog
+              mutations={mutations}
+              trigger={<Button size="sm">New role</Button>}
+            />
+          </CanAct>
         </div>
       }
     >
@@ -266,38 +269,44 @@ export function RolesTable({
               <TableCell className="text-right">
                 <div className="flex justify-end gap-2">
                   {role.allow_all ? null : (
-                    <PermissionsDialog
+                    <CanAct permission="roles.write">
+                      <PermissionsDialog
+                        role={role}
+                        catalog={catalog}
+                        mutations={mutations}
+                        trigger={
+                          <Button variant="outline" size="sm">
+                            Permissions
+                          </Button>
+                        }
+                      />
+                    </CanAct>
+                  )}
+                  <CanAct permission="roles.write">
+                    <RoleDialog
                       role={role}
-                      catalog={catalog}
                       mutations={mutations}
                       trigger={
                         <Button variant="outline" size="sm">
-                          Permissions
+                          Edit
                         </Button>
                       }
                     />
-                  )}
-                  <RoleDialog
-                    role={role}
-                    mutations={mutations}
-                    trigger={
-                      <Button variant="outline" size="sm">
-                        Edit
-                      </Button>
-                    }
-                  />
+                  </CanAct>
                   {role.is_system ? null : (
-                    <ConfirmAction
-                      label="Delete"
-                      variant="ghost"
-                      title="Delete this role?"
-                      description="Everyone holding it loses the access it granted, immediately."
-                      confirmLabel="Delete role"
-                      pending={mutations.remove.isPending}
-                      onConfirm={(close) =>
-                        mutations.remove.mutate(role.id, { onSuccess: close })
-                      }
-                    />
+                    <CanAct permission="roles.delete">
+                      <ConfirmAction
+                        label="Delete"
+                        variant="ghost"
+                        title="Delete this role?"
+                        description="Everyone holding it loses the access it granted, immediately."
+                        confirmLabel="Delete role"
+                        pending={mutations.remove.isPending}
+                        onConfirm={(close) =>
+                          mutations.remove.mutate(role.id, { onSuccess: close })
+                        }
+                      />
+                    </CanAct>
                   )}
                 </div>
               </TableCell>

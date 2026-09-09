@@ -1,5 +1,6 @@
 "use client"
 
+import { CanAct } from "@/features/admin/auth/components/can"
 import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
 
 import { useState } from "react"
@@ -71,7 +72,9 @@ function TierDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={trigger} />
+      <CanAct permission="score_tiers.write">
+        <DialogTrigger render={trigger} />
+      </CanAct>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{editing ? "Edit tier" : "New tier"}</DialogTitle>
@@ -220,17 +223,19 @@ export function TiersTable({
                       </Button>
                     }
                   />
-                  <ConfirmAction
-                    label="Delete"
-                    variant="ghost"
-                    title="Delete this tier?"
-                    description="Every profile standing on the ladder is recomputed straight away, so people can move tier the moment you confirm."
-                    confirmLabel="Delete tier"
-                    pending={mutations.remove.isPending}
-                    onConfirm={(close) =>
-                      mutations.remove.mutate(tier.id, { onSuccess: close })
-                    }
-                  />
+                  <CanAct permission="score_tiers.delete">
+                    <ConfirmAction
+                      label="Delete"
+                      variant="ghost"
+                      title="Delete this tier?"
+                      description="Every profile standing on the ladder is recomputed straight away, so people can move tier the moment you confirm."
+                      confirmLabel="Delete tier"
+                      pending={mutations.remove.isPending}
+                      onConfirm={(close) =>
+                        mutations.remove.mutate(tier.id, { onSuccess: close })
+                      }
+                    />
+                  </CanAct>
                 </div>
               </TableCell>
             </TableRow>

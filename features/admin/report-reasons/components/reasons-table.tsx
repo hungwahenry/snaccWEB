@@ -1,5 +1,6 @@
 "use client"
 
+import { CanAct } from "@/features/admin/auth/components/can"
 import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
@@ -86,7 +87,9 @@ function ReasonDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={trigger} />
+      <CanAct permission="report_reasons.write">
+        <DialogTrigger render={trigger} />
+      </CanAct>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
@@ -243,19 +246,21 @@ export function ReasonsTable({
                       Restore
                     </Button>
                   ) : (
-                    <ConfirmAction
-                      label="Retire"
-                      variant="ghost"
-                      title={`Retire "${reason.label}"?`}
-                      description="Nobody can pick it when reporting any more. Reports already filed under it keep their reason."
-                      confirmLabel="Retire it"
-                      pending={mutations.retire.isPending}
-                      onConfirm={(close) =>
-                        mutations.retire.mutate(reason.id, {
-                          onSuccess: close,
-                        })
-                      }
-                    />
+                    <CanAct permission="report_reasons.retire">
+                      <ConfirmAction
+                        label="Retire"
+                        variant="ghost"
+                        title={`Retire "${reason.label}"?`}
+                        description="Nobody can pick it when reporting any more. Reports already filed under it keep their reason."
+                        confirmLabel="Retire it"
+                        pending={mutations.retire.isPending}
+                        onConfirm={(close) =>
+                          mutations.retire.mutate(reason.id, {
+                            onSuccess: close,
+                          })
+                        }
+                      />
+                    </CanAct>
                   )}
                 </div>
               </TableCell>

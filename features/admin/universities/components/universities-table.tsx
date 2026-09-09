@@ -1,5 +1,6 @@
 "use client"
 
+import { CanAct } from "@/features/admin/auth/components/can"
 import { useState } from "react"
 import { TableFrame } from "@/components/data-table/table-frame"
 import { Badge } from "@/components/ui/badge"
@@ -75,7 +76,9 @@ function UniversityDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={trigger} />
+      <CanAct permission="universities.write">
+        <DialogTrigger render={trigger} />
+      </CanAct>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
@@ -161,13 +164,15 @@ function DeleteDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          <Button variant="ghost" size="sm">
-            Delete
-          </Button>
-        }
-      />
+      <CanAct permission="universities.delete">
+        <DialogTrigger
+          render={
+            <Button variant="ghost" size="sm">
+              Delete
+            </Button>
+          }
+        />
+      </CanAct>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Delete {university.name}?</DialogTitle>

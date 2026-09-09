@@ -1,5 +1,6 @@
 "use client"
 
+import { CanAct } from "@/features/admin/auth/components/can"
 import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
 
 import { useState } from "react"
@@ -68,7 +69,9 @@ function PromptDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={trigger} />
+      <CanAct permission="onboarding_prompts.write">
+        <DialogTrigger render={trigger} />
+      </CanAct>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{editing ? "Edit prompt" : "New prompt"}</DialogTitle>
@@ -180,17 +183,19 @@ export function PromptsTable({
                       </Button>
                     }
                   />
-                  <ConfirmAction
-                    label="Delete"
-                    variant="ghost"
-                    title="Delete this prompt?"
-                    description="New sign-ups will stop being offered it. Answers people already gave stay where they are."
-                    confirmLabel="Delete prompt"
-                    pending={mutations.remove.isPending}
-                    onConfirm={(close) =>
-                      mutations.remove.mutate(prompt.id, { onSuccess: close })
-                    }
-                  />
+                  <CanAct permission="onboarding_prompts.delete">
+                    <ConfirmAction
+                      label="Delete"
+                      variant="ghost"
+                      title="Delete this prompt?"
+                      description="New sign-ups will stop being offered it. Answers people already gave stay where they are."
+                      confirmLabel="Delete prompt"
+                      pending={mutations.remove.isPending}
+                      onConfirm={(close) =>
+                        mutations.remove.mutate(prompt.id, { onSuccess: close })
+                      }
+                    />
+                  </CanAct>
                 </div>
               </TableCell>
             </TableRow>

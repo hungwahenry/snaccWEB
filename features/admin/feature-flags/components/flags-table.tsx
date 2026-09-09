@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
+import { CanAct } from "@/features/admin/auth/components/can"
 import { Button } from "@/components/ui/button"
 import { TableFrame } from "@/components/data-table/table-frame"
 import {
@@ -51,13 +52,15 @@ function VersionDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          <Button variant="outline" size="sm">
-            Versions
-          </Button>
-        }
-      />
+      <CanAct permission="flags.write">
+        <DialogTrigger
+          render={
+            <Button variant="outline" size="sm">
+              Versions
+            </Button>
+          }
+        />
+      </CanAct>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="font-mono text-sm">{flag.key}</DialogTitle>
@@ -166,13 +169,15 @@ export function FlagsTable({
                             onUpdate={onToggle}
                             pending={pending}
                           />
-                          <Switch
-                            checked={flag.enabled}
-                            disabled={pending}
-                            onCheckedChange={(enabled) =>
-                              onToggle({ key: flag.key, enabled })
-                            }
-                          />
+                          <CanAct permission="flags.write">
+                            <Switch
+                              checked={flag.enabled}
+                              disabled={pending}
+                              onCheckedChange={(enabled) =>
+                                onToggle({ key: flag.key, enabled })
+                              }
+                            />
+                          </CanAct>
                         </div>
                       </TableCell>
                     </TableRow>

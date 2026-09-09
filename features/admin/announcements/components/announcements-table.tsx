@@ -1,5 +1,6 @@
 "use client"
 
+import { CanAct } from "@/features/admin/auth/components/can"
 import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
 
 import { useState } from "react"
@@ -81,7 +82,9 @@ function BroadcastDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button size="sm">New announcement</Button>} />
+      <CanAct permission="announcements.write">
+        <DialogTrigger render={<Button size="sm">New announcement</Button>} />
+      </CanAct>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Broadcast announcement</DialogTitle>
@@ -223,19 +226,21 @@ export function AnnouncementsTable({
                     {formatDate(announcement.created_at)}
                   </TableCell>
                   <TableCell className="text-right">
-                    <ConfirmAction
-                      label="Delete"
-                      variant="ghost"
-                      title="Delete this announcement?"
-                      description="It disappears from everyone's notifications. Pushes already sent cannot be taken back."
-                      confirmLabel="Delete announcement"
-                      pending={mutations.remove.isPending}
-                      onConfirm={(close) =>
-                        mutations.remove.mutate(announcement.id, {
-                          onSuccess: close,
-                        })
-                      }
-                    />
+                    <CanAct permission="announcements.delete">
+                      <ConfirmAction
+                        label="Delete"
+                        variant="ghost"
+                        title="Delete this announcement?"
+                        description="It disappears from everyone's notifications. Pushes already sent cannot be taken back."
+                        confirmLabel="Delete announcement"
+                        pending={mutations.remove.isPending}
+                        onConfirm={(close) =>
+                          mutations.remove.mutate(announcement.id, {
+                            onSuccess: close,
+                          })
+                        }
+                      />
+                    </CanAct>
                   </TableCell>
                 </TableRow>
               ))

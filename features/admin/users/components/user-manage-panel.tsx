@@ -124,7 +124,7 @@ export function UserManagePanel({
           }
           description="Which consoles they can reach, and what they may do there."
           action={
-            <CanAct permission="roles.read">
+            <CanAct permission="roles.grant">
               <RolesDialog user={user} />
             </CanAct>
           }

@@ -4,6 +4,7 @@ import { TableFrame } from "@/components/data-table/table-frame"
 import { useState } from "react"
 import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
+import { CanAct } from "@/features/admin/auth/components/can"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -66,13 +67,15 @@ function EditDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          <Button variant="outline" size="sm">
-            Edit
-          </Button>
-        }
-      />
+      <CanAct permission="config.write">
+        <DialogTrigger
+          render={
+            <Button variant="outline" size="sm">
+              Edit
+            </Button>
+          }
+        />
+      </CanAct>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="font-mono text-sm">{setting.key}</DialogTitle>

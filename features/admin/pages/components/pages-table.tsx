@@ -1,5 +1,6 @@
 "use client"
 
+import { CanAct } from "@/features/admin/auth/components/can"
 import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
 
 import Link from "next/link"
@@ -29,9 +30,11 @@ export function PagesTable({
     <TableFrame
       toolbar={
         <div className="flex justify-end">
-          <Button size="sm" render={<Link href="/admin/pages/new" />}>
-            New page
-          </Button>
+          <CanAct permission="pages.write">
+            <Button size="sm" render={<Link href="/admin/pages/new" />}>
+              New page
+            </Button>
+          </CanAct>
         </div>
       }
     >
@@ -82,17 +85,19 @@ export function PagesTable({
                     >
                       Edit
                     </Button>
-                    <ConfirmAction
-                      label="Delete"
-                      variant="ghost"
-                      title="Delete this page?"
-                      description="Anyone following its link gets a 404 from the moment you confirm."
-                      confirmLabel="Delete page"
-                      pending={mutations.remove.isPending}
-                      onConfirm={(close) =>
-                        mutations.remove.mutate(page.id, { onSuccess: close })
-                      }
-                    />
+                    <CanAct permission="pages.delete">
+                      <ConfirmAction
+                        label="Delete"
+                        variant="ghost"
+                        title="Delete this page?"
+                        description="Anyone following its link gets a 404 from the moment you confirm."
+                        confirmLabel="Delete page"
+                        pending={mutations.remove.isPending}
+                        onConfirm={(close) =>
+                          mutations.remove.mutate(page.id, { onSuccess: close })
+                        }
+                      />
+                    </CanAct>
                   </div>
                 </TableCell>
               </TableRow>
