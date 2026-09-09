@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/api/errors"
-import type { FlagChanges } from "../types"
+import type { AdminFeatureFlag, FlagChanges } from "../types"
 import { listFlags, updateFlag } from "../api"
 
 const KEY = ["admin", "flags"]
@@ -12,13 +12,12 @@ export function useFlags() {
   return useQuery({ queryKey: KEY, queryFn: listFlags })
 }
 
-function described(flag: {
-  key: string
-  enabled: boolean
-  min_version: string | null
-  max_version: string | null
-}) {
+function described(flag: AdminFeatureFlag) {
   if (!flag.enabled) return `${flag.key} disabled.`
+  if (flag.overrides.length > 0) {
+    const rules = flag.overrides.length === 1 ? "rule" : "rules"
+    return `${flag.key} saved, with ${flag.overrides.length} platform ${rules}.`
+  }
   if (flag.min_version && flag.max_version) {
     return `${flag.key} on for ${flag.min_version} to ${flag.max_version}.`
   }
