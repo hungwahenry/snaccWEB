@@ -290,8 +290,14 @@ export function ProfileHeaderSkeleton() {
   return (
     <div className="flex animate-pulse flex-col">
       <div className="h-32 bg-muted sm:h-40" />
-      <div className="flex flex-col gap-4 px-4 pb-4 sm:px-6">
-        <div className="-mt-10 size-20 rounded-full bg-muted ring-4 ring-background" />
+      <div className="flex flex-col gap-3 px-4 pb-4 sm:px-6">
+        <div className="flex items-start justify-between gap-3">
+          <div className="-mt-10 size-20 shrink-0 rounded-full bg-muted ring-4 ring-background" />
+          <div className="flex gap-2 pt-2">
+            <div className="h-9 w-24 rounded-full bg-muted" />
+            <div className="h-9 w-9 rounded-full bg-muted" />
+          </div>
+        </div>
         <div className="flex flex-col gap-2">
           <div className="h-6 w-40 rounded-md bg-muted" />
           <div className="h-4 w-24 rounded-md bg-muted" />
@@ -302,6 +308,11 @@ export function ProfileHeaderSkeleton() {
             <div key={i} className="h-9 w-14 rounded-md bg-muted" />
           ))}
         </div>
+      </div>
+      <div className="flex gap-2 border-b border-border px-4 py-2">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="h-9 w-20 rounded-full bg-muted" />
+        ))}
       </div>
     </div>
   )

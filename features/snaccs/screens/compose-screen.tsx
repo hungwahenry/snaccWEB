@@ -1,6 +1,7 @@
 "use client"
 
 import { ComposerBar } from "@/components/ui/composer-bar"
+import { ComposerScreen } from "@/components/ui/composer-screen"
 import { FileTextIcon, GhostIcon } from "lucide-react"
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
@@ -59,7 +60,7 @@ function ComposeBody({
   const copy = COPY[composer.mode]
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <ComposerScreen className="overflow-y-auto">
       <ComposerHeader
         title={copy.title}
         onClose={composer.close}
@@ -203,6 +204,6 @@ function ComposeBody({
       <StickerCreator {...composer.stickerCreator} />
       <ImageEditorSheet {...composer.imageEditor} />
       <DraftsSheet {...composer.draftsSheet} />
-    </div>
+    </ComposerScreen>
   )
 }

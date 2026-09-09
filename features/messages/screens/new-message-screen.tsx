@@ -2,8 +2,8 @@
 
 import { GhostAvatar } from "@/components/ui/ghost-avatar"
 import { BackHeader } from "@/features/navigation/components/back-header"
+import { ComposerScreen } from "@/components/ui/composer-screen"
 import { useBack } from "@/hooks/use-back"
-import { useKeyboardInset } from "@/hooks/use-keyboard-inset"
 import { MessageComposer } from "../components/composer/message-composer"
 import { useMessageComposer } from "../hooks/use-message-composer"
 import { useStartConversation } from "../hooks/use-start-conversation"
@@ -18,7 +18,6 @@ export function NewMessageScreen({
 }) {
   const back = useBack()
   const start = useStartConversation()
-  const keyboard = useKeyboardInset()
   const handle = useVerifiedHandle(targetId, username)
   const composer = useMessageComposer({
     onSend: (body) => start.mutate({ targetId, body }),
@@ -26,11 +25,7 @@ export function NewMessageScreen({
   })
 
   return (
-    <div
-      // Shrinks with the keyboard so the composer sits above it and the thread stays visible.
-      style={{ height: `calc(100dvh - ${keyboard}px)` }}
-      className="flex flex-col"
-    >
+    <ComposerScreen>
       <BackHeader
         title={handle ? `Message @${handle}` : "Anonymous message"}
         onBack={back}
@@ -57,6 +52,6 @@ export function NewMessageScreen({
         remaining={composer.remaining}
         showCounter={composer.showCounter}
       />
-    </div>
+    </ComposerScreen>
   )
 }

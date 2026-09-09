@@ -1,4 +1,5 @@
 import { ComposerBar } from "@/components/ui/composer-bar"
+import { ComposerScreen } from "@/components/ui/composer-screen"
 import { XIcon } from "lucide-react"
 import type { ReactNode } from "react"
 import { Button } from "@/components/ui/button"
@@ -15,7 +16,7 @@ export function MomentTextShell({
   bar: ReactNode
 }) {
   return (
-    <div className="flex min-h-dvh flex-col">
+    <ComposerScreen className="overflow-y-auto">
       <div
         className="flex flex-1 flex-col pt-[env(safe-area-inset-top)]"
         style={{ backgroundColor: background }}
@@ -40,6 +41,6 @@ export function MomentTextShell({
       </div>
 
       <ComposerBar>{bar}</ComposerBar>
-    </div>
+    </ComposerScreen>
   )
 }

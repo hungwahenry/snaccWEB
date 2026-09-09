@@ -1,6 +1,7 @@
 "use client"
 
 import { ComposerBar } from "@/components/ui/composer-bar"
+import { ComposerScreen } from "@/components/ui/composer-screen"
 import { MessageSquareDashedIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -44,7 +45,7 @@ function Editor({ snacc }: { snacc: Snacc }) {
   const editor = useSnaccEditor(snacc)
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <ComposerScreen className="overflow-y-auto">
       <ComposerHeader title="Edit snacc" onClose={editor.close} />
 
       <div className="flex-1 px-4 pt-4 pb-6">
@@ -96,6 +97,6 @@ function Editor({ snacc }: { snacc: Snacc }) {
         />
       </ComposerBar>
       <ImageEditorSheet {...editor.imageEditor} />
-    </div>
+    </ComposerScreen>
   )
 }

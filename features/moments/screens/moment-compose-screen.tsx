@@ -1,6 +1,7 @@
 "use client"
 
 import { ComposerBar } from "@/components/ui/composer-bar"
+import { ComposerScreen } from "@/components/ui/composer-screen"
 import { ComposerFrame } from "@/features/snaccs/components/composer/composer-frame"
 import { ComposerHeader } from "@/features/snaccs/components/composer/composer-header"
 import { MomentComposeBar } from "../components/composer/moment-compose-bar"
@@ -46,7 +47,7 @@ export function MomentComposeScreen() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <ComposerScreen className="overflow-y-auto">
       <ComposerHeader title="New moment" onClose={close} />
 
       <div className="flex flex-1 flex-col gap-4 px-4 pt-4 pb-6">
@@ -63,6 +64,6 @@ export function MomentComposeScreen() {
       </div>
 
       <ComposerBar>{bar}</ComposerBar>
-    </div>
+    </ComposerScreen>
   )
 }

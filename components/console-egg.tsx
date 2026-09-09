@@ -10,21 +10,8 @@ const MARK = `
  ███████ ██   ████ ██   ██  ██████  ██████
 `
 
-const SEEN = "snacc:egg"
-
-function firstLook(): boolean {
-  try {
-    if (window.sessionStorage.getItem(SEEN)) return false
-    window.sessionStorage.setItem(SEEN, "1")
-  } catch {
-  }
-  return true
-}
-
 export function ConsoleEgg() {
   useEffect(() => {
-    if (!firstLook()) return
-
     console.log(`%c${MARK}`, "color:#ff6b00;font-weight:bold")
     console.log(
       "%cCurious one, aren't you? 👀 You won't find a session token down here, they live in httpOnly cookies the browser won't hand you, and the API checks everything twice anyway.",
