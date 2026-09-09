@@ -1,5 +1,4 @@
 import { api } from "@/lib/api/client"
-import type { Paginated } from "@/lib/api/types"
 import type {
   MyReport,
   ReportableType,
@@ -40,6 +39,6 @@ export function listReportReasons(
   return api.get<ReportReason[]>("/reports/reasons", { type })
 }
 
-export function listMyReports(page: number): Promise<Paginated<MyReport>> {
-  return api.get<Paginated<MyReport>>("/reports", { page })
+export function listMyReports(): Promise<MyReport[]> {
+  return api.get<MyReport[]>("/reports")
 }
