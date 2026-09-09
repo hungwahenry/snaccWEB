@@ -4,4 +4,5 @@ export const realtimeRooms = {
   feedCampus: (slug: string) => `feed:campus:${slug}`,
   profile: (username: string) => `profile:${username}`,
   campus: (slug: string) => `campus:${slug}`,
+  match: (matchId: string) => `match:${matchId}`,
 } as const

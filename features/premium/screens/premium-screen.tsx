@@ -2,7 +2,7 @@
 
 import { CircleSlashIcon, GemIcon } from "lucide-react"
 import { EmptyState } from "@/components/ui/empty-state"
-import { useFlag } from "@/features/config/hooks/use-flag"
+import { useFlagWhenKnown } from "@/features/config/hooks/use-flag"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { useWalletOverview } from "@/features/wallet/hooks/account/use-wallet-overview"
 import { useBack } from "@/hooks/use-back"
@@ -15,7 +15,7 @@ import { usePremium } from "../hooks/use-premium"
 
 export function PremiumScreen() {
   const back = useBack()
-  const enabled = useFlag("premium")
+  const enabled = useFlagWhenKnown("premium")
   const query = usePremium()
   const wallet = useWalletOverview()
   const { buy, buying } = useBuyPremium()
@@ -29,7 +29,9 @@ export function PremiumScreen() {
       <BackHeader title="Premium" onBack={back} />
 
       {/* Reachable directly even while the row that leads here is hidden, so say something. */}
-      {!enabled ? (
+      {enabled === null ? (
+        <PremiumSkeleton />
+      ) : !enabled ? (
         <EmptyState
           icon={CircleSlashIcon}
           title="Not available"

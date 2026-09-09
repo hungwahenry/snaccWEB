@@ -40,6 +40,7 @@ export function useFirstPostComposer(onPosted: () => void) {
         images: [],
         gif: null,
         sticker: null,
+      match: null,
         voice: null,
         spoiler: false,
         anonymous: ghost.active,

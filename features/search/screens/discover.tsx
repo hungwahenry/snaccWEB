@@ -7,6 +7,7 @@ import { BirthdaysToday } from "@/features/birthdays/components/birthdays-today"
 import { useCampusBirthdays } from "@/features/birthdays/hooks/use-campus-birthdays"
 import { MatchDetailSheet } from "@/features/football/components/match-detail-sheet"
 import { Matchday } from "@/features/football/components/matchday"
+import { useMatchSnaccCounts } from "@/features/football/hooks/use-match-room"
 import { MatchdaySkeleton } from "@/features/football/components/matchday-skeleton"
 import { useMatchDetail } from "@/features/football/hooks/use-match-detail"
 import { useScoreboard } from "@/features/football/hooks/use-scoreboard"
@@ -27,6 +28,7 @@ export function Discover({ compact = false }: { compact?: boolean }) {
   const hashtags = usePopularHashtags()
   const suggestions = useFollowSuggestions()
   const [matchId, setMatchId] = useState<string | null>(null)
+  const counts = useMatchSnaccCounts()
   const match = useMatchDetail(matchId)
 
   const matches = scoreboard.data?.matches ?? []
@@ -55,6 +57,7 @@ export function Discover({ compact = false }: { compact?: boolean }) {
       ) : (
         <Matchday
           matches={matches}
+          counts={counts.data ?? {}}
           onPressMatch={(entry) => setMatchId(entry.id)}
         />
       )}

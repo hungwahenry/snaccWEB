@@ -49,7 +49,9 @@ export function PremiumGate({
 
         <div className="flex flex-col gap-1.5">
           <h2 className="text-2xl font-extrabold">{title}</h2>
-          <p className="text-[15px] text-pretty text-muted-foreground">{body}</p>
+          <p className="text-[15px] text-pretty text-muted-foreground">
+            {body}
+          </p>
         </div>
 
         {/* With Premium off there is nothing to sell, so the pitch stands without the button. */}

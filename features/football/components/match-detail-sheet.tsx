@@ -1,12 +1,48 @@
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { useFlag } from "@/features/config/hooks/use-flag"
+import { composePath } from "@/features/snaccs/routes"
+import { matchRoomPath } from "../routes"
 import { ActionSheet } from "@/components/ui/action-sheet"
 import { Eyebrow } from "@/components/ui/eyebrow"
-import { Spinner } from "@/components/ui/spinner"
+import { Skeleton } from "@/components/ui/skeleton"
 import { clockTime, shortDate } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import type { FormRow, MatchDetail, MatchTeam, TableSlot } from "../types"
 import { LiveBadge } from "./matchday"
 
 const shortName = (team: MatchTeam) => team.code ?? team.name
+
+/** Shaped like what lands, so nothing shifts when it does. */
+function MatchDetailSkeleton() {
+  return (
+    <div className="flex flex-col gap-6 pt-2">
+      <div className="flex w-full items-center">
+        <div className="flex flex-1 flex-col items-center gap-2">
+          <Skeleton className="size-11 rounded-full" />
+          <Skeleton className="h-4 w-20" />
+        </div>
+        <Skeleton className="h-9 w-24" />
+        <div className="flex flex-1 flex-col items-center gap-2">
+          <Skeleton className="size-11 rounded-full" />
+          <Skeleton className="h-4 w-20" />
+        </div>
+      </div>
+
+      <div className="flex gap-2">
+        <Skeleton className="h-10 flex-1 rounded-full" />
+        <Skeleton className="h-10 flex-1 rounded-full" />
+      </div>
+
+      {[0, 1, 2].map((row) => (
+        <div key={row} className="flex flex-col gap-2.5">
+          <Skeleton className="h-3 w-24" />
+          <Skeleton className="h-16 w-full rounded-2xl" />
+        </div>
+      ))}
+    </div>
+  )
+}
 
 function TeamBadge({ team }: { team: MatchTeam }) {
   return (
@@ -131,6 +167,8 @@ export function MatchDetailSheet({
   loading: boolean
   failed: boolean
 }) {
+  const canPost = useFlag("snacc_matches")
+
   return (
     <ActionSheet
       open={open}
@@ -151,16 +189,37 @@ export function MatchDetailSheet({
       className="px-5 pb-6"
     >
       {!detail ? (
-        <div className="flex justify-center py-16">
-          {failed ? (
+        failed ? (
+          <div className="flex justify-center py-16">
             <p className="text-muted-foreground">Could not load this match.</p>
-          ) : loading ? (
-            <Spinner className="text-muted-foreground" />
-          ) : null}
-        </div>
+          </div>
+        ) : loading ? (
+          <MatchDetailSkeleton />
+        ) : null
       ) : (
         <div className="flex flex-col gap-6 pt-2">
           <ScoreHeader detail={detail} />
+
+          {/* The way in: the sheet is where somebody is already looking at this match. */}
+          {canPost ? (
+            <div className="flex gap-2">
+              <Button
+                className="flex-1"
+                render={
+                  <Link href={composePath({ matchId: detail.match.id })} />
+                }
+              >
+                Snacc about this
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1"
+                render={<Link href={matchRoomPath(detail.match.id)} />}
+              >
+                See the room
+              </Button>
+            </div>
+          ) : null}
 
           {detail.form.home.length > 0 || detail.form.away.length > 0 ? (
             <div className="flex flex-col gap-2.5">

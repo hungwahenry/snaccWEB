@@ -4,6 +4,7 @@
 export const FLAG_KEYS = [
   "giphy",
   "snacc_gifs",
+  "snacc_matches",
   "message_gifs",
   "search",
   "earnings",
@@ -36,6 +37,7 @@ export const FLAG_KEYS = [
   "stickers",
   "snacc_stickers",
   "message_stickers",
+  "premium_wallet",
   "premium",
   "wallet",
   "wallet_dva",
@@ -95,6 +97,10 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly "earn.withdrawal.followers": number
   readonly "earn.withdrawal.account_age_days": number
   readonly "client.min_version": string
+  readonly "premium.wallet.monthly_kobo": number
+  readonly "premium.wallet.yearly_kobo": number
+  readonly "client.min_version_ios": string
+  readonly "client.min_version_android": string
   readonly "client.store_url_android": string
   readonly "client.store_url_ios": string
   readonly "ghost.window.minutes": number
@@ -164,6 +170,10 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   "earn.withdrawal.followers": 50,
   "earn.withdrawal.account_age_days": 14,
   "client.min_version": "0.0.0",
+  "premium.wallet.monthly_kobo": 350000,
+  "premium.wallet.yearly_kobo": 3200000,
+  "client.min_version_ios": "",
+  "client.min_version_android": "",
   "client.store_url_android":
     "https://play.google.com/store/apps/details?id=com.snacc.fyi",
   "client.store_url_ios": "",

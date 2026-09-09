@@ -1,4 +1,5 @@
 import { onEarningsWallet } from "@/features/earnings/realtime"
+import { onMatchSnacc } from "@/features/football/realtime"
 import { onGhostWindow } from "@/features/ghost/realtime"
 import {
   onConversationRead,
@@ -27,6 +28,7 @@ export const REALTIME_HANDLERS = {
   notification: onNotification,
   "notification.removed": onNotification,
   "ghost.window": onGhostWindow,
+  "match.snacc": onMatchSnacc,
   "score.changed": onScoreChanged,
   "snacc.reaction": onSnaccReaction,
   "snacc.comment": onSnaccComment,

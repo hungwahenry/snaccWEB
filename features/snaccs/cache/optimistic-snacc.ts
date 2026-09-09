@@ -1,3 +1,4 @@
+import type { LiveMatch } from "@/features/football/types"
 import type { Gif } from "@/features/giphy/types"
 import type { DraftSticker } from "@/features/stickers/types"
 import type { VoiceDraft } from "@/features/voice/hooks/use-voice-recorder"
@@ -13,6 +14,7 @@ export interface SnaccDraft {
   images: PickedImage[]
   gif: Gif | null
   sticker: DraftSticker | null
+  match: LiveMatch | null
   voice: VoiceDraft | null
   parentId?: string
   resnaccOfId?: string
@@ -50,6 +52,7 @@ export function draftToInput(id: string, draft: SnaccDraft): CreateSnaccInput {
     images: draft.images.length > 0 ? draft.images : undefined,
     giphyId: draft.gif?.id,
     stickerId: draft.sticker?.id,
+    matchId: draft.match?.id,
     voice: draft.voice ?? undefined,
     parentId: draft.parentId,
     resnaccOfId: draft.resnaccOfId,
@@ -92,6 +95,20 @@ export function buildOptimisticSnacc(
     parent_id: placed?.parent_id ?? null,
     reply_to_user: placed?.reply_to_user ?? null,
     resnacc_of: original ? toEmbedded(original) : null,
+    // Shown straight away from the board we already have; the server takes its own copy.
+    match: draft.match
+      ? {
+          match_id: draft.match.id,
+          competition: draft.match.competition.name,
+          home: { name: draft.match.home.name, crest: draft.match.home.crest },
+          away: { name: draft.match.away.name, crest: draft.match.away.crest },
+          kickoff_at: draft.match.kickoff_at,
+          home_score: draft.match.home_score,
+          away_score: draft.match.away_score,
+          status: draft.match.status,
+          live: true,
+        }
+      : null,
     my_resnacc: false,
     mine: true,
     body: draft.body,

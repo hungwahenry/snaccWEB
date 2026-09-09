@@ -29,6 +29,7 @@ import type { StoredDraft } from "../../drafts/types"
 import { composePath, snaccPath } from "../../routes"
 import { pickedAssets } from "../../utils/draft-images"
 import type { PollDraft } from "./use-poll-draft"
+import { useScoreboard } from "@/features/football/hooks/use-scoreboard"
 import { EMPTY_DRAFT, pollMinutes, useSnaccDraft } from "./use-snacc-draft"
 import {
   useComposerTypeahead,
@@ -52,6 +53,7 @@ export function useComposer(params: {
   parentId?: string
   resnaccOfId?: string
   initialBody?: string
+  matchId?: string
   draftId?: string
 }) {
   const router = useRouter()
@@ -81,6 +83,15 @@ export function useComposer(params: {
       : { ...EMPTY_DRAFT, body: params.initialBody ?? "" }
   })
   const draft = useSnaccDraft(seed, { allowVoice: !ghost.active })
+
+  // Derived rather than seeded: the board arrives after this mounts, and a match is context the
+  // composer was opened with, not something it holds and edits.
+  const board = useScoreboard()
+  const [matchDropped, setMatchDropped] = useState(false)
+  const match =
+    params.matchId && !matchDropped
+      ? (board.data?.matches.find((one) => one.id === params.matchId) ?? null)
+      : null
   const typeahead = useComposerTypeahead(draft.body, draft.cursor)
 
   const stickerCreator = useStickerCreator(draft.selectSticker)
@@ -99,6 +110,7 @@ export function useComposer(params: {
       images: pickedAssets(draft.images),
       gif: draft.gif,
       sticker: draft.sticker,
+      match,
       voice: draft.voice,
       parentId: params.parentId,
       resnaccOfId: params.resnaccOfId,
@@ -169,6 +181,8 @@ export function useComposer(params: {
 
   return {
     ...draft,
+    match,
+    removeMatch: () => setMatchDropped(true),
     mode,
     dirty,
     ghost: ghost.active,

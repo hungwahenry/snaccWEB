@@ -2,6 +2,7 @@ import { StickerAttachmentView } from "@/features/stickers/components/sticker-at
 import { VoiceNotePlayer } from "@/features/voice/components/voice-note-player"
 import type { Snacc } from "../../../types"
 import { PollView, type PollViewProps } from "../poll-view"
+import { MatchAttachment } from "@/features/football/components/match-attachment"
 import { SnaccGifView } from "./snacc-gif"
 import { SnaccImages } from "./snacc-images"
 
@@ -15,6 +16,7 @@ type SnaccMediaProps = {
     | "voice"
     | "gif"
     | "sticker"
+    | "match"
     | "spoiler"
     | "poll"
     | "status"
@@ -38,7 +40,8 @@ export function SnaccMedia({
     snacc.voice ||
     snacc.images.length > 0 ||
     snacc.gif ||
-    snacc.sticker
+    snacc.sticker ||
+    snacc.match
   if (!hasAny) return null
 
   return (
@@ -64,6 +67,8 @@ export function SnaccMedia({
         onPressImage={onPressImage}
         onHoldImage={onHoldImage}
       />
+
+      {snacc.match ? <MatchAttachment match={snacc.match} /> : null}
 
       {snacc.gif ? (
         <SnaccGifView

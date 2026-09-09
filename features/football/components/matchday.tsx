@@ -1,7 +1,8 @@
 import { Eyebrow } from "@/components/ui/eyebrow"
 import { clockTime } from "@/lib/format"
 import { cn } from "@/lib/utils"
-import type { LiveMatch, MatchTeam } from "../types"
+import { MessageCircleIcon } from "lucide-react"
+import type { LiveMatch, MatchSnaccCounts, MatchTeam } from "../types"
 
 function Crest({ url, size }: { url: string | null; size: number }) {
   if (!url)
@@ -86,9 +87,11 @@ function StatusBadge({ match }: { match: LiveMatch }) {
 
 function MatchCard({
   match,
+  snaccs,
   onPress,
 }: {
   match: LiveMatch
+  snaccs: number
   onPress: () => void
 }) {
   const playing = match.status === "live" || match.status === "halftime"
@@ -110,15 +113,23 @@ function MatchCard({
       </div>
       <TeamRow team={match.home} score={match.home_score} playing={playing} />
       <TeamRow team={match.away} score={match.away_score} playing={playing} />
+      {snaccs > 0 ? (
+        <span className="flex items-center gap-1 text-[11px] font-bold text-muted-foreground">
+          <MessageCircleIcon className="size-3" />
+          {snaccs === 1 ? "1 snacc" : `${snaccs} snaccs`}
+        </span>
+      ) : null}
     </button>
   )
 }
 
 export function Matchday({
   matches,
+  counts = {},
   onPressMatch,
 }: {
   matches: LiveMatch[]
+  counts?: MatchSnaccCounts
   onPressMatch: (match: LiveMatch) => void
 }) {
   if (matches.length === 0) return null
@@ -131,6 +142,7 @@ export function Matchday({
           <MatchCard
             key={match.id}
             match={match}
+            snaccs={counts[match.id] ?? 0}
             onPress={() => onPressMatch(match)}
           />
         ))}

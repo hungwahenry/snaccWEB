@@ -54,6 +54,7 @@ export function BirthdayWishDialog({
             <Button
               size="lg"
               className="h-14 text-base"
+              nativeButton={false}
               render={
                 <Link href={composePath({ initialBody: PREFILL })}>
                   <PencilIcon /> Post about it

@@ -16,16 +16,20 @@ export function useBirthdayWish({
   const [armed, setArmed] = useState(due)
   if (due !== armed) {
     setArmed(due)
-    if (due) {
-      markWished()
-      setOpen(true)
-    }
+    if (due) setOpen(true)
+  }
+
+  // Marked on the way out rather than on the way in. Marking as it opens means anything that
+  // interrupts the render — a remount, a reload — spends the year's wish on a dialog nobody saw.
+  function onOpenChange(next: boolean) {
+    setOpen(next)
+    if (!next) markWished()
   }
 
   return {
     showButton: isBirthday,
     open,
-    onOpenChange: setOpen,
+    onOpenChange,
     onOpen: () => setOpen(true),
   }
 }

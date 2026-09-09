@@ -1,5 +1,7 @@
 import { PencilIcon, XIcon } from "lucide-react"
 import type { Gif } from "@/features/giphy/types"
+import { MatchAttachment } from "@/features/football/components/match-attachment"
+import type { SnaccMatch } from "@/features/football/types"
 import { StickerAttachmentView } from "@/features/stickers/components/sticker-attachment-view"
 import type { DraftSticker } from "@/features/stickers/types"
 import { VoiceComposerPanel } from "@/features/voice/components/voice-composer-panel"
@@ -60,6 +62,8 @@ export function ComposerAttachments({
   onEditImage,
   onRemoveGif,
   onRemoveSticker,
+  match,
+  onRemoveMatch,
 }: {
   images: DraftImage[]
   gif: Gif | null
@@ -70,12 +74,28 @@ export function ComposerAttachments({
   onEditImage?: (key: string) => void
   onRemoveGif: () => void
   onRemoveSticker?: () => void
+  match?: SnaccMatch | null
+  onRemoveMatch?: () => void
 }) {
   const hasVoice = !!storedVoice || !!voice?.recording || !!voice?.draft
-  if (!gif && !sticker && images.length === 0 && !hasVoice) return null
+  if (!gif && !sticker && images.length === 0 && !hasVoice && !match)
+    return null
 
   return (
     <>
+      {match ? (
+        <div className="relative px-4 pt-3">
+          <MatchAttachment match={match} interactive={false} />
+          {onRemoveMatch ? (
+            <CornerButton
+              onPress={onRemoveMatch}
+              label="Remove match"
+              icon={XIcon}
+              side="right"
+            />
+          ) : null}
+        </div>
+      ) : null}
       {hasVoice ? (
         <VoiceComposerPanel
           recording={voice?.recording ?? false}

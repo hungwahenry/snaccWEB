@@ -10,7 +10,7 @@ import { LoadFailed } from "@/components/ui/load-failed"
 import { LoadMore } from "@/components/ui/load-more"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
 import { useMe } from "@/features/auth/hooks/use-me"
-import { useFlag } from "@/features/config/hooks/use-flag"
+import { useFlagWhenKnown } from "@/features/config/hooks/use-flag"
 import { TabHeader } from "@/features/navigation/components/tab-header"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { cn } from "@/lib/utils"
@@ -32,7 +32,7 @@ export function MessagesScreen() {
   const search = useDebouncedValue(query.trim(), 300)
   const searching = search.length >= MIN_QUERY
 
-  const messagesEnabled = useFlag("anon_messages")
+  const messagesEnabled = useFlagWhenKnown("anon_messages")
   const feed = useConversations(searching ? search : "")
   const hits = useMessageSearch(messagesEnabled ? search : "")
   const me = useMe()
@@ -65,7 +65,9 @@ export function MessagesScreen() {
         }
       />
 
-      {!messagesEnabled ? (
+      {messagesEnabled === null ? (
+        <SkeletonRows count={8} item={ConversationRowSkeleton} />
+      ) : !messagesEnabled ? (
         <EmptyState
           icon={GhostIcon}
           title="Messages aren't on yet"

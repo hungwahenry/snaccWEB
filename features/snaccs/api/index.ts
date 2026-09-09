@@ -21,6 +21,7 @@ export interface CreateSnaccInput {
   images?: PickedImage[]
   giphyId?: string
   stickerId?: string
+  matchId?: string
   parentId?: string
   resnaccOfId?: string
   poll?: { options: string[]; images?: PickedImage[]; durationMinutes: number }
@@ -49,6 +50,7 @@ export function createSnacc(input: CreateSnaccInput): Promise<Snacc> {
       body: input.body,
       giphyId: input.giphyId,
       stickerId: input.stickerId,
+      matchId: input.matchId,
       parentId: input.parentId,
       resnaccOfId: input.resnaccOfId,
       spoiler: input.spoiler,
@@ -64,6 +66,7 @@ export function createSnacc(input: CreateSnaccInput): Promise<Snacc> {
     ["resnaccOfId", input.resnaccOfId],
     ["giphyId", input.giphyId],
     ["stickerId", input.stickerId],
+    ["matchId", input.matchId],
     ["spoiler", input.spoiler ? "true" : undefined],
     ["poll", pollField(input.poll)],
     [

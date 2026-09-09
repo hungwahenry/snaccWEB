@@ -43,8 +43,12 @@ function subscribe(listener: () => void): () => void {
   }
 }
 
+// One frozen value, not a fresh object per call: React compares snapshots by identity, so a new
+// object every render reads as "the store changed" and spins.
+const SERVER_STATE: ConfirmState = { options: null, open: false }
+
 const getSnapshot = () => state
-const getServerSnapshot = (): ConfirmState => ({ options: null, open: false })
+const getServerSnapshot = () => SERVER_STATE
 
 export function confirm(options: ConfirmOptions): void {
   set({ options, open: true })

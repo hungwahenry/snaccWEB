@@ -17,6 +17,7 @@ import { ComposerFrame } from "../components/composer/composer-frame"
 import { ComposerHeader } from "../components/composer/composer-header"
 import { ComposerInput } from "../components/composer/composer-input"
 import { ComposerSuggestions } from "../components/composer/composer-suggestions"
+import { liveMatchCard } from "@/features/football/utils/card"
 import { ComposerNudges } from "../components/composer/composer-nudges"
 import { ComposerToolbar } from "../components/composer/composer-toolbar"
 import { DraftsSheet } from "../components/composer/drafts-sheet"
@@ -35,6 +36,7 @@ type ComposeScreenProps = {
   parentId?: string
   resnaccOfId?: string
   initialBody?: string
+  matchId?: string
   draftId?: string
 }
 
@@ -53,9 +55,16 @@ function ComposeBody({
   parentId,
   resnaccOfId,
   initialBody,
+  matchId,
   draftId,
 }: ComposeScreenProps) {
-  const composer = useComposer({ parentId, resnaccOfId, initialBody, draftId })
+  const composer = useComposer({
+    parentId,
+    resnaccOfId,
+    initialBody,
+    matchId,
+    draftId,
+  })
   const parent = useSnacc(parentId ?? "")
   const quoting = useSnacc(resnaccOfId ?? "")
   const copy = COPY[composer.mode]
@@ -152,6 +161,8 @@ function ComposeBody({
           />
         ) : (
           <ComposerAttachments
+            match={composer.match ? liveMatchCard(composer.match) : null}
+            onRemoveMatch={composer.removeMatch}
             images={composer.images}
             gif={composer.gif}
             sticker={composer.sticker}

@@ -1,3 +1,4 @@
+import type { SnaccMatch } from "@/features/football/types"
 import type { UserScore } from "@/features/score/types"
 import type { StickerAttachment } from "@/features/stickers/types"
 
@@ -127,6 +128,7 @@ export interface Snacc {
   voice: SnaccVoiceNote | null
   poll: SnaccPoll | null
   gif: SnaccGif | null
+  match: SnaccMatch | null
   sticker: StickerAttachment | null
   reactions: SnaccReaction[]
   reactions_count: number

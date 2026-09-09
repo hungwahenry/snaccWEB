@@ -9,6 +9,7 @@ export function composePath(
     resnaccOfId?: string
     initialBody?: string
     draftId?: string
+    matchId?: string
   } = {}
 ): string {
   const search = new URLSearchParams()
@@ -16,6 +17,7 @@ export function composePath(
   if (params.parentId) search.set("parentId", params.parentId)
   if (params.resnaccOfId) search.set("resnaccOfId", params.resnaccOfId)
   if (params.initialBody) search.set("initialBody", params.initialBody)
+  if (params.matchId) search.set("matchId", params.matchId)
   const qs = search.toString()
   return qs ? `/compose?${qs}` : "/compose"
 }
