@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { usePremiumNudge } from "@/features/premium/hooks/use-premium-limit"
 import {
   useVoiceRecorder,
   type VoiceDraft,
@@ -9,8 +10,8 @@ import type { PickedImage } from "@/lib/media"
 import type { Message } from "../types"
 import { replyPreview, toReplyPreview } from "../utils/preview"
 
-export const MESSAGE_MAX_LENGTH = 2000
-const COUNTER_FROM = MESSAGE_MAX_LENGTH - 100
+/** How close to the limit the counter appears. */
+const COUNTER_WITHIN = 100
 
 export interface ComposerContext {
   label: string
@@ -57,6 +58,14 @@ export function useMessageComposer({
   onSendVoice,
 }: MessageComposerInput) {
   const [body, setBody] = useState("")
+  // The limit is the account's, not a constant: Premium raises it, and the server enforces its
+  // own number either way.
+  const bodyLimit = usePremiumNudge(
+    "content.message.body_max_length",
+    (max) => body.length >= max,
+    (upgrade) => `${upgrade} characters with Premium`
+  )
+  const maxLength = bodyLimit.value
   const [slide, setSlide] = useState(0)
   const recorder = useVoiceRecorder()
   const stash = useRef("")
@@ -122,7 +131,7 @@ export function useMessageComposer({
   return {
     body,
     change(text: string) {
-      setBody(text.slice(0, MESSAGE_MAX_LENGTH))
+      setBody(text.slice(0, maxLength))
       if (!editing && text.trim()) onType?.()
     },
     send() {
@@ -137,8 +146,9 @@ export function useMessageComposer({
     offerVoice: voice !== null && !hasContent && !editing,
     context,
     editing: Boolean(editing),
-    remaining: MESSAGE_MAX_LENGTH - body.length,
-    showCounter: body.length >= COUNTER_FROM,
-    maxLength: MESSAGE_MAX_LENGTH,
+    remaining: maxLength - body.length,
+    showCounter: body.length >= maxLength - COUNTER_WITHIN,
+    maxLength,
+    upgrade: bodyLimit,
   }
 }

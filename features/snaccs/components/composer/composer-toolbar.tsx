@@ -7,6 +7,7 @@ import {
 } from "lucide-react"
 import type { ReactNode } from "react"
 import { IconButton } from "@/components/ui/icon-button"
+import { PremiumNudge } from "@/features/premium/components/premium-nudge"
 import { cn } from "@/lib/utils"
 
 type ComposerToolbarProps = {
@@ -27,6 +28,7 @@ type ComposerToolbarProps = {
   onToggleSpoiler: () => void
   remaining: number
   showCounter: boolean
+  upgrade: { show: boolean; label: string }
   right: ReactNode
 }
 
@@ -48,6 +50,7 @@ export function ComposerToolbar({
   onToggleSpoiler,
   remaining,
   showCounter,
+  upgrade,
   right,
 }: ComposerToolbarProps) {
   return (
@@ -96,14 +99,20 @@ export function ComposerToolbar({
 
       <div className="flex items-center gap-3 pr-2">
         {showCounter ? (
-          <span
-            className={cn(
-              "text-sm font-bold tabular-nums",
-              remaining < 0 ? "text-destructive" : "text-muted-foreground"
-            )}
-          >
-            {remaining}
-          </span>
+          <PremiumNudge show={upgrade.show} label={upgrade.label}>
+            <span
+              className={cn(
+                "text-sm font-bold tabular-nums",
+                upgrade.show
+                  ? "text-premium"
+                  : remaining < 0
+                    ? "text-destructive"
+                    : "text-muted-foreground"
+              )}
+            >
+              {remaining}
+            </span>
+          </PremiumNudge>
         ) : null}
         {right}
       </div>

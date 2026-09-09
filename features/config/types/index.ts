@@ -10,9 +10,12 @@ export type ConfigValue<K extends ConfigKey> =
   (typeof PUBLIC_CONFIG_DEFAULTS)[K]
 
 export type ConfigValues = Partial<Record<ConfigKey, unknown>>
+/** What Premium would raise each key to. Empty when Premium is off — nothing to offer. */
+export type ConfigUpgrades = Partial<Record<ConfigKey, unknown>>
 export type FeatureFlags = Partial<Record<FlagKey, boolean>>
 
 export interface AppConfig {
   values: ConfigValues
   flags: FeatureFlags
+  upgrades: ConfigUpgrades
 }

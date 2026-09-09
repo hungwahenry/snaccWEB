@@ -3,10 +3,13 @@
 import {
   BanIcon,
   BookmarkIcon,
+  ChartNoAxesColumnIcon,
   CoinsIcon,
   DownloadIcon,
+  EggIcon,
   FileTextIcon,
   FlagIcon,
+  GemIcon,
   GhostIcon,
   HandCoinsIcon,
   HeartIcon,
@@ -25,6 +28,9 @@ import { Spinner } from "@/components/ui/spinner"
 import { useLogout } from "@/features/auth/hooks/use-logout"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { useFlag } from "@/features/config/hooks/use-flag"
+import { EGGS_PATH } from "@/features/eggs/routes"
+import { INSIGHTS_PATH } from "@/features/insights/routes"
+import { PREMIUM_PATH } from "@/features/premium/routes"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import {
   EARNINGS_PATH,
@@ -43,6 +49,8 @@ export function SettingsScreen() {
   const accentsEnabled = useFlag("accent_colors")
   const earningsEnabled = useFlag("earnings")
   const walletEnabled = useFlag("wallet")
+  const premiumEnabled = useFlag("premium")
+  const eggsEnabled = useFlag("easter_eggs")
 
   function confirmLogout() {
     confirm({
@@ -59,6 +67,17 @@ export function SettingsScreen() {
       <BackHeader title="Settings" onBack={back} />
 
       <div className="flex flex-col gap-5 px-6 py-6">
+        {premiumEnabled ? (
+          <Section title="Premium">
+            <Row icon={GemIcon} label="Snacc Premium" href={PREMIUM_PATH} />
+            <Row
+              icon={ChartNoAxesColumnIcon}
+              label="Insights"
+              href={INSIGHTS_PATH}
+            />
+          </Section>
+        ) : null}
+
         {earningsEnabled || walletEnabled ? (
           <Section title="Money">
             {earningsEnabled && walletEnabled ? (
@@ -78,6 +97,9 @@ export function SettingsScreen() {
 
         <Section title="Content">
           <Row icon={BookmarkIcon} label="Saved snaccs" href="/saved" />
+          {eggsEnabled ? (
+            <Row icon={EggIcon} label="Easter eggs" href={EGGS_PATH} />
+          ) : null}
           {accentsEnabled ? (
             <Row
               icon={PaletteIcon}

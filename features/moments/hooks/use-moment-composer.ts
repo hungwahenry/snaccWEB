@@ -5,13 +5,13 @@ import { useCallback, useState } from "react"
 import { toast } from "sonner"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
-import { getErrorMessage } from "@/lib/api/errors"
 import { newId } from "@/lib/ids"
 import type { PickedImage } from "@/lib/media"
 import { createMoment } from "../api"
 import type { MomentMode } from "../types"
 import { DEFAULT_BACKGROUND } from "../utils/backgrounds"
 import { authorMomentsKey, MOMENTS_TRAY_KEY } from "../utils/keys"
+import { toastError } from "@/features/premium/utils/limit-toast"
 
 const COUNTER_APPEARS_AT = 80
 
@@ -42,7 +42,7 @@ export function useMomentComposer(onPosted: () => void) {
         queryKey: authorMomentsKey(moment.author.id),
       })
     },
-    onError: (error) => toast.error(getErrorMessage(error)),
+    onError: (error) => toastError(error),
   })
 
   const trimmed = body.trim()

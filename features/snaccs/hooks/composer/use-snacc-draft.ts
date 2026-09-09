@@ -2,7 +2,10 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { useConfigValue } from "@/features/config/hooks/use-config-value"
+import {
+  usePremiumLimit,
+  usePremiumNudge,
+} from "@/features/premium/hooks/use-premium-limit"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import type { Gif } from "@/features/giphy/types"
 import { useImageEditor } from "@/features/image-editor/hooks/use-image-editor"
@@ -46,8 +49,7 @@ export function useSnaccDraft(
   seed: DraftSeed,
   options: { allowVoice?: boolean } = {}
 ) {
-  const bodyMax = useConfigValue("content.snacc.body_max_length")
-  const maxImages = useConfigValue("content.snacc.max_images")
+  const maxImages = usePremiumLimit("content.snacc.max_images").value
   const showGif = useFlag("snacc_gifs")
   const stickersEnabled = useFlag("snacc_stickers")
   const voiceOn = useFlag("voice_snaccs")
@@ -67,6 +69,12 @@ export function useSnaccDraft(
   const { poll, pollValid } = pollDraft
 
   const trimmed = body.trim()
+  const bodyLimit = usePremiumNudge(
+    "content.snacc.body_max_length",
+    (max) => trimmed.length >= max,
+    (upgrade) => `${upgrade} characters with Premium`
+  )
+  const bodyMax = bodyLimit.value
   const remaining = bodyMax - trimmed.length
   const hasMedia = images.length > 0 || gif !== null
   const storedVoice = seed.storedVoice ?? null
@@ -166,6 +174,7 @@ export function useSnaccDraft(
 
     remaining,
     showCounter: remaining <= COUNTER_APPEARS_AT,
+    upgrade: bodyLimit,
     storedVoice,
     withinLimits:
       remaining >= 0 &&

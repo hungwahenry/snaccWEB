@@ -1,5 +1,4 @@
 import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
 import { newId } from "@/lib/ids"
 import { getQueryClient } from "@/lib/query-client"
 import { createSnacc, type CreateSnaccInput } from "../api"
@@ -11,6 +10,7 @@ import {
   removeSnacc,
   replaceSnacc,
 } from "."
+import { toastError } from "@/features/premium/utils/limit-toast"
 import {
   buildOptimisticSnacc,
   draftToInput,
@@ -88,6 +88,6 @@ async function send(id: string, input: CreateSnaccInput): Promise<void> {
     }
   } catch (error) {
     patchSnacc(id, (snacc) => ({ ...snacc, status: "failed" }))
-    toast.error(getErrorMessage(error))
+    toastError(error)
   }
 }

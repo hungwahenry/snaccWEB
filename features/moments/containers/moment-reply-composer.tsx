@@ -30,6 +30,7 @@ export function MomentReplyComposer({
       maxLength={composer.maxLength}
       remaining={composer.remaining}
       showCounter={composer.showCounter}
+      upgrade={composer.upgrade}
       onFocus={onFocus}
       onBlur={onBlur}
     />

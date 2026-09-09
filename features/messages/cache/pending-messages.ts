@@ -1,8 +1,7 @@
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
 import { newId } from "@/lib/ids"
 import { sendMessage, type SendMessageInput } from "../api"
 import { patchMessage, prependMessage, removeMessage, settleMessage } from "."
+import { toastError } from "@/features/premium/utils/limit-toast"
 import {
   buildOptimisticMessage,
   draftToInput,
@@ -52,6 +51,6 @@ async function send(
       ...message,
       status: "failed",
     }))
-    toast.error(getErrorMessage(error))
+    toastError(error)
   }
 }

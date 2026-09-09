@@ -15,6 +15,7 @@ import { createSticker } from "../api"
 import type { Sticker } from "../types"
 import { exportSticker } from "../utils/export"
 import { invalidateStickers } from "./use-sticker-library"
+import { toastError } from "@/features/premium/utils/limit-toast"
 
 export function useStickerCreator(onCreated: (sticker: Sticker) => void) {
   const size = useConfigValue("content.sticker.max_edge")
@@ -28,7 +29,7 @@ export function useStickerCreator(onCreated: (sticker: Sticker) => void) {
       setImage(null)
       onCreated(sticker)
     },
-    onError: (error) => toast.error(getErrorMessage(error)),
+    onError: (error) => toastError(error),
   })
 
   const begin = useCallback(async () => {

@@ -1,6 +1,7 @@
 import { ArrowUpIcon, CheckIcon } from "lucide-react"
 import { useCallback, useState, type RefObject } from "react"
 import { Spinner } from "@/components/ui/spinner"
+import { PremiumNudge } from "@/features/premium/components/premium-nudge"
 import { VoiceRecordButton } from "@/features/voice/components/voice-record-button"
 import { VoiceRecordingBar } from "@/features/voice/components/voice-recording-bar"
 import type { PickedImage } from "@/lib/media"
@@ -31,6 +32,7 @@ export type MessageComposerProps = {
   placeholder?: string
   maxLength: number
   remaining: number
+  upgrade: { show: boolean; label: string }
   showCounter: boolean
   images?: PickedImage[]
   onRemoveImage?: (uri: string) => void
@@ -56,6 +58,7 @@ export function MessageComposer({
   placeholder = "Message…",
   maxLength,
   remaining,
+  upgrade,
   showCounter,
   images = [],
   onRemoveImage,
@@ -102,9 +105,22 @@ export function MessageComposer({
       ) : null}
 
       {showCounter ? (
-        <p className="pr-2 pb-1 text-right text-xs text-muted-foreground tabular-nums">
-          {remaining}
-        </p>
+        <div className="flex justify-end pr-2 pb-1">
+          <PremiumNudge show={upgrade.show} label={upgrade.label}>
+            <span
+              className={cn(
+                "text-xs tabular-nums",
+                upgrade.show
+                  ? "font-semibold text-premium"
+                  : remaining < 0
+                    ? "text-destructive"
+                    : "text-muted-foreground"
+              )}
+            >
+              {remaining}
+            </span>
+          </PremiumNudge>
+        </div>
       ) : null}
 
       <form

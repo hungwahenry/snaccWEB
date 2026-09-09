@@ -51,6 +51,7 @@ export function NewMessageScreen({
         maxLength={composer.maxLength}
         remaining={composer.remaining}
         showCounter={composer.showCounter}
+        upgrade={composer.upgrade}
       />
     </ComposerScreen>
   )

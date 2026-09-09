@@ -187,6 +187,7 @@ function ComposeBody({
           onToggleSpoiler={composer.toggleSpoiler}
           remaining={composer.remaining}
           showCounter={composer.showCounter}
+          upgrade={composer.upgrade}
           right={
             <Button
               size="sm"

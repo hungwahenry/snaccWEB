@@ -84,6 +84,7 @@ function Editor({ snacc }: { snacc: Snacc }) {
           onToggleSpoiler={editor.toggleSpoiler}
           remaining={editor.remaining}
           showCounter={editor.showCounter}
+          upgrade={editor.upgrade}
           right={
             <Button
               size="sm"

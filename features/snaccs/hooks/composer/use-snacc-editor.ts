@@ -3,7 +3,6 @@
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useBack } from "@/hooks/use-back"
-import { getErrorMessage } from "@/lib/api/errors"
 import { editSnacc } from "../../api"
 import { patchSnacc } from "../../cache"
 import type { Snacc } from "../../types"
@@ -13,6 +12,7 @@ import {
   toDraftImages,
 } from "../../utils/draft-images"
 import { useSnaccDraft } from "./use-snacc-draft"
+import { toastError } from "@/features/premium/utils/limit-toast"
 
 export function useSnaccEditor(snacc: Snacc) {
   const back = useBack()
@@ -65,7 +65,7 @@ export function useSnaccEditor(snacc: Snacc) {
           toast.success("Snacc updated.")
           back()
         },
-        onError: (error) => toast.error(getErrorMessage(error)),
+        onError: (error) => toastError(error),
       }
     )
   }

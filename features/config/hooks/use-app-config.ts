@@ -7,7 +7,7 @@ import type { AppConfig } from "@/features/config/types"
 
 export const APP_CONFIG_KEY = ["app-config"]
 
-const EMPTY: AppConfig = { values: {}, flags: {} }
+const EMPTY: AppConfig = { values: {}, flags: {}, upgrades: {} }
 
 export function useAppConfig() {
   return useQuery({

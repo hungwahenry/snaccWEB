@@ -9,6 +9,8 @@ import { SkeletonRows } from "@/components/ui/skeleton-rows"
 import { Spinner } from "@/components/ui/spinner"
 import { Switch } from "@/components/ui/switch"
 import { useMe } from "@/features/auth/hooks/use-me"
+import { useFlag } from "@/features/config/hooks/use-flag"
+import { useIsPremium } from "@/features/premium/hooks/use-premium-limit"
 import {
   FollowUserRow,
   FollowUserRowSkeleton,
@@ -16,6 +18,7 @@ import {
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { useBack } from "@/hooks/use-back"
 import { VisitorsLocked } from "../components/visitors-locked"
+import { VisitorsUpsell } from "../components/visitors-upsell"
 import { useProfileVisitors } from "../hooks/use-profile-visitors"
 import { useVisitorSummary } from "../hooks/use-visitor-summary"
 
@@ -34,6 +37,12 @@ export function VisitorsScreen() {
   const list = useProfileVisitors(showVisitors)
 
   const anonymous = summary?.anonymous ?? 0
+  const premium = useIsPremium()
+  const offered = useFlag("premium")
+  // The names beyond the free window. The count above the list stays the true one.
+  const hidden = premium
+    ? 0
+    : Math.max((summary?.named ?? 0) - list.users.length, 0)
 
   return (
     <>
@@ -109,6 +118,7 @@ export function VisitorsScreen() {
               />
             ))
           )}
+          {offered ? <VisitorsUpsell hidden={hidden} /> : null}
           <LoadMore onReach={list.loadMore} disabled={list.loadingMore} />
           <ListFooter loading={list.loadingMore} />
         </>

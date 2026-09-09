@@ -6,7 +6,9 @@ import { Spinner } from "@/components/ui/spinner"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { AvatarPicker } from "@/features/onboarding/components/avatar-picker"
+import { AVATAR_EDITOR_PATH } from "@/features/avatar/routes"
 import { UsernameField } from "@/features/onboarding/components/username-field"
+import { PremiumNudge } from "@/features/premium/components/premium-nudge"
 import type { UsernameStatus } from "@/features/onboarding/schemas"
 import { GraduationYearSelect } from "@/features/users/components/graduation-year-select"
 import { MONTH_SHORT } from "@/features/birthdays/utils/options"
@@ -23,9 +25,10 @@ const GENDER_OPTIONS: { value: Gender; label: string }[] = [
 
 export type EditProfileFormProps = {
   canUploadPhoto: boolean
+  canCustomizeAvatar: boolean
   displayNameMax: number
   usernameMax: number
-  bioMax: number
+  bioLimit: { value: number; show: boolean; label: string }
   campusName: string | null
   birthday: Birthday | null
   avatarUri: string
@@ -55,14 +58,19 @@ export type EditProfileFormProps = {
 
 function Field({
   label,
+  action,
   children,
 }: {
   label: string
+  action?: React.ReactNode
   children: React.ReactNode
 }) {
   return (
     <label className="flex flex-col gap-2">
-      <span className="text-sm font-semibold text-foreground">{label}</span>
+      <span className="flex items-center justify-between gap-2">
+        <span className="text-sm font-semibold text-foreground">{label}</span>
+        {action}
+      </span>
       {children}
     </label>
   )
@@ -95,6 +103,17 @@ export function EditProfileForm(form: EditProfileFormProps) {
         />
       )}
 
+      {form.canCustomizeAvatar ? (
+        <Button
+          variant="outline"
+          size="lg"
+          className="-mt-2 w-full rounded-full"
+          render={<Link href={AVATAR_EDITOR_PATH} />}
+        >
+          Customize avatar 🎨
+        </Button>
+      ) : null}
+
       <Field label="Display name">
         <Input
           value={form.displayName}
@@ -112,12 +131,17 @@ export function EditProfileForm(form: EditProfileFormProps) {
         onChange={form.changeUsername}
       />
 
-      <Field label="Bio">
+      <Field
+        label="Bio"
+        action={
+          <PremiumNudge show={form.bioLimit.show} label={form.bioLimit.label} />
+        }
+      >
         <Textarea
           value={form.bio}
           onChange={(event) => form.setBio(event.target.value)}
           placeholder="Tell people about yourself."
-          maxLength={form.bioMax}
+          maxLength={form.bioLimit.value}
           className="min-h-24 rounded-2xl px-5 py-4 text-base md:text-base"
         />
       </Field>

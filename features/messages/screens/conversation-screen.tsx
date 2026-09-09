@@ -226,6 +226,7 @@ export function ConversationScreen({ id }: { id: string }) {
             maxLength={composer.maxLength}
             remaining={composer.remaining}
             showCounter={composer.showCounter}
+            upgrade={composer.upgrade}
             images={screen.draft}
             onRemoveImage={screen.onRemoveImage}
             viewOnce={screen.viewOnce}
