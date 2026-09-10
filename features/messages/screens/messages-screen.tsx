@@ -1,5 +1,6 @@
 "use client"
 
+import { ChatRoomsSection } from "@/features/chats/components/chat-rooms-section"
 import { GhostIcon, SearchXIcon } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -76,6 +77,7 @@ export function MessagesScreen() {
         />
       ) : (
         <>
+          <ChatRoomsSection />
           <ConversationSearch value={query} onChange={setQuery} />
 
           {feed.loading ? (

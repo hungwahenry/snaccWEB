@@ -1,3 +1,4 @@
+import { onChatMessage, onChatMessageRemoved } from "@/features/chats/realtime"
 import { onEarningsWallet } from "@/features/earnings/realtime"
 import { onMatchSnacc } from "@/features/football/realtime"
 import { onGhostWindow } from "@/features/ghost/realtime"
@@ -36,6 +37,8 @@ export const REALTIME_HANDLERS = {
   "snacc.resnacc": onSnaccResnacc,
   "snacc.deleted": onSnaccDeleted,
   "snacc.edited": onSnaccEdited,
+  "chat.message": onChatMessage,
+  "chat.message.removed": onChatMessageRemoved,
   "message.new": onMessageNew,
   "message.updated": onMessageUpdated,
   "conversation.revealed": onConversationRevealed,
