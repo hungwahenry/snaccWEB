@@ -17,6 +17,7 @@ type RealtimeApi = {
   subscribe: (room: string) => void
   unsubscribe: (room: string) => void
   on: (event: string, handler: (payload: unknown) => void) => () => void
+  emit: (event: string, payload: unknown) => void
 }
 
 const noop = () => {}
@@ -24,6 +25,7 @@ const RealtimeContext = createContext<RealtimeApi>({
   subscribe: noop,
   unsubscribe: noop,
   on: () => noop,
+  emit: noop,
 })
 
 export function useRealtime(): RealtimeApi {
@@ -98,6 +100,7 @@ export function RealtimeProvider({
           rooms.set(room, next)
         }
       },
+      emit: (event, payload) => socketRef.current?.emit(event, payload),
       on: (event, handler) => {
         const listener: Listener = { event, handler }
         listenersRef.current.add(listener)

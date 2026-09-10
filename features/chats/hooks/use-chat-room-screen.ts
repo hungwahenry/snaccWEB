@@ -18,6 +18,7 @@ import { CHAT_ROOMS_KEY } from "../keys"
 import type { ChatMessage } from "../types"
 import { useChatMessages } from "./use-chat-messages"
 import { useChatRooms } from "./use-chat-rooms"
+import { useChatTyping } from "./use-chat-typing"
 
 export function useChatRoomScreen(roomId: string) {
   const me = useMe()
@@ -25,6 +26,7 @@ export function useChatRoomScreen(roomId: string) {
   const room = rooms.data?.find((each) => each.id === roomId) ?? null
   const { messages, loading, loadMore } = useChatMessages(roomId)
   const [draft, setDraft] = useState("")
+  const typing = useChatTyping(roomId)
 
   const refreshRooms = () =>
     getQueryClient().invalidateQueries({ queryKey: CHAT_ROOMS_KEY })
@@ -91,7 +93,11 @@ export function useChatRoomScreen(roomId: string) {
     loading,
     loadMore,
     draft,
-    setDraft,
+    setDraft: (value: string) => {
+      setDraft(value)
+      if (value.trim()) typing.signal()
+    },
+    typingLabel: typing.label,
     canSend: draft.trim().length > 0 && !send.isPending,
     post,
     toggleMuted: () => mute.mutate(!room?.muted),

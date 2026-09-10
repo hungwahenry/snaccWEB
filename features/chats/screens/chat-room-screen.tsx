@@ -62,6 +62,12 @@ export function ChatRoomScreen({ roomId }: { roomId: string }) {
         )}
       </div>
 
+      {screen.typingLabel ? (
+        <p className="px-4 pb-1 text-xs italic text-muted-foreground">
+          {screen.typingLabel}
+        </p>
+      ) : null}
+
       {room?.locked ? (
         <div className="flex items-center justify-center gap-2 border-t border-border px-4 py-4 text-sm text-muted-foreground">
           <LockIcon className="size-4" />
