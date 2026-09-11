@@ -1,5 +1,6 @@
 import { dehydrate, type DehydratedState } from "@tanstack/react-query"
-import { APP_CONFIG_KEY } from "@/features/config/hooks/use-app-config"
+import { authKeys } from "@/features/auth/utils/keys"
+import { configKeys } from "@/features/config/utils/keys"
 import type { User } from "@/features/users/types"
 import type {
   AppConfig,
@@ -7,8 +8,7 @@ import type {
   ConfigValues,
   FeatureFlags,
 } from "@/features/config/types"
-import { getQueryClient } from "./query-client"
-import { ME_KEY } from "./query-keys"
+import { getQueryClient } from "./query/client"
 import { getBearerToken, SNACC_API_URL, WEB_CLIENT_INFO } from "./session"
 
 async function read<T>(
@@ -55,9 +55,9 @@ export async function prefetchAppConfig(): Promise<DehydratedState | null> {
 
   const queryClient = getQueryClient()
   const config: AppConfig = { values, flags, upgrades }
-  queryClient.setQueryData(APP_CONFIG_KEY, config)
+  queryClient.setQueryData(configKeys.app(), config)
   // Signed out, or the call failed: leave it for the client rather than seeding a wrong answer.
-  if (me) queryClient.setQueryData(ME_KEY, me)
+  if (me) queryClient.setQueryData(authKeys.me(), me)
 
   return dehydrate(queryClient)
 }

@@ -14,10 +14,17 @@ export function AuthorBadges({
   return (
     <>
       {official ? (
-        <BadgeCheckIcon className="shrink-0 text-foreground" size={size} />
+        <BadgeCheckIcon
+          role="img"
+          aria-label="Official account"
+          className="shrink-0 text-foreground"
+          size={size}
+        />
       ) : null}
       {premium ? (
         <span
+          role="img"
+          aria-label="Premium"
           className="relative inline-flex shrink-0"
           style={{ width: size, height: size }}
         >

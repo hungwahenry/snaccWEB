@@ -3,7 +3,7 @@ import type {
   MediaGif,
   MediaImage,
   MediaSticker,
-} from "@/features/admin/shell/ui/content-media"
+} from "@/features/admin/shell/types"
 
 export type MessageAuthor = UserRefWithCampus
 
@@ -43,8 +43,7 @@ export interface AdminConversationDetail {
   messages: AdminThreadMessage[]
 }
 
-export interface ListConversationsParams {
-  page?: number
-  perPage?: number
-  participantId?: string
+export type ConversationListQuery = {
+  page: number
+  perPage: number
 }

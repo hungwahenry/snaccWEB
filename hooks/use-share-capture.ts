@@ -2,7 +2,8 @@
 
 import { domToBlob } from "modern-screenshot"
 import { useRef, useState } from "react"
-import { toast } from "sonner"
+import { showErrorMessage } from "@/lib/feedback"
+import { shareOrDownload } from "@/lib/share-file"
 
 export function useShareCapture(fileName = "snacc.png") {
   const cardRef = useRef<HTMLDivElement>(null)
@@ -15,27 +16,9 @@ export function useShareCapture(fileName = "snacc.png") {
     try {
       const blob = await domToBlob(node, { scale: 2, type: "image/png" })
       if (!blob) throw new Error("empty")
-      const file = new File([blob], fileName, { type: "image/png" })
-
-      if (
-        typeof navigator.share === "function" &&
-        navigator.canShare?.({ files: [file] })
-      ) {
-        await navigator.share({ files: [file] })
-        return
-      }
-
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement("a")
-      link.href = url
-      link.download = fileName
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      URL.revokeObjectURL(url)
-    } catch (error) {
-      if ((error as { name?: string }).name === "AbortError") return
-      toast.error("Could not share the card.")
+      await shareOrDownload(new File([blob], fileName, { type: "image/png" }))
+    } catch {
+      showErrorMessage("Could not share the card.")
     } finally {
       setBusy(false)
     }

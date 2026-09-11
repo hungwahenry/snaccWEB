@@ -4,6 +4,8 @@ import Link from "next/link"
 import { Wordmark } from "@/components/marketing/wordmark"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { useBack } from "@/hooks/use-back"
+import { HOME_PATH } from "@/features/feed/routes"
+import { PRIVACY_PATH, TERMS_PATH } from "@/lib/routes"
 
 export function AboutScreen() {
   const back = useBack("/settings")
@@ -14,7 +16,7 @@ export function AboutScreen() {
 
       <div className="flex min-h-[60dvh] flex-col px-6">
         <div className="flex flex-1 flex-col items-center justify-center gap-4 py-16">
-          <Wordmark href="/home" height={44} />
+          <Wordmark href={HOME_PATH} height={44} />
           <div className="flex flex-col items-center gap-1">
             <p className="text-2xl font-extrabold tracking-tight text-foreground">
               Snacc
@@ -28,14 +30,14 @@ export function AboutScreen() {
         <div className="flex flex-col items-center gap-3 pb-6">
           <div className="flex items-center gap-4">
             <Link
-              href="/terms"
+              href={TERMS_PATH}
               className="text-base text-foreground active:opacity-60"
             >
               Terms of Use
             </Link>
             <span className="size-1 rounded-full bg-muted-foreground/40" />
             <Link
-              href="/privacy"
+              href={PRIVACY_PATH}
               className="text-base text-foreground active:opacity-60"
             >
               Privacy Policy

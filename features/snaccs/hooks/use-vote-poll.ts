@@ -1,10 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
 import { votePoll } from "../api"
 import { patchSnacc } from "../cache"
+import { showError } from "@/lib/feedback"
 
 export function useVotePoll() {
   const [votingFor, setVotingFor] = useState<string | null>(null)
@@ -16,7 +15,7 @@ export function useVotePoll() {
       const fresh = await votePoll(snaccId, optionId)
       patchSnacc(snaccId, (snacc) => ({ ...snacc, poll: fresh }))
     } catch (error) {
-      toast.error(getErrorMessage(error))
+      showError(error)
     } finally {
       setVotingFor(null)
     }

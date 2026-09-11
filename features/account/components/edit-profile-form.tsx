@@ -15,6 +15,7 @@ import { MONTH_SHORT } from "@/features/birthdays/utils/options"
 import type { Birthday, Gender } from "@/features/users/types"
 import { cn } from "@/lib/utils"
 import { ProfilePhotos } from "./profile-photos"
+import { EDIT_BIRTHDAY_PATH, EDIT_UNIVERSITY_PATH } from "../routes"
 
 const GENDER_OPTIONS: { value: Gender; label: string }[] = [
   { value: "male", label: "Male" },
@@ -199,7 +200,7 @@ export function EditProfileForm(form: EditProfileFormProps) {
       <div className="flex flex-col gap-2">
         <span className="text-sm font-semibold text-foreground">Campus</span>
         <Link
-          href="/edit-university"
+          href={EDIT_UNIVERSITY_PATH}
           className="flex h-14 items-center justify-between gap-2 rounded-full bg-input px-4 transition-opacity active:opacity-70"
         >
           <span
@@ -217,7 +218,7 @@ export function EditProfileForm(form: EditProfileFormProps) {
       <div className="flex flex-col gap-2">
         <span className="text-sm font-semibold text-foreground">Birthday</span>
         <Link
-          href="/edit-birthday"
+          href={EDIT_BIRTHDAY_PATH}
           className="flex h-14 items-center justify-between gap-2 rounded-full bg-input px-4 transition-opacity active:opacity-70"
         >
           <span

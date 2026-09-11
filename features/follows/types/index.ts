@@ -1,16 +1,9 @@
-import type { UserScore } from "@/features/score/types"
+import type { Author } from "@/features/users/types"
 
 export type FollowTab = "followers" | "following"
 
-export interface FollowUser {
-  id: string
-  username: string | null
-  display_name: string | null
-  avatar_url: string
-  university: { id: string; name: string; acronym: string } | null
-  score: UserScore
-  official: boolean
-  is_birthday: boolean
+/** Someone in a list of people, with where you and they stand. */
+export interface FollowUser extends Author {
   is_following: boolean
   follows_you: boolean
 }

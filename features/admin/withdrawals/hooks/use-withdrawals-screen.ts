@@ -1,13 +1,24 @@
 "use client"
 
-import { useListState } from "@/features/admin/shell/hooks/use-list-state"
-import type { ListWithdrawalsParams } from "../types"
-import { useWithdrawals } from "./use-withdrawals"
+import { parseAsString, parseAsStringLiteral } from "nuqs"
+import { useListParams } from "@/features/admin/shell/hooks/use-list-params"
+import { PAGE_SIZE } from "@/features/admin/shell/utils/list-params"
+import { WITHDRAWAL_STATUSES } from "../utils/status"
+import { useWithdrawalSummary, useWithdrawals } from "./use-withdrawals"
+
+const FILTERS = {
+  q: parseAsString.withDefault(""),
+  status: parseAsStringLiteral(WITHDRAWAL_STATUSES),
+}
 
 export function useWithdrawalsScreen() {
-  const { params, patch } = useListState<ListWithdrawalsParams>({
-    page: 1,
-    perPage: 20,
+  const list = useListParams(FILTERS)
+  const query = useWithdrawals({
+    page: list.query.page,
+    perPage: PAGE_SIZE,
+    q: list.query.q || undefined,
+    status: list.query.status ?? undefined,
   })
-  return { params, patch, query: useWithdrawals(params) }
+
+  return { list, query, summary: useWithdrawalSummary() }
 }

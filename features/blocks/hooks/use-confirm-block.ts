@@ -1,21 +1,37 @@
 "use client"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
 import { confirm } from "@/components/ui/confirm"
+import { removePerson } from "@/features/follows/cache"
 import { removeAuthorSnaccs } from "@/features/snaccs/cache"
-import { getErrorMessage } from "@/lib/api/errors"
-import { FEED_KEY } from "@/lib/query-keys"
+import { snaccKeys } from "@/features/snaccs/utils/keys"
+import { userKeys } from "@/features/users/utils/keys"
+import { handleOf } from "@/features/users/utils/names"
+import { showSuccess } from "@/lib/feedback"
 import { blockUser } from "../api"
+import { blockKeys } from "../utils/keys"
 
-type Blockable = { id: string; username: string | null }
+interface Blockable {
+  id: string
+  username: string | null
+}
 
 export function useConfirmBlock() {
   const queryClient = useQueryClient()
-  const block = useMutation({ mutationFn: blockUser })
+  const block = useMutation({
+    mutationFn: (user: Blockable) => blockUser(user.id),
+    onSuccess: (_result, user) => {
+      removeAuthorSnaccs(user.id)
+      removePerson(user.id)
+      void queryClient.invalidateQueries({ queryKey: snaccKeys.lists() })
+      void queryClient.invalidateQueries({ queryKey: userKeys.profiles() })
+      void queryClient.invalidateQueries({ queryKey: blockKeys.all() })
+      showSuccess(`Blocked ${handleOf(user) ?? "them"}.`)
+    },
+  })
 
   return function confirmBlock(user: Blockable, onBlocked?: () => void) {
-    const who = user.username ? `@${user.username}` : "this person"
+    const who = handleOf(user) ?? "this person"
 
     confirm({
       title: `Block ${who}?`,
@@ -24,16 +40,7 @@ export function useConfirmBlock() {
         {
           label: "Block",
           destructive: true,
-          onPress: () =>
-            block.mutate(user.id, {
-              onSuccess: () => {
-                removeAuthorSnaccs(user.id)
-                void queryClient.invalidateQueries({ queryKey: FEED_KEY })
-                toast.success(`Blocked ${who}.`)
-                onBlocked?.()
-              },
-              onError: (error) => toast.error(getErrorMessage(error)),
-            }),
+          onPress: () => block.mutate(user, { onSuccess: onBlocked }),
         },
       ],
     })

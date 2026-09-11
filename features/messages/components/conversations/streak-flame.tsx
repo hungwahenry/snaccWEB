@@ -12,7 +12,7 @@ export function StreakFlame({
   return (
     <span
       className={cn("flex items-center gap-1", className)}
-      aria-label={`${days} day streak`}
+      aria-label={`${days}-day streak`}
     >
       <span className="text-xs">🔥</span>
       <span className="text-xs font-bold text-foreground tabular-nums">

@@ -2,7 +2,7 @@ import { ArrowUpIcon } from "lucide-react"
 import { GhostAvatar } from "@/components/ui/ghost-avatar"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { cn } from "@/lib/utils"
-import type { NewPoster } from "../hooks/use-feed-screen"
+import type { NewPoster } from "../types"
 
 export function NewSnaccsPill({
   posters,
@@ -31,11 +31,11 @@ export function NewSnaccsPill({
                     index > 0 && "-ml-2"
                   )}
                 >
-                  {poster.key === "ghost" ? (
+                  {poster.anonymous ? (
                     <GhostAvatar className="size-6" iconClassName="size-3.5" />
                   ) : (
                     <UserAvatar
-                      alt="New poster"
+                      alt=""
                       avatarUrl={poster.avatarUrl}
                       className="size-6"
                       textClassName="text-[10px]"

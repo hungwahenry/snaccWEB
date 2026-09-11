@@ -2,7 +2,6 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
-import { toast } from "sonner"
 import {
   EMPTY_BIRTHDAY,
   isComplete,
@@ -10,9 +9,9 @@ import {
 } from "@/features/birthdays/components/birthday-fields"
 import type { Profile } from "@/features/users/types"
 import { useBack } from "@/hooks/use-back"
-import { getErrorMessage } from "@/lib/api/errors"
-import { ME_KEY } from "@/lib/query-keys"
+import { authKeys } from "@/features/auth/utils/keys"
 import { updateProfile } from "../api"
+import { showSuccess } from "@/lib/feedback"
 
 export function useBirthdayForm(profile: Profile) {
   const back = useBack("/edit-profile")
@@ -20,11 +19,10 @@ export function useBirthdayForm(profile: Profile) {
   const update = useMutation({
     mutationFn: updateProfile,
     onSuccess: (user) => {
-      queryClient.setQueryData(ME_KEY, user)
-      toast.success("Birthday saved.")
+      queryClient.setQueryData(authKeys.me(), user)
+      showSuccess("Birthday saved.")
       back()
     },
-    onError: (error) => toast.error(getErrorMessage(error)),
   })
 
   const locked = profile.birthday !== null

@@ -12,33 +12,43 @@ export interface CreateReportInput {
   detail?: string
 }
 
-function targetField(target: ReportTarget): Record<string, string> {
-  if (target.type === "snacc") return { snaccId: target.id }
-  if (target.type === "moment") return { momentId: target.id }
-  return { userId: target.id }
-}
+const id = encodeURIComponent
 
 export async function createReport({
   target,
   reasonId,
   detail,
 }: CreateReportInput): Promise<void> {
-  if (target.type === "message") {
-    await api.post(
-      `/conversations/${target.conversationId}/messages/${target.id}/report`,
-      { reasonId, detail }
-    )
-    return
+  const body = { reasonId, detail }
+
+  switch (target.type) {
+    case "message":
+      await api.post(
+        `/conversations/${id(target.conversationId)}/messages/${id(target.id)}/report`,
+        body
+      )
+      return
+    case "chat_message":
+      await api.post(`/chats/messages/${id(target.id)}/report`, body)
+      return
+    case "snacc":
+      await api.post("/reports", { ...body, snaccId: target.id })
+      return
+    case "moment":
+      await api.post("/reports", { ...body, momentId: target.id })
+      return
+    case "user":
+      await api.post("/reports", { ...body, userId: target.id })
+      return
   }
-  await api.post("/reports", { reasonId, detail, ...targetField(target) })
 }
 
-export function listReportReasons(
+export function getReportReasons(
   type: ReportableType
 ): Promise<ReportReason[]> {
   return api.get<ReportReason[]>("/reports/reasons", { type })
 }
 
-export function listMyReports(): Promise<MyReport[]> {
+export function getMyReports(): Promise<MyReport[]> {
   return api.get<MyReport[]>("/reports")
 }

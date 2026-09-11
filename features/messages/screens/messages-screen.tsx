@@ -1,19 +1,21 @@
 "use client"
 
-import { ChatRoomsSection } from "@/features/chats/components/chat-rooms-section"
-import { GhostIcon, SearchXIcon } from "lucide-react"
-import { useState } from "react"
+import {
+  GhostIcon,
+  MessageCircleIcon,
+  MessagesSquareIcon,
+  SearchXIcon,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { IconButton } from "@/components/ui/icon-button"
 import { ListFooter } from "@/components/ui/list-footer"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { LoadMore } from "@/components/ui/load-more"
+import { PillTabs } from "@/components/ui/pill-tabs"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
-import { useMe } from "@/features/auth/hooks/use-me"
-import { useFlagWhenKnown } from "@/features/config/hooks/use-flag"
+import { ChatRoomsList } from "@/features/chats/components/chat-rooms-list"
 import { TabHeader } from "@/features/navigation/components/tab-header"
-import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { cn } from "@/lib/utils"
 import {
   ConversationRow,
@@ -23,39 +25,18 @@ import { ConversationSearch } from "../components/conversations/conversation-sea
 import { MessageHitRow } from "../components/conversations/message-hit-row"
 import { ShareAnonLinkSheet } from "../components/conversations/share-anon-link-sheet"
 import { StreakIntroSheet } from "../components/conversations/streak-intro-sheet"
-import { useAnonLink } from "../hooks/use-anon-link"
-import { useConversations } from "../hooks/use-conversations"
-import { MIN_QUERY, useMessageSearch } from "../hooks/use-message-search"
-import { useStreakIntro } from "../hooks/use-streak-intro"
+import { useMessagesScreen } from "../hooks/use-messages-screen"
 
 export function MessagesScreen() {
-  const [query, setQuery] = useState("")
-  const search = useDebouncedValue(query.trim(), 300)
-  const searching = search.length >= MIN_QUERY
-
-  const messagesEnabled = useFlagWhenKnown("anon_messages")
-  const feed = useConversations(searching ? search : "")
-  const hits = useMessageSearch(messagesEnabled ? search : "")
-  const me = useMe()
-  const streakIntro = useStreakIntro()
-  const username = me.data?.profile?.username ?? null
-  const showShare = Boolean(
-    messagesEnabled &&
-    (me.data?.profile?.allow_anonymous_messages ?? false) &&
-    username
-  )
-  const anonLink = useAnonLink(showShare, username)
-
-  const matches = searching ? (hits.data?.items ?? []) : []
-  const nothing =
-    searching && feed.conversations.length === 0 && matches.length === 0
+  const screen = useMessagesScreen()
+  const { feed, anonLink } = screen
 
   return (
     <>
       <TabHeader
-        title="DMs"
+        title={screen.title}
         right={
-          showShare ? (
+          screen.showShare ? (
             <IconButton
               icon={GhostIcon}
               label="Get anonymous messages"
@@ -66,9 +47,27 @@ export function MessagesScreen() {
         }
       />
 
-      {messagesEnabled === null ? (
+      {screen.tabs ? (
+        <PillTabs
+          tabs={[
+            { value: "dms", label: "DMs", icon: MessageCircleIcon },
+            {
+              value: "rooms",
+              label: "Rooms",
+              icon: MessagesSquareIcon,
+              count: screen.tabs.unreadRooms,
+            },
+          ]}
+          value={screen.tabs.value}
+          onChange={screen.tabs.onChange}
+        />
+      ) : null}
+
+      {screen.showRooms ? (
+        <ChatRoomsList {...screen.rooms} />
+      ) : screen.dmsEnabled === null ? (
         <SkeletonRows count={8} item={ConversationRowSkeleton} />
-      ) : !messagesEnabled ? (
+      ) : !screen.dmsEnabled ? (
         <EmptyState
           icon={GhostIcon}
           title="Messages aren't on yet"
@@ -77,8 +76,7 @@ export function MessagesScreen() {
         />
       ) : (
         <>
-          <ChatRoomsSection />
-          <ConversationSearch value={query} onChange={setQuery} />
+          <ConversationSearch value={screen.query} onChange={screen.setQuery} />
 
           {feed.loading ? (
             <SkeletonRows count={8} item={ConversationRowSkeleton} />
@@ -98,18 +96,18 @@ export function MessagesScreen() {
                 />
               ))}
 
-              {feed.conversations.length === 0 && !searching ? (
+              {feed.conversations.length === 0 && !screen.searching ? (
                 <EmptyState
                   icon={GhostIcon}
                   title="No messages yet"
                   description={
-                    showShare
+                    screen.showShare
                       ? "Start a chat from someone’s profile, or share your link for anonymous messages."
                       : "Start a chat from someone’s profile."
                   }
                   className="py-24"
                   action={
-                    showShare ? (
+                    screen.showShare ? (
                       <Button size="sm" onClick={anonLink.onOpen}>
                         <GhostIcon /> Share your link
                       </Button>
@@ -118,18 +116,19 @@ export function MessagesScreen() {
                 />
               ) : null}
 
-              {matches.length > 0 ? (
+              {/* Threads are matched by person; this section is the text inside them. */}
+              {screen.matches.length > 0 ? (
                 <div className="pt-2">
                   <p className="px-4 pb-1 text-xs font-bold tracking-wide text-muted-foreground uppercase sm:px-6">
                     Messages
                   </p>
-                  {matches.map((hit) => (
+                  {screen.matches.map((hit) => (
                     <MessageHitRow key={hit.message.id} hit={hit} />
                   ))}
                 </div>
               ) : null}
 
-              {nothing && !hits.isPending ? (
+              {screen.nothingFound ? (
                 <EmptyState
                   icon={SearchXIcon}
                   title="Nothing found"
@@ -140,15 +139,15 @@ export function MessagesScreen() {
 
               <LoadMore onReach={feed.loadMore} disabled={feed.loadingMore} />
               <ListFooter
-                loading={feed.loadingMore || (searching && hits.isPending)}
+                loading={feed.loadingMore || screen.searchingMessages}
               />
             </>
           )}
         </>
       )}
 
-      {showShare ? <ShareAnonLinkSheet {...anonLink.sheet} /> : null}
-      <StreakIntroSheet {...streakIntro.sheet} />
+      {screen.showShare ? <ShareAnonLinkSheet {...anonLink.sheet} /> : null}
+      <StreakIntroSheet {...screen.streakIntro} />
     </>
   )
 }

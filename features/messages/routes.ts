@@ -1,5 +1,8 @@
-export const messagesPath = "/messages"
-export const conversationPath = (id: string) => `/messages/${id}`
+export const MESSAGES_PATH = "/messages"
+export const MESSAGE_PRIVACY_PATH = "/settings/privacy"
+
+export const conversationPath = (id: string) =>
+  `${MESSAGES_PATH}/${encodeURIComponent(id)}`
 
 export function newMessagePath(target: {
   id: string
@@ -7,5 +10,5 @@ export function newMessagePath(target: {
 }): string {
   const search = new URLSearchParams({ targetId: target.id })
   if (target.username) search.set("username", target.username)
-  return `/messages/new?${search.toString()}`
+  return `${MESSAGES_PATH}/new?${search.toString()}`
 }

@@ -1,33 +1,13 @@
-import {
-  BanknoteIcon,
-  CalendarDaysIcon,
-  CircleCheckIcon,
-  CircleDashedIcon,
-  EyeIcon,
-  UsersRoundIcon,
-  type LucideIcon,
-} from "lucide-react"
-import { compactCount, formatNaira } from "@/lib/format"
+import { CircleCheckIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
-import type { WalletMilestone } from "../types"
-
-const MILESTONE_META: Record<
-  string,
-  { label: string; icon: LucideIcon; money?: boolean }
-> = {
-  balance: { label: "Minimum earnings", icon: BanknoteIcon, money: true },
-  views: { label: "Total views", icon: EyeIcon },
-  followers: { label: "Followers", icon: UsersRoundIcon },
-  account_age_days: { label: "Days on Snacc", icon: CalendarDaysIcon },
-}
+import type { EarningsMilestone } from "../types"
+import { clearedLabel, milestoneLook } from "../utils/milestones"
 
 export function MilestoneList({
   milestones,
 }: {
-  milestones: WalletMilestone[]
+  milestones: EarningsMilestone[]
 }) {
-  const cleared = milestones.filter((milestone) => milestone.met).length
-
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-end justify-between">
@@ -35,7 +15,7 @@ export function MilestoneList({
           Milestones
         </span>
         <span className="text-sm font-bold text-muted-foreground">
-          {cleared} of {milestones.length} cleared
+          {clearedLabel(milestones)}
         </span>
       </div>
       {milestones.map((milestone) => (
@@ -45,42 +25,33 @@ export function MilestoneList({
   )
 }
 
-function MilestoneBar({ milestone }: { milestone: WalletMilestone }) {
-  const meta = MILESTONE_META[milestone.key] ?? {
-    label: milestone.key,
-    icon: CircleDashedIcon,
-  }
-  const format = (value: number) =>
-    meta.money ? formatNaira(value) : compactCount(value)
-  const percent =
-    milestone.target > 0
-      ? Math.min(100, Math.round((milestone.current / milestone.target) * 100))
-      : 0
+function MilestoneBar({ milestone }: { milestone: EarningsMilestone }) {
+  const look = milestoneLook(milestone)
 
   return (
     <div className="flex items-center gap-3">
       <span
         className={cn(
           "flex size-10 shrink-0 items-center justify-center rounded-full",
-          milestone.met ? "bg-emerald-500/15" : "bg-muted"
+          milestone.met ? "bg-success/15" : "bg-muted"
         )}
       >
-        <meta.icon
+        <look.icon
           className={cn(
             "size-5",
-            milestone.met ? "text-emerald-500" : "text-muted-foreground"
+            milestone.met ? "text-success" : "text-muted-foreground"
           )}
         />
       </span>
 
       <div className="flex flex-1 flex-col gap-2">
         <div className="flex items-center justify-between">
-          <span className="font-bold text-foreground">{meta.label}</span>
+          <span className="font-bold text-foreground">{look.label}</span>
           {milestone.met ? (
-            <CircleCheckIcon className="size-5 text-emerald-500" />
+            <CircleCheckIcon className="size-5 text-success" />
           ) : (
-            <span className="text-sm text-muted-foreground">
-              {format(milestone.current)} / {format(milestone.target)}
+            <span className="text-sm text-muted-foreground tabular-nums">
+              {look.progress}
             </span>
           )}
         </div>
@@ -88,9 +59,9 @@ function MilestoneBar({ milestone }: { milestone: WalletMilestone }) {
           <div
             className={cn(
               "h-full rounded-full transition-all",
-              milestone.met ? "bg-emerald-500" : "bg-primary"
+              milestone.met ? "bg-success" : "bg-primary"
             )}
-            style={{ width: `${percent}%` }}
+            style={{ width: `${look.percent}%` }}
           />
         </div>
       </div>

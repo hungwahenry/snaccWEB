@@ -11,26 +11,28 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Eyebrow } from "@/components/ui/eyebrow"
-import { formatNaira } from "@/lib/format"
-import type { VirtualAccount, WalletOverview } from "../../types"
+import type { AccountFooterView } from "../../hooks/home/use-wallet-home"
 import { AccountFooter } from "./account-footer"
 
 export function BalanceCard({
-  overview,
+  balance,
   hidden,
   onToggleHidden,
-  account,
+  frozen,
+  showAccount,
+  footer,
   onSend,
   onRequest,
   onTopUp,
   onReceive,
   onPayLink,
 }: {
-  overview: WalletOverview
+  balance: string
   hidden: boolean
   onToggleHidden: () => void
-  /** Null when account numbers are off; otherwise whatever the API knows so far. */
-  account: { data: VirtualAccount | null; ready: boolean } | null
+  frozen: boolean
+  showAccount: boolean
+  footer: AccountFooterView | null
   onSend: () => void
   onRequest: () => void
   onTopUp: () => void
@@ -39,7 +41,7 @@ export function BalanceCard({
 }) {
   const actions: { icon: LucideIcon; label: string; onPress: () => void }[] = [
     { icon: BanknoteArrowDownIcon, label: "Add money", onPress: onTopUp },
-    ...(account
+    ...(showAccount
       ? [{ icon: LandmarkIcon, label: "Account", onPress: onReceive }]
       : []),
     { icon: QrCodeIcon, label: "Pay link", onPress: onPayLink },
@@ -62,9 +64,9 @@ export function BalanceCard({
           )}
         </button>
         <p className="truncate text-center text-5xl font-extrabold text-foreground tabular-nums">
-          {hidden ? "₦••••" : formatNaira(overview.balance)}
+          {balance}
         </p>
-        {overview.frozen ? (
+        {frozen ? (
           <span className="mt-1 flex items-center gap-2 rounded-full bg-muted px-3 py-1.5">
             <LockIcon className="size-4 text-muted-foreground" />
             <span className="text-sm font-bold text-muted-foreground">
@@ -86,7 +88,7 @@ export function BalanceCard({
         <Button
           size="lg"
           className="h-14 flex-1 text-base"
-          disabled={overview.frozen}
+          disabled={frozen}
           onClick={onSend}
         >
           <SendIcon /> Send
@@ -111,7 +113,7 @@ export function BalanceCard({
         ))}
       </div>
 
-      {account?.ready ? <AccountFooter account={account.data} /> : null}
+      {footer ? <AccountFooter footer={footer} /> : null}
     </div>
   )
 }

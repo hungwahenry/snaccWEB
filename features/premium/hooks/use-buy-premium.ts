@@ -2,10 +2,9 @@
 
 import { useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
+import { walletChanged } from "@/features/wallet/cache"
 import { useMoneyConfirm } from "@/features/wallet/hooks/pin/use-money-confirm"
-import { WALLET_OVERVIEW_KEY } from "@/features/wallet/utils/keys"
+import { showError, showSuccess } from "@/lib/feedback"
 import { buyPremium } from "../api"
 import type { PremiumPlan, PremiumWalletPlan } from "../types"
 import { PREMIUM_KEY } from "../utils/keys"
@@ -25,13 +24,11 @@ export function useBuyPremium() {
       )
       if (!bought) return
 
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: PREMIUM_KEY }),
-        queryClient.invalidateQueries({ queryKey: WALLET_OVERVIEW_KEY }),
-      ])
-      toast.success("Premium is yours.")
+      walletChanged()
+      await queryClient.invalidateQueries({ queryKey: PREMIUM_KEY })
+      showSuccess("Premium is yours.")
     } catch (error) {
-      toast.error(getErrorMessage(error))
+      showError(error)
     } finally {
       setBuying(null)
     }

@@ -1,34 +1,40 @@
 "use client"
 
+import { Plus } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
-import { Spinner } from "@/components/ui/spinner"
-import { PromptsTable } from "@/features/admin/onboarding-prompts/components/prompts-table"
-import {
-  usePromptMutations,
-  usePrompts,
-} from "@/features/admin/onboarding-prompts/hooks/use-onboarding-prompts"
+import { PromptDialog } from "../components/prompt-dialog"
+import { PromptsTable } from "../components/prompts-table"
+import { usePromptsScreen } from "../hooks/use-prompts-screen"
 
 export function PromptsScreen() {
-  const query = usePrompts()
-  const mutations = usePromptMutations()
+  const { query, actions } = usePromptsScreen()
 
   return (
     <>
       <PageHeader
         title="Onboarding prompts"
         description="Starter chips shown on the first-post screen."
+        action={
+          <CanAct permission="onboarding_prompts.write">
+            <PromptDialog
+              trigger={
+                <Button size="sm">
+                  <Plus />
+                  Add prompt
+                </Button>
+              }
+              onSubmit={(draft) => actions.save(draft)}
+            />
+          </CanAct>
+        }
       />
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load prompts.
-        </p>
-      ) : (
-        <PromptsTable prompts={query.data} mutations={mutations} />
-      )}
+      <PromptsTable
+        query={query}
+        onSave={actions.save}
+        onDelete={actions.remove}
+      />
     </>
   )
 }

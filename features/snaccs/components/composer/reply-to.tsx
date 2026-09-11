@@ -1,10 +1,9 @@
 import { GhostAvatar } from "@/components/ui/ghost-avatar"
 import { UserAvatar } from "@/components/ui/user-avatar"
-import { aspectRatio } from "@/lib/aspect"
 import type { Snacc } from "../../types"
+import { SnaccGlimpse } from "../thread/snacc-glimpse"
 import { ThreadConnector } from "../thread/thread-connector"
-
-const THUMB = 56
+import { nameOf, authorNameOf } from "@/features/users/utils/names"
 
 export function ReplyTo({ snacc }: { snacc: Snacc }) {
   const { author } = snacc
@@ -16,7 +15,7 @@ export function ReplyTo({ snacc }: { snacc: Snacc }) {
           <GhostAvatar />
         ) : (
           <UserAvatar
-            alt={author.display_name ?? "Author"}
+            alt={nameOf(author)}
             avatarUrl={author.avatar_url}
             name={author.username}
           />
@@ -26,33 +25,9 @@ export function ReplyTo({ snacc }: { snacc: Snacc }) {
 
       <div className="flex min-w-0 flex-1 flex-col gap-1.5 pb-4">
         <span className="truncate font-extrabold text-foreground">
-          {snacc.anonymous ? "Ghost" : (author.display_name ?? author.username)}
+          {authorNameOf(author, snacc.anonymous)}
         </span>
-        {snacc.body ? (
-          <p className="line-clamp-4 leading-6 whitespace-pre-wrap text-muted-foreground">
-            {snacc.body}
-          </p>
-        ) : null}
-        {snacc.gif ? (
-          <img
-            src={snacc.gif.url}
-            alt="GIF"
-            className="self-start rounded-lg object-cover"
-            style={{ height: THUMB, aspectRatio: aspectRatio(snacc.gif) }}
-          />
-        ) : snacc.images.length > 0 ? (
-          <div className="flex gap-1.5">
-            {snacc.images.slice(0, 4).map((image) => (
-              <img
-                key={image.position}
-                src={image.thumb_url ?? image.url}
-                alt=""
-                className="rounded-lg object-cover"
-                style={{ width: THUMB, height: THUMB }}
-              />
-            ))}
-          </div>
-        ) : null}
+        <SnaccGlimpse snacc={snacc} />
       </div>
     </div>
   )

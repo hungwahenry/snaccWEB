@@ -1,0 +1,6 @@
+export const EDIT_PROFILE_PATH = "/edit-profile"
+export const EDIT_UNIVERSITY_PATH = "/edit-university"
+export const EDIT_BIRTHDAY_PATH = "/edit-birthday"
+export const CHANGE_EMAIL_PATH = "/settings/email"
+export const EXPORT_DATA_PATH = "/settings/export"
+export const DELETE_ACCOUNT_PATH = "/settings/delete"

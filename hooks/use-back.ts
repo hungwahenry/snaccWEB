@@ -2,8 +2,9 @@
 
 import { useRouter } from "next/navigation"
 import { useCallback } from "react"
+import { HOME_PATH } from "@/features/feed/routes"
 
-export function useBack(fallback = "/home") {
+export function useBack(fallback = HOME_PATH) {
   const router = useRouter()
 
   return useCallback(() => {

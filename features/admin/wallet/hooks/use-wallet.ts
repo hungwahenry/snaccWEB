@@ -1,68 +1,62 @@
 "use client"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
-import type { WalletQuery } from "../types"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { useMemo } from "react"
+import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
 import {
   adjustWallet,
   freezeWallet,
   getWallet,
   getWalletSummary,
   listWalletAccounts,
-  listWalletTransactions,
+  unfreezeWallet,
 } from "../api"
-
-const KEY = ["admin", "wallet"]
+import type { AdjustWalletInput, WalletAccountListQuery } from "../types"
+import { adminWalletKeys } from "../utils/keys"
 
 export function useWalletSummary() {
-  return useQuery({ queryKey: [...KEY, "summary"], queryFn: getWalletSummary })
+  return useQuery({
+    queryKey: adminWalletKeys.summary(),
+    queryFn: getWalletSummary,
+  })
 }
 
-export function useWalletAccounts(params: WalletQuery) {
+export function useWalletAccounts(query: WalletAccountListQuery) {
   return useQuery({
-    queryKey: [...KEY, "accounts", params],
-    queryFn: () => listWalletAccounts(params),
+    queryKey: adminWalletKeys.accounts(query),
+    queryFn: () => listWalletAccounts(query),
+    placeholderData: keepPreviousData,
   })
 }
 
 export function useWallet(userId: string) {
   return useQuery({
-    queryKey: [...KEY, "account", userId],
+    queryKey: adminWalletKeys.detail(userId),
     queryFn: () => getWallet(userId),
   })
 }
 
-export function useWalletTransactions(params: WalletQuery) {
-  return useQuery({
-    queryKey: [...KEY, "transactions", params],
-    queryFn: () => listWalletTransactions(params),
+export function useWalletActions(userId: string) {
+  const invalidates = [adminWalletKeys.all()]
+
+  const { run: freeze } = useAdminMutation({
+    mutationFn: () => freezeWallet(userId),
+    success: "Wallet frozen.",
+    invalidates,
   })
-}
+  const { run: unfreeze } = useAdminMutation({
+    mutationFn: () => unfreezeWallet(userId),
+    success: "Wallet unfrozen.",
+    invalidates,
+  })
+  const { run: adjust } = useAdminMutation({
+    mutationFn: (input: AdjustWalletInput) => adjustWallet(userId, input),
+    success: "Posted to the ledger.",
+    invalidates,
+  })
 
-export function useWalletMutations(userId: string) {
-  const qc = useQueryClient()
-  const onError = (error: unknown) => toast.error(getErrorMessage(error))
-  const invalidate = () => qc.invalidateQueries({ queryKey: KEY })
-
-  return {
-    freeze: useMutation({
-      mutationFn: ({ frozen, reason }: { frozen: boolean; reason?: string }) =>
-        freezeWallet(userId, frozen, reason),
-      onSuccess: (_data, variables) => {
-        invalidate()
-        toast.success(variables.frozen ? "Wallet frozen." : "Wallet unfrozen.")
-      },
-      onError,
-    }),
-    adjust: useMutation({
-      mutationFn: ({ delta, reason }: { delta: number; reason: string }) =>
-        adjustWallet(userId, delta, reason),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Posted to the ledger.")
-      },
-      onError,
-    }),
-  }
+  return useMemo(
+    () => ({ freeze, unfreeze, adjust }),
+    [freeze, unfreeze, adjust]
+  )
 }

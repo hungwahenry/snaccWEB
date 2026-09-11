@@ -1,6 +1,6 @@
 import { ImagePlusIcon, PlusIcon, XIcon } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import type { PollDraft } from "../../hooks/composer/use-poll-draft"
+import type { PollDraft } from "../../types"
 
 const DAYS = [0, 1, 2, 3, 4, 5, 6, 7]
 const HOURS = Array.from({ length: 24 }, (_, hour) => hour)
@@ -39,7 +39,7 @@ function DurationSelect({
 
 export function PollEditor({
   poll,
-  duplicate,
+  problem,
   optionMax,
   maxOptions,
   onSetOption,
@@ -51,7 +51,8 @@ export function PollEditor({
   onRemove,
 }: {
   poll: PollDraft
-  duplicate: boolean
+  /** Why the poll can't go out yet, when the form alone doesn't show it. */
+  problem: string | null
   optionMax: number
   maxOptions: number
   onSetOption: (index: number, text: string) => void
@@ -116,10 +117,8 @@ export function PollEditor({
           </div>
         ))}
 
-        {duplicate ? (
-          <p className="px-1 text-xs text-destructive">
-            Every option has to be different.
-          </p>
+        {problem ? (
+          <p className="px-1 text-xs text-destructive">{problem}</p>
         ) : null}
 
         {poll.options.length < maxOptions ? (

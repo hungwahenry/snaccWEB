@@ -1,12 +1,16 @@
-import { toast } from "sonner"
+import { campusPath } from "@/features/campus/routes"
+import { snaccPath } from "@/features/snaccs/routes"
+import { profilePath } from "@/features/users/routes"
+import { showErrorMessage, showSuccess } from "./feedback"
+import { isShareCancel } from "./share-file"
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://snacc.fyi"
 
 export const shareLink = {
-  profile: (username: string) => `${SITE_URL}/@${username}`,
-  snacc: (id: string) => `${SITE_URL}/snacc/${id}`,
-  campus: (slug: string) => `${SITE_URL}/campus/${slug}`,
-  pay: (username: string) => `${SITE_URL}/pay/${username}`,
+  profile: (username: string) => SITE_URL + profilePath(username),
+  snacc: (id: string) => SITE_URL + snaccPath(id),
+  campus: (slug: string) => SITE_URL + campusPath(slug),
+  pay: (username: string) => `${SITE_URL}/pay/${encodeURIComponent(username)}`,
 }
 
 export function bareLink(url: string): string {
@@ -16,9 +20,9 @@ export function bareLink(url: string): string {
 export async function copyLink(url: string, what = "Link"): Promise<void> {
   try {
     await navigator.clipboard.writeText(url)
-    toast.success(`${what} copied`)
+    showSuccess(`${what} copied`)
   } catch {
-    toast.error("Couldn't copy that link.")
+    showErrorMessage("Couldn't copy that link.")
   }
 }
 
@@ -32,7 +36,7 @@ export async function shareOrCopy(
       await navigator.share({ text, url })
       return
     } catch (error) {
-      if ((error as { name?: string }).name === "AbortError") return
+      if (isShareCancel(error)) return
     }
   }
   await copyLink(url, what)

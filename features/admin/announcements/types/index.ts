@@ -6,14 +6,24 @@ export interface AdminAnnouncement {
   created_at: string
 }
 
-export interface ListAnnouncementsParams {
-  page?: number
-  perPage?: number
+export type AnnouncementListQuery = {
+  page: number
+  perPage: number
+  q?: string
 }
+
+export type AnnouncementAudience = "all" | "campus"
 
 export interface CreateAnnouncementInput {
   title: string
   message: string
-  audience: "all" | "campus"
+  audience: AnnouncementAudience
   universityId?: string
+}
+
+export interface AnnouncementDraft {
+  title: string
+  message: string
+  audience: AnnouncementAudience
+  universityId: string | null
 }

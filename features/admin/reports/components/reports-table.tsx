@@ -1,155 +1,108 @@
 "use client"
 
-import { STATUS_VARIANT } from "../utils/status"
-import { TableFrame } from "@/components/data-table/table-frame"
-import { Badge } from "@/components/ui/badge"
+import type { UseQueryResult } from "@tanstack/react-query"
+import { useMemo, type ReactNode } from "react"
+import { Button } from "@/components/ui/button"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { formatDate } from "@/lib/format"
+  HiddenHeader,
+  type Column,
+} from "@/features/admin/shell/components/data-table"
+import { QueryTable } from "@/features/admin/shell/components/query-table"
+import { StatusBadge } from "@/features/admin/shell/components/status-badge"
 import type { Paginated } from "@/lib/api/types"
+import { formatDate } from "@/lib/format"
+import type {
+  AdminReport,
+  ReportTarget,
+  ResolveDraft,
+  SuspensionChoices,
+} from "../types"
+import { reporterName, reviewerName } from "../utils/reports"
+import { REPORT_STATUS } from "../utils/status"
 import { ReportTargetCell } from "./report-target-cell"
 import { ResolveDialog } from "./resolve-dialog"
-import type { useResolveReport } from "../hooks/use-reports"
-import type { AdminReport, ListReportsParams } from "../types"
 
 export function ReportsTable({
-  data,
-  params,
-  onParams,
-  resolve,
+  query,
+  toolbar,
+  onPageChange,
+  suspension,
+  onResolve,
 }: {
-  data: Paginated<AdminReport>
-  params: ListReportsParams
-  onParams: (patch: Partial<ListReportsParams>) => void
-  resolve: ReturnType<typeof useResolveReport>
+  query: UseQueryResult<Paginated<AdminReport>>
+  toolbar: ReactNode
+  onPageChange: (page: number) => void
+  suspension: SuspensionChoices
+  onResolve: (target: ReportTarget, draft: ResolveDraft) => Promise<unknown>
 }) {
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <Select
-          value={params.status ?? "all"}
-          onValueChange={(value) =>
-            onParams({
-              status: !value || value === "all" ? undefined : (value as never),
-              page: 1,
-            })
-          }
-        >
-          <SelectTrigger className="w-36">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All status</SelectItem>
-            <SelectItem value="open">Open</SelectItem>
-            <SelectItem value="actioned">Actioned</SelectItem>
-            <SelectItem value="dismissed">Dismissed</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select
-          value={params.targetType ?? "all"}
-          onValueChange={(value) =>
-            onParams({
-              targetType:
-                !value || value === "all" ? undefined : (value as never),
-              page: 1,
-            })
-          }
-        >
-          <SelectTrigger className="w-36">
-            <SelectValue placeholder="Target" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All targets</SelectItem>
-            <SelectItem value="snacc">Snaccs</SelectItem>
-            <SelectItem value="user">Users</SelectItem>
-            <SelectItem value="message">Messages</SelectItem>
-            <SelectItem value="moment">Moments</SelectItem>
-            <SelectItem value="chat_message">Room messages</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+  const columns = useMemo<Column<AdminReport>[]>(
+    () => [
+      {
+        id: "target",
+        header: "Target",
+        className: "max-w-xs",
+        cell: (report) => <ReportTargetCell report={report} />,
+      },
+      {
+        id: "reason",
+        header: "Reason",
+        cell: (report) => report.reason.label,
+      },
+      {
+        id: "reporter",
+        header: "Reporter",
+        className: "text-muted-foreground",
+        cell: (report) => reporterName(report),
+      },
+      {
+        id: "status",
+        header: "Status",
+        cell: (report) => <StatusBadge status={REPORT_STATUS[report.status]} />,
+      },
+      {
+        id: "reported",
+        header: "Reported",
+        className: "text-muted-foreground",
+        cell: (report) => formatDate(report.created_at),
+      },
+      {
+        id: "actions",
+        header: <HiddenHeader>Actions</HiddenHeader>,
+        align: "end",
+        cell: (report) =>
+          report.status === "open" ? (
+            <CanAct permission="reports.resolve">
+              <ResolveDialog
+                report={report}
+                suspension={suspension}
+                trigger={
+                  <Button variant="outline" size="sm">
+                    Resolve
+                  </Button>
+                }
+                onSubmit={(draft) => onResolve(report.target, draft)}
+              />
+            </CanAct>
+          ) : (
+            <span className="text-xs text-muted-foreground">
+              {reviewerName(report)}
+            </span>
+          ),
+      },
+    ],
+    [suspension, onResolve]
+  )
 
-      <TableFrame
-        page={data.page}
-        perPage={data.per_page}
-        total={data.total}
-        onPageChange={(page) => onParams({ page })}
-      >
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Target</TableHead>
-              <TableHead>Reason</TableHead>
-              <TableHead>Reporter</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Reported</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.items.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="py-10 text-center text-sm text-muted-foreground"
-                >
-                  No reports match these filters.
-                </TableCell>
-              </TableRow>
-            ) : (
-              data.items.map((report) => (
-                <TableRow key={report.id}>
-                  <TableCell className="max-w-xs">
-                    <ReportTargetCell report={report} />
-                  </TableCell>
-                  <TableCell className="text-sm">
-                    {report.reason.label}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {report.reporter
-                      ? report.reporter.username
-                        ? `@${report.reporter.username}`
-                        : report.reporter.display_name
-                      : "Snacc"}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={STATUS_VARIANT[report.status]}>
-                      {report.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {formatDate(report.created_at)}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {report.status === "open" ? (
-                      <ResolveDialog report={report} resolve={resolve} />
-                    ) : (
-                      <span className="text-xs text-muted-foreground">
-                        {report.reviewed_by?.username
-                          ? `@${report.reviewed_by.username}`
-                          : "resolved"}
-                      </span>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableFrame>
-    </div>
+  return (
+    <QueryTable
+      query={query}
+      what="reports"
+      columns={columns}
+      rowKey={(report) => report.id}
+      empty="No reports match these filters."
+      toolbar={toolbar}
+      onPageChange={onPageChange}
+    />
   )
 }

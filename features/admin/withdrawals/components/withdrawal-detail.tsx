@@ -1,59 +1,52 @@
 "use client"
 
-import { CanAct } from "@/features/admin/auth/components/can"
-import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
+import { Button } from "@/components/ui/button"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
+import { ConfirmAction } from "@/features/admin/shell/components/confirm-action"
 import {
   DetailHeader,
   Fact,
   Facts,
   Section,
-} from "@/features/admin/shell/ui/detail"
-import { UserInline } from "@/features/admin/shell/ui/user-inline"
-import { Badge } from "@/components/ui/badge"
+} from "@/features/admin/shell/components/detail"
+import { StatusBadge } from "@/features/admin/shell/components/status-badge"
+import { UserCell } from "@/features/admin/shell/components/user-cell"
 import { formatDate, formatNaira } from "@/lib/format"
-import { STATUS_VARIANT } from "../utils/status"
-import type { useWithdrawalMutations } from "../hooks/use-withdrawals"
 import type { AdminWithdrawal } from "../types"
+import { WITHDRAWAL_STATUS } from "../utils/status"
+import { accountLine, canRetry } from "../utils/withdrawals"
 
 export function WithdrawalDetail({
   withdrawal,
-  actions,
+  onRetry,
 }: {
   withdrawal: AdminWithdrawal
-  actions: ReturnType<typeof useWithdrawalMutations>
+  onRetry: () => Promise<unknown>
 }) {
   return (
     <div className="flex flex-col gap-6">
       <DetailHeader
         title={formatNaira(withdrawal.amount)}
-        badges={
-          <Badge variant={STATUS_VARIANT[withdrawal.status]}>
-            {withdrawal.status}
-          </Badge>
-        }
+        badges={<StatusBadge status={WITHDRAWAL_STATUS[withdrawal.status]} />}
         meta={
           <>
             <span className="font-mono">{withdrawal.reference}</span>
-            <span>Requested {formatDate(withdrawal.created_at)}</span>
+            <span>Asked for {formatDate(withdrawal.created_at)}</span>
             {withdrawal.completed_at ? (
-              <span>Completed {formatDate(withdrawal.completed_at)}</span>
+              <span>Finished {formatDate(withdrawal.completed_at)}</span>
             ) : null}
           </>
         }
         actions={
-          withdrawal.status === "pending" ? (
+          canRetry(withdrawal) ? (
             <CanAct permission="withdrawals.process">
               <ConfirmAction
-                label="Send to Paystack again"
-                variant="default"
-                confirmVariant="default"
-                title="Re-attempt this transfer?"
-                description="Paystack is asked to move the money again. If the first attempt actually succeeded, this could pay twice — check the timeline before confirming."
+                trigger={<Button size="sm">Send to Paystack again</Button>}
+                tone="default"
+                title="Try this transfer again?"
+                description="Paystack is asked to move the money again. If the first try actually went through, this could pay twice, so check the timeline before you confirm."
                 confirmLabel="Send again"
-                pending={actions.retry.isPending}
-                onConfirm={(close) =>
-                  actions.retry.mutate(undefined, { onSuccess: close })
-                }
+                onConfirm={() => onRetry()}
               />
             </CanAct>
           ) : null
@@ -61,7 +54,7 @@ export function WithdrawalDetail({
       />
 
       <div className="rounded-lg border px-4 py-3">
-        <UserInline user={withdrawal.user} note="Requested by" />
+        <UserCell user={withdrawal.user} note="Asked for by" />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -69,15 +62,10 @@ export function WithdrawalDetail({
           <Facts>
             <Fact label="Bank" value={withdrawal.bank_name} />
             <Fact label="Account name" value={withdrawal.account_name} />
-            <Fact
-              label="Account"
-              value={
-                withdrawal.account_number ?? `•••• ${withdrawal.account_last4}`
-              }
-            />
+            <Fact label="Account" value={accountLine(withdrawal)} />
             <Fact
               label="Recipient code"
-              value={withdrawal.recipient_code ?? "—"}
+              value={withdrawal.recipient_code}
               mono
             />
             <Fact
@@ -87,7 +75,7 @@ export function WithdrawalDetail({
             />
             {withdrawal.failure_reason ? (
               <Fact
-                label="Failure reason"
+                label="Why it failed"
                 value={
                   <span className="text-destructive">
                     {withdrawal.failure_reason}
@@ -100,7 +88,7 @@ export function WithdrawalDetail({
 
         <Section
           title="Timeline"
-          description="Balance moved from what it was before to what it is now."
+          description="What their balance was before and after, and each step Paystack reported."
         >
           <Facts>
             <Fact
@@ -112,15 +100,13 @@ export function WithdrawalDetail({
               value={formatNaira(withdrawal.balance_after)}
             />
             {withdrawal.events.length === 0 ? (
-              <Fact label="Events" value="None recorded" />
+              <Fact label="Steps" value="None recorded" />
             ) : (
               withdrawal.events.map((event, index) => (
                 <Fact
                   key={`${event.status}-${index}`}
                   label={
-                    <Badge variant="outline" className="capitalize">
-                      {event.status}
-                    </Badge>
+                    <StatusBadge status={WITHDRAWAL_STATUS[event.status]} />
                   }
                   value={formatDate(event.created_at)}
                 />

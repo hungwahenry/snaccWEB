@@ -1,207 +1,98 @@
 "use client"
 
-import { CanAct } from "@/features/admin/auth/components/can"
-import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
-
-import { useState } from "react"
+import type { UseQueryResult } from "@tanstack/react-query"
+import { useMemo } from "react"
 import { Button } from "@/components/ui/button"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
+import { ConfirmAction } from "@/features/admin/shell/components/confirm-action"
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Field, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { TableFrame } from "@/components/data-table/table-frame"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { Textarea } from "@/components/ui/textarea"
-import type { AdminPrompt } from "../types"
-import type { usePromptMutations } from "../hooks/use-onboarding-prompts"
-
-type Mutations = ReturnType<typeof usePromptMutations>
-
-function PromptDialog({
-  prompt,
-  mutations,
-  trigger,
-}: {
-  prompt?: AdminPrompt
-  mutations: Mutations
-  trigger: React.ReactElement
-}) {
-  const [open, setOpen] = useState(false)
-  const [emoji, setEmoji] = useState(prompt?.emoji ?? "")
-  const [label, setLabel] = useState(prompt?.label ?? "")
-  const [placeholder, setPlaceholder] = useState(prompt?.placeholder ?? "")
-  const [position, setPosition] = useState(String(prompt?.position ?? 0))
-
-  const editing = Boolean(prompt)
-  const valid =
-    emoji.trim() !== "" && label.trim() !== "" && placeholder.trim() !== ""
-
-  function save() {
-    const base = {
-      emoji: emoji.trim(),
-      label: label.trim(),
-      placeholder: placeholder.trim(),
-      position: Number(position) || 0,
-    }
-    if (editing && prompt) {
-      mutations.update.mutate(
-        { id: prompt.id, input: base },
-        { onSuccess: () => setOpen(false) }
-      )
-    } else {
-      mutations.create.mutate(base, { onSuccess: () => setOpen(false) })
-    }
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <CanAct permission="onboarding_prompts.write">
-        <DialogTrigger render={trigger} />
-      </CanAct>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{editing ? "Edit prompt" : "New prompt"}</DialogTitle>
-        </DialogHeader>
-        <div className="flex gap-3">
-          <Field className="w-24">
-            <FieldLabel>Emoji</FieldLabel>
-            <Input
-              value={emoji}
-              onChange={(event) => setEmoji(event.target.value)}
-              placeholder="🔥"
-              maxLength={16}
-            />
-          </Field>
-          <Field className="flex-1">
-            <FieldLabel>Label</FieldLabel>
-            <Input
-              value={label}
-              onChange={(event) => setLabel(event.target.value)}
-              placeholder="Hot take"
-              maxLength={100}
-            />
-          </Field>
-        </div>
-        <Field>
-          <FieldLabel>Placeholder</FieldLabel>
-          <Textarea
-            value={placeholder}
-            onChange={(event) => setPlaceholder(event.target.value)}
-            placeholder="Drop a hot take about {campus}…"
-            maxLength={200}
-          />
-        </Field>
-        <Field className="w-28">
-          <FieldLabel>Position</FieldLabel>
-          <Input
-            type="number"
-            value={position}
-            onChange={(event) => setPosition(event.target.value)}
-          />
-        </Field>
-        <p className="text-xs text-muted-foreground">
-          {"{campus}"} is replaced with the user&apos;s campus acronym.
-        </p>
-        <DialogFooter>
-          <DialogClose render={<Button variant="ghost">Cancel</Button>} />
-          <Button
-            disabled={
-              !valid || mutations.create.isPending || mutations.update.isPending
-            }
-            onClick={save}
-          >
-            Save
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-}
+  HiddenHeader,
+  type Column,
+} from "@/features/admin/shell/components/data-table"
+import { QueryTable } from "@/features/admin/shell/components/query-table"
+import type { AdminPrompt, PromptDraft } from "../types"
+import { PromptDialog } from "./prompt-dialog"
 
 export function PromptsTable({
-  prompts,
-  mutations,
+  query,
+  onSave,
+  onDelete,
 }: {
-  prompts: AdminPrompt[]
-  mutations: Mutations
+  query: UseQueryResult<AdminPrompt[]>
+  onSave: (draft: PromptDraft, id: string) => Promise<unknown>
+  onDelete: (id: string) => Promise<unknown>
 }) {
+  const columns = useMemo<Column<AdminPrompt>[]>(
+    () => [
+      {
+        id: "prompt",
+        header: "Prompt",
+        cell: (prompt) => (
+          <p className="font-medium">
+            <span className="mr-1.5" aria-hidden>
+              {prompt.emoji}
+            </span>
+            {prompt.label}
+          </p>
+        ),
+      },
+      {
+        id: "placeholder",
+        header: "Placeholder",
+        className: "max-w-sm whitespace-normal text-muted-foreground",
+        cell: (prompt) => <p className="line-clamp-2">{prompt.placeholder}</p>,
+      },
+      {
+        id: "position",
+        header: "Position",
+        align: "end",
+        className: "tabular-nums",
+        cell: (prompt) => prompt.position,
+      },
+      {
+        id: "actions",
+        header: <HiddenHeader>Actions</HiddenHeader>,
+        align: "end",
+        cell: (prompt) => (
+          <div className="flex justify-end gap-2">
+            <CanAct permission="onboarding_prompts.write">
+              <PromptDialog
+                prompt={prompt}
+                trigger={
+                  <Button variant="outline" size="sm">
+                    Edit
+                  </Button>
+                }
+                onSubmit={(draft) => onSave(draft, prompt.id)}
+              />
+            </CanAct>
+            <CanAct permission="onboarding_prompts.delete">
+              <ConfirmAction
+                trigger={
+                  <Button variant="ghost" size="sm">
+                    Delete
+                  </Button>
+                }
+                title={`Delete ${prompt.label}?`}
+                description="New people stop being offered it. Snaccs already posted from it stay where they are."
+                confirmLabel="Delete prompt"
+                onConfirm={() => onDelete(prompt.id)}
+              />
+            </CanAct>
+          </div>
+        ),
+      },
+    ],
+    [onSave, onDelete]
+  )
+
   return (
-    <TableFrame
-      toolbar={
-        <div className="flex justify-end">
-          <PromptDialog
-            mutations={mutations}
-            trigger={<Button size="sm">Add prompt</Button>}
-          />
-        </div>
-      }
-    >
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Prompt</TableHead>
-            <TableHead>Placeholder</TableHead>
-            <TableHead className="text-right">Position</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {prompts.map((prompt) => (
-            <TableRow key={prompt.id}>
-              <TableCell className="font-medium">
-                <span className="mr-1.5">{prompt.emoji}</span>
-                {prompt.label}
-              </TableCell>
-              <TableCell className="max-w-sm truncate text-sm text-muted-foreground">
-                {prompt.placeholder}
-              </TableCell>
-              <TableCell className="text-right tabular-nums">
-                {prompt.position}
-              </TableCell>
-              <TableCell className="text-right">
-                <div className="flex justify-end gap-2">
-                  <PromptDialog
-                    prompt={prompt}
-                    mutations={mutations}
-                    trigger={
-                      <Button variant="outline" size="sm">
-                        Edit
-                      </Button>
-                    }
-                  />
-                  <CanAct permission="onboarding_prompts.delete">
-                    <ConfirmAction
-                      label="Delete"
-                      variant="ghost"
-                      title="Delete this prompt?"
-                      description="New sign-ups will stop being offered it. Answers people already gave stay where they are."
-                      confirmLabel="Delete prompt"
-                      pending={mutations.remove.isPending}
-                      onConfirm={(close) =>
-                        mutations.remove.mutate(prompt.id, { onSuccess: close })
-                      }
-                    />
-                  </CanAct>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableFrame>
+    <QueryTable
+      query={query}
+      what="prompts"
+      columns={columns}
+      rowKey={(prompt) => prompt.id}
+      empty="No prompts yet. Add one to give new people a starting point."
+    />
   )
 }

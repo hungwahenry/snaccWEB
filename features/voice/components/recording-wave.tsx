@@ -1,7 +1,8 @@
 "use client"
 
-import { useCallback, useState } from "react"
-import { barCount, VoiceBars } from "./voice-bars"
+import { useCallback, useMemo, useState } from "react"
+import { barCount, trail } from "../utils/wave"
+import { VoiceBars } from "./voice-bars"
 
 export function RecordingWave({
   levels,
@@ -21,18 +22,12 @@ export function RecordingWave({
     return () => observer.disconnect()
   }, [])
 
-  const display =
-    slots > 0
-      ? [
-          ...Array<number>(Math.max(0, slots - levels.length)).fill(0),
-          ...levels.slice(-slots),
-        ]
-      : []
+  const display = useMemo(() => trail(levels, slots), [levels, slots])
 
   return (
     <div
       ref={measure}
-      className="flex flex-1 items-center justify-end overflow-hidden"
+      className="flex min-w-0 flex-1 items-center justify-end overflow-hidden"
     >
       {display.length > 0 ? (
         <VoiceBars levels={display} height={height} className="bg-primary" />

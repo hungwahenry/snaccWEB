@@ -1,125 +1,130 @@
 "use client"
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import type { ReactElement, ReactNode } from "react"
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Field, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Switch } from "@/components/ui/switch"
-import { CanAct } from "@/features/admin/auth/components/can"
-import { useFlagForm } from "../hooks/use-flag-form"
-import type { AdminFeatureFlag, FlagChanges } from "../types"
-import { PLATFORM_LABELS, PLATFORMS } from "../utils"
+  DialogForm,
+  FormDialog,
+  FormNote,
+} from "@/features/admin/shell/components/form-dialog"
+import {
+  SwitchField,
+  TextField,
+} from "@/features/admin/shell/components/form-fields"
+import { useDraft } from "@/features/admin/shell/hooks/use-draft"
+import type { AdminFeatureFlag, FlagDraft } from "../types"
+import {
+  draftErrors,
+  draftFrom,
+  isDraftReady,
+  patchRule,
+  PLATFORM_LABELS,
+  PLATFORMS,
+  withRule,
+} from "../utils/flags"
 
-type UpdateInput = { key: string } & FlagChanges
+function problem(message: string | null): ReactNode {
+  return message ? <span className="text-destructive">{message}</span> : null
+}
 
-function Form({
+function AvailabilityForm({
   flag,
-  pending,
-  onUpdate,
-  onDone,
+  onSubmit,
 }: {
   flag: AdminFeatureFlag
-  pending: boolean
-  onUpdate: (input: UpdateInput) => void
-  onDone: () => void
+  onSubmit: (draft: FlagDraft) => Promise<unknown>
 }) {
-  const form = useFlagForm(flag)
+  const { draft, set, text } = useDraft(() => draftFrom(flag))
+  const errors = draftErrors(draft)
 
   return (
-    <>
-      <p className="text-sm text-muted-foreground">
-        Which app builds this reaches. A build only changes when someone
-        installs from a store, so an over-the-air update never moves anyone past
-        these. Leave a field empty for no limit.
-      </p>
-
+    <DialogForm
+      submitLabel="Save"
+      canSubmit={isDraftReady(draft)}
+      onSubmit={() => onSubmit(draft)}
+    >
       <div className="grid grid-cols-2 gap-3">
-        <Field>
-          <FieldLabel>Oldest build</FieldLabel>
-          <Input
-            value={form.min}
-            placeholder="1.2.0"
-            onChange={(event) => form.setMin(event.target.value)}
-          />
-        </Field>
-        <Field>
-          <FieldLabel>Newest build</FieldLabel>
-          <Input
-            value={form.max}
-            placeholder="no limit"
-            onChange={(event) => form.setMax(event.target.value)}
-          />
-        </Field>
+        <TextField
+          label="Oldest build"
+          placeholder="1.2.0"
+          hint={problem(errors.window.min)}
+          {...text("min")}
+        />
+        <TextField
+          label="Newest build"
+          placeholder="No limit"
+          hint={problem(errors.window.max)}
+          {...text("max")}
+        />
       </div>
 
-      <div className="flex flex-col gap-3 rounded-lg border p-3">
-        <div>
-          <p className="text-sm font-medium">Platform rules</p>
-          <p className="text-xs text-pretty text-muted-foreground">
-            For when the stores fall out of step. A platform with its own rule
-            ignores the builds above and follows this instead.
-          </p>
-        </div>
+      <fieldset className="flex flex-col gap-3 rounded-lg border p-3">
+        <legend className="px-1 text-sm font-medium">Platform rules</legend>
+        <FormNote>
+          For when the stores fall out of step. A platform with its own rule
+          ignores the builds above and follows this instead.
+        </FormNote>
 
         {PLATFORMS.map((platform) => {
-          const rule = form.rules[platform]
+          const rule = draft.rules[platform]
+          const ruleErrors = errors.rules[platform]
+          const label = PLATFORM_LABELS[platform]
 
           return (
             <div
               key={platform}
-              className="flex flex-col gap-3 border-t pt-3 first:border-t-0 first:pt-0"
+              className="flex flex-col gap-3 border-t pt-3 first-of-type:border-t-0 first-of-type:pt-0"
             >
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-sm">{PLATFORM_LABELS[platform]}</span>
-                <Switch
-                  checked={Boolean(rule)}
-                  onCheckedChange={(wanted) =>
-                    form.toggleRule(platform, wanted)
-                  }
-                />
-              </div>
-
+              <SwitchField
+                label={`Own rule for ${label}`}
+                checked={Boolean(rule)}
+                onChange={(wanted) =>
+                  set("rules", withRule(draft.rules, platform, wanted))
+                }
+              />
               {rule ? (
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs text-muted-foreground">
-                      On for {PLATFORM_LABELS[platform]}
-                    </span>
-                    <Switch
-                      checked={rule.enabled}
-                      onCheckedChange={(enabled) =>
-                        form.editRule(platform, { enabled })
-                      }
-                    />
-                  </div>
-
+                <div className="flex flex-col gap-3 pl-3">
+                  <SwitchField
+                    label={`On for ${label}`}
+                    checked={rule.enabled}
+                    onChange={(enabled) =>
+                      set(
+                        "rules",
+                        patchRule(draft.rules, platform, { enabled })
+                      )
+                    }
+                  />
                   {platform === "web" ? (
-                    <p className="text-xs text-muted-foreground">
+                    <FormNote>
                       The web ships continuously, so there is no build to limit.
-                    </p>
+                    </FormNote>
                   ) : (
-                    <div className="grid grid-cols-2 gap-2">
-                      <Input
+                    <div className="grid grid-cols-2 gap-3">
+                      <TextField
+                        label="Oldest build"
+                        placeholder="No limit"
                         value={rule.min}
-                        placeholder="oldest build"
+                        hint={problem(ruleErrors?.min ?? null)}
                         onChange={(event) =>
-                          form.editRule(platform, { min: event.target.value })
+                          set(
+                            "rules",
+                            patchRule(draft.rules, platform, {
+                              min: event.target.value,
+                            })
+                          )
                         }
                       />
-                      <Input
+                      <TextField
+                        label="Newest build"
+                        placeholder="No limit"
                         value={rule.max}
-                        placeholder="newest build"
+                        hint={problem(ruleErrors?.max ?? null)}
                         onChange={(event) =>
-                          form.editRule(platform, { max: event.target.value })
+                          set(
+                            "rules",
+                            patchRule(draft.rules, platform, {
+                              max: event.target.value,
+                            })
+                          )
                         }
                       />
                     </div>
@@ -129,65 +134,40 @@ function Form({
             </div>
           )
         })}
-      </div>
+      </fieldset>
 
-      <p className="text-xs text-muted-foreground">
-        Anything that doesn&apos;t say which build it is gets treated as too old
-        and won&apos;t see the feature.
-      </p>
-
-      <DialogFooter>
-        <DialogClose render={<Button variant="ghost">Cancel</Button>} />
-        <Button
-          disabled={pending}
-          onClick={() => {
-            onUpdate({ key: flag.key, ...form.changes() })
-            onDone()
-          }}
-        >
-          Save
-        </Button>
-      </DialogFooter>
-    </>
+      <FormNote>
+        A build only changes when someone installs from a store, so an update
+        sent over the air never moves anyone past these. Anything that does not
+        say which build it is counts as too old and will not see the feature.
+      </FormNote>
+    </DialogForm>
   )
 }
 
 export function AvailabilityDialog({
   flag,
-  onUpdate,
-  pending,
+  trigger,
+  disabled,
+  onSubmit,
 }: {
   flag: AdminFeatureFlag
-  onUpdate: (input: UpdateInput) => void
-  pending: boolean
+  trigger: ReactElement
+  disabled?: boolean
+  onSubmit: (draft: FlagDraft) => Promise<unknown>
 }) {
-  const [open, setOpen] = useState(false)
-
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <CanAct permission="flags.write">
-        <DialogTrigger
-          render={
-            <Button variant="outline" size="sm">
-              Availability
-            </Button>
-          }
-        />
-      </CanAct>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle className="font-mono text-sm">{flag.key}</DialogTitle>
-        </DialogHeader>
-        {/* Mounted only while open, so it always opens on what is actually saved. */}
-        {open ? (
-          <Form
-            flag={flag}
-            pending={pending}
-            onUpdate={onUpdate}
-            onDone={() => setOpen(false)}
-          />
-        ) : null}
-      </DialogContent>
-    </Dialog>
+    <FormDialog
+      trigger={trigger}
+      disabled={disabled}
+      title={
+        <>
+          Who gets <span className="font-mono">{flag.key}</span>
+        </>
+      }
+      description="Which app builds this reaches. Leave a field empty for no limit."
+    >
+      <AvailabilityForm flag={flag} onSubmit={onSubmit} />
+    </FormDialog>
   )
 }

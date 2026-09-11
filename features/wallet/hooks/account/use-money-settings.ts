@@ -1,27 +1,29 @@
 "use client"
 
 import { useState } from "react"
-import { useMe } from "@/features/auth/hooks/use-me"
 import type { MoneyRequestPrivacy } from "@/features/users/types"
+import { mutedCountLabel, requestPrivacyLabel } from "../../utils/settings"
 import { useMutes } from "../requests/use-mutes"
-import { useWalletSettings } from "./use-wallet-settings"
+import { useRequestPrivacy } from "./use-request-privacy"
 
 export function useMoneySettings() {
-  const me = useMe()
-  const settings = useWalletSettings()
+  const { privacy, setPrivacy } = useRequestPrivacy()
   const mutes = useMutes()
   const [privacyOpen, setPrivacyOpen] = useState(false)
 
-  const privacy = me.data?.profile?.money_requests_from ?? "everyone"
-
   return {
-    privacy,
-    privacyOpen,
-    setPrivacyOpen,
-    mutedCount: mutes.data?.length ?? 0,
-    selectPrivacy: (value: MoneyRequestPrivacy) => {
-      setPrivacyOpen(false)
-      if (value !== privacy) settings.mutate({ moneyRequestsFrom: value })
+    privacy: {
+      value: privacy,
+      label: requestPrivacyLabel(privacy),
+      open: privacyOpen,
+      onOpenChange: setPrivacyOpen,
+      onSelect: (value: MoneyRequestPrivacy) => {
+        setPrivacyOpen(false)
+        setPrivacy(value)
+      },
     },
+    mutedLabel: mutes.data ? mutedCountLabel(mutes.data.length) : "",
   }
 }
+
+export type MoneySettingsProps = ReturnType<typeof useMoneySettings>

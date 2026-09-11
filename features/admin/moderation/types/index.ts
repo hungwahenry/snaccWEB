@@ -1,11 +1,11 @@
-import type { Paginated } from "@/lib/api/types"
-
 export type ModerationSurface =
   "snacc" | "comment" | "moment" | "message" | "anon_message" | "profile"
 
 export type ModerationAction = "allow" | "flag" | "hold" | "block"
 
 export type ModerationMode = "inline" | "queued"
+
+export type ModerationTab = "rules" | "surfaces" | "categories" | "reviews"
 
 export interface SurfaceSetting {
   surface: ModerationSurface
@@ -89,4 +89,39 @@ export interface RuleInput {
   position?: number
 }
 
-export type ScanQuery = Record<string, string | number | boolean>
+export type RuleChanges = Partial<RuleInput> & { retired?: boolean }
+
+export type SurfaceChanges = Partial<
+  Pick<SurfaceSetting, "enabled" | "mode">
+> & { timeoutMs?: number }
+
+export type ScanQuery = {
+  page: number
+  verdict?: ModerationAction
+}
+
+export interface RuleDraft {
+  surface: ModerationSurface
+  category: string
+  threshold: string
+  action: ModerationAction
+  note: string
+}
+
+export interface ModerationTotals {
+  reviewed: number
+  today: number
+  acted: number
+  live: number
+  surfaces: number
+  failures: number
+  unruled: number
+}
+
+export interface InsightBar {
+  from: number
+  label: string
+  count: number
+  fraction: number
+  catching: boolean
+}

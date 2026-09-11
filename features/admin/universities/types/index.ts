@@ -1,9 +1,3 @@
-export interface ListUniversitiesParams {
-  page?: number
-  perPage?: number
-  q?: string
-}
-
 export interface AdminUniversity {
   id: string
   name: string
@@ -16,6 +10,12 @@ export interface AdminUniversity {
   fund: { cap: number; distributed: number } | null
 }
 
+export type UniversityListQuery = {
+  page: number
+  perPage: number
+  q?: string
+}
+
 export interface CreateUniversityInput {
   name: string
   slug: string
@@ -25,10 +25,13 @@ export interface CreateUniversityInput {
   logoUrl?: string
 }
 
-export interface UpdateUniversityInput {
-  name?: string
-  acronym?: string
-  motto?: string
-  website?: string
-  logoUrl?: string
+export type UpdateUniversityInput = Partial<Omit<CreateUniversityInput, "slug">>
+
+export interface UniversityDraft {
+  name: string
+  slug: string
+  acronym: string
+  motto: string
+  website: string
+  logoUrl: string
 }

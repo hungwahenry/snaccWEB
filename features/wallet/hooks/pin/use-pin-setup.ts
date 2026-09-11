@@ -1,20 +1,34 @@
 "use client"
 
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import { useRef, useState } from "react"
-import { toast } from "sonner"
 import { signal } from "@/features/signals/utils/queue"
-import { getErrorMessage } from "@/lib/api/errors"
+import { showError, showSuccess } from "@/lib/feedback"
 import { useStepUp } from "@/providers/step-up-provider"
-import { setPin as setPinRequest } from "../../api"
-import { WALLET_OVERVIEW_KEY } from "../../utils/keys"
+import { setPin } from "../../api"
+import { pinChanged } from "../../cache"
+import type { PinSetupMode, PinSetupStage } from "../../types"
+import { pinEntered } from "../../utils/pin"
 import { usePinInput } from "./use-pin-input"
 
-export type PinSetupStage = "intro" | "enter" | "confirm"
+const COPY: Record<
+  PinSetupMode,
+  { title: string; action: string; done: string }
+> = {
+  setup: {
+    title: "Set a wallet PIN",
+    action: "Set up your PIN",
+    done: "Your wallet PIN is set",
+  },
+  change: {
+    title: "Change your wallet PIN",
+    action: "Change PIN",
+    done: "Your PIN is changed",
+  },
+}
 
-export function usePinSetup(mode: "setup" | "change", onDone: () => void) {
+export function usePinSetup(mode: PinSetupMode, onDone: () => void) {
   const stepUp = useStepUp()
-  const queryClient = useQueryClient()
   const [stage, setStage] = useState<PinSetupStage>("intro")
   const [first, setFirst] = useState("")
   const [error, setError] = useState<string | null>(null)
@@ -22,36 +36,33 @@ export function usePinSetup(mode: "setup" | "change", onDone: () => void) {
   const starting = useRef(false)
 
   const saving = useMutation({
-    mutationFn: setPinRequest,
+    mutationFn: setPin,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: WALLET_OVERVIEW_KEY })
+      pinChanged()
       signal("wallet_pin", { detail: mode })
-      toast.success(
-        mode === "change" ? "Your PIN is changed" : "Your wallet PIN is set"
-      )
+      showSuccess(COPY[mode].done)
       onDone()
     },
     onError: (err) => {
-      toast.error(getErrorMessage(err))
+      showError(err)
       setFirst("")
       setStage("enter")
     },
   })
 
   const input = usePinInput((entered) => {
-    if (stage === "enter") {
-      setFirst(entered)
+    if (stage === "intro") return
+    const outcome = pinEntered(stage, first, entered)
+    if (outcome.kind === "confirm") {
+      setFirst(outcome.first)
       setStage("confirm")
-      return
-    }
-    if (entered !== first) {
-      setError("Those did not match. Start again.")
+    } else if (outcome.kind === "mismatch") {
+      setError(outcome.error)
       setFirst("")
       setStage("enter")
-      return
+    } else if (stepUpId.current) {
+      saving.mutate({ pin: outcome.pin, stepUpId: stepUpId.current })
     }
-    if (stepUpId.current)
-      saving.mutate({ pin: entered, stepUpId: stepUpId.current })
   })
 
   async function begin() {
@@ -61,21 +72,26 @@ export function usePinSetup(mode: "setup" | "change", onDone: () => void) {
       stepUpId.current = await stepUp("wallet_pin")
       setStage("enter")
     } catch {
+      // Closing the emailed-code step just leaves the intro up.
     } finally {
       starting.current = false
     }
   }
 
   return {
-    mode,
     stage,
+    copy: COPY[mode],
     pin: input.value,
+    title: stage === "confirm" ? "Enter it once more" : "Choose a 6-digit PIN",
+    hint: stage === "confirm" ? null : "Avoid your birthday or 123456.",
     error,
     saving: saving.isPending,
-    begin: () => void begin(),
-    press: (key: string) => {
+    onBegin: () => void begin(),
+    onKey: (key: string) => {
       setError(null)
       input.press(key)
     },
   }
 }
+
+export type PinSetupProps = ReturnType<typeof usePinSetup>

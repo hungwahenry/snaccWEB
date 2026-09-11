@@ -1,19 +1,23 @@
-"use client"
-
 import { BellOffIcon } from "lucide-react"
 import { EmptyState } from "@/components/ui/empty-state"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { Spinner } from "@/components/ui/spinner"
 import { UserAvatar } from "@/components/ui/user-avatar"
+import { handleOf, nameOf } from "@/features/users/utils/names"
 import { shortDate } from "@/lib/format"
 import { cn } from "@/lib/utils"
-import { useMuted } from "../../hooks/requests/use-mutes"
+import type { MutedScreenProps } from "../../hooks/requests/use-muted-screen"
 import type { RequestMute } from "../../types"
 
-export function MutedPanel() {
-  const screen = useMuted()
-
-  if (screen.loading) {
+export function MutedPanel({
+  loading,
+  failed,
+  retry,
+  muted,
+  isBusy,
+  unmute,
+}: MutedScreenProps) {
+  if (loading) {
     return (
       <div className="flex justify-center py-24">
         <Spinner className="text-muted-foreground" />
@@ -21,18 +25,15 @@ export function MutedPanel() {
     )
   }
 
-  if (screen.failed) {
+  if (failed) {
     return (
       <div className="py-24">
-        <LoadFailed
-          title="Could not load your muted list"
-          onRetry={screen.retry}
-        />
+        <LoadFailed title="Could not load your muted list" onRetry={retry} />
       </div>
     )
   }
 
-  if (screen.muted.length === 0) {
+  if (muted.length === 0) {
     return (
       <EmptyState
         icon={BellOffIcon}
@@ -49,12 +50,12 @@ export function MutedPanel() {
         These people cannot ask you for money. They can still send you money,
         and they are not told they are muted.
       </p>
-      {screen.muted.map((mute) => (
+      {muted.map((mute) => (
         <MuteRow
           key={mute.id}
           mute={mute}
-          busy={screen.busyId === mute.user.id}
-          onUnmute={() => screen.unmute(mute.user.id)}
+          busy={isBusy(mute.user.id)}
+          onUnmute={() => unmute(mute.user.id)}
         />
       ))}
     </div>
@@ -73,14 +74,14 @@ function MuteRow({
   return (
     <div className="flex items-center gap-3 py-2.5">
       <UserAvatar
-        alt={mute.user.display_name ?? "User"}
+        alt={nameOf(mute.user)}
         className="size-11"
         avatarUrl={mute.user.avatar_url}
         name={mute.user.username}
       />
       <span className="flex min-w-0 flex-1 flex-col">
         <span className="truncate font-bold text-foreground">
-          @{mute.user.username}
+          {handleOf(mute.user) ?? nameOf(mute.user)}
         </span>
         <span className="truncate text-sm text-muted-foreground">
           {mute.user.display_name ? `${mute.user.display_name} · ` : ""}

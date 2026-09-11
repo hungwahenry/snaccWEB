@@ -1,145 +1,74 @@
-"use client"
-
-import { STATUS_VARIANT } from "../utils/status"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
-import { TableFrame } from "@/components/data-table/table-frame"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { formatDate, formatNaira } from "@/lib/format"
+import type { UseQueryResult } from "@tanstack/react-query"
+import Link from "next/link"
+import type { ReactNode } from "react"
+import type { Column } from "@/features/admin/shell/components/data-table"
+import { QueryTable } from "@/features/admin/shell/components/query-table"
+import { StatusBadge } from "@/features/admin/shell/components/status-badge"
+import { UserCell } from "@/features/admin/shell/components/user-cell"
+import { withdrawalPath } from "@/features/admin/shell/routes"
 import type { Paginated } from "@/lib/api/types"
-import type {
-  AdminWithdrawal,
-  ListWithdrawalsParams,
-  WithdrawalStatus,
-} from "../types"
+import { formatDate, formatNaira } from "@/lib/format"
+import type { AdminWithdrawal } from "../types"
+import { WITHDRAWAL_STATUS } from "../utils/status"
+
+const COLUMNS: Column<AdminWithdrawal>[] = [
+  {
+    id: "reference",
+    header: "Reference",
+    cell: (withdrawal) => (
+      <Link
+        href={withdrawalPath(withdrawal.id)}
+        className="font-mono text-xs font-medium underline-offset-4 hover:underline"
+      >
+        {withdrawal.reference}
+      </Link>
+    ),
+  },
+  {
+    id: "user",
+    header: "Who",
+    cell: (withdrawal) => <UserCell user={withdrawal.user} size="sm" />,
+  },
+  {
+    id: "amount",
+    header: "Amount",
+    align: "end",
+    className: "tabular-nums",
+    cell: (withdrawal) => formatNaira(withdrawal.amount),
+  },
+  {
+    id: "status",
+    header: "Status",
+    cell: (withdrawal) => (
+      <StatusBadge status={WITHDRAWAL_STATUS[withdrawal.status]} />
+    ),
+  },
+  {
+    id: "requested",
+    header: "Asked for",
+    className: "text-muted-foreground",
+    cell: (withdrawal) => formatDate(withdrawal.created_at),
+  },
+]
 
 export function WithdrawalsTable({
-  data,
-  params,
-  onParams,
+  query,
+  toolbar,
+  onPageChange,
 }: {
-  data: Paginated<AdminWithdrawal>
-  params: ListWithdrawalsParams
-  onParams: (patch: Partial<ListWithdrawalsParams>) => void
+  query: UseQueryResult<Paginated<AdminWithdrawal>>
+  toolbar: ReactNode
+  onPageChange: (page: number) => void
 }) {
-  const router = useRouter()
-  const [search, setSearch] = useState(params.q ?? "")
-
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <form
-          className="flex-1"
-          onSubmit={(event) => {
-            event.preventDefault()
-            onParams({ q: search.trim() || undefined, page: 1 })
-          }}
-        >
-          <Input
-            placeholder="Search name, handle or email…"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            className="max-w-xs"
-          />
-        </form>
-        <Select
-          value={params.status ?? "all"}
-          onValueChange={(value) =>
-            onParams({
-              status: !value || value === "all" ? undefined : (value as never),
-              page: 1,
-            })
-          }
-        >
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All status</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="success">Success</SelectItem>
-            <SelectItem value="failed">Failed</SelectItem>
-            <SelectItem value="reversed">Reversed</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <TableFrame
-        page={data.page}
-        perPage={data.per_page}
-        total={data.total}
-        onPageChange={(page) => onParams({ page })}
-      >
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Reference</TableHead>
-              <TableHead>User</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Requested</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.items.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={5}
-                  className="py-10 text-center text-sm text-muted-foreground"
-                >
-                  No withdrawals match these filters.
-                </TableCell>
-              </TableRow>
-            ) : (
-              data.items.map((withdrawal) => (
-                <TableRow
-                  key={withdrawal.id}
-                  className="cursor-pointer"
-                  onClick={() =>
-                    router.push(`/admin/withdrawals/${withdrawal.id}`)
-                  }
-                >
-                  <TableCell className="font-mono text-xs">
-                    {withdrawal.reference}
-                  </TableCell>
-                  <TableCell className="text-sm">
-                    {withdrawal.user.username
-                      ? `@${withdrawal.user.username}`
-                      : withdrawal.user.display_name}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {formatNaira(withdrawal.amount)}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={STATUS_VARIANT[withdrawal.status]}>
-                      {withdrawal.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {formatDate(withdrawal.created_at)}
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableFrame>
-    </div>
+    <QueryTable
+      query={query}
+      what="withdrawals"
+      columns={COLUMNS}
+      rowKey={(withdrawal) => withdrawal.id}
+      empty="No withdrawals match these filters."
+      toolbar={toolbar}
+      onPageChange={onPageChange}
+    />
   )
 }

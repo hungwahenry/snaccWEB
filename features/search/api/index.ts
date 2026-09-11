@@ -1,7 +1,7 @@
 import { api } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
 import type { FollowUser } from "@/features/follows/types"
-import type { SearchHashtag } from "@/features/hashtags/types"
+import type { Hashtag } from "@/features/hashtags/types"
 import type { Snacc } from "@/features/snaccs/types"
 
 export function searchUsers(
@@ -21,6 +21,6 @@ export function searchSnaccs(
 export function searchHashtags(
   q: string,
   page: number
-): Promise<Paginated<SearchHashtag>> {
-  return api.get<Paginated<SearchHashtag>>("/search/hashtags", { q, page })
+): Promise<Paginated<Hashtag>> {
+  return api.get<Paginated<Hashtag>>("/search/hashtags", { q, page })
 }

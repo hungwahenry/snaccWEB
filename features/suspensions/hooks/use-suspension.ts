@@ -3,8 +3,9 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
-import { ME_KEY } from "@/lib/query-keys"
+import { authKeys } from "@/features/auth/utils/keys"
 import { getSuspension } from "../api"
+import { HOME_PATH } from "@/features/feed/routes"
 
 const SUSPENSION_KEY = ["me", "suspension"]
 
@@ -20,8 +21,8 @@ export function useSuspension() {
   const lapsed = query.isSuccess && query.data === null
   useEffect(() => {
     if (!lapsed) return
-    void queryClient.invalidateQueries({ queryKey: ME_KEY })
-    router.replace("/home")
+    void queryClient.invalidateQueries({ queryKey: authKeys.me() })
+    router.replace(HOME_PATH)
   }, [lapsed, queryClient, router])
 
   return query

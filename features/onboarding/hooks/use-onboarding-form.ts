@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { toast } from "sonner"
 import { useLogout } from "@/features/auth/hooks/use-logout"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { buildAvatarUrl } from "@/features/avatar/utils/dicebear"
@@ -10,10 +9,11 @@ import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { useUniversities } from "@/features/universities/hooks/use-universities"
 import type { University } from "@/features/universities/types"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
-import { getErrorMessage } from "@/lib/api/errors"
 import { pickImage, type PickedImage } from "@/lib/media"
 import { useCompleteProfile } from "./use-complete-profile"
 import { useUsernameField } from "./use-username-field"
+import { showErrorMessage } from "@/lib/feedback"
+import { HOME_PATH } from "@/features/feed/routes"
 
 const TOTAL_STEPS = 2
 
@@ -55,7 +55,7 @@ export function useOnboardingForm() {
       const picked = await pickImage()
       if (picked) setAvatar(picked)
     } catch {
-      toast.error("Could not read that image.")
+      showErrorMessage("Could not read that image.")
     }
   }
 
@@ -105,8 +105,7 @@ export function useOnboardingForm() {
         graduationYear: graduationYear ?? undefined,
       },
       {
-        onSuccess: () => router.replace("/home"),
-        onError: (error) => toast.error(getErrorMessage(error)),
+        onSuccess: () => router.replace(HOME_PATH),
       }
     )
   }

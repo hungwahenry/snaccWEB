@@ -11,11 +11,14 @@ export interface AuditLog {
   created_at: string
 }
 
-export interface ListAuditParams {
-  page?: number
-  perPage?: number
+export type AuditListQuery = {
+  page: number
+  perPage: number
+  q?: string
   action?: string
   targetType?: string
   targetId?: string
   adminId?: string
+  from?: string
+  to?: string
 }

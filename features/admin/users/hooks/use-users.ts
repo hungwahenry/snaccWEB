@@ -1,16 +1,13 @@
 "use client"
 
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { useMemo } from "react"
+import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
+import { plural } from "@/features/admin/shell/utils/format"
+import type { SuspensionDraft } from "@/features/admin/suspension-reasons/types"
+import { toSuspendInput } from "@/features/admin/suspension-reasons/utils/suspension"
 import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query"
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
-import {
-  adjustBalance,
+  adjustEarnings,
   blockPayouts,
   deleteUser,
   getUser,
@@ -22,137 +19,122 @@ import {
   revokeSessions,
   setUserUniversity,
   suspendUser,
-  type SuspendInput,
   unblockPayouts,
   unsuspendUser,
 } from "../api"
-import type { ListUsersParams } from "../types"
+import type { AdjustEarningsInput, UserActions, UserListQuery } from "../types"
+import { adminUserKeys } from "../utils/keys"
 
-export function useUsers(params: ListUsersParams) {
+export function useUsers(query: UserListQuery) {
   return useQuery({
-    queryKey: ["admin", "users", params],
-    queryFn: () => listUsers(params),
+    queryKey: adminUserKeys.list(query),
+    queryFn: () => listUsers(query),
     placeholderData: keepPreviousData,
   })
 }
 
 export function useUser(id: string) {
   return useQuery({
-    queryKey: ["admin", "user", id],
+    queryKey: adminUserKeys.detail(id),
     queryFn: () => getUser(id),
-    enabled: !!id,
   })
 }
 
-export function useUserMutations(id: string) {
-  const queryClient = useQueryClient()
-  const router = useRouter()
+export function useUserActions(id: string, onDeleted: () => void): UserActions {
+  const invalidates = [adminUserKeys.detail(id), adminUserKeys.lists()]
 
-  function invalidate() {
-    queryClient.invalidateQueries({ queryKey: ["admin", "users"] })
-    queryClient.invalidateQueries({ queryKey: ["admin", "user", id] })
-  }
-  function onError(error: unknown) {
-    toast.error(getErrorMessage(error))
-  }
+  const { run: suspend } = useAdminMutation({
+    mutationFn: ({ draft, note }: { draft: SuspensionDraft; note?: string }) =>
+      suspendUser(id, toSuspendInput(draft, note)),
+    success: "Account suspended.",
+    invalidates,
+  })
+  const { run: unsuspend } = useAdminMutation({
+    mutationFn: () => unsuspendUser(id),
+    success: "Suspension lifted.",
+    invalidates,
+  })
+  const { run: pause } = useAdminMutation({
+    mutationFn: (reason?: string) => pauseEarnings(id, reason),
+    success: "Earning paused.",
+    invalidates,
+  })
+  const { run: resume } = useAdminMutation({
+    mutationFn: () => resumeEarnings(id),
+    success: "Earning resumed.",
+    invalidates,
+  })
+  const { run: block } = useAdminMutation({
+    mutationFn: (reason?: string) => blockPayouts(id, reason),
+    success: "Withdrawals blocked.",
+    invalidates,
+  })
+  const { run: unblock } = useAdminMutation({
+    mutationFn: () => unblockPayouts(id),
+    success: "Withdrawals allowed again.",
+    invalidates,
+  })
+  const { run: postEverywhere } = useAdminMutation({
+    mutationFn: () => makeGlobal(id),
+    success: "Their snaccs now reach every campus.",
+    invalidates,
+  })
+  const { run: bindToCampus } = useAdminMutation({
+    mutationFn: () => makeCampusBound(id),
+    success: "Their snaccs now stay on their campus.",
+    invalidates,
+  })
+  const { run: moveCampus } = useAdminMutation({
+    mutationFn: (universityId: string) => setUserUniversity(id, universityId),
+    success: "Campus changed.",
+    invalidates,
+  })
+  const { run: adjust } = useAdminMutation({
+    mutationFn: (input: AdjustEarningsInput) => adjustEarnings(id, input),
+    success: "Unclaimed earnings adjusted.",
+    invalidates,
+  })
+  const { run: signOut } = useAdminMutation({
+    mutationFn: () => revokeSessions(id),
+    success: ({ revoked }) => `Signed out of ${plural(revoked, "device")}.`,
+    invalidates,
+  })
+  const { run: remove } = useAdminMutation({
+    mutationFn: (confirmEmail: string) => deleteUser(id, confirmEmail),
+    success: "Account deleted.",
+    invalidates: [adminUserKeys.lists()],
+    onSuccess: onDeleted,
+  })
 
-  return {
-    suspend: useMutation({
-      mutationFn: (input: SuspendInput) => suspendUser(id, input),
-      onSuccess: () => {
-        invalidate()
-        toast.success("User suspended.")
-      },
-      onError,
+  return useMemo(
+    () => ({
+      suspend: (draft: SuspensionDraft, note?: string) =>
+        suspend({ draft, note }),
+      unsuspend,
+      pause,
+      resume,
+      block,
+      unblock,
+      postEverywhere,
+      bindToCampus,
+      moveCampus,
+      adjust,
+      signOut,
+      remove,
     }),
-    unsuspend: useMutation({
-      mutationFn: () => unsuspendUser(id),
-      onSuccess: () => {
-        invalidate()
-        toast.success("User reinstated.")
-      },
-      onError,
-    }),
-    pauseEarnings: useMutation({
-      mutationFn: (reason?: string) => pauseEarnings(id, reason),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Earnings paused.")
-      },
-      onError,
-    }),
-    resumeEarnings: useMutation({
-      mutationFn: () => resumeEarnings(id),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Earnings resumed.")
-      },
-      onError,
-    }),
-    makeGlobal: useMutation({
-      mutationFn: () => makeGlobal(id),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Posts now reach every campus.")
-      },
-      onError,
-    }),
-    makeCampusBound: useMutation({
-      mutationFn: () => makeCampusBound(id),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Posts now reach this campus only.")
-      },
-      onError,
-    }),
-    blockPayouts: useMutation({
-      mutationFn: (reason?: string) => blockPayouts(id, reason),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Payouts blocked.")
-      },
-      onError,
-    }),
-    unblockPayouts: useMutation({
-      mutationFn: () => unblockPayouts(id),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Payouts unblocked.")
-      },
-      onError,
-    }),
-    balance: useMutation({
-      mutationFn: (input: { delta: number; reason?: string }) =>
-        adjustBalance(id, input.delta, input.reason),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Balance adjusted.")
-      },
-      onError,
-    }),
-    revoke: useMutation({
-      mutationFn: () => revokeSessions(id),
-      onSuccess: (result) => {
-        invalidate()
-        toast.success(`Revoked ${result.revoked} session(s).`)
-      },
-      onError,
-    }),
-    setUniversity: useMutation({
-      mutationFn: (universityId: string) => setUserUniversity(id, universityId),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Campus updated.")
-      },
-      onError,
-    }),
-    remove: useMutation({
-      mutationFn: (confirmEmail: string) => deleteUser(id, confirmEmail),
-      onSuccess: () => {
-        toast.success("User deleted.")
-        router.replace("/admin/users")
-      },
-      onError,
-    }),
-  }
+    [
+      suspend,
+      unsuspend,
+      pause,
+      resume,
+      block,
+      unblock,
+      postEverywhere,
+      bindToCampus,
+      moveCampus,
+      adjust,
+      signOut,
+      remove,
+    ]
+  )
 }

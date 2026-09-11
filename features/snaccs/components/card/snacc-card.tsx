@@ -20,6 +20,7 @@ import { QuotedTombstone } from "./quote/quoted-tombstone"
 import { SnaccActions } from "./snacc-actions"
 import { SnaccBody } from "./snacc-body"
 import { SnaccPendingBar } from "./snacc-pending-bar"
+import { nameOf } from "@/features/users/utils/names"
 
 export type SnaccActionHandlers = {
   onReact: (snacc: Snacc, emoji: string) => void
@@ -100,7 +101,7 @@ function SnaccCardComponent(props: SnaccCardProps) {
       className="shrink-0"
     >
       <UserAvatar
-        alt={author.display_name ?? "Snacc author"}
+        alt={nameOf(author)}
         avatarUrl={author.avatar_url}
         name={author.username}
       />

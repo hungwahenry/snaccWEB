@@ -1,110 +1,32 @@
 "use client"
 
-import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
+import type { UseQueryResult } from "@tanstack/react-query"
 import Link from "next/link"
-import { useState } from "react"
-import { TableFrame } from "@/components/data-table/table-frame"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useMemo, type ReactNode } from "react"
 import { Badge } from "@/components/ui/badge"
-import { CanAct } from "@/features/admin/auth/components/can"
 import { Button } from "@/components/ui/button"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
+import { ActionButton } from "@/features/admin/shell/components/action-button"
+import { ConfirmAction } from "@/features/admin/shell/components/confirm-action"
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Field, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { Textarea } from "@/components/ui/textarea"
-import { formatDate, formatNumber } from "@/lib/format"
+  HiddenHeader,
+  type Column,
+} from "@/features/admin/shell/components/data-table"
+import { QueryTable } from "@/features/admin/shell/components/query-table"
+import { StatusBadge } from "@/features/admin/shell/components/status-badge"
+import { UserCell } from "@/features/admin/shell/components/user-cell"
+import { snaccPath } from "@/features/admin/shell/routes"
 import type { Paginated } from "@/lib/api/types"
-import type { useSnaccMutations } from "../hooks/use-snaccs"
-import type { AdminSnacc, ListSnaccsParams } from "../types"
+import { formatDate } from "@/lib/format"
+import type { AdminSnacc, SnaccActions } from "../types"
+import { engagementLine, snaccPreview, snaccStatus } from "../utils/snaccs"
 
-type Mutations = ReturnType<typeof useSnaccMutations>
-
-function DeleteDialog({
+function RowActions({
   snacc,
   actions,
 }: {
   snacc: AdminSnacc
-  actions: Mutations
-}) {
-  const [open, setOpen] = useState(false)
-  const [reason, setReason] = useState("")
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          <Button variant="outline" size="sm">
-            Remove
-          </Button>
-        }
-      />
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Remove snacc</DialogTitle>
-        </DialogHeader>
-        <p className="text-sm text-muted-foreground">
-          This is permanent. Replies go with it, the author&apos;s counts
-          unwind, and what it earned is retracted. To take it out of sight
-          reversibly, hold it instead.
-        </p>
-        <Field>
-          <FieldLabel>Reason (optional)</FieldLabel>
-          <Textarea
-            value={reason}
-            onChange={(event) => setReason(event.target.value)}
-            rows={3}
-            maxLength={500}
-          />
-        </Field>
-        <DialogFooter>
-          <DialogClose render={<Button variant="ghost">Cancel</Button>} />
-          <Button
-            variant="destructive"
-            disabled={actions.remove.isPending}
-            onClick={() =>
-              actions.remove.mutate(
-                { id: snacc.id, reason: reason.trim() || undefined },
-                { onSuccess: () => setOpen(false) }
-              )
-            }
-          >
-            Remove
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-function SnaccActions({
-  snacc,
-  actions,
-}: {
-  snacc: AdminSnacc
-  actions: Mutations
+  actions: SnaccActions
 }) {
   if (snacc.deleted_at) {
     return <span className="text-sm text-muted-foreground">Removed</span>
@@ -113,207 +35,140 @@ function SnaccActions({
     return (
       <CanAct permission="snaccs.hold">
         <ConfirmAction
-          label="Release"
-          confirmVariant="default"
+          trigger={
+            <Button variant="outline" size="sm">
+              Release
+            </Button>
+          }
+          tone="default"
           title="Put this snacc back?"
           description="It becomes visible in every feed again, replies included."
           confirmLabel="Release it"
-          pending={actions.release.isPending}
-          onConfirm={(close) =>
-            actions.release.mutate(snacc.id, { onSuccess: close })
-          }
+          onConfirm={() => actions.release(snacc.id)}
         />
       </CanAct>
     )
   }
+
   return (
     <div className="flex justify-end gap-2">
       <CanAct permission="snaccs.hold">
         <ConfirmAction
-          label="Hold"
-          variant="ghost"
+          trigger={
+            <Button variant="ghost" size="sm">
+              Hold
+            </Button>
+          }
           title="Hold this snacc?"
           description="It is hidden from every feed while you decide, and its replies go with it. Nothing is deleted."
           confirmLabel="Hold it"
-          pending={actions.hold.isPending}
-          onConfirm={(close) =>
-            actions.hold.mutate({ id: snacc.id }, { onSuccess: close })
-          }
+          onConfirm={() => actions.hold(snacc.id)}
         />
       </CanAct>
-      <Button
+      <ActionButton
         variant="ghost"
         size="sm"
-        disabled={actions.pin.isPending || actions.unpin.isPending}
         onClick={() =>
-          snacc.pinned
-            ? actions.unpin.mutate(snacc.id)
-            : actions.pin.mutate(snacc.id)
+          snacc.pinned ? actions.unpin(snacc.id) : actions.pin(snacc.id)
         }
       >
         {snacc.pinned ? "Unpin" : "Pin"}
-      </Button>
-      <DeleteDialog snacc={snacc} actions={actions} />
+      </ActionButton>
+      <ConfirmAction
+        trigger={
+          <Button variant="outline" size="sm">
+            Remove
+          </Button>
+        }
+        title="Remove snacc"
+        description="This is permanent. Replies go with it, the author's counts unwind, and what it earned is retracted. To take it out of sight reversibly, hold it instead."
+        confirmLabel="Remove"
+        reason={{ label: "Reason" }}
+        onConfirm={(reason) => actions.remove(snacc.id, reason)}
+      />
     </div>
   )
 }
 
-function preview(snacc: AdminSnacc) {
-  if (snacc.body) return snacc.body
-  if (snacc.images.length) return `${snacc.images.length} image(s)`
-  if (snacc.gif) return "GIF"
-  return "—"
-}
-
 export function SnaccsTable({
-  data,
-  params,
-  onParams,
+  query,
+  toolbar,
+  onPageChange,
   actions,
 }: {
-  data: Paginated<AdminSnacc>
-  params: ListSnaccsParams
-  onParams: (patch: Partial<ListSnaccsParams>) => void
-  actions: Mutations
+  query: UseQueryResult<Paginated<AdminSnacc>>
+  toolbar: ReactNode
+  onPageChange: (page: number) => void
+  actions: SnaccActions
 }) {
-  const [search, setSearch] = useState(params.q ?? "")
-  const deletedValue =
-    params.deleted === true
-      ? "deleted"
-      : params.deleted === false
-        ? "live"
-        : "all"
+  const columns = useMemo<Column<AdminSnacc>[]>(
+    () => [
+      {
+        id: "author",
+        header: "Author",
+        cell: (snacc) => <UserCell user={snacc.author} />,
+      },
+      {
+        id: "content",
+        header: "Content",
+        className: "max-w-xs",
+        cell: (snacc) => (
+          <>
+            <Link
+              href={snaccPath(snacc.id)}
+              className="block truncate text-sm font-medium underline-offset-4 hover:underline"
+            >
+              {snaccPreview(snacc)}
+            </Link>
+            <p className="text-xs text-muted-foreground">
+              {formatDate(snacc.created_at)}
+            </p>
+          </>
+        ),
+      },
+      {
+        id: "engagement",
+        header: "Engagement",
+        align: "end",
+        className: "text-xs text-muted-foreground tabular-nums",
+        cell: (snacc) => engagementLine(snacc),
+      },
+      {
+        id: "reports",
+        header: "Reports",
+        align: "end",
+        className: "tabular-nums",
+        cell: (snacc) =>
+          snacc.reports_count > 0 ? (
+            <Badge variant="destructive">{snacc.reports_count}</Badge>
+          ) : (
+            <span className="text-muted-foreground">0</span>
+          ),
+      },
+      {
+        id: "status",
+        header: "Status",
+        cell: (snacc) => <StatusBadge status={snaccStatus(snacc)} />,
+      },
+      {
+        id: "actions",
+        header: <HiddenHeader>Actions</HiddenHeader>,
+        align: "end",
+        cell: (snacc) => <RowActions snacc={snacc} actions={actions} />,
+      },
+    ],
+    [actions]
+  )
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <form
-          className="flex-1"
-          onSubmit={(event) => {
-            event.preventDefault()
-            onParams({ q: search.trim() || undefined, page: 1 })
-          }}
-        >
-          <Input
-            placeholder="Search snacc text…"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            className="max-w-xs"
-          />
-        </form>
-        <Select
-          value={deletedValue}
-          onValueChange={(value) =>
-            onParams({
-              deleted:
-                !value || value === "all" ? undefined : value === "deleted",
-              page: 1,
-            })
-          }
-        >
-          <SelectTrigger className="w-36">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All snaccs</SelectItem>
-            <SelectItem value="live">Live</SelectItem>
-            <SelectItem value="deleted">Removed</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <TableFrame
-        page={data.page}
-        perPage={data.per_page}
-        total={data.total}
-        onPageChange={(page) => onParams({ page })}
-      >
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Author</TableHead>
-              <TableHead>Content</TableHead>
-              <TableHead className="text-right">Engagement</TableHead>
-              <TableHead className="text-right">Reports</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.items.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="py-10 text-center text-sm text-muted-foreground"
-                >
-                  No snaccs match these filters.
-                </TableCell>
-              </TableRow>
-            ) : (
-              data.items.map((snacc) => (
-                <TableRow key={snacc.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Avatar className="size-7">
-                        <AvatarImage src={snacc.author.avatar_url} alt="" />
-                        <AvatarFallback>
-                          {(
-                            snacc.author.display_name ||
-                            snacc.author.username ||
-                            "?"
-                          )
-                            .slice(0, 2)
-                            .toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="text-sm">
-                        {snacc.author.username
-                          ? `@${snacc.author.username}`
-                          : snacc.author.display_name}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="max-w-xs">
-                    <Link
-                      href={`/admin/snaccs/${snacc.id}`}
-                      className="block truncate text-sm font-medium underline-offset-4 hover:underline"
-                    >
-                      {preview(snacc)}
-                    </Link>
-                    <p className="text-xs text-muted-foreground">
-                      {formatDate(snacc.created_at)}
-                    </p>
-                  </TableCell>
-                  <TableCell className="text-right text-xs text-muted-foreground tabular-nums">
-                    {formatNumber(snacc.reactions_count)} rx ·{" "}
-                    {formatNumber(snacc.comments_count)} co ·{" "}
-                    {formatNumber(snacc.views_count)} vw
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {snacc.reports_count > 0 ? (
-                      <Badge variant="destructive">{snacc.reports_count}</Badge>
-                    ) : (
-                      <span className="text-muted-foreground">0</span>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {snacc.deleted_at ? (
-                      <Badge variant="destructive">removed</Badge>
-                    ) : snacc.pinned ? (
-                      <Badge variant="secondary">pinned</Badge>
-                    ) : (
-                      <Badge variant="outline">live</Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <SnaccActions snacc={snacc} actions={actions} />
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableFrame>
-    </div>
+    <QueryTable
+      query={query}
+      what="snaccs"
+      columns={columns}
+      rowKey={(snacc) => snacc.id}
+      empty="No snaccs match these filters."
+      toolbar={toolbar}
+      onPageChange={onPageChange}
+    />
   )
 }

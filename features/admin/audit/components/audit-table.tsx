@@ -1,149 +1,118 @@
 "use client"
 
-import { useState } from "react"
-import { TableFrame } from "@/components/data-table/table-frame"
+import type { UseQueryResult } from "@tanstack/react-query"
+import Link from "next/link"
+import type { ReactNode } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { formatDate } from "@/lib/format"
+  HiddenHeader,
+  type Column,
+} from "@/features/admin/shell/components/data-table"
+import { QueryTable } from "@/features/admin/shell/components/query-table"
+import { userPath } from "@/features/admin/shell/routes"
+import { humanize, shortId } from "@/features/admin/shell/utils/format"
 import type { Paginated } from "@/lib/api/types"
-import type { AuditLog, ListAuditParams } from "../types"
+import { formatDate } from "@/lib/format"
+import { cn } from "@/lib/utils"
+import type { AuditLog } from "../types"
+import {
+  actionLabel,
+  adminLabel,
+  hasSnapshot,
+  targetHref,
+} from "../utils/audit"
+import { AuditChangeDialog } from "./audit-change-dialog"
 
-function DiffDialog({ log }: { log: AuditLog }) {
+const LINK = "underline-offset-4 hover:underline"
+
+function Target({ log }: { log: AuditLog }) {
+  const href = targetHref(log)
+  const id = log.target_id
+
   return (
-    <Dialog>
-      <DialogTrigger
-        render={
-          <Button variant="ghost" size="sm">
-            View
-          </Button>
-        }
-      />
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="font-mono text-sm">{log.action}</DialogTitle>
-        </DialogHeader>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <div className="mb-1 text-xs font-medium text-muted-foreground">
-              Before
-            </div>
-            <pre className="max-h-80 overflow-auto rounded-lg bg-muted p-3 text-xs">
-              {JSON.stringify(log.before, null, 2)}
-            </pre>
-          </div>
-          <div>
-            <div className="mb-1 text-xs font-medium text-muted-foreground">
-              After
-            </div>
-            <pre className="max-h-80 overflow-auto rounded-lg bg-muted p-3 text-xs">
-              {JSON.stringify(log.after, null, 2)}
-            </pre>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+    <div className="flex min-w-0 items-center gap-2">
+      <Badge variant="outline">{humanize(log.target_type)}</Badge>
+      {id === null ? null : href ? (
+        <Link href={href} title={id} className={cn("font-mono text-xs", LINK)}>
+          {shortId(id)}
+        </Link>
+      ) : (
+        <span title={id} className="font-mono text-xs text-muted-foreground">
+          {shortId(id)}
+        </span>
+      )}
+    </div>
   )
 }
 
-export function AuditTable({
-  data,
-  params,
-  onParams,
-}: {
-  data: Paginated<AuditLog>
-  params: ListAuditParams
-  onParams: (patch: Partial<ListAuditParams>) => void
-}) {
-  const [action, setAction] = useState(params.action ?? "")
-
-  return (
-    <div className="flex flex-col gap-4">
-      <form
-        onSubmit={(event) => {
-          event.preventDefault()
-          onParams({ action: action.trim() || undefined, page: 1 })
-        }}
-      >
-        <Input
-          placeholder="Filter by action, e.g. user.suspend"
-          value={action}
-          onChange={(event) => setAction(event.target.value)}
-          className="max-w-xs"
+const COLUMNS: Column<AuditLog>[] = [
+  {
+    id: "action",
+    header: "Action",
+    cell: (log) => (
+      <div className="min-w-0">
+        <p className="font-medium">{actionLabel(log.action)}</p>
+        <p className="font-mono text-xs text-muted-foreground">{log.action}</p>
+      </div>
+    ),
+  },
+  {
+    id: "admin",
+    header: "Admin",
+    cell: (log) => (
+      <Link href={userPath(log.admin_id)} className={cn("text-sm", LINK)}>
+        {adminLabel(log)}
+      </Link>
+    ),
+  },
+  {
+    id: "target",
+    header: "Target",
+    cell: (log) => <Target log={log} />,
+  },
+  {
+    id: "when",
+    header: "When",
+    className: "text-muted-foreground",
+    cell: (log) => formatDate(log.created_at),
+  },
+  {
+    id: "detail",
+    header: <HiddenHeader>Before and after</HiddenHeader>,
+    align: "end",
+    cell: (log) =>
+      hasSnapshot(log) ? (
+        <AuditChangeDialog
+          log={log}
+          trigger={
+            <Button variant="ghost" size="sm">
+              View change
+            </Button>
+          }
         />
-      </form>
-      <TableFrame
-        page={data.page}
-        perPage={data.per_page}
-        total={data.total}
-        onPageChange={(page) => onParams({ page })}
-      >
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Action</TableHead>
-              <TableHead>Admin</TableHead>
-              <TableHead>Target</TableHead>
-              <TableHead>When</TableHead>
-              <TableHead className="text-right">Detail</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.items.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={5}
-                  className="py-10 text-center text-sm text-muted-foreground"
-                >
-                  No audit entries.
-                </TableCell>
-              </TableRow>
-            ) : (
-              data.items.map((log) => (
-                <TableRow key={log.id}>
-                  <TableCell className="font-mono text-xs">
-                    {log.action}
-                  </TableCell>
-                  <TableCell className="text-sm">
-                    {log.admin_username
-                      ? `@${log.admin_username}`
-                      : log.admin_email}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{log.target_type}</Badge>
-                    {log.target_id && (
-                      <span className="ml-2 font-mono text-xs text-muted-foreground">
-                        {log.target_id.slice(0, 8)}…
-                      </span>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {formatDate(log.created_at)}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DiffDialog log={log} />
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableFrame>
-    </div>
+      ) : null,
+  },
+]
+
+export function AuditTable({
+  query,
+  toolbar,
+  onPageChange,
+}: {
+  query: UseQueryResult<Paginated<AuditLog>>
+  toolbar: ReactNode
+  onPageChange: (page: number) => void
+}) {
+  return (
+    <QueryTable
+      query={query}
+      what="the audit log"
+      columns={COLUMNS}
+      rowKey={(log) => log.id}
+      empty="Nothing in the log matches that."
+      toolbar={toolbar}
+      onPageChange={onPageChange}
+    />
   )
 }

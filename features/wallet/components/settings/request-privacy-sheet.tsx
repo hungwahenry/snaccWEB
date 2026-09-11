@@ -1,20 +1,7 @@
 import { CheckIcon } from "lucide-react"
 import { ActionSheet } from "@/components/ui/action-sheet"
 import type { MoneyRequestPrivacy } from "@/features/users/types"
-
-const OPTIONS: { value: MoneyRequestPrivacy; label: string; hint: string }[] = [
-  {
-    value: "everyone",
-    label: "Everyone",
-    hint: "Anyone on Snacc can ask you for money",
-  },
-  {
-    value: "following",
-    label: "People you follow",
-    hint: "Only people you follow can ask",
-  },
-  { value: "nobody", label: "No one", hint: "Money requests to you are off" },
-]
+import { REQUEST_PRIVACY_OPTIONS } from "../../utils/settings"
 
 export function RequestPrivacySheet({
   open,
@@ -34,7 +21,7 @@ export function RequestPrivacySheet({
       title="Who can ask you for money?"
       className="px-4"
     >
-      {OPTIONS.map((option) => (
+      {REQUEST_PRIVACY_OPTIONS.map((option) => (
         <button
           key={option.value}
           type="button"

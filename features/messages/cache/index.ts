@@ -1,49 +1,52 @@
-import type { Paginated } from "@/lib/api/types"
-import { getQueryClient } from "@/lib/query-client"
-import type { InfiniteData } from "@tanstack/react-query"
-import type { Message } from "../types"
-import { CONVERSATIONS_KEY, messagesKey } from "../utils/keys"
+import type { PaginatedPages } from "@/lib/api/types"
+import { getQueryClient } from "@/lib/query/client"
+import { filterItems, findItem, mapItems, prependItem } from "@/lib/query/pages"
+import type { Conversation, Message } from "../types"
+import { messageKeys } from "../utils/keys"
 
-type MessagePages = InfiniteData<Paginated<Message>>
+type MessagePages = PaginatedPages<Message>
+type ConversationPages = PaginatedPages<Conversation>
 
 const client = () => getQueryClient()
 
-function patchThread(
+function readThread(conversationId: string): MessagePages | undefined {
+  return client().getQueryData<MessagePages>(messageKeys.thread(conversationId))
+}
+
+function changeThread(
   conversationId: string,
-  patch: (data: MessagePages) => MessagePages
+  change: (data: MessagePages | undefined) => MessagePages | undefined
 ): void {
-  client().setQueryData<MessagePages>(messagesKey(conversationId), (data) =>
-    data ? patch(data) : data
+  client().setQueryData<MessagePages>(
+    messageKeys.thread(conversationId),
+    change
   )
 }
 
-function refreshList(): void {
-  void client().invalidateQueries({ queryKey: CONVERSATIONS_KEY })
+/** The inbox orders and previews by the latest message, so any change to a thread refreshes it. */
+export function inboxChanged(): void {
+  void client().invalidateQueries({ queryKey: messageKeys.conversationLists() })
 }
 
+export function unreadChanged(): void {
+  void client().invalidateQueries({ queryKey: messageKeys.unread() })
+}
+
+export function findMessage(
+  conversationId: string,
+  id: string
+): Message | undefined {
+  return findItem(readThread(conversationId), (message) => message.id === id)
+}
+
+/** Puts a message at the bottom of the thread, or updates it in place if it is already there. */
 export function prependMessage(conversationId: string, message: Message): void {
-  patchThread(conversationId, (data) => {
-    if (
-      data.pages.some((page) => page.items.some((m) => m.id === message.id))
-    ) {
-      return {
-        ...data,
-        pages: data.pages.map((page) => ({
-          ...page,
-          items: page.items.map((m) => (m.id === message.id ? message : m)),
-        })),
-      }
-    }
-    return {
-      ...data,
-      pages: data.pages.map((page, index) =>
-        index === 0
-          ? { ...page, items: [message, ...page.items], total: page.total + 1 }
-          : page
-      ),
-    }
-  })
-  refreshList()
+  changeThread(conversationId, (data) =>
+    findItem(data, (m) => m.id === message.id)
+      ? mapItems(data, (m) => (m.id === message.id ? message : m))
+      : prependItem(data, message)
+  )
+  inboxChanged()
 }
 
 export function swapMessage(
@@ -51,14 +54,10 @@ export function swapMessage(
   id: string,
   message: Message
 ): void {
-  patchThread(conversationId, (data) => ({
-    ...data,
-    pages: data.pages.map((page) => ({
-      ...page,
-      items: page.items.map((m) => (m.id === id ? message : m)),
-    })),
-  }))
-  refreshList()
+  changeThread(conversationId, (data) =>
+    mapItems(data, (m) => (m.id === id ? message : m))
+  )
+  inboxChanged()
 }
 
 export function replaceMessage(conversationId: string, message: Message): void {
@@ -70,75 +69,91 @@ export function patchMessage(
   id: string,
   patch: (message: Message) => Message
 ): void {
-  patchThread(conversationId, (data) => ({
-    ...data,
-    pages: data.pages.map((page) => ({
-      ...page,
-      items: page.items.map((m) => (m.id === id ? patch(m) : m)),
-    })),
-  }))
-}
-
-export function markPhotoOpened(conversationId: string, photoId: string): void {
-  patchThread(conversationId, (data) => ({
-    ...data,
-    pages: data.pages.map((page) => ({
-      ...page,
-      items: page.items.map((message) =>
-        message.images.some((image) => image.id === photoId)
-          ? {
-              ...message,
-              images: message.images.map((image) =>
-                image.id === photoId ? { ...image, opened: true } : image
-              ),
-            }
-          : message
-      ),
-    })),
-  }))
-}
-
-function pages(conversationId: string): MessagePages | undefined {
-  return client().getQueryData<MessagePages>(messagesKey(conversationId))
-}
-
-export function findMessage(
-  conversationId: string,
-  id: string
-): Message | undefined {
-  return pages(conversationId)
-    ?.pages.flatMap((page) => page.items)
-    .find((message) => message.id === id)
-}
-
-function hasMessage(conversationId: string, id: string): boolean {
-  return Boolean(
-    pages(conversationId)?.pages.some((page) =>
-      page.items.some((m) => m.id === id)
-    )
+  changeThread(conversationId, (data) =>
+    mapItems(data, (m) => (m.id === id ? patch(m) : m))
   )
 }
 
+export function removeMessage(conversationId: string, id: string): void {
+  changeThread(conversationId, (data) => filterItems(data, (m) => m.id !== id))
+  inboxChanged()
+}
+
+/** Settles a sent message; drops the stand-in if the real one already arrived over the socket. */
 export function settleMessage(
   conversationId: string,
   sentId: string,
   real: Message
 ): void {
-  if (sentId !== real.id && hasMessage(conversationId, real.id)) {
+  if (sentId !== real.id && findMessage(conversationId, real.id)) {
     removeMessage(conversationId, sentId)
     return
   }
   swapMessage(conversationId, sentId, real)
 }
 
-export function removeMessage(conversationId: string, id: string): void {
-  patchThread(conversationId, (data) => ({
-    ...data,
-    pages: data.pages.map((page) => ({
-      ...page,
-      items: page.items.filter((m) => m.id !== id),
-      total: Math.max(0, page.total - 1),
-    })),
-  }))
-  refreshList()
+export function markPhotoOpened(conversationId: string, photoId: string): void {
+  changeThread(conversationId, (data) =>
+    mapItems(data, (message) =>
+      message.images.some((image) => image.id === photoId)
+        ? {
+            ...message,
+            images: message.images.map((image) =>
+              image.id === photoId ? { ...image, opened: true } : image
+            ),
+          }
+        : message
+    )
+  )
+}
+
+export function setConversation(conversation: Conversation): void {
+  client().setQueryData(messageKeys.conversation(conversation.id), conversation)
+  inboxChanged()
+}
+
+export function conversationChanged(id: string): void {
+  void client().invalidateQueries({ queryKey: messageKeys.conversation(id) })
+  inboxChanged()
+}
+
+export function setPeerRead(conversationId: string, readAt: string): void {
+  client().setQueryData<Conversation>(
+    messageKeys.conversation(conversationId),
+    (current) => (current ? { ...current, peer_read_at: readAt } : current)
+  )
+}
+
+/** Clears a thread's unread mark everywhere it shows, and takes it off the unread count at once. */
+export function markConversationSeen(conversationId: string): void {
+  const queryClient = client()
+  const lists = queryClient.getQueriesData<ConversationPages>({
+    queryKey: messageKeys.conversationLists(),
+  })
+  const wasUnread =
+    queryClient.getQueryData<Conversation>(
+      messageKeys.conversation(conversationId)
+    )?.has_unread === true ||
+    lists.some(
+      ([, data]) =>
+        findItem(data, (c) => c.id === conversationId)?.has_unread === true
+    )
+
+  const seen = (c: Conversation) =>
+    c.id === conversationId && c.has_unread ? { ...c, has_unread: false } : c
+
+  queryClient.setQueriesData<ConversationPages>(
+    { queryKey: messageKeys.conversationLists() },
+    (data) => mapItems(data, seen)
+  )
+  queryClient.setQueryData<Conversation>(
+    messageKeys.conversation(conversationId),
+    (current) => current && seen(current)
+  )
+
+  if (wasUnread) {
+    queryClient.setQueryData<number>(messageKeys.unread(), (count) =>
+      count === undefined ? count : Math.max(0, count - 1)
+    )
+  }
 }

@@ -5,6 +5,7 @@ import { useState } from "react"
 import { useInfiniteList } from "@/hooks/use-infinite-list"
 import { getReactionSummary, listReactions } from "../../api"
 import type { Snacc } from "../../types"
+import { snaccKeys } from "../../utils/keys"
 
 export function useBreakdownSheet() {
   const [viewing, setViewing] = useState<Snacc | null>(null)
@@ -13,12 +14,12 @@ export function useBreakdownSheet() {
   const snaccId = viewing?.id ?? null
 
   const summary = useQuery({
-    queryKey: ["snaccs", snaccId, "reactions", "summary"],
+    queryKey: snaccKeys.reactionSummary(snaccId ?? ""),
     queryFn: () => getReactionSummary(snaccId!),
     enabled: snaccId !== null && open,
   })
   const reactors = useInfiniteList(
-    ["snaccs", snaccId, "reactions", filter],
+    snaccKeys.reactors(snaccId ?? "", filter),
     (page) => listReactions(snaccId!, filter ?? undefined, page),
     { enabled: snaccId !== null && open }
   )

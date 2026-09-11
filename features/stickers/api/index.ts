@@ -1,8 +1,11 @@
-import type { Gif } from "@/features/giphy/types"
 import { api } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
 import { appendImage, type PickedImage } from "@/lib/media"
 import type { Sticker } from "../types"
+
+export function listStickers(page: number): Promise<Paginated<Sticker>> {
+  return api.get<Paginated<Sticker>>("/stickers", { page })
+}
 
 export function createSticker(image: PickedImage): Promise<Sticker> {
   const form = new FormData()
@@ -10,26 +13,24 @@ export function createSticker(image: PickedImage): Promise<Sticker> {
   return api.upload<Sticker>("/stickers", form)
 }
 
-export const deleteSticker = (id: string) => api.del<void>(`/stickers/${id}`)
+export function deleteSticker(id: string): Promise<void> {
+  return api.del<void>(`/stickers/${encodeURIComponent(id)}`)
+}
 
-export const listStickers = (page: number) =>
-  api.get<Paginated<Sticker>>("/stickers", { page })
+export function saveGiphySticker(giphyId: string): Promise<Sticker> {
+  return api.post<Sticker>("/stickers/giphy", { giphyId })
+}
 
-export const saveGiphySticker = (giphyId: string) =>
-  api.post<Sticker>("/stickers/giphy", { giphyId })
+export function saveMessageSticker(messageId: string): Promise<Sticker> {
+  return api.post<Sticker>("/stickers/from-message", { messageId })
+}
 
-export const saveMessageSticker = (messageId: string) =>
-  api.post<Sticker>("/stickers/from-message", { messageId })
+export function saveChatMessageSticker(
+  chatMessageId: string
+): Promise<Sticker> {
+  return api.post<Sticker>("/stickers/from-chat-message", { chatMessageId })
+}
 
-export const saveSnaccSticker = (snaccId: string) =>
-  api.post<Sticker>("/stickers/from-snacc", { snaccId })
-
-export const searchStickers = (params: {
-  query: string
-  limit?: number
-  offset?: number
-}) => api.get<Gif[]>("/stickers/giphy/search", params)
-
-export const trendingStickers = (
-  params: { limit?: number; offset?: number } = {}
-) => api.get<Gif[]>("/stickers/giphy/trending", params)
+export function saveSnaccSticker(snaccId: string): Promise<Sticker> {
+  return api.post<Sticker>("/stickers/from-snacc", { snaccId })
+}

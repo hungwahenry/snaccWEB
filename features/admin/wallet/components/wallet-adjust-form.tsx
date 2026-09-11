@@ -1,27 +1,32 @@
 "use client"
 
 import { useState } from "react"
-import { Section } from "@/features/admin/shell/ui/detail"
-import { CanAct } from "@/features/admin/auth/components/can"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import type { useWalletMutations } from "../hooks/use-wallet"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
+import { ActionButton } from "@/features/admin/shell/components/action-button"
+import { Section } from "@/features/admin/shell/components/detail"
+import { TextField } from "@/features/admin/shell/components/form-fields"
+import { previewAdjustment } from "@/features/admin/shell/utils/money"
+import type { AdjustWalletInput } from "../types"
+import { ADJUST_REASON_MAX, adjustHint, toAdjustInput } from "../utils/wallet"
 
 export function WalletAdjustForm({
-  actions,
+  balance,
+  onSubmit,
 }: {
-  actions: ReturnType<typeof useWalletMutations>
+  balance: number
+  onSubmit: (input: AdjustWalletInput) => Promise<unknown>
 }) {
-  const [delta, setDelta] = useState("")
+  const [amount, setAmount] = useState("")
   const [reason, setReason] = useState("")
+  const preview = previewAdjustment(balance, amount)
+  const input = toAdjustInput(preview, reason)
 
-  const kobo = Math.round(Number(delta) * 100)
-  const ready =
-    delta.trim().length > 0 &&
-    Number.isFinite(kobo) &&
-    kobo !== 0 &&
-    reason.trim().length > 0
+  async function submit() {
+    if (!input) return
+    await onSubmit(input)
+    setAmount("")
+    setReason("")
+  }
 
   return (
     <Section
@@ -29,42 +34,25 @@ export function WalletAdjustForm({
       description="Posts against the adjustments pool, so the entries still explain the balance."
     >
       <div className="flex flex-col gap-3 rounded-lg border p-4">
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="delta">Amount in naira</Label>
-          <Input
-            id="delta"
-            inputMode="decimal"
-            placeholder="-500 to take money back"
-            value={delta}
-            onChange={(event) => setDelta(event.target.value)}
-          />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="reason">Reason</Label>
-          <Input
-            id="reason"
-            placeholder="Why this is being moved"
-            value={reason}
-            onChange={(event) => setReason(event.target.value)}
-          />
-        </div>
+        <TextField
+          label="Amount in naira"
+          inputMode="decimal"
+          placeholder="-500 to take money back"
+          value={amount}
+          onChange={(event) => setAmount(event.target.value)}
+          hint={adjustHint(balance, preview)}
+        />
+        <TextField
+          label="Reason"
+          placeholder="Why this is being moved"
+          maxLength={ADJUST_REASON_MAX}
+          value={reason}
+          onChange={(event) => setReason(event.target.value)}
+        />
         <CanAct permission="wallet.adjust">
-          <Button
-            disabled={!ready || actions.adjust.isPending}
-            onClick={() =>
-              actions.adjust.mutate(
-                { delta: kobo, reason: reason.trim() },
-                {
-                  onSuccess: () => {
-                    setDelta("")
-                    setReason("")
-                  },
-                }
-              )
-            }
-          >
+          <ActionButton disabled={!input} onClick={submit}>
             Post adjustment
-          </Button>
+          </ActionButton>
         </CanAct>
       </div>
     </Section>

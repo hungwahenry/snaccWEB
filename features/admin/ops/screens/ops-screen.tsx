@@ -1,16 +1,31 @@
 "use client"
 
 import { PageHeader } from "@/features/admin/shell/components/page-header"
-import { OpsView } from "@/features/admin/ops/components/ops-view"
+import { DriftPanel } from "../components/drift-panel"
+import { HealthPanel } from "../components/health-panel"
+import { QueuesTable } from "../components/queues-table"
+import { SettlementPanel } from "../components/settlement-panel"
+import { useOpsScreen } from "../hooks/use-ops-screen"
 
 export function OpsScreen() {
+  const { health, queues, drift, actions } = useOpsScreen()
+
   return (
     <>
       <PageHeader
-        title="Ops & maintenance"
-        description="System health, background jobs, and whether the data still adds up."
+        title="Health and drift"
+        description="How the server is doing, what the background jobs are up to, and whether the numbers still add up."
       />
-      <OpsView />
+      <div className="flex flex-col gap-6">
+        <HealthPanel query={health} />
+        <QueuesTable
+          query={queues}
+          driver={health.data?.queue_driver}
+          onRetry={actions.retry}
+        />
+        <SettlementPanel onReconcile={actions.reconcile} />
+        <DriftPanel query={drift} onRepair={actions.repair} />
+      </div>
     </>
   )
 }

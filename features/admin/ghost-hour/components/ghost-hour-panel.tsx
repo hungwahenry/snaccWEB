@@ -1,82 +1,41 @@
 "use client"
 
 import { Radio, VenetianMask } from "lucide-react"
-import { useEffect, useState } from "react"
-import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
-import { Stat, StatGrid } from "@/features/admin/shell/ui/detail"
 import { Badge } from "@/components/ui/badge"
-import { Spinner } from "@/components/ui/spinner"
+import { Button } from "@/components/ui/button"
+import { ConfirmAction } from "@/features/admin/shell/components/confirm-action"
+import { Stat, StatGrid } from "@/features/admin/shell/components/detail"
 import { formatDate } from "@/lib/format"
-import { OpenDialog } from "./open-dialog"
-import { useGhostMutations, useGhostWindow } from "../hooks/use-ghost-hour"
+import { cn } from "@/lib/utils"
 import type { GhostWindowState } from "../types"
+import { windowNote } from "../utils/ghost-hour"
+import { OpenDialog } from "./open-dialog"
 
-function useRemaining(state: GhostWindowState | undefined): number | null {
-  const endsAt = state?.active ? state.ends_at : null
-  const serverTime = state?.server_time ?? null
-
-  const [base, setBase] = useState(serverTime)
-  const [elapsed, setElapsed] = useState(0)
-
-  if (base !== serverTime) {
-    setBase(serverTime)
-    setElapsed(0)
-  }
-
-  useEffect(() => {
-    if (!endsAt) return
-    const id = setInterval(() => setElapsed((value) => value + 1_000), 1_000)
-    return () => clearInterval(id)
-  }, [endsAt, base])
-
-  if (!endsAt || !serverTime) return null
-
-  return Math.max(0, Date.parse(endsAt) - Date.parse(serverTime) - elapsed)
-}
-
-function countdown(ms: number): string {
-  const total = Math.floor(ms / 1000)
-  const minutes = Math.floor(total / 60)
-  const seconds = total % 60
-
-  return `${minutes}:${String(seconds).padStart(2, "0")}`
-}
-
-export function GhostHourPanel() {
-  const query = useGhostWindow()
-  const actions = useGhostMutations()
-  const remaining = useRemaining(query.data)
-
-  if (query.isPending) {
-    return (
-      <div className="flex justify-center py-24">
-        <Spinner />
-      </div>
-    )
-  }
-
-  if (query.isError || !query.data) {
-    return (
-      <p className="text-sm text-muted-foreground">
-        Couldn&apos;t load Ghost Hour state.
-      </p>
-    )
-  }
-
-  const state = query.data
-
+export function GhostHourPanel({
+  state,
+  remaining,
+  onOpen,
+  onClose,
+}: {
+  state: GhostWindowState
+  remaining: number | null
+  onOpen: (minutes: number | undefined) => Promise<unknown>
+  onClose: () => Promise<unknown>
+}) {
   return (
     <div className="flex flex-col gap-6">
       <div
-        className={`flex flex-col gap-4 rounded-lg border p-6 sm:flex-row sm:items-center sm:justify-between ${
-          state.active ? "border-resnacc/40 bg-resnacc/5" : ""
-        }`}
+        className={cn(
+          "flex flex-col gap-4 rounded-lg border p-6 sm:flex-row sm:items-center sm:justify-between",
+          state.active && "border-resnacc/40 bg-resnacc/5"
+        )}
       >
         <div className="flex items-center gap-4">
           <div
-            className={`flex size-12 shrink-0 items-center justify-center rounded-full ${
+            className={cn(
+              "flex size-12 shrink-0 items-center justify-center rounded-full",
               state.active ? "bg-resnacc/15 text-resnacc" : "bg-muted"
-            }`}
+            )}
           >
             {state.active ? (
               <Radio className="size-5" />
@@ -89,14 +48,10 @@ export function GhostHourPanel() {
               <h2 className="text-lg font-semibold">
                 {state.active ? "Ghost Hour is live" : "Ghost Hour is closed"}
               </h2>
-              {state.active && <Badge>live</Badge>}
+              {state.active ? <Badge>live</Badge> : null}
             </div>
             <p className="text-sm text-pretty text-muted-foreground">
-              {state.active && remaining !== null
-                ? `${countdown(remaining)} left — closes ${formatDate(state.ends_at)}`
-                : state.starts_at
-                  ? `Next window opens ${formatDate(state.starts_at)}`
-                  : "Nothing scheduled. The nightly job picks a slot each morning."}
+              {windowNote(state, remaining)}
             </p>
           </div>
         </div>
@@ -104,22 +59,21 @@ export function GhostHourPanel() {
         <div className="shrink-0">
           {state.active ? (
             <ConfirmAction
-              label="Close now"
+              trigger={
+                <Button variant="outline" size="sm">
+                  Close now
+                </Button>
+              }
               title="Close Ghost Hour early?"
               description="Anonymous posting stops immediately for everyone, before the window was due to end. No push is sent when it closes."
               confirmLabel="Close the window"
-              pending={actions.close.isPending}
-              onConfirm={(close) =>
-                actions.close.mutate(undefined, { onSuccess: close })
-              }
+              onConfirm={() => onClose()}
             />
           ) : (
             <OpenDialog
               defaultMinutes={state.window_minutes}
-              pending={actions.open.isPending}
-              onOpen={(minutes, close) =>
-                actions.open.mutate(minutes, { onSuccess: close })
-              }
+              trigger={<Button size="sm">Open Ghost Hour now</Button>}
+              onOpen={onOpen}
             />
           )}
         </div>

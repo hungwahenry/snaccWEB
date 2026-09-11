@@ -1,4 +1,6 @@
-import { getQueryClient } from "@/lib/query-client"
+import { snaccKeys } from "@/features/snaccs/utils/keys"
+import { getQueryClient } from "@/lib/query/client"
+import { footballKeys } from "./utils/keys"
 
 /**
  * A new snacc in a match room.
@@ -13,7 +15,7 @@ export function onMatchSnacc(payload: {
 }): void {
   const queryClient = getQueryClient()
   void queryClient.invalidateQueries({
-    queryKey: ["match-room", payload.match_id],
+    queryKey: snaccKeys.match(payload.match_id),
   })
-  void queryClient.invalidateQueries({ queryKey: ["match-snacc-counts"] })
+  void queryClient.invalidateQueries({ queryKey: footballKeys.snaccCounts() })
 }

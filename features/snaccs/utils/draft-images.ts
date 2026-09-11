@@ -1,9 +1,5 @@
 import type { PickedImage } from "@/lib/media"
-import type { SnaccImage } from "../types"
-
-export type DraftImage =
-  | { kind: "kept"; id: string; url: string; width: number; height: number }
-  | { kind: "picked"; asset: PickedImage }
+import type { DraftImage, SnaccImage } from "../types"
 
 export function draftImageKey(image: DraftImage): string {
   return image.kind === "kept" ? image.id : image.asset.uri
@@ -21,6 +17,10 @@ export function toDraftImages(images: SnaccImage[]): DraftImage[] {
     width: image.width,
     height: image.height,
   }))
+}
+
+export function toPickedImages(assets: PickedImage[]): DraftImage[] {
+  return assets.map((asset) => ({ kind: "picked", asset }))
 }
 
 export function pickedAssets(images: DraftImage[]): PickedImage[] {

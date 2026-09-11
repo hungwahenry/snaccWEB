@@ -5,9 +5,9 @@ import { NuqsAdapter } from "nuqs/adapters/next/app"
 import { Suspense, useState, type ReactNode } from "react"
 import { ConsoleEgg } from "@/components/console-egg"
 import { NavigationProgress } from "@/components/navigation-progress"
-import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeProvider } from "./theme-provider"
 import { Toaster } from "@/components/ui/sonner"
-import { getQueryClient } from "@/lib/query-client"
+import { getQueryClient } from "@/lib/query/client"
 
 export function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(getQueryClient)

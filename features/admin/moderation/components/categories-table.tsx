@@ -1,80 +1,78 @@
 "use client"
 
-import { Section } from "@/features/admin/shell/ui/detail"
-import { TableFrame } from "@/components/data-table/table-frame"
-import { Badge } from "@/components/ui/badge"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import type { UseQueryResult } from "@tanstack/react-query"
+import type { Column } from "@/features/admin/shell/components/data-table"
+import { QueryTable } from "@/features/admin/shell/components/query-table"
+import { StatusBadge } from "@/features/admin/shell/components/status-badge"
 import { formatNumber } from "@/lib/format"
 import type { CategoryUsage } from "../types"
+import { scoreSources } from "../utils/moderation"
+
+const COLUMNS: Column<CategoryUsage>[] = [
+  {
+    id: "category",
+    header: "Category",
+    className: "whitespace-normal",
+    cell: (entry) => (
+      <>
+        <p className="font-medium">{entry.label}</p>
+        <p className="max-w-lg text-xs text-pretty text-muted-foreground">
+          {entry.description}
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "key",
+    header: "Key",
+    className: "font-mono text-xs text-muted-foreground",
+    cell: (entry) => entry.category,
+  },
+  {
+    id: "sources",
+    header: "Scores from",
+    cell: (entry) => (
+      <div className="flex flex-wrap gap-1.5">
+        {scoreSources(entry).map((source) => (
+          <StatusBadge key={source.label} status={source} />
+        ))}
+      </div>
+    ),
+  },
+  {
+    id: "rules",
+    header: "Rules",
+    className: "text-sm text-muted-foreground",
+    cell: (entry) =>
+      entry.ruled.length === 0 ? (
+        <span className="text-destructive">none</span>
+      ) : (
+        entry.ruled.join(", ")
+      ),
+  },
+  {
+    id: "seen",
+    header: "Seen",
+    align: "end",
+    className: "tabular-nums",
+    cell: (entry) => formatNumber(entry.scans),
+  },
+]
 
 export function CategoriesTable({
-  categories,
+  query,
 }: {
-  categories: CategoryUsage[]
+  query: UseQueryResult<CategoryUsage[]>
 }) {
   return (
-    <Section
+    <QueryTable
+      query={query}
+      what="categories"
       title="Categories"
       description="What the classifier can score, and which of them you have rules for. A category with no rule is scored and recorded but never acted on."
-    >
-      <TableFrame>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Category</TableHead>
-              <TableHead>Key</TableHead>
-              <TableHead>Scores from</TableHead>
-              <TableHead>Rules</TableHead>
-              <TableHead className="text-right">Seen</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {categories.map((entry) => (
-              <TableRow key={entry.category}>
-                <TableCell>
-                  <p className="font-medium">{entry.label}</p>
-                  <p className="max-w-lg text-xs text-pretty text-muted-foreground">
-                    {entry.description}
-                  </p>
-                </TableCell>
-                <TableCell className="font-mono text-xs text-muted-foreground">
-                  {entry.category}
-                </TableCell>
-                <TableCell>
-                  <div className="flex flex-wrap gap-1.5">
-                    {entry.scores_text ? (
-                      <Badge variant="outline">text</Badge>
-                    ) : null}
-                    {entry.scores_image ? (
-                      <Badge variant="outline">images</Badge>
-                    ) : (
-                      <Badge variant="secondary">text only</Badge>
-                    )}
-                    {entry.unknown ? <Badge>new</Badge> : null}
-                  </div>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {entry.ruled.length === 0 ? (
-                    <span className="text-destructive">none</span>
-                  ) : (
-                    entry.ruled.join(", ")
-                  )}
-                </TableCell>
-                <TableCell className="text-right tabular-nums">
-                  {formatNumber(entry.scans)}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableFrame>
-    </Section>
+      columns={COLUMNS}
+      rowKey={(entry) => entry.category}
+      empty="No categories yet."
+    />
   )
 }

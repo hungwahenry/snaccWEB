@@ -1,3 +1,5 @@
+"use client"
+
 import { ArrowUpIcon, CheckIcon } from "lucide-react"
 import { useCallback, useState, type RefObject } from "react"
 import { Spinner } from "@/components/ui/spinner"
@@ -7,18 +9,18 @@ import { VoiceRecordingBar } from "@/features/voice/components/voice-recording-b
 import type { PickedImage } from "@/lib/media"
 import { cn } from "@/lib/utils"
 import type {
+  ComposerAction,
   ComposerContext,
   VoiceControls,
-} from "../../hooks/use-message-composer"
-import {
-  ComposerActionsMenu,
-  type ComposerAction,
-} from "./composer-actions-menu"
+} from "../../types"
+import { ComposerActionsMenu } from "./composer-actions-menu"
 import { ComposerContextRow } from "./composer-context-row"
 import { MessageDraftImages } from "./message-draft-images"
 import { ViewOnceToggle } from "./view-once-toggle"
 
 const INPUT_REST_HEIGHT = 36
+
+type Nudge = { show: boolean; label: string }
 
 export type MessageComposerProps = {
   inputRef?: RefObject<HTMLTextAreaElement | null>
@@ -29,11 +31,12 @@ export type MessageComposerProps = {
   sending: boolean
   editing: boolean
   context: ComposerContext | null
+  onCancelContext?: () => void
   placeholder?: string
   maxLength: number
   remaining: number
-  upgrade: { show: boolean; label: string }
-  imageUpgrade?: { show: boolean; label: string }
+  upgrade: Nudge
+  imageUpgrade?: Nudge
   showCounter: boolean
   images?: PickedImage[]
   onRemoveImage?: (uri: string) => void
@@ -56,6 +59,7 @@ export function MessageComposer({
   sending,
   editing,
   context,
+  onCancelContext,
   placeholder = "Message…",
   maxLength,
   remaining,
@@ -75,17 +79,25 @@ export function MessageComposer({
 }: MessageComposerProps) {
   const recording = voice?.recording ?? false
   const showMic = offerVoice && voice !== null
-  const showDrafts = images.length > 0 && Boolean(onRemoveImage)
-  const showViewOnce = images.length === 1 && Boolean(onToggleViewOnce)
+  const showDrafts = images.length > 0 && onRemoveImage !== undefined
+  const showViewOnce = images.length === 1 && onToggleViewOnce !== undefined
   const [tall, setTall] = useState(false)
-  const watchHeight = useCallback((node: HTMLTextAreaElement | null) => {
-    if (!node) return
-    const observer = new ResizeObserver(([entry]) =>
-      setTall(entry.contentRect.height > INPUT_REST_HEIGHT + 2)
-    )
-    observer.observe(node)
-    return () => observer.disconnect()
-  }, [])
+
+  const fieldRef = useCallback(
+    (node: HTMLTextAreaElement | null) => {
+      if (inputRef) inputRef.current = node
+      if (!node) return
+      const observer = new ResizeObserver(([entry]) =>
+        setTall(entry.contentRect.height > INPUT_REST_HEIGHT + 2)
+      )
+      observer.observe(node)
+      return () => {
+        observer.disconnect()
+        if (inputRef) inputRef.current = null
+      }
+    },
+    [inputRef]
+  )
 
   return (
     <div
@@ -96,9 +108,11 @@ export function MessageComposer({
     >
       {context || showDrafts ? (
         <div className="mb-2 rounded-2xl bg-input">
-          {context ? <ComposerContextRow context={context} /> : null}
+          {context ? (
+            <ComposerContextRow context={context} onCancel={onCancelContext} />
+          ) : null}
           {showDrafts ? (
-            <MessageDraftImages images={images} onRemove={onRemoveImage!} />
+            <MessageDraftImages images={images} onRemove={onRemoveImage} />
           ) : null}
           {showDrafts && imageUpgrade?.show ? (
             <div className="flex justify-center pb-2">
@@ -106,7 +120,7 @@ export function MessageComposer({
             </div>
           ) : null}
           {showViewOnce ? (
-            <ViewOnceToggle checked={viewOnce} onToggle={onToggleViewOnce!} />
+            <ViewOnceToggle checked={viewOnce} onToggle={onToggleViewOnce} />
           ) : null}
         </div>
       ) : null}
@@ -121,7 +135,9 @@ export function MessageComposer({
                   ? "font-semibold text-premium"
                   : remaining < 0
                     ? "text-destructive"
-                    : "text-muted-foreground"
+                    : onDark
+                      ? "text-white/70"
+                      : "text-muted-foreground"
               )}
             >
               {remaining}
@@ -156,25 +172,27 @@ export function MessageComposer({
             />
           ) : (
             <textarea
-              ref={(node) => {
-                watchHeight(node)
-                if (inputRef) inputRef.current = node
-              }}
+              ref={fieldRef}
               value={body}
               rows={1}
               maxLength={maxLength}
               placeholder={editing ? "Edit message…" : placeholder}
+              aria-label={editing ? "Edit message" : placeholder}
               onChange={(event) => onChange(event.target.value)}
               onFocus={onFocus}
               onBlur={onBlur}
               onKeyDown={(event) => {
-                if (
-                  event.key === "Enter" &&
-                  !event.shiftKey &&
-                  !event.nativeEvent.isComposing
-                ) {
+                if (event.nativeEvent.isComposing) return
+                if (event.key === "Enter" && !event.shiftKey) {
                   event.preventDefault()
                   onSend()
+                } else if (
+                  event.key === "Escape" &&
+                  context &&
+                  onCancelContext
+                ) {
+                  event.preventDefault()
+                  onCancelContext()
                 }
               }}
               className={cn(

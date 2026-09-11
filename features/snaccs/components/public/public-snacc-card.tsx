@@ -11,14 +11,15 @@ import Link from "next/link"
 import { compactCount, timeAgo } from "@/lib/format"
 import { richText } from "@/lib/rich-text"
 import { AuthorBadges } from "@/features/users/components/public/author-badges"
-import type { PublicQuotedSnacc, PublicSnacc } from "../../api/public"
+import { nameOf } from "@/features/users/utils/names"
+import type { EmbeddedSnacc, Snacc } from "../../types"
 import { VoiceNotePlayer } from "@/features/voice/components/voice-note-player"
 
 export function PublicSnaccCard({
   snacc,
   href,
 }: {
-  snacc: PublicSnacc
+  snacc: Snacc
   href?: string
 }) {
   const { author } = snacc
@@ -43,7 +44,7 @@ export function PublicSnaccCard({
         <div className="flex min-w-0 flex-1 flex-col gap-2">
           <div className="flex items-center gap-1.5 text-sm">
             <span className="shrink truncate font-extrabold text-foreground">
-              {ghost ? "Ghost" : (author.display_name ?? author.username)}
+              {ghost ? "Ghost" : nameOf(author)}
             </span>
             {!ghost ? (
               <AuthorBadges
@@ -178,7 +179,7 @@ export function PublicSnaccCard({
   )
 }
 
-function QuotedSnacc({ snacc }: { snacc: PublicQuotedSnacc }) {
+function QuotedSnacc({ snacc }: { snacc: EmbeddedSnacc }) {
   const { author } = snacc
   const ghost = snacc.anonymous
   const hasMedia =
@@ -193,7 +194,7 @@ function QuotedSnacc({ snacc }: { snacc: PublicQuotedSnacc }) {
           <img src={author.avatar_url} alt="" className="size-5 rounded-full" />
         )}
         <span className="truncate font-bold text-foreground">
-          {ghost ? "Ghost" : (author.display_name ?? author.username)}
+          {ghost ? "Ghost" : nameOf(author)}
         </span>
         {!ghost ? (
           <AuthorBadges
@@ -222,7 +223,7 @@ function QuotedSnacc({ snacc }: { snacc: PublicQuotedSnacc }) {
   )
 }
 
-function SnaccActions({ snacc }: { snacc: PublicSnacc }) {
+function SnaccActions({ snacc }: { snacc: Snacc }) {
   return (
     <div className="flex items-center gap-2">
       <div className="flex min-w-0 flex-1 items-center gap-1.5">

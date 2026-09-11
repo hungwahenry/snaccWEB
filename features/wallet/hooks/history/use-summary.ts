@@ -2,11 +2,11 @@
 
 import { useQuery } from "@tanstack/react-query"
 import { getSummary } from "../../api"
-import { SUMMARY_KEY } from "../../utils/keys"
+import { walletKeys } from "../../utils/keys"
 
 export function useSummary(month: string) {
   return useQuery({
-    queryKey: [...SUMMARY_KEY, month],
+    queryKey: walletKeys.summary(month),
     queryFn: () => getSummary(month),
   })
 }

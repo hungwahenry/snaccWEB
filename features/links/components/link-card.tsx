@@ -11,6 +11,7 @@ import { profilePath } from "@/features/users/routes"
 import { bareLink, shareLink, type ShareRef } from "@/lib/share-links"
 import { cn } from "@/lib/utils"
 import type { LinkPerson, LinkTarget } from "@/features/links/types"
+import { nameOf } from "@/features/users/utils/names"
 
 const CARD = "overflow-hidden rounded-2xl border border-border bg-background"
 
@@ -35,7 +36,7 @@ function PersonRow({ person, pay }: { person: LinkPerson; pay: boolean }) {
   return (
     <div className="flex items-center gap-3 p-3">
       <UserAvatar
-        alt={person.display_name ?? "Avatar"}
+        alt={nameOf(person)}
         avatarUrl={person.avatar_url}
         name={person.username}
         className="size-10"
@@ -44,7 +45,7 @@ function PersonRow({ person, pay }: { person: LinkPerson; pay: boolean }) {
         <span className="flex items-center gap-1">
           <TierName
             official={person.official}
-            name={person.display_name ?? person.username}
+            name={nameOf(person)}
             className="text-sm font-bold text-foreground"
             iconSize={14}
           />

@@ -1,6 +1,6 @@
 import { Keypad } from "@/components/ui/keypad"
 import { cn } from "@/lib/utils"
-import { PIN_LENGTH } from "../../hooks/pin/use-pin-input"
+import { pinDots } from "../../utils/pin"
 
 export function PinPad({
   value,
@@ -31,12 +31,12 @@ export function PinPad({
           ) : null}
         </div>
         <div className="flex gap-4">
-          {Array.from({ length: PIN_LENGTH }, (_, index) => (
+          {pinDots(value).map((filled, index) => (
             <span
               key={index}
               className={cn(
                 "size-4 rounded-full border-2",
-                index < value.length
+                filled
                   ? "border-primary bg-primary"
                   : "border-muted-foreground/40"
               )}

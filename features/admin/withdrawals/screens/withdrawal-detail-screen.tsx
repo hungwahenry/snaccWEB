@@ -1,26 +1,22 @@
 "use client"
 
-import { DetailScreen } from "@/features/admin/shell/ui/detail-screen"
-import { WithdrawalDetail } from "@/features/admin/withdrawals/components/withdrawal-detail"
-import {
-  useWithdrawal,
-  useWithdrawalMutations,
-} from "@/features/admin/withdrawals/hooks/use-withdrawals"
+import { BackLink } from "@/features/admin/shell/components/back-link"
+import { QueryView } from "@/features/admin/shell/components/query-view"
+import { WITHDRAWALS_PATH } from "@/features/admin/shell/routes"
+import { WithdrawalDetail } from "../components/withdrawal-detail"
+import { useWithdrawalDetailScreen } from "../hooks/use-withdrawal-detail-screen"
 
 export function WithdrawalDetailScreen({ id }: { id: string }) {
-  const query = useWithdrawal(id)
-  const actions = useWithdrawalMutations(id)
+  const { query, actions } = useWithdrawalDetailScreen(id)
 
   return (
-    <DetailScreen
-      backHref="/admin/withdrawals"
-      backLabel="Back to withdrawals"
-      missing="Couldn't load this withdrawal."
-      query={query}
-    >
-      {(withdrawal) => (
-        <WithdrawalDetail withdrawal={withdrawal} actions={actions} />
-      )}
-    </DetailScreen>
+    <>
+      <BackLink href={WITHDRAWALS_PATH} label="Back to withdrawals" />
+      <QueryView query={query} what="this withdrawal">
+        {(withdrawal) => (
+          <WithdrawalDetail withdrawal={withdrawal} onRetry={actions.retry} />
+        )}
+      </QueryView>
+    </>
   )
 }

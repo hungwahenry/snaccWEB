@@ -1,8 +1,8 @@
 "use client"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
+import { useQuery } from "@tanstack/react-query"
+import { useMemo } from "react"
+import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
 import {
   getDrift,
   getHealth,
@@ -11,70 +11,59 @@ import {
   retryQueue,
   runTask,
 } from "../api"
+import { adminOpsKeys } from "../utils/keys"
+import {
+  reconcileMessage,
+  REPAIR_TASKS,
+  repairMessage,
+  retryMessage,
+} from "../utils/ops"
 
-const KEY = ["admin", "ops"]
+const LIVE_MS = 15_000
 
 export function useHealth() {
   return useQuery({
-    queryKey: [...KEY, "health"],
+    queryKey: adminOpsKeys.health(),
     queryFn: getHealth,
-    refetchInterval: 15_000,
+    refetchInterval: LIVE_MS,
   })
 }
 
 export function useQueues() {
   return useQuery({
-    queryKey: [...KEY, "queues"],
+    queryKey: adminOpsKeys.queues(),
     queryFn: getQueues,
-    refetchInterval: 15_000,
+    refetchInterval: LIVE_MS,
   })
 }
 
 export function useDrift() {
-  return useQuery({ queryKey: [...KEY, "drift"], queryFn: getDrift })
+  return useQuery({ queryKey: adminOpsKeys.drift(), queryFn: getDrift })
 }
 
-export function useOpsMutations() {
-  const qc = useQueryClient()
-  const onError = (error: unknown) => toast.error(getErrorMessage(error))
-  return {
-    repair: useMutation({
-      mutationFn: async () => {
-        await runTask("repair-counters")
-        await runTask("repair-scores")
-        await runTask("repair-wallets")
-      },
-      onSuccess: () => {
-        qc.invalidateQueries({ queryKey: KEY })
-        toast.success(
-          "Repaired. Anything that drifted will drift again until the cause is fixed."
-        )
-      },
-      onError,
-    }),
-    reconcile: useMutation({
-      mutationFn: reconcilePaystack,
-      onSuccess: (result) => {
-        qc.invalidateQueries({ queryKey: KEY })
-        const moved =
-          result.withdrawals.settled +
-          result.withdrawals.failed +
-          result.deposits.credited
-        toast.success(
-          moved > 0
-            ? `Settled ${result.withdrawals.settled} withdrawal(s), returned ${result.withdrawals.failed}, credited ${result.deposits.credited} deposit(s).`
-            : "Nothing to settle — Paystack agrees with us."
-        )
-      },
-      onError,
-    }),
-    retry: useMutation({
-      mutationFn: retryQueue,
-      onSuccess: (result) => {
-        qc.invalidateQueries({ queryKey: [...KEY, "queues"] })
-        toast.success(`Retried ${result.retried} failed job(s).`)
-      },
-      onError,
-    }),
-  }
+export function useOpsActions() {
+  const { run: repair } = useAdminMutation({
+    mutationFn: async () => {
+      const results = []
+      for (const task of REPAIR_TASKS) results.push(await runTask(task))
+      return results
+    },
+    success: repairMessage,
+    invalidates: [adminOpsKeys.drift()],
+  })
+  const { run: reconcile } = useAdminMutation({
+    mutationFn: () => reconcilePaystack(),
+    success: reconcileMessage,
+    invalidates: [adminOpsKeys.all()],
+  })
+  const { run: retry } = useAdminMutation({
+    mutationFn: (queue: string) => retryQueue(queue),
+    success: ({ retried }) => retryMessage(retried),
+    invalidates: [adminOpsKeys.queues()],
+  })
+
+  return useMemo(
+    () => ({ repair, reconcile, retry }),
+    [repair, reconcile, retry]
+  )
 }

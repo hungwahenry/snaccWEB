@@ -1,9 +1,9 @@
-import { api, type QueryParams } from "@/lib/api/client"
+import { api } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
-import type { AdminSnacc, AdminSnaccDetail, ListSnaccsParams } from "../types"
+import type { AdminSnacc, AdminSnaccDetail, SnaccListQuery } from "../types"
 
-export function listSnaccs(params: ListSnaccsParams) {
-  return api.get<Paginated<AdminSnacc>>("/admin/snaccs", params as QueryParams)
+export function listSnaccs(query: SnaccListQuery) {
+  return api.get<Paginated<AdminSnacc>>("/admin/snaccs", query)
 }
 
 export function getSnacc(id: string) {

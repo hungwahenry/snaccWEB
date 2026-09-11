@@ -1,41 +1,28 @@
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
-import { UserAvatar } from "@/components/ui/user-avatar"
-import { snaccPath } from "@/features/snaccs/routes"
-import { profilePath } from "@/features/users/routes"
+import { PersonAvatar } from "@/features/users/components/person-avatar"
 import { timeAgo } from "@/lib/format"
-import type { MyReport } from "../types"
+import type { MyReport, ReportSubject } from "../types"
 
-export function ReportRow({ report }: { report: MyReport }) {
-  const user =
-    report.target.type === "snacc"
-      ? report.target.snacc.author
-      : report.target.user
-  const href =
-    report.target.type === "snacc"
-      ? snaccPath(report.target.snacc.id)
-      : profilePath(user.username)
-  const what =
-    report.target.type === "snacc"
-      ? (report.target.snacc.body ?? "A snacc")
-      : `@${user.username ?? "someone"}`
-
+export function ReportRow({
+  report,
+  subject,
+}: {
+  report: MyReport
+  subject: ReportSubject
+}) {
   return (
     <Link
-      href={href}
+      href={subject.href}
       className="flex items-start gap-3 px-4 py-3.5 transition-colors hover:bg-accent/40"
     >
-      <UserAvatar
-        alt={user.display_name ?? "User"}
-        avatarUrl={user.avatar_url}
-        name={user.username}
-      />
+      <PersonAvatar person={subject.person} />
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="text-sm font-bold text-foreground">
           {report.reason}
         </span>
         <span className="line-clamp-2 text-sm text-muted-foreground">
-          {what}
+          {subject.what}
         </span>
         {report.detail ? (
           <span className="line-clamp-2 text-xs text-muted-foreground">

@@ -5,6 +5,40 @@ export interface DashboardSeriesPoint {
   active: number
 }
 
+export type SeriesMetric = Exclude<keyof DashboardSeriesPoint, "date">
+
+export interface WithdrawalStatusCount {
+  status: "pending" | "success" | "failed" | "reversed"
+  count: number
+  amount: number
+}
+
+export interface EarningTypeTotal {
+  type: "reaction" | "resnacc"
+  count: number
+  amount: number
+}
+
+export interface DashboardMoney {
+  total_distributed: number
+  wallet_liability: number
+  withdrawals_by_status: WithdrawalStatusCount[]
+  earnings_by_type: EarningTypeTotal[]
+}
+
+export interface TopCampus {
+  id: string
+  name: string
+  acronym: string
+  members: number
+  snaccs: number
+}
+
+export interface TopReaction {
+  emoji: string
+  count: number
+}
+
 export interface DashboardMetrics {
   platform: boolean
   users: {
@@ -29,28 +63,9 @@ export interface DashboardMetrics {
     dismissed: number
     reports_7d: number
   }
-  money: {
-    total_distributed: number
-    wallet_liability: number
-    withdrawals_by_status: {
-      status: "pending" | "success" | "failed" | "reversed"
-      count: number
-      amount: number
-    }[]
-    earnings_by_type: {
-      type: "reaction" | "resnacc"
-      count: number
-      amount: number
-    }[]
-  } | null
+  money: DashboardMoney | null
   campuses: { total: number; funded: number }
-  top_campuses: {
-    id: string
-    name: string
-    acronym: string
-    members: number
-    snaccs: number
-  }[]
-  top_reactions: { emoji: string; count: number }[]
+  top_campuses: TopCampus[]
+  top_reactions: TopReaction[]
   series: DashboardSeriesPoint[]
 }

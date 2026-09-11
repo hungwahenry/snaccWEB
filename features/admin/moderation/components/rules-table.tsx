@@ -1,197 +1,160 @@
 "use client"
 
-import { ACTION_VARIANT } from "../utils/actions"
-import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
-import { Section } from "@/features/admin/shell/ui/detail"
-import { TableFrame } from "@/components/data-table/table-frame"
-import { CanAct } from "@/features/admin/auth/components/can"
+import type { UseQueryResult } from "@tanstack/react-query"
+import { Plus } from "lucide-react"
+import { useMemo, type ReactNode } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
+import { ConfirmAction } from "@/features/admin/shell/components/confirm-action"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { RuleDialog } from "./rule-dialog"
-import { SURFACE_LABELS } from "../utils/surfaces"
+  HiddenHeader,
+  type Column,
+} from "@/features/admin/shell/components/data-table"
+import { QueryTable } from "@/features/admin/shell/components/query-table"
+import { StatusBadge } from "@/features/admin/shell/components/status-badge"
 import type {
-  ModerationAction,
+  CategoryUsage,
   ModerationRule,
   ModerationSurface,
+  RuleDraft,
 } from "../types"
-import type { useModerationMutations } from "../hooks/use-moderation"
+import { ACTION_STATUS } from "../utils/actions"
+import { surfaceLabel } from "../utils/surfaces"
+import { RuleDialog } from "./rule-dialog"
+
+const SURFACE_COLUMN: Column<ModerationRule> = {
+  id: "surface",
+  header: "Surface",
+  className: "text-sm",
+  cell: (rule) => surfaceLabel(rule.surface),
+}
 
 export function RulesTable({
-  rules,
-  mutations,
+  query,
   surface,
-  onSurface,
+  categories,
+  toolbar,
   onTune,
+  onSave,
+  onSetRetired,
 }: {
-  rules: ModerationRule[]
-  mutations: ReturnType<typeof useModerationMutations>
-  surface: string
-  onSurface: (next: string) => void
+  query: UseQueryResult<ModerationRule[]>
+  surface: ModerationSurface | null
+  categories: CategoryUsage[]
+  toolbar: ReactNode
   onTune: (rule: ModerationRule) => void
+  onSave: (draft: RuleDraft, id?: string) => Promise<unknown>
+  onSetRetired: (id: string, retired: boolean) => Promise<unknown>
 }) {
-  const shown =
-    surface === "all" ? rules : rules.filter((rule) => rule.surface === surface)
+  const columns = useMemo<Column<ModerationRule>[]>(() => {
+    const columns: Column<ModerationRule>[] = [
+      {
+        id: "category",
+        header: "Category",
+        className: "font-mono text-xs",
+        cell: (rule) => (
+          <span className="inline-flex items-center gap-2">
+            {rule.category}
+            {rule.retired ? <Badge variant="outline">retired</Badge> : null}
+          </span>
+        ),
+      },
+      {
+        id: "threshold",
+        header: "At or above",
+        align: "end",
+        className: "tabular-nums",
+        cell: (rule) => rule.threshold.toFixed(2),
+      },
+      {
+        id: "action",
+        header: "Does",
+        cell: (rule) => <StatusBadge status={ACTION_STATUS[rule.action]} />,
+      },
+      {
+        id: "note",
+        header: "Why",
+        className:
+          "max-w-md text-sm whitespace-normal text-pretty text-muted-foreground",
+        cell: (rule) => rule.note ?? "—",
+      },
+      {
+        id: "actions",
+        header: <HiddenHeader>Actions</HiddenHeader>,
+        align: "end",
+        cell: (rule) => (
+          <div className="flex justify-end gap-2">
+            <Button variant="ghost" size="sm" onClick={() => onTune(rule)}>
+              Tune
+            </Button>
+            <CanAct permission="moderation.write">
+              <RuleDialog
+                rule={rule}
+                categories={categories}
+                trigger={
+                  <Button variant="outline" size="sm">
+                    Edit
+                  </Button>
+                }
+                onSubmit={(draft) => onSave(draft, rule.id)}
+              />
+            </CanAct>
+            <CanAct permission="moderation.write">
+              <ConfirmAction
+                trigger={
+                  <Button variant="ghost" size="sm">
+                    {rule.retired ? "Restore" : "Retire"}
+                  </Button>
+                }
+                tone={rule.retired ? "default" : "destructive"}
+                title={
+                  rule.retired
+                    ? `Put ${rule.category} back?`
+                    : `Retire ${rule.category}?`
+                }
+                description={
+                  rule.retired
+                    ? "It starts deciding again on the next post."
+                    : "It stops firing. The scans that cite it keep their record."
+                }
+                confirmLabel={rule.retired ? "Restore it" : "Retire it"}
+                onConfirm={() => onSetRetired(rule.id, !rule.retired)}
+              />
+            </CanAct>
+          </div>
+        ),
+      },
+    ]
+
+    return surface === null ? [SURFACE_COLUMN, ...columns] : columns
+  }, [surface, categories, onTune, onSave, onSetRetired])
 
   return (
-    <Section
+    <QueryTable
+      query={query}
+      what="rules"
       title="Rules"
       description="What a score means. Everything the pipeline does to someone's content is decided here."
-      action={
+      actions={
         <CanAct permission="moderation.write">
           <RuleDialog
-            surface={
-              surface === "all" ? undefined : (surface as ModerationSurface)
+            surface={surface}
+            categories={categories}
+            trigger={
+              <Button size="sm">
+                <Plus />
+                Add rule
+              </Button>
             }
-            mutations={mutations}
-            trigger={<Button size="sm">Add rule</Button>}
+            onSubmit={(draft) => onSave(draft)}
           />
         </CanAct>
       }
-    >
-      <TableFrame
-        toolbar={
-          <Select
-            value={surface}
-            onValueChange={(next) => next && onSurface(next)}
-          >
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Surface" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All surfaces</SelectItem>
-              {Object.entries(SURFACE_LABELS).map(([value, label]) => (
-                <SelectItem key={value} value={value}>
-                  {label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        }
-      >
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {surface === "all" ? <TableHead>Surface</TableHead> : null}
-              <TableHead>Category</TableHead>
-              <TableHead className="text-right">At or above</TableHead>
-              <TableHead>Does</TableHead>
-              <TableHead>Why</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {shown.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={surface === "all" ? 6 : 5}
-                  className="py-10 text-center text-sm text-muted-foreground"
-                >
-                  No rules here yet. Without one, this surface is scored and
-                  recorded but nothing is ever acted on.
-                </TableCell>
-              </TableRow>
-            ) : (
-              shown.map((rule) => (
-                <TableRow key={rule.id}>
-                  {surface === "all" ? (
-                    <TableCell className="text-sm whitespace-nowrap">
-                      {SURFACE_LABELS[rule.surface] ?? rule.surface}
-                    </TableCell>
-                  ) : null}
-                  <TableCell className="font-mono text-xs">
-                    <span className="inline-flex items-center gap-2">
-                      {rule.category}
-                      {rule.retired ? (
-                        <Badge variant="outline">retired</Badge>
-                      ) : null}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {rule.threshold.toFixed(2)}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={ACTION_VARIANT[rule.action]}>
-                      {rule.action}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="max-w-md text-sm text-pretty text-muted-foreground">
-                    {rule.note ?? "—"}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onTune(rule)}
-                      >
-                        Tune
-                      </Button>
-                      <CanAct permission="moderation.write">
-                        <RuleDialog
-                          rule={rule}
-                          mutations={mutations}
-                          trigger={
-                            <Button variant="outline" size="sm">
-                              Edit
-                            </Button>
-                          }
-                        />
-                      </CanAct>
-                      <CanAct permission="moderation.write">
-                        <ConfirmAction
-                          label={rule.retired ? "Restore" : "Retire"}
-                          variant="ghost"
-                          confirmVariant={
-                            rule.retired ? "default" : "destructive"
-                          }
-                          title={
-                            rule.retired
-                              ? `Put ${rule.category} back?`
-                              : `Retire ${rule.category}?`
-                          }
-                          description={
-                            rule.retired
-                              ? "It starts deciding again on the next post."
-                              : "It stops firing. The scans that cite it keep their record."
-                          }
-                          confirmLabel={
-                            rule.retired ? "Restore it" : "Retire it"
-                          }
-                          pending={mutations.update.isPending}
-                          onConfirm={(close) =>
-                            mutations.update.mutate(
-                              {
-                                id: rule.id,
-                                input: { retired: !rule.retired },
-                              },
-                              { onSuccess: close }
-                            )
-                          }
-                        />
-                      </CanAct>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableFrame>
-    </Section>
+      toolbar={toolbar}
+      columns={columns}
+      rowKey={(rule) => rule.id}
+      empty="No rules here yet. Without one, this surface is scored and recorded but nothing is ever acted on."
+    />
   )
 }

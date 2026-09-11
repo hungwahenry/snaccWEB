@@ -1,4 +1,9 @@
-import { onChatMessage, onChatMessageRemoved } from "@/features/chats/realtime"
+import {
+  onChatMessage,
+  onChatMessageRemoved,
+  onChatMessageUpdated,
+  onChatRoomUpdated,
+} from "@/features/chats/realtime"
 import { onEarningsWallet } from "@/features/earnings/realtime"
 import { onMatchSnacc } from "@/features/football/realtime"
 import { onGhostWindow } from "@/features/ghost/realtime"
@@ -39,6 +44,8 @@ export const REALTIME_HANDLERS = {
   "snacc.edited": onSnaccEdited,
   "chat.message": onChatMessage,
   "chat.message.removed": onChatMessageRemoved,
+  "chat.message.updated": onChatMessageUpdated,
+  "chat.room.updated": onChatRoomUpdated,
   "message.new": onMessageNew,
   "message.updated": onMessageUpdated,
   "conversation.revealed": onConversationRevealed,

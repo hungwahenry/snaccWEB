@@ -1,87 +1,142 @@
-"use client"
-
-import { timeAgo } from "@/lib/format"
+import {
+  BubbleQuote,
+  BubbleText,
+  BubbleVoice,
+} from "@/features/messages/components/thread/bubble-content"
+import { BubbleFrame } from "@/features/messages/components/thread/bubble-frame"
+import { TAIL_REACH } from "@/features/messages/components/thread/bubble-tail"
+import { MessageFailed } from "@/features/messages/components/thread/message-failed"
+import { MessageGif } from "@/features/messages/components/thread/message-gif"
+import { MessageImages } from "@/features/messages/components/thread/message-images"
+import { MessageReactions } from "@/features/messages/components/thread/message-reactions"
+import { StickerAttachmentView } from "@/features/stickers/components/sticker-attachment-view"
+import { TierName } from "@/features/users/components/flair"
+import { PersonAvatar } from "@/features/users/components/person-avatar"
+import { ProfileLink } from "@/features/users/components/profile-link"
+import type { Author } from "@/features/users/types"
+import { nameOf } from "@/features/users/utils/names"
 import { cn } from "@/lib/utils"
 import type { ChatMessage } from "../types"
+import { chatBubbleParts } from "../utils/bubble"
 
-/// A room names who is speaking on the message that starts a run, unlike a DM where there are
-/// only two people and the side of the thread says it.
+const STICKER_SIZE = 140
+
+/** The DM bubble minus what a room never carries (money, view-once, moments), plus the one thing
+ * a DM never needs: who is speaking, on the message that starts a run. */
 export function ChatBubble({
   message,
-  leadsRun,
-  onRemove,
+  firstInBurst,
+  lastInBurst,
+  onPressImage,
+  onRetry,
+  onDiscard,
+  onReact,
 }: {
   message: ChatMessage
-  leadsRun: boolean
-  onRemove?: () => void
+  firstInBurst: boolean
+  lastInBurst: boolean
+  onPressImage: (index: number) => void
+  onRetry: () => void
+  onDiscard: () => void
+  onReact?: (emoji: string) => void
 }) {
   const mine = message.mine
-
-  if (message.deleted) {
-    return (
-      <div className={cn("px-4 py-1", mine ? "text-right" : "text-left")}>
-        <span className="text-xs italic text-muted-foreground">
-          {message.deleted_by_sender ? "Message withdrawn" : "Removed by a moderator"}
-        </span>
-      </div>
-    )
-  }
+  const parts = chatBubbleParts(message)
+  const failed = message.status === "failed"
 
   return (
-    <div className={cn("group flex flex-col gap-1 px-4 py-0.5", mine && "items-end")}>
-      {leadsRun && !mine ? (
-        <span className="flex items-center gap-1.5 pl-1 text-xs font-bold text-muted-foreground">
-          <img src={message.sender.avatar_url} alt="" className="size-4 rounded-full" />
-          {message.sender.username ?? message.sender.display_name ?? "Someone"}
-        </span>
-      ) : null}
+    <div className={cn("flex flex-col", mine ? "items-end" : "items-start")}>
+      {firstInBurst && !mine ? <SenderRow sender={message.sender} /> : null}
 
-      <div
-        className={cn(
-          "flex max-w-[80%] flex-col gap-2 rounded-2xl px-3 py-2",
-          mine ? "bg-primary text-primary-foreground" : "bg-muted"
-        )}
+      <BubbleFrame
+        mine={mine}
+        firstInBurst={firstInBurst}
+        lastInBurst={lastInBurst}
+        sending={message.status === "sending"}
+        failed={failed}
+        bubbled={parts.bubbled}
+        media={
+          <>
+            {parts.images.length > 0 ? (
+              <MessageImages
+                images={parts.images}
+                onPressImage={onPressImage}
+              />
+            ) : null}
+            {parts.sticker ? (
+              <StickerAttachmentView
+                sticker={parts.sticker}
+                size={STICKER_SIZE}
+              />
+            ) : null}
+            {parts.gif ? <MessageGif gif={parts.gif} /> : null}
+          </>
+        }
       >
-        {message.reply_to ? (
-          <div
-            className={cn(
-              "rounded-lg border-l-2 px-2 py-1",
-              mine ? "border-primary-foreground/50 bg-black/10" : "border-primary bg-black/5"
-            )}
-          >
-            <p className="text-xs font-bold opacity-80">
-              {message.reply_to.sender_username ?? "Someone"}
-            </p>
-            <p className="truncate text-xs opacity-80">
-              {message.reply_to.deleted ? "Message withdrawn" : message.reply_to.body}
-            </p>
-          </div>
+        {parts.reply ? (
+          <BubbleQuote
+            glimpse={parts.reply}
+            author={parts.replyAuthor}
+            mine={mine}
+          />
         ) : null}
 
-        {message.images.map((image) => (
-          <img
-            key={image.id}
-            src={image.thumb_url}
-            alt=""
-            className="max-w-[220px] rounded-xl"
+        {parts.voice ? (
+          <BubbleVoice
+            note={parts.voice}
+            mine={mine}
+            afterQuote={parts.reply !== null}
+            beforeText={parts.hasText}
           />
-        ))}
+        ) : null}
 
-        {message.body ? <p className="whitespace-pre-wrap">{message.body}</p> : null}
+        {parts.hasText ? (
+          <BubbleText
+            mine={mine}
+            body={message.body}
+            shownBody={parts.body}
+            edited={message.edited}
+            removed={parts.removedText}
+            spaced={parts.reply !== null || parts.voice !== null}
+          />
+        ) : null}
+      </BubbleFrame>
 
-        <span className="flex items-center gap-2 text-[10px] opacity-70">
-          {timeAgo(message.created_at)}
-          {mine && onRemove ? (
-            <button
-              type="button"
-              onClick={onRemove}
-              className="cursor-pointer underline opacity-0 transition group-hover:opacity-100"
-            >
-              withdraw
-            </button>
-          ) : null}
-        </span>
-      </div>
+      {message.held && mine ? (
+        <p className="mt-1 pr-1 text-right text-[11px] text-muted-foreground italic">
+          Held for review. Only you can see this.
+        </p>
+      ) : null}
+
+      {failed ? (
+        <MessageFailed onRetry={onRetry} onDiscard={onDiscard} />
+      ) : null}
+
+      <MessageReactions
+        reactions={message.reactions}
+        mine={mine}
+        onPress={onReact}
+      />
     </div>
+  )
+}
+
+function SenderRow({ sender }: { sender: Author }) {
+  return (
+    <ProfileLink
+      username={sender.username}
+      className="mb-1 flex max-w-full items-center gap-1.5 hover:opacity-80"
+      style={{ paddingLeft: TAIL_REACH }}
+    >
+      <PersonAvatar person={sender} className="size-4" />
+      <TierName
+        score={sender.score}
+        official={sender.official}
+        birthday={sender.is_birthday}
+        name={sender.username ?? nameOf(sender, "Someone")}
+        className="text-xs font-bold text-muted-foreground"
+        iconSize={12}
+      />
+    </ProfileLink>
   )
 }

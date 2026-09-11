@@ -1,23 +1,26 @@
 "use client"
 
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import { newId } from "@/lib/ids"
-import { FEED_KEY } from "@/lib/query-keys"
+import { showError } from "@/lib/feedback"
 import { createSnacc, undoResnacc } from "../../api"
-import { patchSnacc, restoreSnaccs, snapshotSnaccs } from "../../cache"
+import {
+  cancelSnaccQueries,
+  patchSnacc,
+  resnaccsChanged,
+  restoreSnaccs,
+  snapshotSnaccs,
+} from "../../cache"
 import type { Snacc } from "../../types"
 
 export function useResnacc() {
-  const queryClient = useQueryClient()
-
   return useMutation({
     mutationFn: async (snacc: Snacc) => {
       if (snacc.my_resnacc) return undoResnacc(snacc.id)
       await createSnacc({ id: newId(), resnaccOfId: snacc.id })
     },
     onMutate: async (snacc: Snacc) => {
-      await queryClient.cancelQueries({ queryKey: FEED_KEY })
-      await queryClient.cancelQueries({ queryKey: ["snaccs"] })
+      await cancelSnaccQueries(snacc.id)
 
       const snapshot = snapshotSnaccs()
       const undoing = snacc.my_resnacc
@@ -33,14 +36,10 @@ export function useResnacc() {
 
       return { snapshot }
     },
-    onError: (_error, _snacc, context) =>
-      restoreSnaccs(context?.snapshot ?? []),
-    onSettled: (_data, _error, snacc) => {
-      void queryClient.invalidateQueries({
-        queryKey: ["snaccs", snacc.id],
-        exact: true,
-      })
-      void queryClient.invalidateQueries({ queryKey: FEED_KEY })
+    onError: (error, _snacc, context) => {
+      restoreSnaccs(context?.snapshot ?? [])
+      showError(error)
     },
+    onSettled: (_data, _error, snacc) => resnaccsChanged(snacc.id),
   })
 }

@@ -1,16 +1,13 @@
-import { api, type QueryParams } from "@/lib/api/client"
+import { api } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
 import type {
   AdminAnnouncement,
+  AnnouncementListQuery,
   CreateAnnouncementInput,
-  ListAnnouncementsParams,
 } from "../types"
 
-export function listAnnouncements(params: ListAnnouncementsParams) {
-  return api.get<Paginated<AdminAnnouncement>>(
-    "/admin/announcements",
-    params as QueryParams
-  )
+export function listAnnouncements(query: AnnouncementListQuery) {
+  return api.get<Paginated<AdminAnnouncement>>("/admin/announcements", query)
 }
 
 export function createAnnouncement(input: CreateAnnouncementInput) {

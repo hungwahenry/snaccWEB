@@ -1,3 +1,5 @@
+import type { InfiniteData } from "@tanstack/react-query"
+
 export type ApiResponse<T> = {
   status: "success"
   message: string
@@ -12,6 +14,9 @@ export type Paginated<T> = {
   per_page: number
   total: number
 }
+
+/** A paged list as an infinite query holds it. */
+export type PaginatedPages<T> = InfiniteData<Paginated<T>, number>
 
 export interface UniversityBadge {
   id: string

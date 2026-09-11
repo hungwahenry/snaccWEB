@@ -1,67 +1,56 @@
 "use client"
 
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { useMemo } from "react"
+import { adminReportKeys } from "@/features/admin/reports/utils/keys"
+import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
 import {
   deleteMessage,
   getConversation,
   listConversations,
   restoreMessage,
 } from "../api"
-import type { ListConversationsParams } from "../types"
+import type { ConversationListQuery } from "../types"
+import { adminMessageKeys } from "../utils/keys"
 
-export function useConversations(params: ListConversationsParams) {
+export function useConversations(query: ConversationListQuery) {
   return useQuery({
-    queryKey: ["admin", "conversations", params],
-    queryFn: () => listConversations(params),
+    queryKey: adminMessageKeys.list(query),
+    queryFn: () => listConversations(query),
     placeholderData: keepPreviousData,
   })
 }
 
 export function useConversation(id: string) {
   return useQuery({
-    queryKey: ["admin", "conversation", id],
+    queryKey: adminMessageKeys.thread(id),
     queryFn: () => getConversation(id),
-    enabled: !!id,
   })
 }
 
-export function useMessageModeration(conversationId: string) {
-  const queryClient = useQueryClient()
+export function useMessageActions(conversationId: string) {
+  const invalidates = [
+    adminMessageKeys.thread(conversationId),
+    adminReportKeys.all(),
+  ]
 
-  function invalidate() {
-    queryClient.invalidateQueries({
-      queryKey: ["admin", "conversation", conversationId],
-    })
-    queryClient.invalidateQueries({ queryKey: ["admin", "reports"] })
-  }
-  function onError(error: unknown) {
-    toast.error(getErrorMessage(error))
-  }
+  const { run: remove } = useAdminMutation({
+    mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
+      deleteMessage(id, reason),
+    success: "Message removed.",
+    invalidates,
+  })
+  const { run: restore } = useAdminMutation({
+    mutationFn: (id: string) => restoreMessage(id),
+    success: "Message restored.",
+    invalidates,
+  })
 
-  return {
-    remove: useMutation({
-      mutationFn: (input: { id: string; reason?: string }) =>
-        deleteMessage(input.id, input.reason),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Message removed.")
-      },
-      onError,
+  return useMemo(
+    () => ({
+      remove: (id: string, reason?: string) => remove({ id, reason }),
+      restore,
     }),
-    restore: useMutation({
-      mutationFn: (id: string) => restoreMessage(id),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Message restored.")
-      },
-      onError,
-    }),
-  }
+    [remove, restore]
+  )
 }

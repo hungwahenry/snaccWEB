@@ -1,25 +1,25 @@
 "use client"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { showSuccess } from "@/lib/feedback"
 import { activateVirtualAccount, getVirtualAccount } from "../../api"
-import { VIRTUAL_ACCOUNT_KEY } from "../../utils/keys"
+import { virtualAccountChanged } from "../../cache"
+import { walletKeys } from "../../utils/keys"
 
 export function useVirtualAccount(options: { enabled?: boolean } = {}) {
   return useQuery({
-    queryKey: VIRTUAL_ACCOUNT_KEY,
+    queryKey: walletKeys.virtualAccount(),
     queryFn: getVirtualAccount,
     enabled: options.enabled,
   })
 }
 
 export function useActivateVirtualAccount() {
-  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: activateVirtualAccount,
-    onSuccess: (account) =>
-      queryClient.setQueryData(VIRTUAL_ACCOUNT_KEY, account),
-    onError: (error) => toast.error(getErrorMessage(error)),
+    onSuccess: (account) => {
+      virtualAccountChanged(account)
+      showSuccess("Opening your account number…")
+    },
   })
 }

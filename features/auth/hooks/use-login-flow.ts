@@ -1,17 +1,27 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
-import { toast } from "sonner"
+import { useState } from "react"
+import { COMPLETE_PROFILE_PATH } from "@/features/onboarding/routes"
+import { useNow } from "@/hooks/use-now"
 import { getErrorMessage } from "@/lib/api/errors"
+import { showSuccess } from "@/lib/feedback"
+import { LANDING_PATH } from "@/lib/routes"
 import { emailSchema, OTP_LENGTH } from "../schemas"
+import type { LoginStep } from "../types"
+import {
+  codeDigits,
+  RESEND_COOLDOWN_SECONDS,
+  resendLabel,
+  retryAfterSeconds,
+  secondsUntil,
+} from "../utils/otp"
 import { useSendOtp } from "./use-send-otp"
 import { useSignIn } from "./use-sign-in"
 
-const RESEND_COOLDOWN_SECONDS = 60
+const SECOND_MS = 1000
 
-export type LoginStep = "email" | "code"
-
+/** Email, then the code we sent to it. Every failure is said under the field it is about. */
 export function useLoginFlow(next: string) {
   const router = useRouter()
   const sendOtp = useSendOtp()
@@ -21,28 +31,41 @@ export function useLoginFlow(next: string) {
   const [step, setStep] = useState<LoginStep>("email")
   const [email, setEmail] = useState("")
   const [code, setCode] = useState("")
-  const [cooldown, setCooldown] = useState(0)
+  const [error, setError] = useState<string | null>(null)
+  const [resendAt, setResendAt] = useState(0)
+  const now = useNow(SECOND_MS)
+  const cooldown = secondsUntil(resendAt, now)
 
   const parsed = emailSchema.safeParse({ email })
 
-  useEffect(() => {
-    if (cooldown <= 0) return
-    const id = setTimeout(() => setCooldown(cooldown - 1), 1000)
-    return () => clearTimeout(id)
-  }, [cooldown])
+  function waitBeforeResend(seconds: number) {
+    setResendAt(Date.now() + seconds * SECOND_MS)
+  }
+
+  function openCodeStep(address: string, wait: number) {
+    setEmail(address)
+    setCode("")
+    setError(null)
+    waitBeforeResend(wait)
+    setStep("code")
+  }
 
   function submitEmail() {
-    if (!parsed.success || sendOtp.isPending) return
+    if (sendOtp.isPending) return
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? "Enter a valid email.")
+      return
+    }
     const address = parsed.data.email
 
     sendOtp.mutate(address, {
-      onSuccess: () => {
-        setEmail(address)
-        setCode("")
-        setCooldown(RESEND_COOLDOWN_SECONDS)
-        setStep("code")
+      onSuccess: () => openCodeStep(address, RESEND_COOLDOWN_SECONDS),
+      onError: (failure) => {
+        // A code went out moments ago, so there is one to type in already.
+        const wait = retryAfterSeconds(failure)
+        if (wait) openCodeStep(address, wait)
+        else setError(getErrorMessage(failure))
       },
-      onError: (error) => toast.error(getErrorMessage(error)),
     })
   }
 
@@ -54,19 +77,21 @@ export function useLoginFlow(next: string) {
       {
         onSuccess: (result) => {
           const done = !!result.user.profile?.completed_at
-          router.replace(done ? next : "/complete-profile")
+          router.replace(done ? next : COMPLETE_PROFILE_PATH)
         },
-        onError: (error) => {
+        onError: (failure) => {
           setCode("")
-          toast.error(getErrorMessage(error))
+          setError(getErrorMessage(failure))
         },
       }
     )
   }
 
   function changeCode(value: string) {
-    const digits = value.replace(/\D/g, "").slice(0, OTP_LENGTH)
+    if (signIn.isPending) return
+    const digits = codeDigits(value, OTP_LENGTH)
     setCode(digits)
+    setError(null)
     if (digits.length === OTP_LENGTH) verify(digits)
   }
 
@@ -75,21 +100,37 @@ export function useLoginFlow(next: string) {
 
     resendOtp.mutate(email, {
       onSuccess: () => {
-        setCooldown(RESEND_COOLDOWN_SECONDS)
-        toast.success("New code sent.")
+        waitBeforeResend(RESEND_COOLDOWN_SECONDS)
+        setError(null)
+        showSuccess("New code sent.")
       },
-      onError: (error) => toast.error(getErrorMessage(error)),
+      onError: (failure) => {
+        const wait = retryAfterSeconds(failure)
+        if (wait) waitBeforeResend(wait)
+        else setError(getErrorMessage(failure))
+      },
     })
   }
 
   return {
     step,
+    error,
+    back:
+      step === "code"
+        ? () => {
+            setError(null)
+            setStep("email")
+          }
+        : () => router.push(LANDING_PATH),
+
     email,
-    setEmail,
-    canSubmitEmail: parsed.success && !sendOtp.isPending,
+    changeEmail: (value: string) => {
+      setEmail(value)
+      setError(null)
+    },
+    canSubmitEmail: email.trim().length > 0 && !sendOtp.isPending,
     sendingCode: sendOtp.isPending,
     submitEmail,
-    backToEmail: () => setStep("email"),
 
     code,
     codeLength: OTP_LENGTH,
@@ -98,7 +139,7 @@ export function useLoginFlow(next: string) {
     canVerify: code.length === OTP_LENGTH && !signIn.isPending,
     verifying: signIn.isPending,
 
-    cooldown,
+    resendLabel: resendLabel(cooldown),
     canResend: cooldown <= 0 && !resendOtp.isPending,
     resending: resendOtp.isPending,
     resend,

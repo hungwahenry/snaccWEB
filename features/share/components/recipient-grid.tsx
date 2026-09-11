@@ -3,6 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import type { Conversation } from "@/features/messages/types"
 import { cn } from "@/lib/utils"
+import { nameOf } from "@/features/users/utils/names"
 
 export function RecipientGrid({
   conversations,
@@ -55,7 +56,7 @@ export function RecipientGrid({
             <span className="relative">
               <UserAvatar
                 className="size-16"
-                alt={person.display_name ?? "Avatar"}
+                alt={nameOf(person)}
                 avatarUrl={person.avatar_url}
                 name={person.username}
               />

@@ -1,57 +1,51 @@
 "use client"
 
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { useMemo } from "react"
+import { useEngagementKinds } from "@/features/admin/engagement/hooks/use-engagement"
+import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
 import { adjustFund, listEarnings, listFunds, provisionFund } from "../api"
-import type { ListEarningsParams } from "../types"
+import type { EarningListQuery, FundInput } from "../types"
+import { kindOptions } from "../utils/earnings"
+import { adminEarningsKeys } from "../utils/keys"
 
-export function useEarnings(params: ListEarningsParams) {
+export function useEarnings(query: EarningListQuery) {
   return useQuery({
-    queryKey: ["admin", "earnings", params],
-    queryFn: () => listEarnings(params),
+    queryKey: adminEarningsKeys.list(query),
+    queryFn: () => listEarnings(query),
     placeholderData: keepPreviousData,
   })
 }
 
 export function useFunds() {
-  return useQuery({ queryKey: ["admin", "funds"], queryFn: listFunds })
+  return useQuery({ queryKey: adminEarningsKeys.funds(), queryFn: listFunds })
 }
 
-export function useFundMutations() {
-  const queryClient = useQueryClient()
+/** Every engagement kind, as choices for the type filter. */
+export function useEarningTypes() {
+  const query = useEngagementKinds()
+  const kinds = query.data
 
-  function onSuccess(message: string) {
-    return () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "funds"] })
-      toast.success(message)
-    }
-  }
-  function onError(error: unknown) {
-    toast.error(getErrorMessage(error))
-  }
+  return useMemo(
+    () => ({ options: kindOptions(kinds ?? []), loading: query.isPending }),
+    [kinds, query.isPending]
+  )
+}
 
-  return {
-    provision: useMutation({
-      mutationFn: provisionFund,
-      onSuccess: onSuccess("Fund provisioned."),
-      onError,
-    }),
-    adjust: useMutation({
-      mutationFn: ({
-        universityId,
-        cap,
-      }: {
-        universityId: string
-        cap: number
-      }) => adjustFund(universityId, cap),
-      onSuccess: onSuccess("Cap adjusted."),
-      onError,
-    }),
-  }
+export function useFundActions() {
+  const invalidates = [adminEarningsKeys.funds()]
+
+  const { run: provision } = useAdminMutation({
+    mutationFn: (input: FundInput) => provisionFund(input),
+    success: "Fund provisioned.",
+    invalidates,
+  })
+  const { run: adjust } = useAdminMutation({
+    mutationFn: ({ universityId, cap }: FundInput) =>
+      adjustFund(universityId, cap),
+    success: "Cap adjusted.",
+    invalidates,
+  })
+
+  return useMemo(() => ({ provision, adjust }), [provision, adjust])
 }

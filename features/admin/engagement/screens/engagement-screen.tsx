@@ -1,41 +1,29 @@
 "use client"
 
 import { PageHeader } from "@/features/admin/shell/components/page-header"
-import { Spinner } from "@/components/ui/spinner"
-import { EngagementTable } from "@/features/admin/engagement/components/engagement-table"
-import {
-  useEngagement,
-  useResetEngagement,
-  useUpdateEngagement,
-} from "@/features/admin/engagement/hooks/use-engagement"
+import { QueryView } from "@/features/admin/shell/components/query-view"
+import { EngagementTables } from "../components/engagement-tables"
+import { useEngagementScreen } from "../hooks/use-engagement-screen"
 
 export function EngagementScreen() {
-  const query = useEngagement()
-  const update = useUpdateEngagement()
-  const reset = useResetEngagement()
+  const { query, actions } = useEngagementScreen()
 
   return (
     <>
       <PageHeader
         title="Engagement weights"
-        description="What each act on a snacc is worth — to Snacc Score, and to the feed. One catalog, so the two can never disagree. Changes apply within ~30s."
+        description="What each act on a snacc is worth: to Snacc Score, to the feed, and in kobo. One catalog, so they can never disagree. Changes apply within about 30 seconds."
       />
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load the catalog.
-        </p>
-      ) : (
-        <EngagementTable
-          kinds={query.data}
-          onUpdate={update.mutate}
-          onReset={reset.mutate}
-          pending={update.isPending || reset.isPending}
-        />
-      )}
+      <QueryView query={query} what="the catalog">
+        {(groups) => (
+          <EngagementTables
+            groups={groups}
+            onReprice={actions.reprice}
+            onReset={actions.reset}
+            onSetEnabled={actions.setEnabled}
+          />
+        )}
+      </QueryView>
     </>
   )
 }

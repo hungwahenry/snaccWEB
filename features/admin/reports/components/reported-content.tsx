@@ -1,23 +1,32 @@
-"use client"
-
 import Link from "next/link"
 import type { ReactNode } from "react"
-import { ContentMedia } from "@/features/admin/shell/ui/content-media"
-import { Section } from "@/features/admin/shell/ui/detail"
-import {
-  UserInline,
-  type InlineUser,
-} from "@/features/admin/shell/ui/user-inline"
 import { Badge } from "@/components/ui/badge"
+import { ContentMedia } from "@/features/admin/shell/components/content-media"
+import { EmptyNote, Section } from "@/features/admin/shell/components/detail"
+import { UserCell } from "@/features/admin/shell/components/user-cell"
+import { snaccPath, threadPath, userPath } from "@/features/admin/shell/routes"
 import { SnaccView } from "@/features/admin/snaccs/components/snacc-view"
+import type { UserRef } from "@/lib/api/types"
 import { formatDate, handleOf } from "@/lib/format"
 import type { AdminReportDetail, ReportTarget } from "../types"
 
+type TargetOf<K extends NonNullable<ReportTarget>["type"]> = Extract<
+  NonNullable<ReportTarget>,
+  { type: K }
+>
+
 function Gone({ what }: { what: string }) {
+  return <EmptyNote>This {what} is no longer available to show.</EmptyNote>
+}
+
+function OpenLink({ href, label }: { href: string; label: string }) {
   return (
-    <p className="rounded-lg border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
-      This {what} is no longer available to show.
-    </p>
+    <Link
+      href={href}
+      className="text-sm font-medium underline underline-offset-4"
+    >
+      {label} →
+    </Link>
   )
 }
 
@@ -28,7 +37,7 @@ function Framed({
   link,
   children,
 }: {
-  author: InlineUser
+  author: UserRef
   note: string
   badges?: ReactNode
   link?: { href: string; label: string }
@@ -37,18 +46,11 @@ function Framed({
   return (
     <div className="flex flex-col gap-3 rounded-lg border p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <UserInline user={author} note={note} />
+        <UserCell user={author} note={note} />
         <div className="flex flex-wrap gap-2 empty:hidden">{badges}</div>
       </div>
       {children}
-      {link ? (
-        <Link
-          href={link.href}
-          className="text-sm font-medium underline underline-offset-4"
-        >
-          {link.label} →
-        </Link>
-      ) : null}
+      {link ? <OpenLink href={link.href} label={link.label} /> : null}
     </div>
   )
 }
@@ -56,7 +58,7 @@ function Framed({
 function ReportedMessage({
   message,
 }: {
-  message: Extract<NonNullable<ReportTarget>, { type: "message" }>["message"]
+  message: TargetOf<"message">["message"]
 }) {
   return (
     <Framed
@@ -75,7 +77,7 @@ function ReportedMessage({
         </>
       }
       link={{
-        href: `/admin/messages/${message.conversation.id}`,
+        href: threadPath(message.conversation.id),
         label: "Read the whole thread",
       }}
     >
@@ -97,10 +99,7 @@ function ReportedMessage({
 function ReportedChatMessage({
   message,
 }: {
-  message: Extract<
-    NonNullable<ReportTarget>,
-    { type: "chat_message" }
-  >["chat_message"]
+  message: TargetOf<"chat_message">["chat_message"]
 }) {
   return (
     <Framed
@@ -127,11 +126,7 @@ function ReportedChatMessage({
   )
 }
 
-function ReportedMoment({
-  moment,
-}: {
-  moment: Extract<NonNullable<ReportTarget>, { type: "moment" }>["moment"]
-}) {
+function ReportedMoment({ moment }: { moment: TargetOf<"moment">["moment"] }) {
   return (
     <Framed
       author={moment.author}
@@ -176,12 +171,7 @@ export function ReportedContent({ report }: { report: AdminReportDetail }) {
       {report.snacc ? (
         <div className="flex flex-col gap-3">
           <SnaccView snacc={report.snacc} />
-          <Link
-            href={`/admin/snaccs/${report.snacc.id}`}
-            className="text-sm font-medium underline underline-offset-4"
-          >
-            Open the snacc →
-          </Link>
+          <OpenLink href={snaccPath(report.snacc.id)} label="Open the snacc" />
         </div>
       ) : target === null ? (
         <Gone what="target" />
@@ -199,10 +189,7 @@ export function ReportedContent({ report }: { report: AdminReportDetail }) {
           note={
             target.user.university?.name ?? "The account itself was reported"
           }
-          link={{
-            href: `/admin/users/${target.user.id}`,
-            label: "Open the profile",
-          }}
+          link={{ href: userPath(target.user.id), label: "Open the profile" }}
         >
           <p className="text-sm text-muted-foreground">
             Nothing specific was flagged — the report is about the account.

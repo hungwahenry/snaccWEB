@@ -1,28 +1,24 @@
-import { formatNaira } from "@/lib/format"
 import type { CampusFund } from "../types"
+import { fundLook } from "../utils/fund"
 
 export function FundBar({ fund }: { fund: CampusFund }) {
-  const used = fund.cap > 0 ? Math.min(1, fund.distributed / fund.cap) : 0
+  const look = fundLook(fund)
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-baseline justify-between">
         <span className="font-bold text-foreground">Campus fund</span>
-        <span className="text-sm text-muted-foreground">
-          {fund.rank
-            ? `#${fund.rank} of ${fund.earners} earners`
-            : `${fund.earners} earning`}
-        </span>
+        <span className="text-sm text-muted-foreground">{look.standing}</span>
       </div>
       <div className="h-2.5 overflow-hidden rounded-full bg-muted">
         <div
           className="h-full rounded-full bg-primary"
-          style={{ width: `${used * 100}%` }}
+          style={{ width: `${look.percent}%` }}
         />
       </div>
       <div className="flex justify-between text-sm text-muted-foreground">
-        <span>{formatNaira(fund.distributed)} shared</span>
-        <span>of {formatNaira(fund.cap)}</span>
+        <span>{look.shared}</span>
+        <span>{look.cap}</span>
       </div>
     </div>
   )

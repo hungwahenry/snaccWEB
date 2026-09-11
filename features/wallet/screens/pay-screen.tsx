@@ -1,73 +1,46 @@
 "use client"
 
 import { BackHeader } from "@/features/navigation/components/back-header"
-import { useBack } from "@/hooks/use-back"
 import { AmountStep } from "../components/pay/amount-step"
-import { PAY_TITLES } from "../components/pay/pay-titles"
 import { RecipientStep } from "../components/pay/recipient-step"
 import { ReviewStep } from "../components/pay/review-step"
 import { SentPanel } from "../components/pay/sent-panel"
-import { TransferDetails } from "../components/pay/transfer-details"
-import { WalletGate } from "../components/shared/wallet-gate"
+import { TopUpTransfer } from "../containers/top-up-transfer"
+import { WalletGate } from "../containers/wallet-gate"
 import { usePayFlow } from "../hooks/pay/use-pay-flow"
-import { WALLET_PATH, type PayMode } from "../routes"
+import type { PayPrefill } from "../types"
 
-export function PayScreen(props: {
-  mode: PayMode
-  to?: string
-  recipientId?: string
-  conversationId?: string
-  amount?: string
-}) {
+export function PayScreen({ prefill }: { prefill: PayPrefill }) {
   return (
     <WalletGate>
-      <Flow {...props} />
+      <Flow prefill={prefill} />
     </WalletGate>
   )
 }
 
-function Flow({
-  mode,
-  to,
-  recipientId,
-  conversationId,
-  amount,
-}: {
-  mode: PayMode
-  to?: string
-  recipientId?: string
-  conversationId?: string
-  amount?: string
-}) {
-  const back = useBack(WALLET_PATH)
-  const flow = usePayFlow(mode, {
-    username: to,
-    recipientId,
-    conversationId,
-    amount,
-  })
+function Flow({ prefill }: { prefill: PayPrefill }) {
+  const flow = usePayFlow(prefill)
 
-  if (flow.done) return <SentPanel flow={flow} />
-
-  if (flow.transfer) {
-    return (
-      <>
-        <BackHeader title={PAY_TITLES[mode]} onBack={back} />
-        <TransferDetails flow={flow} />
-      </>
-    )
+  switch (flow.screen) {
+    case "done":
+      return <SentPanel {...flow.done} />
+    case "transfer":
+      return flow.transfer ? (
+        <>
+          <BackHeader title={flow.title} onBack={flow.onBack} />
+          <TopUpTransfer {...flow.transfer} />
+        </>
+      ) : null
+    case "amount":
+      return (
+        <>
+          <BackHeader title={flow.title} onBack={flow.onBack} />
+          <AmountStep {...flow.amount} />
+        </>
+      )
+    case "review":
+      return flow.review ? <ReviewStep {...flow.review} /> : null
+    default:
+      return <RecipientStep {...flow.recipient} />
   }
-
-  if (flow.step === "amount") {
-    return (
-      <>
-        <BackHeader title={PAY_TITLES[mode]} onBack={back} />
-        <AmountStep flow={flow} />
-      </>
-    )
-  }
-
-  if (flow.step === "review") return <ReviewStep flow={flow} />
-
-  return <RecipientStep flow={flow} />
 }

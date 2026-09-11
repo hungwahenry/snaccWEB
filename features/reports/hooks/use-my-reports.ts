@@ -1,8 +1,9 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
-import { listMyReports } from "../api"
+import { getMyReports } from "../api"
+import { reportKeys } from "../utils/keys"
 
 export function useMyReports() {
-  return useQuery({ queryKey: ["reports", "mine"], queryFn: listMyReports })
+  return useQuery({ queryKey: reportKeys.mine(), queryFn: getMyReports })
 }

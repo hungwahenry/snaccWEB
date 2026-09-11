@@ -2,31 +2,24 @@
 
 import { useEffect, useRef, useState } from "react"
 import { usePremiumNudge } from "@/features/premium/hooks/use-premium-limit"
-import {
-  useVoiceRecorder,
-  type VoiceDraft,
-} from "@/features/voice/hooks/use-voice-recorder"
+import { useVoiceRecorder } from "@/features/voice/hooks/use-voice-recorder"
+import type { VoiceDraft } from "@/features/voice/types"
 import type { PickedImage } from "@/lib/media"
-import type { Message } from "../types"
-import { replyPreview, toReplyPreview } from "../utils/preview"
+import type { ComposerContext, VoiceControls } from "../types"
+import { COUNTER_WITHIN, editChanged } from "../utils/composer"
 
-/** How close to the limit the counter appears. */
-const COUNTER_WITHIN = 100
-
-export interface ComposerContext {
-  label: string
-  body: string
-  cancel?: () => void
-  hint: string
-}
+type LengthKey = "content.message.body_max_length" | "chat.message_max_length"
 
 export interface MessageComposerInput {
   onSend: (body: string) => void
   sending?: boolean
-  replyingTo?: Message | null
-  onCancelReply?: () => void
-  editing?: Message | null
-  onCancelEdit?: () => void
+  /** What the message answers or edits, shown above the field. */
+  context?: ComposerContext | null
+  onCancelContext?: () => void
+  /** The message being edited; its words fill the field until the edit ends. */
+  editing?: { body: string | null } | null
+  /** Rooms allow longer messages than DMs; each caller names its own limit. */
+  lengthKey?: LengthKey
   onType?: () => void
   images?: PickedImage[]
   maxImages?: number
@@ -34,23 +27,14 @@ export interface MessageComposerInput {
   onSendVoice?: (voice: VoiceDraft) => void
 }
 
-export interface VoiceControls {
-  recording: boolean
-  durationMs: number
-  levels: number[]
-  slide: number
-  onStart: () => void
-  onSlide: (translationX: number) => void
-  onFinish: (cancelled: boolean) => void
-}
-
+/** The text field of any message composer: its words, its limit, and the voice button. */
 export function useMessageComposer({
   onSend,
-  sending,
-  replyingTo,
-  onCancelReply,
-  editing,
-  onCancelEdit,
+  sending = false,
+  context = null,
+  onCancelContext,
+  editing = null,
+  lengthKey = "content.message.body_max_length",
   onType,
   images = [],
   maxImages = 0,
@@ -58,10 +42,10 @@ export function useMessageComposer({
   onSendVoice,
 }: MessageComposerInput) {
   const [body, setBody] = useState("")
-  // The limit is the account's, not a constant: Premium raises it, and the server enforces its
-  // own number either way.
+  // The limit is the account's, not a constant: Premium can raise it, and the server enforces
+  // its own number either way.
   const bodyLimit = usePremiumNudge(
-    "content.message.body_max_length",
+    lengthKey,
     (max) => body.length >= max,
     (upgrade) => `${upgrade} characters with Premium`
   )
@@ -87,68 +71,56 @@ export function useMessageComposer({
     wasEditing.current = Boolean(editing)
   }, [editing])
 
-  const canAttach = !editing && maxImages > 0 && images.length < maxImages
   const hasContent = trimmed.length > 0 || images.length > 0
-  const voice: VoiceControls | null = canSendVoice
-    ? {
-        recording: recorder.recording,
-        durationMs: recorder.durationMs,
-        levels: recorder.levels,
-        slide,
-        onStart: () => void recorder.start(),
-        onSlide: setSlide,
-        onFinish: (cancelled) => {
-          setSlide(0)
-          if (cancelled) {
-            void recorder.cancel()
-            return
-          }
-          void recorder.stop().then((draft) => {
-            if (draft) onSendVoice?.(draft)
-          })
-        },
-      }
-    : null
-  const canSend =
-    hasContent && !sending && (!editing || trimmed !== editing.body)
+  const canSend = hasContent && !sending && editChanged(editing, trimmed)
 
-  const context: ComposerContext | null = editing
-    ? {
-        label: "Editing your message",
-        body: replyPreview(toReplyPreview(editing)),
-        cancel: onCancelEdit,
-        hint: "Cancel edit",
-      }
-    : replyingTo
+  const voice: VoiceControls | null =
+    canSendVoice && onSendVoice
       ? {
-          label: `Replying to ${replyingTo.mine ? "yourself" : "them"}`,
-          body: replyPreview(toReplyPreview(replyingTo)),
-          cancel: onCancelReply,
-          hint: "Cancel reply",
+          recording: recorder.recording,
+          durationMs: recorder.durationMs,
+          levels: recorder.levels,
+          slide,
+          onStart: () => void recorder.start(),
+          onSlide: setSlide,
+          onFinish: (cancelled) => {
+            setSlide(0)
+            if (cancelled) {
+              void recorder.cancel()
+              return
+            }
+            void recorder.stop().then((draft) => {
+              if (draft) onSendVoice(draft)
+            })
+          },
         }
       : null
 
   return {
-    body,
-    change(text: string) {
-      setBody(text.slice(0, maxLength))
-      if (!editing && text.trim()) onType?.()
+    canAttach: !editing && maxImages > 0 && images.length < maxImages,
+    /** Everything the field itself needs, named as MessageComposer takes it. */
+    field: {
+      body,
+      onChange(text: string) {
+        setBody(text.slice(0, maxLength))
+        if (!editing && text.trim()) onType?.()
+      },
+      onSend() {
+        if (!canSend) return
+        onSend(trimmed)
+        setBody("")
+      },
+      canSend,
+      sending,
+      editing: editing !== null,
+      context,
+      onCancelContext,
+      voice,
+      offerVoice: voice !== null && !hasContent && !editing,
+      maxLength,
+      remaining: maxLength - body.length,
+      showCounter: body.length >= maxLength - COUNTER_WITHIN,
+      upgrade: { show: bodyLimit.show, label: bodyLimit.label },
     },
-    send() {
-      if (!canSend) return
-      onSend(trimmed)
-      setBody("")
-    },
-    canSend,
-    sending: Boolean(sending),
-    canAttach,
-    voice,
-    offerVoice: voice !== null && !hasContent && !editing,
-    context,
-    editing: Boolean(editing),
-    remaining: maxLength - body.length,
-    showCounter: body.length >= maxLength - COUNTER_WITHIN,
-    maxLength,
-    upgrade: bodyLimit,
   }
 }

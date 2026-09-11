@@ -1,163 +1,109 @@
 "use client"
 
-import { CanAct } from "@/features/admin/auth/components/can"
-import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
-import { useState } from "react"
+import type { ChangeEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { Field, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
+import { ActionButton } from "@/features/admin/shell/components/action-button"
+import { ConfirmAction } from "@/features/admin/shell/components/confirm-action"
+import { TextField } from "@/features/admin/shell/components/form-fields"
+import type { AdminPage, PageDraft, PageTextKey } from "../types"
+import { PAGE_LIMITS, STATUS_CHANGE } from "../utils/page"
 import { RichTextEditor } from "./rich-text-editor"
-import type { usePageMutations } from "../hooks/use-pages"
-import type { AdminPage } from "../types"
+
+type TextBinding = {
+  value: string
+  onChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
+}
 
 export function PageEditor({
   page,
-  mutations,
+  draft,
+  text,
+  canSave,
+  onBodyChange,
+  onSave,
+  onToggleStatus,
 }: {
   page?: AdminPage
-  mutations: ReturnType<typeof usePageMutations>
+  draft: PageDraft
+  text: (key: PageTextKey) => TextBinding
+  canSave: boolean
+  onBodyChange: (content: unknown, html: string) => void
+  onSave: () => Promise<unknown>
+  onToggleStatus: () => Promise<unknown>
 }) {
-  const [title, setTitle] = useState(page?.title ?? "")
-  const [slug, setSlug] = useState(page?.slug ?? "")
-  const [excerpt, setExcerpt] = useState(page?.excerpt ?? "")
-  const [seoTitle, setSeoTitle] = useState(page?.seo_title ?? "")
-  const [seoDescription, setSeoDescription] = useState(
-    page?.seo_description ?? ""
-  )
-  const [doc, setDoc] = useState<unknown>(page?.content ?? null)
-  const [html, setHtml] = useState(page?.html ?? "")
-
-  const editing = Boolean(page)
-  const valid =
-    title.trim() !== "" &&
-    slug.trim() !== "" &&
-    html.trim() !== "" &&
-    html !== "<p></p>"
-
-  function save() {
-    const shared = {
-      title: title.trim(),
-      slug: slug.trim(),
-      content: doc,
-      html,
-      excerpt: excerpt.trim() || undefined,
-      seoTitle: seoTitle.trim() || undefined,
-      seoDescription: seoDescription.trim() || undefined,
-    }
-    if (editing) {
-      mutations.update.mutate(shared)
-    } else {
-      mutations.create.mutate(shared)
-    }
-  }
-
-  const pending = mutations.create.isPending || mutations.update.isPending
+  const change = page ? STATUS_CHANGE[page.status] : null
 
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          {editing && page && (
+          {change ? (
             <CanAct permission="pages.publish">
               <ConfirmAction
-                label={page.status === "published" ? "Unpublish" : "Publish"}
-                title={
-                  page.status === "published"
-                    ? "Take this page down?"
-                    : "Publish this page?"
+                trigger={
+                  <Button variant="outline" size="sm">
+                    {change.action}
+                  </Button>
                 }
-                description={
-                  page.status === "published"
-                    ? "Anyone who opens the link will get a not-found instead. The draft is kept."
-                    : "It goes live on the site straight away, exactly as written here."
-                }
-                confirmLabel={
-                  page.status === "published" ? "Unpublish" : "Publish it"
-                }
-                confirmVariant={
-                  page.status === "published" ? "destructive" : "default"
-                }
-                pending={mutations.setStatus.isPending}
-                onConfirm={(close) =>
-                  mutations.setStatus.mutate(
-                    {
-                      pageId: page.id,
-                      status:
-                        page.status === "published" ? "draft" : "published",
-                    },
-                    { onSuccess: close }
-                  )
-                }
+                title={change.title}
+                description={change.description}
+                confirmLabel={change.confirmLabel}
+                tone={change.tone}
+                onConfirm={onToggleStatus}
               />
             </CanAct>
-          )}
+          ) : null}
         </div>
         <CanAct permission="pages.write">
-          <Button disabled={!valid || pending} onClick={save}>
-            {editing ? "Save changes" : "Create page"}
-          </Button>
+          <ActionButton disabled={!canSave} onClick={onSave}>
+            {page ? "Save changes" : "Create page"}
+          </ActionButton>
         </CanAct>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field>
-          <FieldLabel>Title</FieldLabel>
-          <Input
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-            maxLength={200}
-          />
-        </Field>
-        <Field>
-          <FieldLabel>Slug</FieldLabel>
-          <Input
-            value={slug}
-            onChange={(event) => setSlug(event.target.value)}
-            maxLength={100}
-            placeholder="terms-of-use"
-          />
-        </Field>
+        <TextField
+          label="Title"
+          maxLength={PAGE_LIMITS.title}
+          {...text("title")}
+        />
+        <TextField
+          label="Slug"
+          placeholder="terms-of-use"
+          maxLength={PAGE_LIMITS.slug}
+          {...text("slug")}
+        />
       </div>
 
-      <Field>
-        <FieldLabel>Excerpt (optional)</FieldLabel>
-        <Input
-          value={excerpt}
-          onChange={(event) => setExcerpt(event.target.value)}
-          maxLength={300}
-        />
-      </Field>
+      <TextField
+        label="Excerpt"
+        optional
+        maxLength={PAGE_LIMITS.excerpt}
+        {...text("excerpt")}
+      />
 
       <Field>
         <FieldLabel>Body</FieldLabel>
-        <RichTextEditor
-          content={doc}
-          onChange={(json, nextHtml) => {
-            setDoc(json)
-            setHtml(nextHtml)
-          }}
-        />
+        <RichTextEditor content={draft.content} onChange={onBodyChange} />
       </Field>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field>
-          <FieldLabel>SEO title (optional)</FieldLabel>
-          <Input
-            value={seoTitle}
-            onChange={(event) => setSeoTitle(event.target.value)}
-            maxLength={200}
-          />
-        </Field>
-        <Field>
-          <FieldLabel>SEO description (optional)</FieldLabel>
-          <Textarea
-            value={seoDescription}
-            onChange={(event) => setSeoDescription(event.target.value)}
-            rows={2}
-            maxLength={300}
-          />
-        </Field>
+        <TextField
+          label="SEO title"
+          optional
+          maxLength={PAGE_LIMITS.seoTitle}
+          {...text("seoTitle")}
+        />
+        <TextField
+          label="SEO description"
+          optional
+          multiline
+          rows={2}
+          maxLength={PAGE_LIMITS.seoDescription}
+          {...text("seoDescription")}
+        />
       </div>
     </div>
   )

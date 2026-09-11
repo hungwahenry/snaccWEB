@@ -1,3 +1,5 @@
+import { api } from "@/lib/api/client"
+import type { Paginated } from "@/lib/api/types"
 import type {
   CategoryInsight,
   CategoryUsage,
@@ -5,12 +7,12 @@ import type {
   ModerationScan,
   ModerationSummary,
   ModerationSurface,
+  RuleChanges,
   RuleInput,
   ScanQuery,
+  SurfaceChanges,
   SurfaceSetting,
 } from "../types"
-import { api } from "@/lib/api/client"
-import type { Paginated } from "@/lib/api/types"
 
 export function listSurfaces() {
   return api.get<SurfaceSetting[]>("/admin/moderation/surfaces")
@@ -18,13 +20,11 @@ export function listSurfaces() {
 
 export function updateSurface(
   surface: ModerationSurface,
-  body: Partial<Pick<SurfaceSetting, "enabled" | "mode">> & {
-    timeoutMs?: number
-  }
+  changes: SurfaceChanges
 ) {
   return api.patch<SurfaceSetting>(
     `/admin/moderation/surfaces/${surface}`,
-    body
+    changes
   )
 }
 
@@ -36,15 +36,8 @@ export function createRule(input: RuleInput) {
   return api.post<ModerationRule>("/admin/moderation/rules", input)
 }
 
-export function updateRule(
-  id: string,
-  input: Partial<RuleInput> & { retired?: boolean }
-) {
-  return api.patch<ModerationRule>(`/admin/moderation/rules/${id}`, input)
-}
-
-export function removeRule(id: string) {
-  return api.del<{ id: string }>(`/admin/moderation/rules/${id}`)
+export function updateRule(id: string, changes: RuleChanges) {
+  return api.patch<ModerationRule>(`/admin/moderation/rules/${id}`, changes)
 }
 
 export function listCategories() {
@@ -62,6 +55,6 @@ export function getSummary() {
   return api.get<ModerationSummary>("/admin/moderation/summary")
 }
 
-export function listScans(params: ScanQuery) {
-  return api.get<Paginated<ModerationScan>>("/admin/moderation/scans", params)
+export function listScans(query: ScanQuery) {
+  return api.get<Paginated<ModerationScan>>("/admin/moderation/scans", query)
 }

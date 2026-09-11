@@ -1,10 +1,11 @@
-import { getQueryClient } from "@/lib/query-client"
-import { APP_CONFIG_KEY } from "@/features/config/hooks/use-app-config"
 import type { AppConfig, FlagKey } from "@/features/config/types"
+import { getQueryClient } from "@/lib/query/client"
+import { configKeys } from "./keys"
+
+export function cachedConfig(): AppConfig | undefined {
+  return getQueryClient().getQueryData<AppConfig>(configKeys.app())
+}
 
 export function flagOn(key: FlagKey): boolean {
-  return (
-    getQueryClient().getQueryData<AppConfig>(APP_CONFIG_KEY)?.flags[key] ??
-    false
-  )
+  return cachedConfig()?.flags[key] ?? false
 }

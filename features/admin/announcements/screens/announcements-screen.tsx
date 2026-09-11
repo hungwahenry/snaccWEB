@@ -1,39 +1,53 @@
 "use client"
 
-import { useAnnouncementsScreen } from "@/features/admin/announcements/hooks/use-announcements-screen"
+import { Megaphone } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
-import { Spinner } from "@/components/ui/spinner"
-import { AnnouncementsTable } from "@/features/admin/announcements/components/announcements-table"
-import { useAnnouncementMutations } from "@/features/admin/announcements/hooks/use-announcements"
-import { useAllUniversities } from "@/features/admin/universities/hooks/use-universities"
+import { SearchField } from "@/features/admin/shell/components/search-field"
+import { TableToolbar } from "@/features/admin/shell/components/table-toolbar"
+import { AnnouncementDialog } from "../components/announcement-dialog"
+import { AnnouncementsTable } from "../components/announcements-table"
+import { useAnnouncementsScreen } from "../hooks/use-announcements-screen"
 
 export function AnnouncementsScreen() {
-  const { patch, query } = useAnnouncementsScreen()
-  const universities = useAllUniversities()
-  const mutations = useAnnouncementMutations()
+  const { list, query, campuses, actions } = useAnnouncementsScreen()
 
   return (
     <>
       <PageHeader
         title="Announcements"
-        description="Broadcast a notice to every campus or one."
+        description="Send a notice to every campus, or to one."
+        action={
+          <CanAct permission="announcements.write">
+            <AnnouncementDialog
+              campuses={campuses.options}
+              trigger={
+                <Button size="sm">
+                  <Megaphone />
+                  New announcement
+                </Button>
+              }
+              onSubmit={actions.send}
+            />
+          </CanAct>
+        }
       />
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load announcements.
-        </p>
-      ) : (
-        <AnnouncementsTable
-          data={query.data}
-          onParams={patch}
-          universities={universities.data ?? []}
-          mutations={mutations}
-        />
-      )}
+      <AnnouncementsTable
+        query={query}
+        acronyms={campuses.acronyms}
+        onPageChange={list.setPage}
+        onDelete={actions.remove}
+        toolbar={
+          <TableToolbar onReset={list.filtered ? list.reset : undefined}>
+            <SearchField
+              value={list.values.q}
+              onChange={(q) => list.setFilter({ q })}
+              placeholder="Search titles and messages"
+            />
+          </TableToolbar>
+        }
+      />
     </>
   )
 }

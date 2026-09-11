@@ -1,152 +1,93 @@
-import type { Paginated } from "@/lib/api/types"
-import { getQueryClient } from "@/lib/query-client"
-import { FEED_KEY } from "@/lib/query-keys"
-import type { InfiniteData, QueryKey } from "@tanstack/react-query"
-import type { Snacc, SnaccReaction } from "../types"
+import type { QueryKey } from "@tanstack/react-query"
+import { userKeys } from "@/features/users/utils/keys"
+import type { PublicProfile } from "@/features/users/types"
+import type { PaginatedPages } from "@/lib/api/types"
+import { getQueryClient } from "@/lib/query/client"
+import {
+  allItems,
+  appendItem,
+  filterItems,
+  mapItems,
+  prependItem,
+} from "@/lib/query/pages"
+import type { QuotedGone, Snacc, SnaccReaction } from "../types"
+import {
+  commentSortOf,
+  isCommentList,
+  isSnaccDetail,
+  isSnaccList,
+  isUserList,
+  snaccKeys,
+} from "../utils/keys"
 import { withSummary } from "../utils/reactions"
-import { asSnacc, toEmbedded } from "../utils/resnaccs"
+import { asSnacc, isPlainResnacc, toEmbedded } from "../utils/resnaccs"
 
-type SnaccPages = InfiniteData<Paginated<Snacc>>
+type SnaccPages = PaginatedPages<Snacc>
 type Snapshot = [QueryKey, unknown][]
-
-const isFeed = (key: QueryKey) => key[0] === "feed"
-const isComments = (key: QueryKey) =>
-  key[0] === "snaccs" && key[2] === "comments"
-const isUserSnaccs = (key: QueryKey) =>
-  key[0] === "users" && key[1] === "snaccs"
-const isBookmarks = (key: QueryKey) => key[0] === "bookmarks"
-const isHashtagSnaccs = (key: QueryKey) =>
-  key[0] === "hashtags" && key[2] === "snaccs"
-const isSearchSnaccs = (key: QueryKey) =>
-  key[0] === "search" && key[1] === "snaccs"
-const isCampusSnaccs = (key: QueryKey) =>
-  key[0] === "universities" && key[2] === "snaccs"
-const isResnaccQuotes = (key: QueryKey) =>
-  key[0] === "snaccs" && key[2] === "resnaccs" && key[3] === "quotes"
-
-const isSnaccList = (key: QueryKey) =>
-  isFeed(key) ||
-  isComments(key) ||
-  isUserSnaccs(key) ||
-  isBookmarks(key) ||
-  isHashtagSnaccs(key) ||
-  isSearchSnaccs(key) ||
-  isCampusSnaccs(key) ||
-  isResnaccQuotes(key)
 
 const client = () => getQueryClient()
 
-const snaccLists = () =>
-  client().getQueriesData<SnaccPages>({
-    predicate: (query) => isSnaccList(query.queryKey),
-  })
+const inLists = {
+  predicate: (query: { queryKey: QueryKey }) => isSnaccList(query.queryKey),
+}
 
 const hasMedia = (snacc: Snacc) => snacc.images.length > 0 || Boolean(snacc.gif)
 
-const mapPages = (apply: (snacc: Snacc) => Snacc) => (data?: SnaccPages) =>
-  data && {
-    ...data,
-    pages: data.pages.map((page) => ({
-      ...page,
-      items: page.items.map(apply),
-    })),
-  }
-
-function setLists(update: (data?: SnaccPages) => SnaccPages | undefined) {
-  client().setQueriesData<SnaccPages>(
-    { predicate: (query) => isSnaccList(query.queryKey) },
-    update
-  )
+function changeLists(
+  change: (data: SnaccPages | undefined) => SnaccPages | undefined
+): void {
+  client().setQueriesData<SnaccPages>(inLists, change)
 }
-
-export function removeSnacc(id: string): void {
-  const removed = client().getQueryData<Snacc>(["snaccs", id])
-  if (removed) bumpProfileSnaccs(removed.author.username, -1)
-
-  const gone = (snacc: Snacc) => snacc.id === id || snacc.resnacc_of?.id === id
-
-  client().removeQueries({ queryKey: ["snaccs", id], exact: true })
-  setLists(
-    (data) =>
-      data && {
-        ...data,
-        pages: data.pages.map((page) => ({
-          ...page,
-          items: page.items.filter((snacc) => !gone(snacc)),
-          total: Math.max(0, page.total - page.items.filter(gone).length),
-        })),
-      }
-  )
-}
-
-export function removeAuthorSnaccs(userId: string): void {
-  setLists(
-    (data) =>
-      data && {
-        ...data,
-        pages: data.pages.map((page) => {
-          const kept = page.items.filter((snacc) => snacc.author.id !== userId)
-          return {
-            ...page,
-            items: kept,
-            total: Math.max(0, page.total - (page.items.length - kept.length)),
-          }
-        }),
-      }
-  )
-}
-
-const prepend = (snacc: Snacc) => (data?: SnaccPages) =>
-  data && {
-    ...data,
-    pages: data.pages.map((page, index) => ({
-      ...page,
-      total: page.total + 1,
-      items: index === 0 ? [snacc, ...page.items] : page.items,
-    })),
-  }
-
-const append = (snacc: Snacc) => (data?: SnaccPages) =>
-  data && {
-    ...data,
-    pages: data.pages.map((page, index) => ({
-      ...page,
-      total: page.total + 1,
-      items:
-        index === data.pages.length - 1 ? [...page.items, snacc] : page.items,
-    })),
-  }
 
 function bumpProfileSnaccs(
   username: string | null | undefined,
   delta: number
 ): void {
-  const key = username?.toLowerCase()
-  if (!key) return
-  client().setQueryData<{ snaccs_count: number } & Record<string, unknown>>(
-    ["users", "profile", key],
+  if (!username) return
+  client().setQueryData<PublicProfile>(
+    userKeys.profile(username),
     (profile) =>
-      profile
-        ? {
-            ...profile,
-            snaccs_count: Math.max(0, (profile.snaccs_count ?? 0) + delta),
-          }
-        : profile
+      profile && {
+        ...profile,
+        snaccs_count: Math.max(0, profile.snaccs_count + delta),
+      }
   )
 }
 
-function insertIntoProfile(snacc: Snacc, tabs: readonly string[]): void {
-  const username = snacc.author.username?.toLowerCase()
-  if (!username) return
+/** Takes a snacc out of every list; its plain resnaccs go with it and its quotes say why. */
+function dropFromLists(id: string, gone: QuotedGone): void {
+  changeLists((data) =>
+    mapItems(
+      filterItems(
+        data,
+        (snacc) =>
+          snacc.id !== id &&
+          !(snacc.resnacc_of?.id === id && isPlainResnacc(snacc))
+      ),
+      (snacc) =>
+        snacc.resnacc_of?.id === id
+          ? { ...snacc, resnacc_of: null, quoted_gone: gone }
+          : snacc
+    )
+  )
+}
 
-  client().setQueriesData<SnaccPages>(
-    {
-      predicate: (query) =>
-        isUserSnaccs(query.queryKey) &&
-        query.queryKey[2] === username &&
-        tabs.includes(query.queryKey[3] as string),
-    },
-    prepend(snacc)
+export function removeSnacc(id: string): void {
+  const removed = findSnacc(id)
+  if (removed) bumpProfileSnaccs(removed.author.username, -1)
+
+  client().removeQueries({ queryKey: snaccKeys.detail(id), exact: true })
+  dropFromLists(id, "deleted")
+}
+
+/** Hidden, not gone: nothing is counted down and the snacc itself stays open where it is. */
+export function removeHiddenSnacc(id: string): void {
+  dropFromLists(id, "unavailable")
+}
+
+export function removeAuthorSnaccs(userId: string): void {
+  changeLists((data) =>
+    filterItems(data, (snacc) => snacc.author.id !== userId)
   )
 }
 
@@ -154,25 +95,38 @@ export function insertSnacc(snacc: Snacc): void {
   bumpProfileSnaccs(snacc.author.username, 1)
 
   if (snacc.parent_id) {
-    const lists = client().getQueriesData<SnaccPages>({
-      predicate: (query) =>
-        isComments(query.queryKey) && query.queryKey[1] === snacc.parent_id,
-    })
-    for (const [key] of lists) {
-      client().setQueryData<SnaccPages>(
-        key,
-        key[3] === "oldest" ? append(snacc) : prepend(snacc)
+    const parentId = snacc.parent_id
+    for (const [key] of client().getQueriesData<SnaccPages>({
+      predicate: (query) => isCommentList(query.queryKey, parentId),
+    })) {
+      client().setQueryData<SnaccPages>(key, (data) =>
+        commentSortOf(key) === "oldest"
+          ? appendItem(data, snacc)
+          : prependItem(data, snacc)
       )
     }
     return
   }
 
-  client().setQueriesData<SnaccPages>({ queryKey: FEED_KEY }, prepend(snacc))
-  insertIntoProfile(snacc, hasMedia(snacc) ? ["snaccs", "media"] : ["snaccs"])
+  client().setQueriesData<SnaccPages>({ queryKey: snaccKeys.feeds() }, (data) =>
+    prependItem(data, snacc)
+  )
+
+  const username = snacc.author.username
+  if (!username) return
+  const tabs = hasMedia(snacc)
+    ? (["snaccs", "media"] as const)
+    : (["snaccs"] as const)
+  client().setQueriesData<SnaccPages>(
+    { predicate: (query) => isUserList(query.queryKey, username, tabs) },
+    (data) => prependItem(data, snacc)
+  )
 }
 
 export function replaceSnacc(tempId: string, real: Snacc): void {
-  setLists(mapPages((snacc) => (snacc.id === tempId ? real : snacc)))
+  changeLists((data) =>
+    mapItems(data, (snacc) => (snacc.id === tempId ? real : snacc))
+  )
 }
 
 export function patchSnacc(
@@ -196,19 +150,25 @@ export function patchSnacc(
     return snacc
   }
 
-  client().setQueryData<Snacc>(["snaccs", id], (snacc) => snacc && apply(snacc))
-  setLists(mapPages(apply))
+  client().setQueryData<Snacc>(
+    snaccKeys.detail(id),
+    (snacc) => snacc && apply(snacc)
+  )
+  changeLists((data) => mapItems(data, apply))
 
   return previous
 }
 
 export function setPinned(authorId: string, pinnedId: string | null): void {
-  setLists(
-    mapPages((snacc) =>
-      snacc.author.id === authorId
-        ? { ...snacc, pinned: snacc.id === pinnedId }
-        : snacc
-    )
+  const apply = (snacc: Snacc): Snacc =>
+    snacc.author.id === authorId
+      ? { ...snacc, pinned: snacc.id === pinnedId }
+      : snacc
+
+  changeLists((data) => mapItems(data, apply))
+  client().setQueriesData<Snacc>(
+    { predicate: (query) => isSnaccDetail(query.queryKey) },
+    (snacc) => snacc && apply(snacc)
   )
 }
 
@@ -221,12 +181,9 @@ export function setAuthorTier(authorId: string, tier: string | null): void {
         }
       : snacc
 
-  setLists(mapPages(apply))
+  changeLists((data) => mapItems(data, apply))
   client().setQueriesData<Snacc>(
-    {
-      predicate: (query) =>
-        query.queryKey[0] === "snaccs" && query.queryKey.length === 2,
-    },
+    { predicate: (query) => isSnaccDetail(query.queryKey) },
     (snacc) => snacc && apply(snacc)
   )
 }
@@ -237,17 +194,17 @@ export function patchSummary(
   next: string | null
 ): void {
   client().setQueryData<SnaccReaction[]>(
-    ["snaccs", id, "reactions", "summary"],
+    snaccKeys.reactionSummary(id),
     (tallies) => tallies && withSummary(tallies, previous, next)
   )
 }
 
 export function findSnacc(id: string): Snacc | undefined {
-  const single = client().getQueryData<Snacc>(["snaccs", id])
+  const single = client().getQueryData<Snacc>(snaccKeys.detail(id))
   if (single) return single
 
-  for (const [, data] of snaccLists()) {
-    for (const snacc of data?.pages.flatMap((page) => page.items) ?? []) {
+  for (const [, data] of client().getQueriesData<SnaccPages>(inLists)) {
+    for (const snacc of allItems(data)) {
       if (snacc.id === id) return snacc
       if (snacc.resnacc_of?.id === id) return asSnacc(snacc.resnacc_of)
     }
@@ -258,10 +215,40 @@ export function findSnacc(id: string): Snacc | undefined {
 export function snapshotSnaccs(): Snapshot {
   return client().getQueriesData({
     predicate: (query) =>
-      query.queryKey[0] === "snaccs" || isSnaccList(query.queryKey),
+      isSnaccDetail(query.queryKey) || isSnaccList(query.queryKey),
   })
 }
 
 export function restoreSnaccs(snapshot: Snapshot): void {
   snapshot.forEach(([key, data]) => client().setQueryData(key, data))
+}
+
+export function cancelSnaccQueries(id: string): Promise<void> {
+  return Promise.all([
+    client().cancelQueries({ queryKey: snaccKeys.detail(id) }),
+    client().cancelQueries(inLists),
+  ]).then(() => undefined)
+}
+
+export function commentsChanged(parentId: string): void {
+  void client().invalidateQueries({
+    queryKey: snaccKeys.commentLists(parentId),
+    refetchType: "none",
+  })
+  void client().invalidateQueries({ queryKey: snaccKeys.detail(parentId) })
+}
+
+export function resnaccsChanged(id: string): void {
+  void client().invalidateQueries({ queryKey: snaccKeys.resnaccSummary(id) })
+  void client().invalidateQueries({ queryKey: snaccKeys.resnaccers(id) })
+  void client().invalidateQueries({ queryKey: snaccKeys.quotes(id) })
+}
+
+export function reactionsChanged(id: string): void {
+  void client().invalidateQueries({ queryKey: snaccKeys.reactionSummary(id) })
+  void client().invalidateQueries({ queryKey: snaccKeys.reactorLists(id) })
+}
+
+export function savedChanged(): void {
+  void client().invalidateQueries({ queryKey: snaccKeys.bookmarks() })
 }

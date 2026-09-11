@@ -1,201 +1,122 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
-import { CanAct } from "@/features/admin/auth/components/can"
-import { Button } from "@/components/ui/button"
+import type { ReactElement } from "react"
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Field, FieldLabel } from "@/components/ui/field"
+  DialogForm,
+  FormDialog,
+} from "@/features/admin/shell/components/form-dialog"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
+  CheckboxField,
+  SelectField,
+  TextField,
+} from "@/features/admin/shell/components/form-fields"
+import { useDraft } from "@/features/admin/shell/hooks/use-draft"
+import { threadPath } from "@/features/admin/shell/routes"
+import { SuspensionFields } from "@/features/admin/suspension-reasons/components/suspension-fields"
+import type { AdminReport, ResolveDraft, SuspensionChoices } from "../types"
 import {
-  EMPTY_SUSPENSION,
-  SuspensionFields,
-  toSuspensionInput,
-} from "@/features/admin/suspension-reasons/components/suspension-fields"
-import type { useResolveReport } from "../hooks/use-reports"
-import type { AdminReport, ResolveReportInput } from "../types"
+  actChoices,
+  EMPTY_RESOLVE,
+  messageThreadId,
+  suspends,
+  targetNoun,
+  toggleAct,
+} from "../utils/reports"
+import { OUTCOME_OPTIONS } from "../utils/status"
 
-const TARGET_NOUN = {
-  snacc: "snacc",
-  user: "user",
-  message: "message",
-  moment: "moment",
-  chat_message: "room message",
-} as const
+function ResolveForm({
+  report,
+  suspension,
+  onSubmit,
+}: {
+  report: AdminReport
+  suspension: SuspensionChoices
+  onSubmit: (draft: ResolveDraft) => Promise<unknown>
+}) {
+  const { draft, set, text } = useDraft<ResolveDraft>(EMPTY_RESOLVE)
+  const choices = actChoices(report.target)
+  const thread = messageThreadId(report.target)
 
-function actChoicesFor(target: AdminReport["target"]) {
-  if (target?.type === "snacc")
-    return [
-      { value: "delete_snacc", label: "Remove the snacc" },
-      { value: "suspend_author", label: "Suspend the author" },
-    ]
-  if (target?.type === "user")
-    return [{ value: "suspend_user", label: "Suspend the user" }]
-  if (target?.type === "message")
-    return [
-      { value: "delete_message", label: "Remove the message" },
-      { value: "suspend_sender", label: "Suspend the sender" },
-    ]
-  if (target?.type === "chat_message")
-    return [
-      { value: "delete_chat_message", label: "Remove the message" },
-      { value: "suspend_sender", label: "Suspend the sender" },
-    ]
-  if (target?.type === "moment")
-    return [
-      { value: "delete_moment", label: "Remove the moment" },
-      { value: "suspend_moment_author", label: "Suspend whoever posted it" },
-    ]
-  return []
+  return (
+    <DialogForm submitLabel="Resolve" onSubmit={() => onSubmit(draft)}>
+      {thread ? (
+        <Link
+          href={threadPath(thread)}
+          className="text-sm font-medium underline underline-offset-4"
+        >
+          View the full thread →
+        </Link>
+      ) : null}
+      <SelectField
+        label="Outcome"
+        value={draft.status}
+        onChange={(status) => set("status", status)}
+        options={OUTCOME_OPTIONS}
+      />
+      {choices.length > 0 ? (
+        <fieldset className="flex flex-col gap-2">
+          <legend className="mb-1 text-sm font-medium">
+            Actions{" "}
+            <span className="font-normal text-muted-foreground">
+              (optional)
+            </span>
+          </legend>
+          {choices.map((choice) => (
+            <CheckboxField
+              key={choice.value}
+              label={choice.label}
+              checked={draft.acts.includes(choice.value)}
+              onChange={() => set("acts", toggleAct(draft.acts, choice.value))}
+            />
+          ))}
+        </fieldset>
+      ) : null}
+      {suspends(draft.acts) ? (
+        <SuspensionFields
+          value={draft.suspension}
+          onChange={(next) => set("suspension", next)}
+          reasons={suspension.reasons}
+          durations={suspension.durations}
+        />
+      ) : null}
+      <TextField
+        label="Note"
+        optional
+        multiline
+        rows={3}
+        maxLength={500}
+        {...text("note")}
+      />
+    </DialogForm>
+  )
 }
-
-const SUSPEND_ACTS = [
-  "suspend_user",
-  "suspend_author",
-  "suspend_sender",
-  "suspend_moment_author",
-]
 
 export function ResolveDialog({
   report,
-  resolve,
+  suspension,
+  trigger,
+  disabled,
+  onSubmit,
 }: {
   report: AdminReport
-  resolve: ReturnType<typeof useResolveReport>
+  suspension: SuspensionChoices
+  trigger: ReactElement
+  disabled?: boolean
+  onSubmit: (draft: ResolveDraft) => Promise<unknown>
 }) {
-  const [open, setOpen] = useState(false)
-  const [status, setStatus] = useState<"actioned" | "dismissed">("actioned")
-  const [note, setNote] = useState("")
-  const [acts, setActs] = useState<string[]>([])
-  const [draft, setDraft] = useState(EMPTY_SUSPENSION)
-
-  const target = report.target
-  const noun = target ? TARGET_NOUN[target.type] : "target"
-  const actChoices = actChoicesFor(target)
-  const threadId =
-    target?.type === "message" ? target.message.conversation.id : null
-  const suspending = acts.some((act) => SUSPEND_ACTS.includes(act))
-
-  function toggleAct(value: string) {
-    setActs((current) =>
-      current.includes(value)
-        ? current.filter((act) => act !== value)
-        : [...current, value]
-    )
-  }
-
-  function submit() {
-    const input: ResolveReportInput = { status }
-    if (target?.type === "snacc") input.snaccId = target.snacc.id
-    else if (target?.type === "user") input.reportedUserId = target.user.id
-    else if (target?.type === "message") input.messageId = target.message.id
-    else if (target?.type === "moment") input.momentId = target.moment.id
-    else if (target?.type === "chat_message")
-      input.chatMessageId = target.chat_message.id
-    if (note.trim()) input.note = note.trim()
-    if (acts.length > 0) input.acts = acts as ResolveReportInput["acts"]
-    if (suspending) input.suspension = toSuspensionInput(draft)
-    resolve.mutate(input, { onSuccess: () => setOpen(false) })
-  }
-
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <CanAct permission="reports.resolve">
-        <DialogTrigger
-          render={
-            <Button variant="outline" size="sm">
-              Resolve
-            </Button>
-          }
-        />
-      </CanAct>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Resolve reports</DialogTitle>
-        </DialogHeader>
-        <p className="text-sm text-muted-foreground">
-          Resolves every open report on this {noun} together.
-        </p>
-        {threadId ? (
-          <Link
-            href={`/admin/messages/${threadId}`}
-            className="text-sm font-medium underline underline-offset-4"
-          >
-            View the full thread →
-          </Link>
-        ) : null}
-        <Field>
-          <FieldLabel>Outcome</FieldLabel>
-          <Select
-            value={status}
-            onValueChange={(value) => value && setStatus(value as never)}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="actioned">Actioned</SelectItem>
-              <SelectItem value="dismissed">Dismissed</SelectItem>
-            </SelectContent>
-          </Select>
-        </Field>
-        {actChoices.length > 0 && (
-          <Field>
-            <FieldLabel>Actions (optional)</FieldLabel>
-            <div className="flex flex-col gap-1.5">
-              {actChoices.map((choice) => (
-                <button
-                  key={choice.value}
-                  type="button"
-                  onClick={() => toggleAct(choice.value)}
-                  className="flex items-center gap-2.5 text-left text-sm"
-                >
-                  <Checkbox
-                    checked={acts.includes(choice.value)}
-                    className="pointer-events-none"
-                    tabIndex={-1}
-                  />
-                  {choice.label}
-                </button>
-              ))}
-            </div>
-          </Field>
-        )}
-        {suspending ? (
-          <SuspensionFields value={draft} onChange={setDraft} />
-        ) : null}
-        <Field>
-          <FieldLabel>Note (optional)</FieldLabel>
-          <Textarea
-            value={note}
-            onChange={(event) => setNote(event.target.value)}
-            rows={3}
-            maxLength={500}
-          />
-        </Field>
-        <DialogFooter>
-          <DialogClose render={<Button variant="ghost">Cancel</Button>} />
-          <Button disabled={resolve.isPending} onClick={submit}>
-            Resolve
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <FormDialog
+      trigger={trigger}
+      disabled={disabled}
+      title="Resolve reports"
+      description={`Resolves every open report on this ${targetNoun(report.target)} together.`}
+    >
+      <ResolveForm
+        report={report}
+        suspension={suspension}
+        onSubmit={onSubmit}
+      />
+    </FormDialog>
   )
 }

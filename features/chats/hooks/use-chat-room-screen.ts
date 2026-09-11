@@ -1,106 +1,97 @@
 "use client"
 
-import { getErrorMessage } from "@/lib/api/errors"
-import { getQueryClient } from "@/lib/query-client"
-import { newId } from "@/lib/ids"
-import { useMutation } from "@tanstack/react-query"
-import { useEffect, useState } from "react"
-import { toast } from "sonner"
-import { useMe } from "@/features/auth/hooks/use-me"
+import { useEffect, useMemo, useRef, type RefObject } from "react"
+import { useThreadScroll } from "@/features/messages/hooks/use-thread-scroll"
+import { useReportSheet } from "@/features/reports/hooks/use-report-sheet"
+import { useLightbox } from "@/providers/lightbox-provider"
 import {
-  deleteChatMessage,
-  markChatRoomRead,
-  sendChatMessage,
-  setChatRoomMuted,
-} from "../api"
-import { replaceChatMessage, upsertChatMessage } from "../cache"
-import { CHAT_ROOMS_KEY } from "../keys"
-import type { ChatMessage } from "../types"
-import { useChatMessages } from "./use-chat-messages"
+  discardChatMessage,
+  retryChatMessage,
+} from "../cache/pending-chat-messages"
+import type { ChatMessageRowHandlers } from "../components/chat-message-row"
+import { roomSubtitle, roomTitle } from "../utils/rooms"
+import { useReactToChatMessage } from "./use-chat-actions"
+import { useChatComposer } from "./use-chat-composer"
+import { useChatMessageSheet } from "./use-chat-message-sheet"
+import { useChatReactionsSheet } from "./use-chat-reactions-sheet"
 import { useChatRooms } from "./use-chat-rooms"
+import { useChatThread } from "./use-chat-thread"
 import { useChatTyping } from "./use-chat-typing"
+import { useMuteChatRoom } from "./use-mute-chat-room"
 
-export function useChatRoomScreen(roomId: string) {
-  const me = useMe()
+type Elements = {
+  scrollRef: RefObject<HTMLDivElement | null>
+  inputRef: RefObject<HTMLTextAreaElement | null>
+}
+
+export function useChatRoomScreen(
+  roomId: string,
+  { scrollRef, inputRef }: Elements
+) {
   const rooms = useChatRooms()
   const room = rooms.data?.find((each) => each.id === roomId) ?? null
-  const { messages, loading, loadMore } = useChatMessages(roomId)
-  const [draft, setDraft] = useState("")
+  const { messages, items } = useChatThread(roomId)
   const typing = useChatTyping(roomId)
+  const react = useReactToChatMessage(roomId)
+  const mute = useMuteChatRoom(roomId)
+  const report = useReportSheet()
+  const lightbox = useLightbox()
+  const reactions = useChatReactionsSheet(messages.messages)
 
-  const refreshRooms = () =>
-    getQueryClient().invalidateQueries({ queryKey: CHAT_ROOMS_KEY })
+  const scroll = useThreadScroll(scrollRef, {
+    newestId: messages.messages[0]?.id,
+    oldestId: messages.messages.at(-1)?.id,
+    ready: !messages.loading,
+  })
 
-  // Opening the room is the read; anything after is counted again on the next open.
+  const composer = useChatComposer(roomId, {
+    inputRef,
+    onType: typing.signal,
+    onSent: scroll.scrollToBottom,
+  })
+
+  const sheet = useChatMessageSheet(roomId, {
+    onReply: composer.startReply,
+    onEdit: composer.startEdit,
+    onSeeReactions: reactions.onOpen,
+    onReport: report.open,
+  })
+
+  // One handler object for the whole room, so memoised rows never re-render for a new closure.
+  const latest = useRef({ react, composer, sheet, lightbox })
   useEffect(() => {
-    if (!roomId) return
-    void markChatRoomRead(roomId).then(refreshRooms).catch(() => undefined)
-  }, [roomId])
-
-  const send = useMutation({
-    mutationFn: sendChatMessage,
-    onSuccess: (message, input) =>
-      replaceChatMessage(roomId, { ...message, id: input.id }),
-    onError: (error) => toast.error(getErrorMessage(error)),
+    latest.current = { react, composer, sheet, lightbox }
   })
-
-  const mute = useMutation({
-    mutationFn: (muted: boolean) => setChatRoomMuted(roomId, muted),
-    onSuccess: refreshRooms,
-    onError: (error) => toast.error(getErrorMessage(error)),
-  })
-
-  const removal = useMutation({
-    mutationFn: deleteChatMessage,
-    onError: (error) => toast.error(getErrorMessage(error)),
-  })
-
-  function post() {
-    const body = draft.trim()
-    const user = me.data
-    const profile = user?.profile
-    if (!body || !user || !profile) return
-
-    const id = newId()
-    const optimistic: ChatMessage = {
-      id,
-      room_id: roomId,
-      body,
-      created_at: new Date().toISOString(),
-      mine: true,
-      deleted: false,
-      deleted_by_sender: false,
-      held: false,
-      sender: {
-        id: user.id,
-        username: profile.username ?? null,
-        display_name: profile.display_name ?? null,
-        avatar_url: profile.avatar_url ?? "",
-        official: false,
-      },
-      images: [],
-      reply_to: null,
-    }
-
-    upsertChatMessage(roomId, optimistic)
-    setDraft("")
-    send.mutate({ id, roomId, body })
-  }
+  const handlers = useMemo<ChatMessageRowHandlers>(
+    () => ({
+      onReact: (message, emoji) => latest.current.react(message, emoji),
+      onOpenActions: (message) => latest.current.sheet.openFor(message),
+      onReply: (message) => latest.current.composer.startReply(message),
+      onRetry: (message) => retryChatMessage(roomId, message.id),
+      onDiscard: (message) => discardChatMessage(roomId, message.id),
+      onOpenImages: (message, index) =>
+        latest.current.lightbox.open({ images: message.images, index }),
+    }),
+    [roomId]
+  )
 
   return {
     room,
+    title: roomTitle(room),
+    subtitle: roomSubtitle(room),
+    muted: room?.muted ?? false,
+    onToggleMuted: () => mute(!(room?.muted ?? false)),
+    canPost: !room?.locked,
     messages,
-    loading,
-    loadMore,
-    draft,
-    setDraft: (value: string) => {
-      setDraft(value)
-      if (value.trim()) typing.signal()
-    },
+    thread: items,
     typingLabel: typing.label,
-    canSend: draft.trim().length > 0 && !send.isPending,
-    post,
-    toggleMuted: () => mute.mutate(!room?.muted),
-    remove: (id: string) => removal.mutate(id),
+    onScroll: scroll.onScroll,
+    handlers,
+    composer: composer.field,
+    stickerTray: composer.stickerTray,
+    stickerCreator: composer.stickerCreator,
+    actions: sheet.sheet,
+    reactions: reactions.sheet,
+    report: report.sheet,
   }
 }

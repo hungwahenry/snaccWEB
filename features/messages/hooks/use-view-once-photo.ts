@@ -2,8 +2,6 @@
 
 import { useMutation } from "@tanstack/react-query"
 import { useCallback, useState } from "react"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
 import { openPhoto } from "../api"
 import { markPhotoOpened } from "../cache"
 import type { MessageImage } from "../types"
@@ -34,12 +32,11 @@ export function useViewOncePhoto(conversationId: string) {
       setOpened(result)
       markPhotoOpened(conversationId, result.photo.id)
     },
-    onError: (error) => toast.error(getErrorMessage(error)),
   })
 
   return {
     url: opened?.url ?? null,
-    opening: open.isPending,
+    openingId: open.isPending ? (open.variables?.photo.id ?? null) : null,
     open: open.mutate,
     close: useCallback(() => setOpened(null), []),
   }

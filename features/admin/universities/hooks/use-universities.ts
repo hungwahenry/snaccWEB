@@ -1,13 +1,8 @@
 "use client"
 
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { useMemo } from "react"
+import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
 import { MINUTE_MS } from "@/lib/duration"
 import {
   createUniversity,
@@ -16,58 +11,66 @@ import {
   listUniversities,
   updateUniversity,
 } from "../api"
-import type { ListUniversitiesParams, UpdateUniversityInput } from "../types"
+import type { UniversityDraft, UniversityListQuery } from "../types"
+import { adminUniversityKeys } from "../utils/keys"
+import {
+  acronymsById,
+  campusOptions,
+  toCreateInput,
+  toUpdateInput,
+} from "../utils/university"
 
-export function useUniversities(params: ListUniversitiesParams) {
+export function useUniversities(query: UniversityListQuery) {
   return useQuery({
-    queryKey: ["admin", "universities", params],
-    queryFn: () => listUniversities(params),
+    queryKey: adminUniversityKeys.list(query),
+    queryFn: () => listUniversities(query),
     placeholderData: keepPreviousData,
   })
 }
 
-export function useAllUniversities() {
-  return useQuery({
-    queryKey: ["admin", "universities", "all"],
+/** Every campus, for pickers and for naming campuses by acronym. */
+export function useCampuses() {
+  const query = useQuery({
+    queryKey: adminUniversityKeys.everything(),
     queryFn: listAllUniversities,
     staleTime: 5 * MINUTE_MS,
   })
+  const universities = query.data
+
+  return useMemo(
+    () => ({
+      universities: universities ?? [],
+      options: campusOptions(universities ?? []),
+      acronyms: acronymsById(universities ?? []),
+      loading: query.isPending,
+    }),
+    [universities, query.isPending]
+  )
 }
 
-export function useUniversityMutations() {
-  const queryClient = useQueryClient()
+export function useUniversityActions() {
+  const invalidates = [adminUniversityKeys.all()]
 
-  function onSuccess(message: string) {
-    return () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "universities"] })
-      toast.success(message)
-    }
-  }
-  function onError(error: unknown) {
-    toast.error(getErrorMessage(error))
-  }
+  const { run: save } = useAdminMutation({
+    mutationFn: ({ draft, id }: { draft: UniversityDraft; id?: string }) =>
+      id
+        ? updateUniversity(id, toUpdateInput(draft))
+        : createUniversity(toCreateInput(draft)),
+    success: (_university, { id }) =>
+      id ? "University saved." : "University added.",
+    invalidates,
+  })
+  const { run: remove } = useAdminMutation({
+    mutationFn: (id: string) => deleteUniversity(id),
+    success: "University deleted.",
+    invalidates,
+  })
 
-  return {
-    create: useMutation({
-      mutationFn: createUniversity,
-      onSuccess: onSuccess("University created."),
-      onError,
+  return useMemo(
+    () => ({
+      save: (draft: UniversityDraft, id?: string) => save({ draft, id }),
+      remove,
     }),
-    update: useMutation({
-      mutationFn: ({
-        id,
-        input,
-      }: {
-        id: string
-        input: UpdateUniversityInput
-      }) => updateUniversity(id, input),
-      onSuccess: onSuccess("University updated."),
-      onError,
-    }),
-    remove: useMutation({
-      mutationFn: (id: string) => deleteUniversity(id),
-      onSuccess: onSuccess("University deleted."),
-      onError,
-    }),
-  }
+    [save, remove]
+  )
 }

@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils"
+import { speedLabel } from "../utils/labels"
 
 export function SpeedPill({
   speed,
@@ -16,9 +17,9 @@ export function SpeedPill({
         event.stopPropagation()
         onPress()
       }}
-      aria-label={`Playback speed ${speed}x, tap to change`}
+      aria-label={speedLabel(speed)}
       className={cn(
-        "min-w-9 rounded-full px-1.5 py-1 text-[11px] font-bold tabular-nums transition-opacity active:opacity-70",
+        "min-w-9 rounded-full px-1.5 py-1 text-[11px] font-bold tabular-nums transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-ring active:opacity-70",
         onDark ? "bg-background/20 text-background" : "bg-muted text-foreground"
       )}
     >

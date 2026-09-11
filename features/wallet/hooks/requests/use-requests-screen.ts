@@ -1,40 +1,43 @@
 "use client"
 
 import { useState } from "react"
-import type { MoneyRequest } from "../../types"
-import type { RequestBox } from "../../utils/requests"
-import { useRequestActions } from "./use-request-actions"
+import type { RequestBox } from "../../types"
+import { useRequestSheet } from "./use-request-sheet"
 import { useRequests } from "./use-requests"
+
+const EMPTY: Record<RequestBox, { title: string; description: string }> = {
+  incoming: {
+    title: "No requests yet",
+    description: "No one is asking you for money.",
+  },
+  outgoing: {
+    title: "Nothing asked yet",
+    description: "You have not asked anyone yet.",
+  },
+}
 
 export function useRequestsScreen() {
   const [box, setBox] = useState<RequestBox>("incoming")
   const list = useRequests(box)
-  const actions = useRequestActions()
-  const [detail, setDetail] = useState<MoneyRequest | null>(null)
-  const [detailOpen, setDetailOpen] = useState(false)
-
-  function fromSheet(act: (request: MoneyRequest) => void) {
-    return (request: MoneyRequest) => {
-      setDetailOpen(false)
-      act(request)
-    }
-  }
+  const { actions, open, sheet } = useRequestSheet()
 
   return {
     box,
     setBox,
-    list,
-    busyId: actions.busyId,
-    pay: actions.pay,
-    decline: actions.decline,
-    cancel: actions.cancel,
-    detail,
-    detailOpen,
-    setDetailOpen,
-    open: (request: MoneyRequest) => {
-      setDetail(request)
-      setDetailOpen(true)
+    // The previous box's rows would read as this box's until the new page lands.
+    list: {
+      items: list.stale ? [] : list.items,
+      loading: list.loading || list.stale,
+      failed: list.failed,
+      retry: list.retry,
+      loadingMore: list.loadingMore,
+      loadMore: list.loadMore,
     },
-    fromSheet,
+    empty: EMPTY[box],
+    isBusy: actions.isBusy,
+    open,
+    sheet: { ...sheet, box },
   }
 }
+
+export type RequestsScreenProps = ReturnType<typeof useRequestsScreen>

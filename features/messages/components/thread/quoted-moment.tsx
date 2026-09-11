@@ -1,5 +1,7 @@
+import { MomentThumb } from "@/features/moments/components/moment-thumb"
 import { cn } from "@/lib/utils"
 import type { QuotedMoment } from "../../types"
+import { momentLabel } from "../../utils/glimpse"
 
 export function QuotedMomentCard({
   moment,
@@ -9,46 +11,26 @@ export function QuotedMomentCard({
   mine: boolean
 }) {
   const muted = mine ? "text-primary-foreground/55" : "text-muted-foreground"
-  const label = mine ? "You replied to their moment" : "Replied to your moment"
+  const gone = moment.expired || moment.id === null
 
-  if (moment.expired || !moment.id) {
+  if (gone) {
     return (
-      <p
-        className={cn("truncate px-3.5 pt-2.5 text-xs italic", muted)}
-      >{`${label} · no longer available`}</p>
+      <p className={cn("truncate px-3.5 pt-2.5 text-xs italic", muted)}>
+        {momentLabel(mine, true)}
+      </p>
     )
   }
 
   return (
     <div className="flex flex-col items-center gap-1.5 px-2 pt-2.5 pb-1.5">
-      <p className={cn("w-[124px] text-center text-[11px]", muted)}>{label}</p>
-      <div
-        className="relative overflow-hidden rounded-xl"
-        style={{
-          width: 124,
-          height: 186,
-          backgroundColor: moment.background ?? "#000",
-        }}
-      >
-        {moment.image_url ? (
-          <>
-            <img
-              src={moment.image_url}
-              alt=""
-              className="size-full object-cover"
-            />
-            {moment.body ? (
-              <p className="absolute inset-x-0 bottom-0 line-clamp-2 bg-black/45 px-2 py-1.5 text-[10px] leading-[13px] font-medium text-white">
-                {moment.body}
-              </p>
-            ) : null}
-          </>
-        ) : (
-          <p className="flex size-full items-center justify-center px-2.5 text-center text-[13px] leading-[17px] font-extrabold text-white">
-            {moment.body}
-          </p>
-        )}
-      </div>
+      <p className={cn("w-[124px] text-center text-[11px]", muted)}>
+        {momentLabel(mine, false)}
+      </p>
+      <MomentThumb
+        body={moment.body}
+        background={moment.background}
+        imageUrl={moment.image_url}
+      />
     </div>
   )
 }

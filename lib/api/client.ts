@@ -41,7 +41,8 @@ async function parse<T>(res: Response, fallback: string): Promise<T> {
     )
   }
 
-  return (json as ApiResponse<T>).data
+  // A 204 has no body to read `data` out of: the route had nothing to say.
+  return (json as ApiResponse<T> | null)?.data as T
 }
 
 async function request<T>(

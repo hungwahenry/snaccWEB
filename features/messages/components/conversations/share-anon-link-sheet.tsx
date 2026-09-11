@@ -81,7 +81,7 @@ export function ShareAnonLinkSheet({
             </span>
           </span>
           {copied ? (
-            <CheckIcon className={cn("text-success size-5")} />
+            <CheckIcon className={cn("size-5 text-success")} />
           ) : (
             <CopyIcon className="size-5 text-muted-foreground" />
           )}

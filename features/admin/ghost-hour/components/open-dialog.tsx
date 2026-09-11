@@ -1,68 +1,68 @@
 "use client"
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import { useState, type ReactElement } from "react"
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Field, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+  DialogForm,
+  FormDialog,
+} from "@/features/admin/shell/components/form-dialog"
+import { TextField } from "@/features/admin/shell/components/form-fields"
+import { parseWindowMinutes, WINDOW_MINUTES_INVALID } from "../utils/ghost-hour"
 
-export function OpenDialog({
+function OpenForm({
   defaultMinutes,
-  pending,
   onOpen,
 }: {
   defaultMinutes: number
-  pending: boolean
-  onOpen: (minutes: number | undefined, close: () => void) => void
+  onOpen: (minutes: number | undefined) => Promise<unknown>
 }) {
-  const [open, setOpen] = useState(false)
   const [minutes, setMinutes] = useState("")
-
-  const parsed = Number(minutes)
-  const value =
-    minutes.trim() !== "" && Number.isFinite(parsed) && parsed > 0
-      ? Math.round(parsed)
-      : undefined
+  const length = parseWindowMinutes(minutes)
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button size="sm">Open Ghost Hour now</Button>} />
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Open Ghost Hour</DialogTitle>
-        </DialogHeader>
-        <p className="text-sm text-muted-foreground">
+    <DialogForm
+      submitLabel="Open now"
+      canSubmit={length.ok}
+      onSubmit={() => (length.ok ? onOpen(length.minutes) : undefined)}
+    >
+      <TextField
+        label="Window length in minutes"
+        optional
+        inputMode="numeric"
+        placeholder={String(defaultMinutes)}
+        value={minutes}
+        onChange={(event) => setMinutes(event.target.value)}
+        hint={
+          length.ok ? null : (
+            <span className="text-destructive">{WINDOW_MINUTES_INVALID}</span>
+          )
+        }
+      />
+    </DialogForm>
+  )
+}
+
+export function OpenDialog({
+  defaultMinutes,
+  trigger,
+  onOpen,
+}: {
+  defaultMinutes: number
+  trigger: ReactElement
+  onOpen: (minutes: number | undefined) => Promise<unknown>
+}) {
+  return (
+    <FormDialog
+      trigger={trigger}
+      title="Open Ghost Hour"
+      description={
+        <>
           This broadcasts a push to{" "}
           <span className="font-medium text-foreground">every device</span> and
           turns on anonymous posting for the window.
-        </p>
-        <Field>
-          <FieldLabel>Window length (minutes, optional)</FieldLabel>
-          <Input
-            type="number"
-            value={minutes}
-            onChange={(event) => setMinutes(event.target.value)}
-            placeholder={String(defaultMinutes)}
-          />
-        </Field>
-        <DialogFooter>
-          <DialogClose render={<Button variant="ghost">Cancel</Button>} />
-          <Button
-            disabled={pending}
-            onClick={() => onOpen(value, () => setOpen(false))}
-          >
-            Open now
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </>
+      }
+    >
+      <OpenForm defaultMinutes={defaultMinutes} onOpen={onOpen} />
+    </FormDialog>
   )
 }

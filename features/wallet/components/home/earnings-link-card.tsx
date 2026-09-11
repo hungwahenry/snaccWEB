@@ -1,18 +1,8 @@
 import { ChevronRightIcon, SparklesIcon } from "lucide-react"
 import Link from "next/link"
-import { formatNaira } from "@/lib/format"
 import { EARNINGS_PATH } from "../../routes"
-import type { WalletOverview } from "../../types"
 
-export function EarningsLinkCard({
-  earnings,
-}: {
-  earnings: WalletOverview["earnings"]
-}) {
-  const cleared = earnings.milestones.filter(
-    (milestone) => milestone.met
-  ).length
-
+export function EarningsLinkCard({ line }: { line: string }) {
   return (
     <Link
       href={EARNINGS_PATH}
@@ -23,11 +13,7 @@ export function EarningsLinkCard({
       </span>
       <span className="flex min-w-0 flex-1 flex-col">
         <span className="font-bold text-foreground">Monetisation</span>
-        <span className="truncate text-sm text-muted-foreground">
-          {earnings.claimable
-            ? `${formatNaira(earnings.balance)} ready to claim`
-            : `${formatNaira(earnings.balance)} earned — ${cleared} of ${earnings.milestones.length} milestones`}
-        </span>
+        <span className="truncate text-sm text-muted-foreground">{line}</span>
       </span>
       <ChevronRightIcon className="size-5 text-muted-foreground" />
     </Link>

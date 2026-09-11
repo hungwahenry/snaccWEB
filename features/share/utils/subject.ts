@@ -1,5 +1,6 @@
 import { shareLink } from "@/lib/share-links"
 import type { ShareSubject } from "../types"
+import { snaccShareText } from "@/features/snaccs/utils/share"
 
 export function shareable(subject: ShareSubject): boolean {
   return subject.kind !== "profile" || Boolean(subject.profile.username)
@@ -20,13 +21,7 @@ export function labelFor(subject: ShareSubject): string {
 
 export function textFor(subject: ShareSubject): string {
   if (subject.kind === "snacc") {
-    const who = subject.snacc.anonymous
-      ? null
-      : (subject.snacc.author.display_name ??
-        (subject.snacc.author.username
-          ? `@${subject.snacc.author.username}`
-          : null))
-    return who ? `${who} on Snacc 👀` : "Check out this snacc on Snacc 👀"
+    return snaccShareText(subject.snacc)
   }
   if (subject.kind === "campus") return `${subject.university.name} on Snacc 👀`
   return `Check out @${subject.profile.username} on Snacc 👀`

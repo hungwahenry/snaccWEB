@@ -1,69 +1,26 @@
-"use client"
-
-import { MessageSquare, Sparkles, UserRound } from "lucide-react"
+import {
+  MessageSquare,
+  MessagesSquare,
+  Sparkles,
+  UserRound,
+} from "lucide-react"
 import Link from "next/link"
 import type { ReactNode } from "react"
-import { handleOf } from "@/lib/format"
-import type { AdminReport, ReportTarget } from "../types"
+import { reportPath } from "@/features/admin/shell/routes"
+import type { AdminReport, ReportTargetType } from "../types"
+import { describeTarget, targetThumb } from "../utils/reports"
 
-function thumbOf(target: NonNullable<ReportTarget>): string | null {
-  if (target.type === "user") return null
-  const content =
-    target.type === "snacc"
-      ? target.snacc
-      : target.type === "moment"
-        ? target.moment
-        : target.type === "chat_message"
-          ? target.chat_message
-          : target.message
-
-  return (
-    content.images[0]?.url ?? content.gif?.url ?? content.sticker?.url ?? null
-  )
-}
-
-const FALLBACK_ICON: Record<string, ReactNode> = {
+const FALLBACK_ICON: Record<ReportTargetType, ReactNode> = {
   snacc: <Sparkles className="size-4" />,
   moment: <Sparkles className="size-4" />,
   message: <MessageSquare className="size-4" />,
-  chat_message: <MessageSquare className="size-4" />,
+  chat_message: <MessagesSquare className="size-4" />,
   user: <UserRound className="size-4" />,
 }
 
-function describe(target: ReportTarget): { title: string; who: string } {
-  if (!target) return { title: "Target is gone", who: "—" }
-  if (target.type === "snacc") {
-    return {
-      title: target.snacc.body?.slice(0, 60) || "Media snacc",
-      who: handleOf(target.snacc.author),
-    }
-  }
-  if (target.type === "user") {
-    return { title: "The account itself", who: handleOf(target.user) }
-  }
-  if (target.type === "moment") {
-    return {
-      title: target.moment.body?.slice(0, 60) || "Photo moment",
-      who: handleOf(target.moment.author),
-    }
-  }
-
-  if (target.type === "chat_message") {
-    return {
-      title: target.chat_message.body?.slice(0, 60) || "Room message",
-      who: handleOf(target.chat_message.sender),
-    }
-  }
-
-  return {
-    title: target.message.body?.slice(0, 60) || "Ghost message",
-    who: handleOf(target.message.sender),
-  }
-}
-
 export function ReportTargetCell({ report }: { report: AdminReport }) {
-  const { title, who } = describe(report.target)
-  const thumb = report.target ? thumbOf(report.target) : null
+  const { title, who } = describeTarget(report.target)
+  const thumb = targetThumb(report.target)
 
   return (
     <div className="flex items-center gap-3">
@@ -71,12 +28,12 @@ export function ReportTargetCell({ report }: { report: AdminReport }) {
         {thumb ? (
           <img src={thumb} alt="" className="size-full object-cover" />
         ) : (
-          (FALLBACK_ICON[report.target?.type ?? "user"] ?? null)
+          FALLBACK_ICON[report.target?.type ?? "user"]
         )}
       </div>
       <div className="min-w-0">
         <Link
-          href={`/admin/reports/${report.id}`}
+          href={reportPath(report.id)}
           className="block truncate text-sm font-medium underline-offset-4 hover:underline"
         >
           {title}

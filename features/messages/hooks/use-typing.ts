@@ -1,47 +1,26 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-import { useRealtimeEvent } from "@/hooks/use-realtime-event"
+import { useEffect } from "react"
+import { useTypingPresence } from "@/hooks/use-typing-presence"
 import { sendTyping } from "../api"
 
-const TYPING_TTL = 4000
-const TYPING_THROTTLE = 2500
-
+/** Whether the other person is typing; a new message from them ends it. */
 export function useTyping(
   conversationId: string,
-  resetKey: string | undefined
+  newestId: string | undefined
 ) {
-  const [typing, setTyping] = useState(false)
-  const lastPing = useRef(0)
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  useEffect(() => () => clearTimeout(timer.current ?? undefined), [])
-
-  // A new message from them means they stopped typing, whatever the timer says.
-  const [shownKey, setShownKey] = useState(resetKey)
-  if (resetKey !== shownKey) {
-    setShownKey(resetKey)
-    setTyping(false)
-  }
-
-  useRealtimeEvent("conversation.typing", (payload) => {
-    if (
-      (payload as { conversation_id?: string }).conversation_id !==
+  const presence = useTypingPresence({
+    event: "conversation.typing",
+    typist: (payload) =>
+      (payload as { conversation_id?: string }).conversation_id ===
       conversationId
-    )
-      return
-    setTyping(true)
-    clearTimeout(timer.current ?? undefined)
-    timer.current = setTimeout(() => setTyping(false), TYPING_TTL)
+        ? { id: conversationId, name: "" }
+        : null,
+    ping: () => void sendTyping(conversationId).catch(() => undefined),
   })
 
-  function notifyTyping() {
-    const now = Date.now()
-    if (now - lastPing.current > TYPING_THROTTLE) {
-      lastPing.current = now
-      void sendTyping(conversationId).catch(() => undefined)
-    }
-  }
+  const { clear } = presence
+  useEffect(clear, [newestId, clear])
 
-  return { typing, notifyTyping }
+  return { typing: presence.names.length > 0, notifyTyping: presence.signal }
 }

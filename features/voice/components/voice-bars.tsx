@@ -1,12 +1,5 @@
 import { cn } from "@/lib/utils"
-
-const BAR_WIDTH = 3
-const GAP = 3
-const MIN_HEIGHT = 3
-
-export function barCount(width: number): number {
-  return Math.max(1, Math.floor((width + GAP) / (BAR_WIDTH + GAP)))
-}
+import { BAR_GAP, BAR_WIDTH, barLit, MIN_BAR_HEIGHT } from "../utils/wave"
 
 export function VoiceBars({
   levels,
@@ -25,25 +18,26 @@ export function VoiceBars({
 
   return (
     <div
+      aria-hidden
       className="pointer-events-none flex items-center"
-      style={{ height, gap: GAP }}
+      style={{ height, gap: BAR_GAP }}
     >
       {levels.map((level, index) => (
         <span
           key={index}
           className={cn(
-            "rounded-full",
+            "shrink-0 rounded-full",
             progress === undefined
               ? className
               : cn(activeClassName, "transition-opacity duration-[120ms]")
           )}
           style={{
             width: BAR_WIDTH,
-            height: Math.max(MIN_HEIGHT, level * height),
+            height: Math.max(MIN_BAR_HEIGHT, level * height),
             opacity:
               progress === undefined
                 ? undefined
-                : progress * total >= index + 1
+                : barLit(progress, index, total)
                   ? 1
                   : 0.28,
           }}

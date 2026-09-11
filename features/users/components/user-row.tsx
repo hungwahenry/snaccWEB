@@ -1,27 +1,38 @@
-import type { ReactNode } from "react"
+import { memo, type ReactNode } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
-import { UserAvatar } from "@/components/ui/user-avatar"
-import type { SnaccAuthor } from "@/features/snaccs/types"
 import { cn } from "@/lib/utils"
+import type { Author } from "../types"
+import { nameOf } from "../utils/names"
 import { TierName } from "./flair"
+import { PersonAvatar } from "./person-avatar"
 import { ProfileLink } from "./profile-link"
 
+export type RowPerson = Pick<
+  Author,
+  | "id"
+  | "username"
+  | "display_name"
+  | "avatar_url"
+  | "score"
+  | "official"
+  | "is_birthday"
+>
+
 type UserRowProps = {
-  user: SnaccAuthor
+  user: RowPerson
   trailing?: ReactNode
   className?: string
 }
 
-export function UserRow({ user, trailing, className }: UserRowProps) {
+export const UserRow = memo(function UserRow({
+  user,
+  trailing,
+  className,
+}: UserRowProps) {
   return (
     <div className={cn("flex items-center gap-3 py-2.5", className)}>
-      <ProfileLink username={user.username} className="shrink-0">
-        <UserAvatar
-          alt={user.display_name ?? "User"}
-          avatarUrl={user.avatar_url}
-          name={user.username}
-          className="size-10"
-        />
+      <ProfileLink username={user.username} className="shrink-0" tabIndex={-1}>
+        <PersonAvatar person={user} className="size-10" />
       </ProfileLink>
 
       <ProfileLink username={user.username} className="min-w-0 flex-1">
@@ -30,7 +41,7 @@ export function UserRow({ user, trailing, className }: UserRowProps) {
             score={user.score}
             official={user.official}
             birthday={user.is_birthday}
-            name={user.display_name ?? user.username}
+            name={nameOf(user)}
             className="font-bold text-foreground"
           />
         </span>
@@ -44,7 +55,7 @@ export function UserRow({ user, trailing, className }: UserRowProps) {
       {trailing}
     </div>
   )
-}
+})
 
 export function UserRowSkeleton() {
   return (

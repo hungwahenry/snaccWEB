@@ -1,24 +1,27 @@
 import Link from "next/link"
+import { memo } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { PersonAvatar } from "@/features/users/components/person-avatar"
 import { timeAgo } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { conversationPath } from "../../routes"
 import type { Conversation } from "../../types"
 import { conversationPreview, partyName } from "../../utils/preview"
-import { MessageAvatar } from "./message-avatar"
 import { StreakFlame } from "./streak-flame"
 
-export function ConversationRow({
+function ConversationRowComponent({
   conversation,
 }: {
   conversation: Conversation
 }) {
+  const unread = conversation.has_unread
+
   return (
     <Link
       href={conversationPath(conversation.id)}
       className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-accent/40 active:opacity-70 sm:px-6"
     >
-      <MessageAvatar party={conversation.other} />
+      <PersonAvatar person={conversation.other} className="size-12" />
 
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="flex items-center gap-2">
@@ -30,14 +33,11 @@ export function ConversationRow({
               Anonymous
             </span>
           ) : null}
-          <StreakFlame days={conversation.streak} className="ml-auto" />
-          <span
-            className={cn(
-              "shrink-0 text-xs text-muted-foreground",
-              conversation.streak > 0 ? undefined : "ml-auto"
-            )}
-          >
-            {timeAgo(conversation.last_message_at)}
+          <span className="ml-auto flex shrink-0 items-center gap-2">
+            <StreakFlame days={conversation.streak} />
+            <span className="text-xs text-muted-foreground">
+              {timeAgo(conversation.last_message_at)}
+            </span>
           </span>
         </span>
 
@@ -45,21 +45,24 @@ export function ConversationRow({
           <span
             className={cn(
               "min-w-0 flex-1 truncate text-sm",
-              conversation.has_unread
-                ? "font-medium text-foreground"
-                : "text-muted-foreground"
+              unread ? "font-medium text-foreground" : "text-muted-foreground"
             )}
           >
             {conversationPreview(conversation)}
           </span>
-          {conversation.has_unread ? (
-            <span className="size-2 shrink-0 rounded-full bg-primary" />
+          {unread ? (
+            <span
+              aria-label="Unread"
+              className="size-2 shrink-0 rounded-full bg-primary"
+            />
           ) : null}
         </span>
       </span>
     </Link>
   )
 }
+
+export const ConversationRow = memo(ConversationRowComponent)
 
 export function ConversationRowSkeleton() {
   return (

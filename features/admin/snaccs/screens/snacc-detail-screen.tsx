@@ -1,24 +1,20 @@
 "use client"
 
-import { DetailScreen } from "@/features/admin/shell/ui/detail-screen"
-import { SnaccDetail } from "@/features/admin/snaccs/components/snacc-detail"
-import {
-  useSnacc,
-  useSnaccMutations,
-} from "@/features/admin/snaccs/hooks/use-snaccs"
+import { BackLink } from "@/features/admin/shell/components/back-link"
+import { QueryView } from "@/features/admin/shell/components/query-view"
+import { SNACCS_PATH } from "@/features/admin/shell/routes"
+import { SnaccDetail } from "../components/snacc-detail"
+import { useSnaccDetailScreen } from "../hooks/use-snacc-detail-screen"
 
 export function SnaccDetailScreen({ id }: { id: string }) {
-  const query = useSnacc(id)
-  const actions = useSnaccMutations()
+  const { query, actions } = useSnaccDetailScreen(id)
 
   return (
-    <DetailScreen
-      backHref="/admin/snaccs"
-      backLabel="Back to snaccs"
-      missing="Couldn't load this snacc."
-      query={query}
-    >
-      {(snacc) => <SnaccDetail snacc={snacc} actions={actions} />}
-    </DetailScreen>
+    <>
+      <BackLink href={SNACCS_PATH} label="Back to snaccs" />
+      <QueryView query={query} what="this snacc">
+        {(snacc) => <SnaccDetail snacc={snacc} actions={actions} />}
+      </QueryView>
+    </>
   )
 }

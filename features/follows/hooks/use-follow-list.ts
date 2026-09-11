@@ -2,10 +2,11 @@
 
 import { listFollows } from "../api"
 import type { FollowTab } from "../types"
-import { useFollowableList } from "./use-followable-list"
+import { followKeys } from "../utils/keys"
+import { usePeopleList } from "./use-people-list"
 
 export function useFollowList(username: string, tab: FollowTab) {
-  return useFollowableList(["users", tab, username.toLowerCase()], (page) =>
+  return usePeopleList(followKeys.follows(username, tab), (page) =>
     listFollows(username, tab, page)
   )
 }

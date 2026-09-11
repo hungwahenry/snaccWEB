@@ -1,31 +1,13 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { toast } from "sonner"
-import { levelFromMetering } from "../utils/levels"
+import { showErrorMessage } from "@/lib/feedback"
+import type { VoiceDraft } from "../types"
+import { decibelsOf, levelFromMetering } from "../utils/levels"
+import { micErrorMessage, MIN_TAKE_MS, pickMimeType } from "../utils/recording"
 
 const TRAIL = 72
 const TICK_MS = 90
-const MIN_TAKE_MS = 700
-
-export interface VoiceDraft {
-  uri: string
-  file: Blob
-  mimeType: string
-  durationMs: number
-}
-
-const CANDIDATES = [
-  "audio/webm;codecs=opus",
-  "audio/webm",
-  "audio/mp4",
-  "audio/ogg;codecs=opus",
-]
-
-function pickMimeType(): string | undefined {
-  if (typeof MediaRecorder === "undefined") return undefined
-  return CANDIDATES.find((type) => MediaRecorder.isTypeSupported(type))
-}
 
 export function useVoiceRecorder() {
   const [recording, setRecording] = useState(false)
@@ -65,16 +47,13 @@ export function useVoiceRecorder() {
     if (!node) return
     const samples = new Float32Array(node.fftSize)
     node.getFloatTimeDomainData(samples)
-    let sum = 0
-    for (const sample of samples) sum += sample * sample
-    const rms = Math.sqrt(sum / samples.length)
-    const db = rms > 0 ? 20 * Math.log10(rms) : -Infinity
-    setLevels((current) => [...current, levelFromMetering(db)].slice(-TRAIL))
+    const level = levelFromMetering(decibelsOf(samples))
+    setLevels((current) => [...current, level].slice(-TRAIL))
   }, [])
 
   const start = useCallback(async (): Promise<boolean> => {
     if (typeof MediaRecorder === "undefined" || !navigator.mediaDevices) {
-      toast.error("This browser cannot record audio.")
+      showErrorMessage("This browser cannot record audio.")
       return false
     }
 
@@ -88,7 +67,9 @@ export function useVoiceRecorder() {
         return false
       }
 
-      const mimeType = pickMimeType()
+      const mimeType = pickMimeType((type) =>
+        MediaRecorder.isTypeSupported(type)
+      )
       const instance = new MediaRecorder(
         media,
         mimeType ? { mimeType } : undefined
@@ -117,14 +98,7 @@ export function useVoiceRecorder() {
       timer.current = window.setInterval(tick, TICK_MS)
       return true
     } catch (error) {
-      const denied =
-        error instanceof DOMException &&
-        (error.name === "NotAllowedError" || error.name === "SecurityError")
-      toast.error(
-        denied
-          ? "Microphone access is off. Allow it in your browser settings."
-          : "Snacc needs your microphone to record."
-      )
+      showErrorMessage(micErrorMessage(error))
       return false
     } finally {
       setPreparing(false)
@@ -181,13 +155,4 @@ export function useVoiceRecorder() {
   useEffect(() => () => teardown(), [teardown])
 
   return { recording, preparing, durationMs, levels, start, stop, cancel }
-}
-
-export type VoiceRecorder = ReturnType<typeof useVoiceRecorder>
-
-export function voiceFileName(mimeType: string): string {
-  if (mimeType.includes("mp4")) return "voice.m4a"
-  if (mimeType.includes("ogg")) return "voice.ogg"
-  if (mimeType.includes("mpeg")) return "voice.mp3"
-  return "voice.webm"
 }

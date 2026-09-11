@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { toast } from "sonner"
 import { openExternal } from "@/lib/links"
 import { sameOriginMedia } from "@/lib/media-url"
+import { shareOrDownload } from "@/lib/share-file"
 
 function fileNameFor(url: string): string {
   const name = url.split("?")[0].split("/").pop()
@@ -21,23 +21,8 @@ export function useSaveImage() {
     try {
       const blob = await fetch(sameOriginMedia(url)).then((res) => res.blob())
       const name = fileNameFor(url)
-      const file = new File([blob], name, { type: blob.type })
-
-      if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file] })
-        return
-      }
-
-      const href = URL.createObjectURL(blob)
-      const link = document.createElement("a")
-      link.href = href
-      link.download = name
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      URL.revokeObjectURL(href)
-    } catch (error) {
-      if ((error as { name?: string }).name === "AbortError") return
+      await shareOrDownload(new File([blob], name, { type: blob.type }))
+    } catch {
       openExternal(url)
     } finally {
       setSaving(false)

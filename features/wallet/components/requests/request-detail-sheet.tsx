@@ -1,43 +1,42 @@
 import { HandCoinsIcon } from "lucide-react"
 import { ActionSheet } from "@/components/ui/action-sheet"
 import { UserAvatar } from "@/components/ui/user-avatar"
-import { clockTime, formatNaira, shortDate } from "@/lib/format"
-import type { MoneyRequest } from "../../types"
-import { requestState, type RequestBox } from "../../utils/requests"
+import { nameOf } from "@/features/users/utils/names"
+import { formatNaira, shortDate } from "@/lib/format"
+import type { MoneyRequest, RequestBox } from "../../types"
+import {
+  requestCounterparty,
+  requestHandle,
+  requestHeadline,
+  requestState,
+} from "../../utils/requests"
+import { momentLabel } from "../../utils/transaction-look"
 import { DetailLine, DetailLines } from "../shared/detail-line"
 import { StatusPill } from "../shared/status-pill"
 import { RequestActions } from "./request-actions"
+
+interface RequestDetailProps {
+  box: RequestBox
+  busy: boolean
+  onPay: () => void
+  onDecline: () => void
+  onCancel: () => void
+}
 
 export function RequestDetailSheet({
   open,
   onOpenChange,
   request,
-  box,
-  busy,
-  onPay,
-  onDecline,
-  onCancel,
-}: {
+  ...props
+}: RequestDetailProps & {
   open: boolean
   onOpenChange: (open: boolean) => void
   request: MoneyRequest | null
-  box: RequestBox
-  busy: boolean
-  onPay: (request: MoneyRequest) => void
-  onDecline: (request: MoneyRequest) => void
-  onCancel: (request: MoneyRequest) => void
 }) {
   return (
     <ActionSheet open={open} onOpenChange={onOpenChange} className="px-6 pb-2">
       {request ? (
-        <Detail
-          request={request}
-          box={box}
-          busy={busy}
-          onPay={() => onPay(request)}
-          onDecline={() => onDecline(request)}
-          onCancel={() => onCancel(request)}
-        />
+        <Detail request={request} {...props} />
       ) : (
         <div className="py-10" />
       )}
@@ -52,16 +51,10 @@ function Detail({
   onPay,
   onDecline,
   onCancel,
-}: {
-  request: MoneyRequest
-  box: RequestBox
-  busy: boolean
-  onPay: () => void
-  onDecline: () => void
-  onCancel: () => void
-}) {
-  const incoming = box === "incoming"
-  const other = incoming ? request.requester : request.target
+}: RequestDetailProps & { request: MoneyRequest }) {
+  const person = requestCounterparty(request, box)
+  const handle = requestHandle(request, box)
+  // Read fresh on each render, so a request that lapses while the sheet is open loses its Pay button.
   const state = requestState(request, box)
 
   return (
@@ -69,11 +62,11 @@ function Detail({
       <div className="flex flex-col items-center gap-3">
         <div className="relative">
           <UserAvatar
-            alt={other.display_name ?? "User"}
+            alt={nameOf(person)}
             className="size-16"
             textClassName="text-2xl"
-            avatarUrl={other.avatar_url}
-            name={other.username}
+            avatarUrl={person.avatar_url}
+            name={person.username}
           />
           <span className="absolute -right-1 -bottom-1 flex size-7 items-center justify-center rounded-full border-4 border-popover bg-muted">
             <HandCoinsIcon className="size-3.5 text-foreground" />
@@ -85,12 +78,10 @@ function Detail({
             {formatNaira(request.amount)}
           </p>
           <p className="font-bold text-foreground">
-            {incoming
-              ? `@${other.username} asked you`
-              : `You asked @${other.username}`}
+            {requestHeadline(request, box)}
           </p>
           <p className="text-sm text-muted-foreground">
-            {shortDate(request.created_at)} · {clockTime(request.created_at)}
+            {momentLabel(request.created_at)}
           </p>
         </div>
 
@@ -101,10 +92,7 @@ function Detail({
 
       <DetailLines>
         {request.note ? <DetailLine label="For" value={request.note} /> : null}
-        <DetailLine
-          label={incoming ? "From" : "To"}
-          value={`@${other.username}`}
-        />
+        <DetailLine label={box === "incoming" ? "From" : "To"} value={handle} />
         {state.open ? (
           <DetailLine label="Expires" value={shortDate(request.expires_at)} />
         ) : request.resolved_at ? (
@@ -115,14 +103,16 @@ function Detail({
         ) : null}
       </DetailLines>
 
-      {state.open ? (
+      {!state.open ? null : box === "incoming" ? (
         <RequestActions
+          box="incoming"
           busy={busy}
-          {...(incoming
-            ? { box: "incoming" as const, onPay, onDecline }
-            : { box: "outgoing" as const, onCancel })}
+          onPay={onPay}
+          onDecline={onDecline}
         />
-      ) : null}
+      ) : (
+        <RequestActions box="outgoing" busy={busy} onCancel={onCancel} />
+      )}
     </div>
   )
 }

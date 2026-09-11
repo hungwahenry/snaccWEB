@@ -2,7 +2,10 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { signOut } from "@/features/auth/api"
+import { clearPendingChatMessages } from "@/features/chats/cache/pending-chat-messages"
+import { clearPendingMessages } from "@/features/messages/cache/pending-messages"
+import { LANDING_PATH } from "@/lib/routes"
+import { signOut } from "../api"
 
 export function useLogout() {
   const queryClient = useQueryClient()
@@ -11,8 +14,11 @@ export function useLogout() {
   return useMutation({
     mutationFn: signOut,
     onSettled: () => {
+      // Nothing half-sent may go out later under whoever signs in next.
+      clearPendingMessages()
+      clearPendingChatMessages()
       queryClient.clear()
-      router.replace("/")
+      router.replace(LANDING_PATH)
     },
   })
 }

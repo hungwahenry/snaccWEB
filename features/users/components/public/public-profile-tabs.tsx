@@ -1,37 +1,30 @@
-import {
-  ImageIcon,
-  MessageCircleIcon,
-  MessageSquareIcon,
-  RepeatIcon,
-  type LucideIcon,
-} from "lucide-react"
 import { cn } from "@/lib/utils"
+import { DEFAULT_PROFILE_TAB, PROFILE_TABS } from "../../utils/profile-tabs"
 
-const TABS: { label: string; icon: LucideIcon }[] = [
-  { label: "Snaccs", icon: MessageSquareIcon },
-  { label: "Replies", icon: MessageCircleIcon },
-  { label: "Media", icon: ImageIcon },
-  { label: "Resnaccs", icon: RepeatIcon },
-]
-
+/** A still picture of the profile tabs for a signed-out visitor; signing in makes them work. */
 export function PublicProfileTabs() {
   return (
-    <div className="border-b border-border">
+    <div className="border-b border-border" aria-hidden>
       <div className="flex gap-2 overflow-x-auto px-4 py-2">
-        {TABS.map((tab, i) => {
-          const active = i === 0
+        {PROFILE_TABS.map((tab) => {
+          const active = tab.value === DEFAULT_PROFILE_TAB
+          const Icon = tab.icon
           return (
             <div
-              key={tab.label}
+              key={tab.value}
               className={cn(
                 "flex h-9 shrink-0 items-center gap-1.5 rounded-full px-3.5",
                 active ? "bg-foreground" : "bg-muted"
               )}
             >
-              <tab.icon
-                size={16}
-                className={active ? "text-background" : "text-muted-foreground"}
-              />
+              {Icon ? (
+                <Icon
+                  size={16}
+                  className={
+                    active ? "text-background" : "text-muted-foreground"
+                  }
+                />
+              ) : null}
               <span
                 className={cn(
                   "text-sm font-extrabold",

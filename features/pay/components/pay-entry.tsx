@@ -1,11 +1,13 @@
 import Link from "next/link"
-import type { PublicProfile } from "@/features/users/api/public"
+import type { PublicProfile } from "@/features/users/types"
 import { PayCode } from "./pay-code"
+import { DOWNLOAD_PATH } from "@/lib/routes"
+import { nameOf } from "@/features/users/utils/names"
 
 const BASE = "https://snacc.fyi"
 
 export function PayEntry({ profile }: { profile: PublicProfile }) {
-  const name = profile.display_name ?? `@${profile.username}`
+  const name = nameOf(profile)
 
   return (
     <div className="flex flex-col gap-6 px-6 py-10">
@@ -41,7 +43,7 @@ export function PayEntry({ profile }: { profile: PublicProfile }) {
           Open in Snacc →
         </a>
         <Link
-          href="/download"
+          href={DOWNLOAD_PATH}
           className="text-center text-sm text-muted-foreground hover:underline"
         >
           Don&rsquo;t have the app? Get Snacc

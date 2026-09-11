@@ -1,46 +1,35 @@
 "use client"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
+import { useQuery } from "@tanstack/react-query"
+import { useMemo } from "react"
+import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
 import { closeGhostHour, getGhostWindow, openGhostHour } from "../api"
+import { openedMessage } from "../utils/ghost-hour"
+import { adminGhostHourKeys } from "../utils/keys"
+
+const LIVE_MS = 15_000
 
 export function useGhostWindow() {
   return useQuery({
-    queryKey: ["admin", "ghost-window"],
+    queryKey: adminGhostHourKeys.window(),
     queryFn: getGhostWindow,
-    refetchInterval: 15_000,
+    refetchInterval: LIVE_MS,
   })
 }
 
-export function useGhostMutations() {
-  const queryClient = useQueryClient()
+export function useGhostHourActions() {
+  const invalidates = [adminGhostHourKeys.window()]
 
-  function invalidate() {
-    queryClient.invalidateQueries({ queryKey: ["admin", "ghost-window"] })
-  }
-  function onError(error: unknown) {
-    toast.error(getErrorMessage(error))
-  }
+  const { run: open } = useAdminMutation({
+    mutationFn: (minutes: number | undefined) => openGhostHour(minutes),
+    success: openedMessage,
+    invalidates,
+  })
+  const { run: close } = useAdminMutation({
+    mutationFn: () => closeGhostHour(),
+    success: "Ghost Hour closed.",
+    invalidates,
+  })
 
-  return {
-    open: useMutation({
-      mutationFn: (minutes?: number) => openGhostHour(minutes),
-      onSuccess: (state) => {
-        invalidate()
-        toast.success(
-          `Ghost Hour opened — pushed to ${state.pushed ?? 0} device(s).`
-        )
-      },
-      onError,
-    }),
-    close: useMutation({
-      mutationFn: () => closeGhostHour(),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Ghost Hour closed.")
-      },
-      onError,
-    }),
-  }
+  return useMemo(() => ({ open, close }), [open, close])
 }

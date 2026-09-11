@@ -1,52 +1,22 @@
-import { GlobeIcon, GraduationCapIcon, UsersRoundIcon } from "lucide-react"
 import { PillTabs, type PillTab } from "@/components/ui/pill-tabs"
 import type { FeedScope } from "../types"
 
-const CAMPUS: PillTab<FeedScope> = {
-  value: "campus",
-  label: "Campus",
-  icon: GraduationCapIcon,
-}
-const GLOBAL: PillTab<FeedScope> = {
-  value: "global",
-  label: "Global",
-  icon: GlobeIcon,
-}
-const FOLLOWING: PillTab<FeedScope> = {
-  value: "following",
-  label: "Following",
-  icon: UsersRoundIcon,
-}
-
 type FeedTabsProps = {
+  tabs: PillTab<FeedScope>[]
   value: FeedScope
   onChange: (scope: FeedScope) => void
   onReselect?: (scope: FeedScope, anchor: HTMLElement) => void
-  following?: boolean
-  global?: boolean
 }
 
-export function FeedTabs({
-  value,
-  onChange,
-  onReselect,
-  following = false,
-  global = true,
-}: FeedTabsProps) {
-  const tabs = [
-    CAMPUS,
-    ...(following ? [FOLLOWING] : []),
-    ...(global ? [GLOBAL] : []),
-  ]
-
-  if (tabs.length < 2 && !onReselect) return null
-
+export function FeedTabs({ tabs, value, onChange, onReselect }: FeedTabsProps) {
   return (
-    <PillTabs
-      tabs={tabs}
-      value={value}
-      onChange={onChange}
-      onReselect={onReselect}
-    />
+    <div className="sticky top-14 z-20 bg-background/90 backdrop-blur md:top-0">
+      <PillTabs
+        tabs={tabs}
+        value={value}
+        onChange={onChange}
+        onReselect={onReselect}
+      />
+    </div>
   )
 }

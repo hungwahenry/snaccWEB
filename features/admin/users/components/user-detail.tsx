@@ -1,62 +1,53 @@
-"use client"
-
-import { DetailHeader } from "@/features/admin/shell/ui/detail"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+import type { ReactNode } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { UserActivityTab } from "./user-activity-tab"
-import { UserManagePanel } from "./user-manage-panel"
-import { UserMoneyTab } from "./user-money-tab"
-import { UserOverviewTab } from "./user-overview-tab"
+import { UserAvatar } from "@/components/ui/user-avatar"
+import { DetailHeader } from "@/features/admin/shell/components/detail"
+import { StatusBadge } from "@/features/admin/shell/components/status-badge"
+import { userInitialSource, userName } from "@/features/admin/shell/utils/user"
 import { formatDate } from "@/lib/format"
 import type { AdminUserDetail } from "../types"
-import type { useUserMutations } from "../hooks/use-users"
+import {
+  userBadges,
+  userSubtitle,
+  USER_TABS,
+  type UserTab,
+} from "../utils/users"
 
-function StatusBadges({ user }: { user: AdminUserDetail }) {
-  return (
-    <>
-      {user.role === "admin" ? (
-        <Badge>admin</Badge>
-      ) : (
-        <Badge variant="outline">user</Badge>
-      )}
-      {user.suspended_at ? (
-        <Badge variant="destructive">suspended</Badge>
-      ) : null}
-      {user.posts_globally ? <Badge>posts everywhere</Badge> : null}
-      {user.earnings_paused_at ? (
-        <Badge variant="secondary">earnings paused</Badge>
-      ) : null}
-      {user.payouts_blocked_at ? (
-        <Badge variant="secondary">payouts blocked</Badge>
-      ) : null}
-    </>
-  )
+const TAB_LABELS: Record<UserTab, string> = {
+  overview: "Overview",
+  manage: "Manage",
+  money: "Money",
+  activity: "Activity",
 }
 
 export function UserDetail({
   user,
-  actions,
+  tab,
+  onTabChange,
+  panels,
 }: {
   user: AdminUserDetail
-  actions: ReturnType<typeof useUserMutations>
+  tab: UserTab
+  onTabChange: (tab: UserTab) => void
+  panels: Record<UserTab, ReactNode>
 }) {
   return (
     <div className="flex flex-col gap-6">
       <DetailHeader
         leading={
-          <Avatar className="size-14">
-            <AvatarImage src={user.avatar_url} alt="" />
-            <AvatarFallback>
-              {(user.display_name || user.username || user.email)
-                .slice(0, 2)
-                .toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar
+            avatarUrl={user.avatar_url}
+            name={userInitialSource(user)}
+            alt=""
+            className="size-14"
+            textClassName="text-lg"
+          />
         }
-        title={user.display_name ?? user.username ?? "Unnamed"}
-        badges={<StatusBadges user={user} />}
-        subtitle={`${user.username ? `@${user.username} · ` : ""}${user.email}`}
+        title={userName(user)}
+        badges={userBadges(user).map((badge) => (
+          <StatusBadge key={badge.label} status={badge} />
+        ))}
+        subtitle={userSubtitle(user)}
         meta={
           <>
             {user.university ? <span>{user.university.name}</span> : null}
@@ -65,26 +56,19 @@ export function UserDetail({
         }
       />
 
-      <Tabs defaultValue="overview">
+      <Tabs value={tab} onValueChange={(next) => onTabChange(next as UserTab)}>
         <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="manage">Manage</TabsTrigger>
-          <TabsTrigger value="money">Money</TabsTrigger>
-          <TabsTrigger value="activity">Activity</TabsTrigger>
+          {USER_TABS.map((key) => (
+            <TabsTrigger key={key} value={key}>
+              {TAB_LABELS[key]}
+            </TabsTrigger>
+          ))}
         </TabsList>
-
-        <TabsContent value="overview">
-          <UserOverviewTab user={user} />
-        </TabsContent>
-        <TabsContent value="manage">
-          <UserManagePanel user={user} actions={actions} />
-        </TabsContent>
-        <TabsContent value="money">
-          <UserMoneyTab user={user} />
-        </TabsContent>
-        <TabsContent value="activity">
-          <UserActivityTab user={user} />
-        </TabsContent>
+        {USER_TABS.map((key) => (
+          <TabsContent key={key} value={key} className="pt-4">
+            {panels[key]}
+          </TabsContent>
+        ))}
       </Tabs>
     </div>
   )

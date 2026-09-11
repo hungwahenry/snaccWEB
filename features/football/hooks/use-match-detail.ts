@@ -3,10 +3,11 @@
 import { useQuery } from "@tanstack/react-query"
 import { MINUTE_MS } from "@/lib/duration"
 import { getMatchDetail } from "../api"
+import { footballKeys } from "../utils/keys"
 
 export function useMatchDetail(matchId: string | null) {
   return useQuery({
-    queryKey: ["football", "match", matchId],
+    queryKey: footballKeys.match(matchId ?? ""),
     queryFn: () => getMatchDetail(matchId!),
     enabled: matchId !== null,
     staleTime: 30_000,

@@ -1,9 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
 import type { PickedImage } from "@/lib/media"
+import { showError, showErrorMessage } from "@/lib/feedback"
 
 type Pending = {
   image: PickedImage
@@ -24,7 +23,7 @@ export function useImageEditor() {
 
   function finish(edited: PickedImage | null) {
     if (!edited) {
-      toast.error("Could not save the edit.")
+      showErrorMessage("Could not save the edit.")
       pending?.resolve(null)
     } else {
       pending?.resolve(edited)
@@ -33,7 +32,7 @@ export function useImageEditor() {
   }
 
   function fail(error: unknown) {
-    toast.error(getErrorMessage(error))
+    showError(error)
     pending?.resolve(null)
     setPending(null)
   }

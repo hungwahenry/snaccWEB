@@ -16,9 +16,13 @@ export class ApiError extends Error {
     return new ApiError(0, NETWORK_ERROR_MESSAGE, "network_error")
   }
 
+  // Only lists of messages count: the errors object also carries plain values such as
+  // `premium_limit`, a config key that would read as gibberish on screen.
   get firstFieldError(): string | null {
-    const first = this.errors && Object.values(this.errors)[0]
-    return first?.[0] ?? null
+    for (const value of Object.values(this.errors ?? {})) {
+      if (Array.isArray(value) && typeof value[0] === "string") return value[0]
+    }
+    return null
   }
 }
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { ComposeScreen } from "@/features/snaccs/screens/compose-screen"
 import { EditSnaccScreen } from "@/features/snaccs/screens/edit-snacc-screen"
+import { COMPOSE_PATH } from "@/features/snaccs/routes"
 import { requireSession } from "@/lib/auth-server"
 
 export const metadata: Metadata = { title: "New snacc" }
@@ -17,7 +18,7 @@ type Props = {
 }
 
 export default async function ComposePage({ searchParams }: Props) {
-  await requireSession("/compose")
+  await requireSession(COMPOSE_PATH)
   const { parentId, resnaccOfId, initialBody, matchId, edit, draft } =
     await searchParams
 

@@ -18,6 +18,7 @@ import { UserAvatar } from "@/components/ui/user-avatar"
 import { cn } from "@/lib/utils"
 import type { NavItem } from "@/features/navigation/types"
 import { NavAvatar } from "./nav-avatar"
+import { HOME_PATH } from "@/features/feed/routes"
 
 type SidebarProps = {
   items: NavItem[]
@@ -45,7 +46,7 @@ export function Sidebar({
   return (
     <div className="flex h-full flex-col items-center gap-1 px-2 py-3 wide:items-stretch wide:px-3">
       <div className="flex h-12 items-center justify-center wide:justify-start wide:px-3">
-        <Wordmark href="/home" height={26} />
+        <Wordmark href={HOME_PATH} height={26} />
       </div>
 
       <nav className="mt-2 flex flex-col gap-1">

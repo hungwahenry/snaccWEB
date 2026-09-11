@@ -1,34 +1,50 @@
 "use client"
 
+import { Plus } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
-import { Spinner } from "@/components/ui/spinner"
-import { TiersTable } from "@/features/admin/score-tiers/components/tiers-table"
-import {
-  useTierMutations,
-  useTiers,
-} from "@/features/admin/score-tiers/hooks/use-score-tiers"
+import { TierDialog } from "../components/tier-dialog"
+import { TiersTable } from "../components/tiers-table"
+import { useScoreTiersScreen } from "../hooks/use-score-tiers-screen"
+import { hasFloor } from "../utils/tier"
 
 export function ScoreTiersScreen() {
-  const query = useTiers()
-  const mutations = useTierMutations()
+  const { query, actions } = useScoreTiersScreen()
+  const noFloor = query.data !== undefined && !hasFloor(query.data)
 
   return (
     <>
       <PageHeader
         title="Snacc Score tiers"
-        description="The ladder: each rung is a score threshold. Edit names, thresholds, icons and colours here; everyone is re-tiered on save."
+        description="The ladder: each rung starts at a score. Names, thresholds, icons and colours are all edited here, and everyone is moved onto the right rung when you save."
+        action={
+          <CanAct permission="score_tiers.write">
+            <TierDialog
+              trigger={
+                <Button size="sm">
+                  <Plus />
+                  Add tier
+                </Button>
+              }
+              onSubmit={(draft) => actions.save(draft)}
+            />
+          </CanAct>
+        }
       />
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load tiers.
+      {noFloor && query.data.length > 0 ? (
+        <p
+          role="alert"
+          className="mb-4 rounded-lg border border-destructive/40 px-4 py-3 text-sm text-destructive"
+        >
+          No tier starts at 0, so anyone below the lowest rung has no tier.
         </p>
-      ) : (
-        <TiersTable tiers={query.data} mutations={mutations} />
-      )}
+      ) : null}
+      <TiersTable
+        query={query}
+        onSave={actions.save}
+        onDelete={actions.remove}
+      />
     </>
   )
 }

@@ -1,30 +1,43 @@
 "use client"
 
-import { useAuditScreen } from "@/features/admin/audit/hooks/use-audit-screen"
+import { OptionSelect } from "@/features/admin/shell/components/option-select"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
-import { Spinner } from "@/components/ui/spinner"
-import { AuditTable } from "@/features/admin/audit/components/audit-table"
+import { SearchField } from "@/features/admin/shell/components/search-field"
+import { TableToolbar } from "@/features/admin/shell/components/table-toolbar"
+import { AuditTable } from "../components/audit-table"
+import { useAuditScreen } from "../hooks/use-audit-screen"
 
 export function AuditScreen() {
-  const { params, patch, query } = useAuditScreen()
+  const { list, query, actions } = useAuditScreen()
 
   return (
     <>
       <PageHeader
         title="Audit log"
-        description="Every admin action, with before and after state."
+        description="Every admin action, with what it changed."
       />
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load the audit log.
-        </p>
-      ) : (
-        <AuditTable data={query.data} params={params} onParams={patch} />
-      )}
+      <AuditTable
+        query={query}
+        onPageChange={list.setPage}
+        toolbar={
+          <TableToolbar onReset={list.filtered ? list.reset : undefined}>
+            <SearchField
+              value={list.values.q}
+              onChange={(q) => list.setFilter({ q })}
+              placeholder="Search actions, ids or admin emails"
+            />
+            <OptionSelect
+              label="Action"
+              value={list.values.action}
+              onChange={(action) => list.setFilter({ action })}
+              options={actions.options}
+              allLabel="Every action"
+              disabled={actions.loading}
+              className="w-56"
+            />
+          </TableToolbar>
+        }
+      />
     </>
   )
 }

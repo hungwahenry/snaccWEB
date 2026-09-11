@@ -1,45 +1,43 @@
-"use client"
-
 import { Snowflake, Sun } from "lucide-react"
-import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
-import { DetailHeader, Stat, StatGrid } from "@/features/admin/shell/ui/detail"
-import { UserInline } from "@/features/admin/shell/ui/user-inline"
-import { TableFrame } from "@/components/data-table/table-frame"
-import { CanAct } from "@/features/admin/auth/components/can"
 import { Badge } from "@/components/ui/badge"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
+import { ConfirmAction } from "@/features/admin/shell/components/confirm-action"
+import {
+  DetailHeader,
+  Stat,
+  StatGrid,
+} from "@/features/admin/shell/components/detail"
+import { UserCell } from "@/features/admin/shell/components/user-cell"
 import { formatDate, formatNaira, formatNumber } from "@/lib/format"
+import type {
+  AdjustWalletInput,
+  WalletDetail as WalletDetailData,
+} from "../types"
+import { WALLET_TAB_LABELS, WALLET_TABS, type WalletTab } from "../utils/wallet"
 import { WalletAdjustForm } from "./wallet-adjust-form"
-import type { useWalletMutations } from "../hooks/use-wallet"
-import type { WalletDetail as WalletDetailData } from "../types"
-
-function Empty({ what, columns }: { what: string; columns: number }) {
-  return (
-    <TableRow>
-      <TableCell
-        colSpan={columns}
-        className="py-8 text-center text-sm text-muted-foreground"
-      >
-        No {what} yet.
-      </TableCell>
-    </TableRow>
-  )
-}
+import { WalletStateBadge } from "./wallet-state-badge"
+import {
+  WalletDepositsTable,
+  WalletEntriesTable,
+  WalletRecipientsTable,
+} from "./wallet-tables"
 
 export function WalletDetail({
   wallet,
-  actions,
+  tab,
+  onTabChange,
+  onFreeze,
+  onUnfreeze,
+  onAdjust,
 }: {
   wallet: WalletDetailData
-  actions: ReturnType<typeof useWalletMutations>
+  tab: WalletTab
+  onTabChange: (tab: WalletTab) => void
+  onFreeze: () => Promise<unknown>
+  onUnfreeze: () => Promise<unknown>
+  onAdjust: (input: AdjustWalletInput) => Promise<unknown>
 }) {
   const frozen = wallet.frozen_at !== null
 
@@ -49,12 +47,7 @@ export function WalletDetail({
         title={formatNaira(wallet.balance)}
         badges={
           <>
-            {frozen ? (
-              <Badge variant="destructive">
-                <Snowflake className="size-3" />
-                Frozen
-              </Badge>
-            ) : null}
+            {frozen ? <WalletStateBadge frozenAt={wallet.frozen_at} /> : null}
             {wallet.pin_locked ? (
               <Badge variant="outline">PIN locked</Badge>
             ) : null}
@@ -71,29 +64,30 @@ export function WalletDetail({
           <CanAct permission="wallet.freeze">
             {frozen ? (
               <ConfirmAction
-                label="Unfreeze"
-                icon={<Sun />}
-                confirmVariant="default"
+                trigger={
+                  <Button variant="outline" size="sm">
+                    <Sun />
+                    Unfreeze
+                  </Button>
+                }
+                tone="default"
                 title="Unfreeze this wallet?"
                 description="They can spend and withdraw again straight away."
                 confirmLabel="Unfreeze wallet"
-                pending={actions.freeze.isPending}
-                onConfirm={(close) =>
-                  actions.freeze.mutate({ frozen: false }, { onSuccess: close })
-                }
+                onConfirm={() => onUnfreeze()}
               />
             ) : (
               <ConfirmAction
-                label="Freeze"
-                icon={<Snowflake />}
-                variant="destructive"
+                trigger={
+                  <Button variant="destructive" size="sm">
+                    <Snowflake />
+                    Freeze
+                  </Button>
+                }
                 title="Freeze this wallet?"
                 description="They stop being able to spend or withdraw straight away. Money still lands in it, and the balance is untouched."
                 confirmLabel="Freeze wallet"
-                pending={actions.freeze.isPending}
-                onConfirm={(close) =>
-                  actions.freeze.mutate({ frozen: true }, { onSuccess: close })
-                }
+                onConfirm={() => onFreeze()}
               />
             )}
           </CanAct>
@@ -102,7 +96,7 @@ export function WalletDetail({
 
       {wallet.user ? (
         <div className="rounded-lg border px-4 py-3">
-          <UserInline user={wallet.user} note="Holder" />
+          <UserCell user={wallet.user} note="Holder" />
         </div>
       ) : null}
 
@@ -116,140 +110,30 @@ export function WalletDetail({
         />
       </StatGrid>
 
-      <WalletAdjustForm actions={actions} />
+      <WalletAdjustForm balance={wallet.balance} onSubmit={onAdjust} />
 
-      <Tabs defaultValue="entries">
+      <Tabs
+        value={tab}
+        onValueChange={(next) => onTabChange(next as WalletTab)}
+      >
         <TabsList>
-          <TabsTrigger value="entries">Movements</TabsTrigger>
-          <TabsTrigger value="deposits">Deposits</TabsTrigger>
-          <TabsTrigger value="recipients">Recipients</TabsTrigger>
+          {WALLET_TABS.map((key) => (
+            <TabsTrigger key={key} value={key}>
+              {WALLET_TAB_LABELS[key]}
+            </TabsTrigger>
+          ))}
         </TabsList>
-
         <TabsContent value="entries">
-          <TableFrame>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>When</TableHead>
-                  <TableHead>Kind</TableHead>
-                  <TableHead>Reference</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                  <TableHead className="text-right">Balance after</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {wallet.entries.length === 0 ? (
-                  <Empty what="movements" columns={5} />
-                ) : (
-                  wallet.entries.map((entry) => (
-                    <TableRow key={entry.id}>
-                      <TableCell className="text-sm whitespace-nowrap">
-                        {formatDate(entry.created_at)}
-                      </TableCell>
-                      <TableCell className="text-sm capitalize">
-                        {entry.transaction.type.replace(/_/g, " ")}
-                      </TableCell>
-                      <TableCell className="font-mono text-xs text-muted-foreground">
-                        {entry.transaction.reference}
-                      </TableCell>
-                      <TableCell
-                        className={`text-right tabular-nums ${entry.amount < 0 ? "text-destructive" : ""}`}
-                      >
-                        {entry.amount > 0 ? "+" : ""}
-                        {formatNaira(entry.amount)}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {formatNaira(entry.balance_after)}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableFrame>
+          <WalletEntriesTable entries={wallet.entries} />
         </TabsContent>
-
         <TabsContent value="deposits">
-          <TableFrame
-            description={
-              wallet.virtual_account
-                ? `Personal account ${wallet.virtual_account.account_number ?? "—"} · ${wallet.virtual_account.bank_name ?? "—"} (${wallet.virtual_account.status})`
-                : undefined
-            }
-          >
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>When</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Channel</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {wallet.deposits.length === 0 ? (
-                  <Empty what="deposits" columns={4} />
-                ) : (
-                  wallet.deposits.map((deposit) => (
-                    <TableRow key={deposit.id}>
-                      <TableCell className="text-sm whitespace-nowrap">
-                        {formatDate(deposit.created_at)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary" className="capitalize">
-                          {deposit.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        {deposit.channel ?? "—"}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {formatNaira(deposit.amount)}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableFrame>
+          <WalletDepositsTable
+            deposits={wallet.deposits}
+            account={wallet.virtual_account}
+          />
         </TabsContent>
-
         <TabsContent value="recipients">
-          <TableFrame>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Kind</TableHead>
-                  <TableHead>Bank</TableHead>
-                  <TableHead>Account</TableHead>
-                  <TableHead>Last used</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {wallet.recipients.length === 0 ? (
-                  <Empty what="recipients" columns={4} />
-                ) : (
-                  wallet.recipients.map((recipient, index) => (
-                    <TableRow key={`${recipient.kind}-${index}`}>
-                      <TableCell className="text-sm capitalize">
-                        {recipient.kind}
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        {recipient.bank_name ?? "—"}
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        {recipient.account_name ?? "—"} ····
-                        {recipient.account_last4 ?? ""}
-                      </TableCell>
-                      <TableCell className="text-sm whitespace-nowrap">
-                        {formatDate(recipient.last_used_at)}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableFrame>
+          <WalletRecipientsTable recipients={wallet.recipients} />
         </TabsContent>
       </Tabs>
     </div>

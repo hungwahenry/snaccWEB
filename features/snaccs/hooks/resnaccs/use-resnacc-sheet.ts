@@ -2,8 +2,6 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
 import { composePath } from "../../routes"
 import type { Snacc } from "../../types"
 import { useResnacc } from "./use-resnacc"
@@ -27,9 +25,7 @@ export function useResnaccSheet() {
       onResnacc() {
         setOpen(false)
         if (!passing) return
-        resnacc.mutate(passing, {
-          onError: (error) => toast.error(getErrorMessage(error)),
-        })
+        resnacc.mutate(passing, {})
       },
       onQuote() {
         setOpen(false)

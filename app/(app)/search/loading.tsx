@@ -1,6 +1,6 @@
 import { MatchdaySkeleton } from "@/features/football/components/matchday-skeleton"
 import { FollowSuggestionsSkeleton } from "@/features/follows/components/follow-suggestions"
-import { TrendingTagsSkeleton } from "@/features/search/components/trending-tags"
+import { TrendingTagsSkeleton } from "@/features/hashtags/components/trending-tags"
 
 export default function Loading() {
   return (

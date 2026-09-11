@@ -1,31 +1,12 @@
 "use client"
 
-import { CheckIcon, ClockIcon, FlameIcon, type LucideIcon } from "lucide-react"
+import { CheckIcon } from "lucide-react"
 import { Popover, PopoverContent } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import type { FeedSort } from "../types"
+import { FEED_SORTS } from "../utils/sorts"
 
 const MENU_WIDTH = 244
-
-const OPTIONS: {
-  value: FeedSort
-  label: string
-  hint: string
-  icon: LucideIcon
-}[] = [
-  {
-    value: "top",
-    label: "Top",
-    hint: "What people are reading",
-    icon: FlameIcon,
-  },
-  {
-    value: "latest",
-    label: "Latest",
-    hint: "Everything, newest first",
-    icon: ClockIcon,
-  },
-]
 
 type FeedSortMenuProps = {
   open: boolean
@@ -49,21 +30,21 @@ export function FeedSortMenu({
         side="bottom"
         align="start"
         sideOffset={6}
+        aria-label="Sort the feed"
         className="gap-0 rounded-2xl border border-border p-1.5"
         style={{ width: MENU_WIDTH }}
       >
-        {OPTIONS.map((option) => {
+        {FEED_SORTS.map((option) => {
           const active = option.value === value
           const Icon = option.icon
           return (
             <button
               key={option.value}
               type="button"
-              role="menuitemradio"
-              aria-checked={active}
+              aria-pressed={active}
               onClick={() => onSelect(option.value)}
               className={cn(
-                "flex w-full items-center gap-3 rounded-xl px-2.5 py-2.5 text-left transition-colors hover:bg-accent/60 active:opacity-60",
+                "flex w-full items-center gap-3 rounded-xl px-2.5 py-2.5 text-left transition-colors outline-none hover:bg-accent/60 focus-visible:bg-accent/60 active:opacity-60",
                 active && "bg-muted"
               )}
             >

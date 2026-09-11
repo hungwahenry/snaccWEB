@@ -1,30 +1,23 @@
-import { LandmarkIcon } from "lucide-react"
-import { UserAvatar } from "@/components/ui/user-avatar"
-import type { SendTarget } from "../../hooks/pay/use-pay-recipient"
+import type { PartyLabel, SendTarget } from "../../types"
+import { PartyAvatar } from "../shared/party-avatar"
 
-export function TargetLine({ target }: { target: SendTarget }) {
+export function TargetLine({
+  target,
+  label,
+}: {
+  target: SendTarget
+  label: PartyLabel
+}) {
   return (
     <div className="flex items-center justify-center gap-2">
-      {target.kind === "user" ? (
-        <UserAvatar
-          alt={target.user.display_name ?? "User"}
-          className="size-6"
-          textClassName="text-[10px]"
-          avatarUrl={target.user.avatar_url}
-          name={target.user.username}
-        />
-      ) : (
-        <span className="flex size-6 items-center justify-center rounded-full bg-muted">
-          <LandmarkIcon className="size-3.5 text-foreground" />
-        </span>
-      )}
+      <PartyAvatar
+        person={target.kind === "user" ? target.user : null}
+        className="size-6"
+        iconClassName="size-3.5"
+        textClassName="text-[10px]"
+      />
       <span className="text-sm text-muted-foreground">
-        To{" "}
-        <span className="font-bold text-foreground">
-          {target.kind === "user"
-            ? `@${target.user.username}`
-            : `${target.bankName} ••${target.accountLast4}`}
-        </span>
+        To <span className="font-bold text-foreground">{label.short}</span>
       </span>
     </div>
   )

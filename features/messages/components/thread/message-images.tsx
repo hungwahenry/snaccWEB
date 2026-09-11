@@ -1,5 +1,12 @@
 import { aspectRatio } from "@/lib/aspect"
+import { countLabel } from "@/lib/format"
 import type { ShownImage } from "../../types"
+
+/** What the pile needs from an image: the same in a DM and in a room. */
+export type ThreadImage = Pick<
+  ShownImage,
+  "id" | "url" | "thumb_url" | "width" | "height"
+>
 
 const MIN_RATIO = 3 / 4
 const MAX_RATIO = 16 / 9
@@ -10,7 +17,7 @@ export function MessageImages({
   images,
   onPressImage,
 }: {
-  images: ShownImage[]
+  images: ThreadImage[]
   onPressImage: (index: number) => void
 }) {
   if (images.length === 0) return null
@@ -29,7 +36,7 @@ export function MessageImages({
       >
         <img
           src={images[0].thumb_url ?? images[0].url}
-          alt=""
+          alt="Photo"
           className="size-full object-cover"
           loading="lazy"
         />
@@ -43,7 +50,7 @@ export function MessageImages({
     <button
       type="button"
       onClick={() => onPressImage(0)}
-      aria-label={`${images.length} photos`}
+      aria-label={countLabel(images.length, "photo")}
       className="relative flex items-center justify-center transition-opacity active:opacity-80"
       style={{ width: WIDTH + 24, height: height + 24 }}
     >

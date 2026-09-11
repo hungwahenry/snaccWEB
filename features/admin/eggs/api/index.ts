@@ -14,12 +14,13 @@ export function updateEgg(id: string, input: UpdateEggInput) {
 }
 
 export function deleteEgg(id: string) {
-  return api.del<null>(`/admin/easter-eggs/${id}`)
+  return api.del<Record<string, never>>(`/admin/easter-eggs/${id}`)
 }
 
 export function uploadEggImage(id: string, file: File) {
   const form = new FormData()
   form.append("image", file)
+
   return api.upload<AdminEgg>(`/admin/easter-eggs/${id}/image`, form)
 }
 

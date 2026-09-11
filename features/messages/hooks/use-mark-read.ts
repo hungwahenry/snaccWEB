@@ -1,27 +1,17 @@
 "use client"
 
-import { useQueryClient } from "@tanstack/react-query"
 import { useEffect } from "react"
 import { markConversationRead } from "../api"
-import {
-  CONVERSATIONS_KEY,
-  conversationKey,
-  UNREAD_MESSAGES_KEY,
-} from "../utils/keys"
+import { markConversationSeen, unreadChanged } from "../cache"
 
+/** Marks the thread read whenever it grows while open, and clears its badge at once. */
 export function useMarkRead(conversationId: string, messageCount: number) {
-  const queryClient = useQueryClient()
-
   useEffect(() => {
     if (!conversationId) return
+
+    markConversationSeen(conversationId)
     void markConversationRead(conversationId)
-      .then(() => {
-        void queryClient.invalidateQueries({ queryKey: UNREAD_MESSAGES_KEY })
-        void queryClient.invalidateQueries({ queryKey: CONVERSATIONS_KEY })
-        void queryClient.invalidateQueries({
-          queryKey: conversationKey(conversationId),
-        })
-      })
+      .then(unreadChanged)
       .catch(() => undefined)
-  }, [conversationId, messageCount, queryClient])
+  }, [conversationId, messageCount])
 }

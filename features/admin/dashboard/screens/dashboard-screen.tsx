@@ -1,49 +1,67 @@
 "use client"
 
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
-import { Spinner } from "@/components/ui/spinner"
-import { useMe } from "@/features/auth/hooks/use-me"
-import { DashboardView } from "@/features/admin/dashboard/components/dashboard-view"
-import { useDashboard } from "@/features/admin/dashboard/hooks/use-dashboard"
-import { firstAllowedHref } from "@/features/admin/shell/nav"
-import { can } from "@/lib/permissions"
+import { QueryView } from "@/features/admin/shell/components/query-view"
+import {
+  ContentSection,
+  ModerationSection,
+} from "../components/activity-sections"
+import { HeadlineStats } from "../components/headline-stats"
+import {
+  EarningsSection,
+  WithdrawalsSection,
+} from "../components/money-sections"
+import {
+  TopCampusesSection,
+  TopReactionsSection,
+} from "../components/top-sections"
+import { TrendsSection } from "../components/trends-section"
+import { useDashboardScreen } from "../hooks/use-dashboard-screen"
 
 export function DashboardScreen() {
-  const router = useRouter()
-  const me = useMe()
-  const allowed = can(me.data?.permissions, "dashboard.read")
-  const query = useDashboard()
-
-  useEffect(() => {
-    if (me.data && !allowed) {
-      router.replace(firstAllowedHref(me.data.permissions) ?? "/home")
-    }
-  }, [me.data, allowed, router])
-
-  if (me.isPending || (me.data && !allowed)) {
-    return (
-      <div className="flex justify-center py-24">
-        <Spinner />
-      </div>
-    )
-  }
+  const { query } = useDashboardScreen()
 
   return (
     <>
       <PageHeader title="Dashboard" description="Your platform at a glance." />
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load metrics.
-        </p>
-      ) : (
-        <DashboardView metrics={query.data} />
-      )}
+      <QueryView query={query} what="metrics">
+        {(metrics) => (
+          <div className="flex flex-col gap-6">
+            {metrics.platform ? null : (
+              <p className="text-sm text-pretty text-muted-foreground">
+                These numbers cover your campuses. Platform money is not
+                included.
+              </p>
+            )}
+
+            <HeadlineStats metrics={metrics} />
+            <TrendsSection series={metrics.series} />
+
+            {metrics.money ? (
+              <div className="grid gap-6 lg:grid-cols-2">
+                <WithdrawalsSection money={metrics.money} />
+                <EarningsSection money={metrics.money} />
+              </div>
+            ) : null}
+
+            <div className="grid gap-6 lg:grid-cols-2">
+              <ContentSection content={metrics.content} />
+              <ModerationSection
+                moderation={metrics.moderation}
+                follows={metrics.engagement.follows}
+              />
+            </div>
+
+            <div className="grid gap-6 lg:grid-cols-2">
+              <TopCampusesSection
+                campuses={metrics.campuses}
+                top={metrics.top_campuses}
+              />
+              <TopReactionsSection reactions={metrics.top_reactions} />
+            </div>
+          </div>
+        )}
+      </QueryView>
     </>
   )
 }

@@ -1,24 +1,14 @@
-import type { SnaccMatch } from "@/features/football/types"
-import type { UserScore } from "@/features/score/types"
-import type { StickerAttachment } from "@/features/stickers/types"
+import type { LiveMatch, SnaccMatch } from "@/features/football/types"
+import type { Gif } from "@/features/giphy/types"
+import type { DraftSticker, StickerAttachment } from "@/features/stickers/types"
+import type { UniversityBadge } from "@/features/universities/types"
+import type { Author } from "@/features/users/types"
+import type { VoiceDraft } from "@/features/voice/types"
+import type { PickedImage } from "@/lib/media"
 
-export interface SnaccAuthorUniversity {
-  id: string
-  name: string
-  acronym: string
-  slug: string
-}
+export type SnaccAuthorUniversity = UniversityBadge
 
-export interface SnaccAuthor {
-  id: string
-  username: string | null
-  display_name: string | null
-  avatar_url: string
-  university: SnaccAuthorUniversity | null
-  score: UserScore
-  official: boolean
-  is_birthday: boolean
-}
+export type SnaccAuthor = Author
 
 export interface SnaccMentionUser {
   id: string
@@ -108,6 +98,8 @@ export interface SnaccReplyTo {
 
 export type SnaccStatus = "sending" | "failed"
 
+export type QuotedGone = "deleted" | "unavailable"
+
 export interface Snacc {
   id: string
   parent_id: string | null
@@ -136,7 +128,7 @@ export interface Snacc {
   saved: boolean
   pinned: boolean
   held: boolean
-  quoted_gone: "deleted" | "unavailable" | null
+  quoted_gone: QuotedGone | null
   comments_count: number
   resnaccs_count: number
   views_count: number
@@ -144,6 +136,165 @@ export interface Snacc {
 
 export type EmbeddedSnacc = Omit<Snacc, "resnacc_of" | "quoted_gone">
 
+/** An embedded snacc that may still carry what it quotes, as a full one does. */
+export type GlimpsedSnacc = EmbeddedSnacc & {
+  resnacc_of?: EmbeddedSnacc | null
+}
+
 export interface SnaccWithParent extends Snacc {
   parent: EmbeddedSnacc | null
 }
+
+export type ResnaccTab = "quotes" | "people"
+
+export interface PollGalleryImage {
+  url: string
+  width: number
+  height: number
+}
+
+export interface CreateSnaccInput {
+  id: string
+  body?: string
+  images?: PickedImage[]
+  giphyId?: string
+  stickerId?: string
+  matchId?: string
+  parentId?: string
+  resnaccOfId?: string
+  poll?: PollPayload
+  spoiler?: boolean
+  voice?: VoiceDraft
+}
+
+export interface EditSnaccInput {
+  id: string
+  body?: string
+  keepImageIds: string[]
+  images: PickedImage[]
+  giphyId?: string
+  stickerId?: string
+  spoiler?: boolean
+}
+
+export interface ReactToSnaccInput {
+  snaccId: string
+  emoji: string | null
+}
+
+export interface PollPayload {
+  options: string[]
+  images?: PickedImage[]
+  durationMinutes: number
+}
+
+/** Everything the composer hands over to post, before the snacc has an id. */
+export interface SnaccDraft {
+  body: string | null
+  images: PickedImage[]
+  gif: Gif | null
+  sticker: DraftSticker | null
+  /** The fixture the composer was opened for; sent even before its card has loaded. */
+  matchId?: string
+  match: LiveMatch | null
+  voice: VoiceDraft | null
+  parentId?: string
+  resnaccOfId?: string
+  poll?: PollPayload
+  spoiler: boolean
+  anonymous: boolean
+}
+
+export type ComposerMode = "reply" | "quote" | "new"
+
+export interface ComposeParams {
+  parentId?: string
+  resnaccOfId?: string
+  initialBody?: string
+  matchId?: string
+  draftId?: string
+}
+
+export type DraftImage =
+  | { kind: "kept"; id: string; url: string; width: number; height: number }
+  | { kind: "picked"; asset: PickedImage }
+
+export interface PollOptionDraft {
+  text: string
+  image: PickedImage | null
+}
+
+export type PollDurationPart = "days" | "hours" | "minutes"
+
+export interface PollDraft {
+  options: PollOptionDraft[]
+  days: number
+  hours: number
+  minutes: number
+}
+
+/** What a composer starts from: empty, a stored draft, or the snacc being edited. */
+export interface DraftSeed {
+  body: string
+  images: DraftImage[]
+  gif: Gif | null
+  spoiler: boolean
+  sticker?: DraftSticker | null
+  voice?: VoiceDraft | null
+  poll?: PollDraft | null
+  storedVoice?: SnaccVoiceNote | null
+}
+
+export interface TypeaheadSuggestion {
+  key: string
+  label: string
+  hint: string | null
+  avatarUrl: string | null
+  replacement: string
+}
+
+export interface ActiveToken {
+  kind: "hashtag" | "mention"
+  term: string
+  start: number
+  end: number
+}
+
+export interface StoredDraftImage {
+  blob: Blob
+  width: number
+  height: number
+  mimeType: string
+  fileName: string
+}
+
+export interface StoredVoice {
+  blob: Blob
+  mimeType: string
+  durationMs: number
+}
+
+export interface StoredPollDraft {
+  options: { text: string; image: StoredDraftImage | null }[]
+  days: number
+  hours: number
+  minutes: number
+}
+
+export interface StoredDraft {
+  id: string
+  saved_at: string
+  parentId?: string
+  resnaccOfId?: string
+  body: string
+  spoiler: boolean
+  images: StoredDraftImage[]
+  voice: StoredVoice | null
+  gif: Gif | null
+  sticker: DraftSticker | null
+  poll: StoredPollDraft | null
+}
+
+export type DraftContent = Omit<StoredDraft, "id" | "saved_at">
+
+export type DraftThumb = { url: string } | { blob: Blob } | null

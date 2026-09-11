@@ -1,34 +1,40 @@
 "use client"
 
+import { Plus } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
-import { Spinner } from "@/components/ui/spinner"
-import { SuspensionReasonsTable } from "@/features/admin/suspension-reasons/components/reasons-table"
-import {
-  useSuspensionReasonMutations,
-  useSuspensionReasons,
-} from "@/features/admin/suspension-reasons/hooks/use-suspension-reasons"
+import { SuspensionReasonDialog } from "../components/suspension-reason-dialog"
+import { SuspensionReasonsTable } from "../components/suspension-reasons-table"
+import { useSuspensionReasonsScreen } from "../hooks/use-suspension-reasons-screen"
 
 export function SuspensionReasonsScreen() {
-  const query = useSuspensionReasons()
-  const mutations = useSuspensionReasonMutations()
+  const { query, actions } = useSuspensionReasonsScreen()
 
   return (
     <>
       <PageHeader
         title="Suspension reasons"
-        description="The wording a suspended user reads on the only screen they can still reach."
+        description="The wording a suspended person reads on the only screen they can still reach."
+        action={
+          <CanAct permission="suspension_reasons.write">
+            <SuspensionReasonDialog
+              trigger={
+                <Button size="sm">
+                  <Plus />
+                  Add reason
+                </Button>
+              }
+              onSubmit={(draft) => actions.save(draft)}
+            />
+          </CanAct>
+        }
       />
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load reasons.
-        </p>
-      ) : (
-        <SuspensionReasonsTable reasons={query.data} mutations={mutations} />
-      )}
+      <SuspensionReasonsTable
+        query={query}
+        onSave={actions.save}
+        onSetRetired={actions.setRetired}
+      />
     </>
   )
 }

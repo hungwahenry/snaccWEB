@@ -1,12 +1,13 @@
+import { voiceFileName } from "@/features/voice/utils/recording"
 import { api } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
-import {
-  voiceFileName,
-  type VoiceDraft,
-} from "@/features/voice/hooks/use-voice-recorder"
-import { appendImage, type PickedImage } from "@/lib/media"
+import { appendImage } from "@/lib/media"
 import type {
   CommentSort,
+  CreateSnaccInput,
+  EditSnaccInput,
+  PollPayload,
+  ReactToSnaccInput,
   ResnaccSummary,
   Snacc,
   SnaccPoll,
@@ -15,21 +16,9 @@ import type {
   SnaccResnaccer,
 } from "../types"
 
-export interface CreateSnaccInput {
-  id: string
-  body?: string
-  images?: PickedImage[]
-  giphyId?: string
-  stickerId?: string
-  matchId?: string
-  parentId?: string
-  resnaccOfId?: string
-  poll?: { options: string[]; images?: PickedImage[]; durationMinutes: number }
-  spoiler?: boolean
-  voice?: VoiceDraft
-}
+const snaccUrl = (id: string) => `/snaccs/${encodeURIComponent(id)}`
 
-function pollField(poll: CreateSnaccInput["poll"]): string | undefined {
+function pollField(poll: PollPayload | undefined): string | undefined {
   return poll
     ? JSON.stringify({
         options: poll.options,
@@ -89,16 +78,6 @@ export function createSnacc(input: CreateSnaccInput): Promise<Snacc> {
   return api.upload<Snacc>("/snaccs", form)
 }
 
-export interface EditSnaccInput {
-  id: string
-  body?: string
-  keepImageIds: string[]
-  images: PickedImage[]
-  giphyId?: string
-  stickerId?: string
-  spoiler?: boolean
-}
-
 export function editSnacc(input: EditSnaccInput): Promise<Snacc> {
   const form = new FormData()
   if (input.body) form.append("body", input.body)
@@ -110,15 +89,15 @@ export function editSnacc(input: EditSnaccInput): Promise<Snacc> {
     appendImage(form, "images", image, `snacc-${index}`)
   )
 
-  return api.uploadPut<Snacc>(`/snaccs/${input.id}`, form)
+  return api.uploadPut<Snacc>(snaccUrl(input.id), form)
 }
 
 export async function deleteSnacc(id: string): Promise<void> {
-  await api.del(`/snaccs/${id}`)
+  await api.del(snaccUrl(id))
 }
 
 export function getSnacc(id: string): Promise<Snacc> {
-  return api.get<Snacc>(`/snaccs/${id}`)
+  return api.get<Snacc>(snaccUrl(id))
 }
 
 export function listComments(
@@ -126,27 +105,22 @@ export function listComments(
   page: number,
   sort: CommentSort
 ): Promise<Paginated<Snacc>> {
-  return api.get<Paginated<Snacc>>(`/snaccs/${snaccId}/comments`, {
+  return api.get<Paginated<Snacc>>(`${snaccUrl(snaccId)}/comments`, {
     page,
     sort,
   })
 }
 
 export async function pinSnacc(snaccId: string): Promise<void> {
-  await api.put(`/snaccs/${snaccId}/pin`)
+  await api.put(`${snaccUrl(snaccId)}/pin`)
 }
 
 export async function unpinSnacc(snaccId: string): Promise<void> {
-  await api.del(`/snaccs/${snaccId}/pin`)
+  await api.del(`${snaccUrl(snaccId)}/pin`)
 }
 
 export async function undoResnacc(snaccId: string): Promise<void> {
-  await api.del(`/snaccs/${snaccId}/resnacc`)
-}
-
-export interface ReactToSnaccInput {
-  snaccId: string
-  emoji: string | null
+  await api.del(`${snaccUrl(snaccId)}/resnacc`)
 }
 
 export async function reactToSnacc({
@@ -154,14 +128,14 @@ export async function reactToSnacc({
   emoji,
 }: ReactToSnaccInput): Promise<void> {
   if (emoji === null) {
-    await api.del(`/snaccs/${snaccId}/reactions`)
+    await api.del(`${snaccUrl(snaccId)}/reactions`)
     return
   }
-  await api.put(`/snaccs/${snaccId}/reactions`, { emoji })
+  await api.put(`${snaccUrl(snaccId)}/reactions`, { emoji })
 }
 
 export function getReactionSummary(snaccId: string): Promise<SnaccReaction[]> {
-  return api.get<SnaccReaction[]>(`/snaccs/${snaccId}/reactions/summary`)
+  return api.get<SnaccReaction[]>(`${snaccUrl(snaccId)}/reactions/summary`)
 }
 
 export function listReactions(
@@ -169,21 +143,21 @@ export function listReactions(
   emoji: string | undefined,
   page: number
 ): Promise<Paginated<SnaccReactor>> {
-  return api.get<Paginated<SnaccReactor>>(`/snaccs/${snaccId}/reactions`, {
+  return api.get<Paginated<SnaccReactor>>(`${snaccUrl(snaccId)}/reactions`, {
     emoji,
     page,
   })
 }
 
 export function getResnaccSummary(snaccId: string): Promise<ResnaccSummary> {
-  return api.get<ResnaccSummary>(`/snaccs/${snaccId}/resnaccs/summary`)
+  return api.get<ResnaccSummary>(`${snaccUrl(snaccId)}/resnaccs/summary`)
 }
 
 export function listResnaccQuotes(
   snaccId: string,
   page: number
 ): Promise<Paginated<Snacc>> {
-  return api.get<Paginated<Snacc>>(`/snaccs/${snaccId}/resnaccs/quotes`, {
+  return api.get<Paginated<Snacc>>(`${snaccUrl(snaccId)}/resnaccs/quotes`, {
     page,
   })
 }
@@ -193,7 +167,7 @@ export function listResnaccers(
   page: number
 ): Promise<Paginated<SnaccResnaccer>> {
   return api.get<Paginated<SnaccResnaccer>>(
-    `/snaccs/${snaccId}/resnaccs/people`,
+    `${snaccUrl(snaccId)}/resnaccs/people`,
     { page }
   )
 }
@@ -202,8 +176,5 @@ export function votePoll(
   snaccId: string,
   optionId: string
 ): Promise<SnaccPoll> {
-  return api.post<SnaccPoll>(
-    `/snaccs/${encodeURIComponent(snaccId)}/poll/votes`,
-    { optionId }
-  )
+  return api.post<SnaccPoll>(`${snaccUrl(snaccId)}/poll/votes`, { optionId })
 }

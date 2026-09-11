@@ -6,6 +6,7 @@ import { timeAgo } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { notificationIcon } from "@/features/notifications/utils/notification-display"
 import type { Notification } from "../types"
+import { nameOf } from "@/features/users/utils/names"
 
 type NotificationRowProps = {
   notification: Notification
@@ -57,7 +58,7 @@ function Face({ notification }: { notification: Notification }) {
   if (!notification.uses_icon && notification.actor) {
     return (
       <UserAvatar
-        alt={notification.actor.display_name ?? "Avatar"}
+        alt={nameOf(notification.actor)}
         avatarUrl={notification.actor.avatar_url}
         name={notification.actor.username}
       />

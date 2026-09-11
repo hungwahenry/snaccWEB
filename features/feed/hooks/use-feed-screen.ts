@@ -1,124 +1,108 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { signal } from "@/features/signals/utils/queue"
 import { useRealtimeEvent } from "@/hooks/use-realtime-event"
 import { useRealtimeRoom } from "@/hooks/use-realtime-room"
-import { realtimeRooms } from "@/providers/realtime-rooms"
-import type { FeedScope, FeedSort } from "../types"
+import type { FeedScope, FeedSnaccEvent, FeedSort, NewPoster } from "../types"
+import { withNewPoster } from "../utils/new-posters"
 import {
   DEFAULT_FEED_SCOPE,
-  rememberFeedSort,
-  rememberedFeedSort,
+  FEED_EMPTY,
+  FEED_FAILED,
+  feedTabs,
+  liveFeedRoom,
+  scopeAllowed,
 } from "../utils/scopes"
 import { useFeed } from "./use-feed"
-
-export interface NewPoster {
-  key: string
-  avatarUrl: string | null
-}
-
-const POSTERS_SHOWN = 3
+import { useFeedSort } from "./use-feed-sort"
 
 type SortMenu = { open: boolean; anchor: HTMLElement | null }
 const CLOSED: SortMenu = { open: false, anchor: null }
 
 export function useFeedScreen() {
-  const [scope, setScope] = useState<FeedScope>(DEFAULT_FEED_SCOPE)
-  const [sort, setSort] = useState<FeedSort>(
-    () => rememberedFeedSort() ?? "top"
-  )
-  const [hasNew, setHasNew] = useState(false)
-  const [newPosters, setNewPosters] = useState<NewPoster[]>([])
+  const [picked, setPicked] = useState<FeedScope>(DEFAULT_FEED_SCOPE)
+  const [remembered, rememberSort] = useFeedSort()
+  const [newPosters, setNewPosters] = useState<NewPoster[] | null>(null)
   const [sortMenu, setSortMenu] = useState<SortMenu>(CLOSED)
 
-  const followingEnabled = useFlag("feed_following")
-  const globalEnabled = useFlag("feed_global")
+  const following = useFlag("feed_following")
+  const global = useFlag("feed_global")
   const sortable = useFlag("feed_ranking")
+  const enabled = useMemo(() => ({ following, global }), [following, global])
+  const tabs = useMemo(() => feedTabs(enabled), [enabled])
 
-  const order: FeedSort = sortable ? sort : "latest"
-  const feed = useFeed(scope, order)
-  const campusSlug = useMe().data?.profile?.university?.slug
+  const scope = scopeAllowed(picked, enabled) ? picked : DEFAULT_FEED_SCOPE
+  const sort: FeedSort = sortable ? remembered : "latest"
+  const feed = useFeed(scope, sort)
+  const campusSlug = useMe().data?.profile?.university?.slug ?? null
+  const room = liveFeedRoom(scope, sort, campusSlug)
 
-  if (scope === "following" && !followingEnabled) setScope(DEFAULT_FEED_SCOPE)
-  if (scope === "global" && !globalEnabled) setScope(DEFAULT_FEED_SCOPE)
-
-  useRealtimeRoom(
-    scope === "campus" && campusSlug
-      ? realtimeRooms.feedCampus(campusSlug)
-      : null
-  )
-
+  useRealtimeRoom(room)
   useRealtimeEvent("feed.snacc", (payload) => {
-    if (scope === "following" || order !== "latest") return
-    setHasNew(true)
-
-    const event = payload as {
-      anonymous?: boolean
-      actor_id?: string
-      avatar_url?: string | null
-    }
-    const key = event.anonymous ? "ghost" : event.actor_id
-    if (!key) return
-
-    setNewPosters((current) => {
-      if (current.some((poster) => poster.key === key)) return current
-      return [...current, { key, avatarUrl: event.avatar_url ?? null }].slice(
-        -POSTERS_SHOWN
-      )
-    })
+    if (!room) return
+    setNewPosters((current) =>
+      withNewPoster(current ?? [], payload as FeedSnaccEvent)
+    )
   })
 
-  const clearNew = () => {
-    setHasNew(false)
-    setNewPosters([])
-  }
-
-  const pickScope = useCallback((next: FeedScope) => {
-    setSortMenu(CLOSED)
-    setScope((current) => {
-      if (next === current) return current
-      signal("feed_scope", { detail: next })
-      clearNew()
-      return next
-    })
-  }, [])
-
-  const pickSort = useCallback(
-    (next: FeedSort) => {
+  const pickScope = useCallback(
+    (next: FeedScope) => {
       setSortMenu(CLOSED)
-      setSort((current) => {
-        if (next === current) return current
-        rememberFeedSort(next)
-        signal("feed_scope", { detail: `${scope}:${next}` })
-        clearNew()
-        return next
-      })
+      if (next === scope) return
+      signal("feed_scope", { detail: next })
+      setNewPosters(null)
+      setPicked(next)
     },
     [scope]
   )
 
-  const refresh = useCallback(() => {
-    clearNew()
+  const pickSort = useCallback(
+    (next: FeedSort) => {
+      setSortMenu(CLOSED)
+      if (next === sort) return
+      signal("feed_scope", { detail: `${scope}:${next}` })
+      setNewPosters(null)
+      rememberSort(next)
+    },
+    [scope, sort, rememberSort]
+  )
+
+  const openSortMenu = useCallback(
+    (_: FeedScope, anchor: HTMLElement) => setSortMenu({ open: true, anchor }),
+    []
+  )
+  const closeSortMenu = useCallback(() => setSortMenu(CLOSED), [])
+
+  const showNew = () => {
+    setNewPosters(null)
     window.scrollTo({ top: 0, behavior: "smooth" })
     feed.refresh()
-  }, [feed])
+  }
 
   return {
-    scope,
-    sort: order,
-    sortable,
-    hasNew,
-    newPosters,
-    sortMenu,
-    tabs: { following: followingEnabled, global: globalEnabled },
-    feed,
-    pickScope,
-    pickSort,
-    openSortMenu: (anchor: HTMLElement) => setSortMenu({ open: true, anchor }),
-    closeSortMenu: () => setSortMenu(CLOSED),
-    refresh,
+    tabs: {
+      show: tabs.length > 1 || sortable,
+      tabs,
+      value: scope,
+      onChange: pickScope,
+      onReselect: sortable ? openSortMenu : undefined,
+    },
+    sortMenu: {
+      open: sortMenu.open,
+      anchor: sortMenu.anchor,
+      value: sort,
+      onSelect: pickSort,
+      onDismiss: closeSortMenu,
+    },
+    newPill: newPosters ? { posters: newPosters, onPress: showNew } : null,
+    list: {
+      feed: { ...feed, loading: feed.loading || feed.stale },
+      failedTitle: FEED_FAILED[scope],
+      empty: FEED_EMPTY[scope],
+      findPeople: scope === "following",
+    },
   }
 }

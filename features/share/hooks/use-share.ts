@@ -2,17 +2,16 @@
 
 import { useMutation } from "@tanstack/react-query"
 import { useState } from "react"
-import { toast } from "sonner"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { sendMessage } from "@/features/messages/api"
 import { useConversations } from "@/features/messages/hooks/use-conversations"
 import { signal } from "@/features/signals/utils/queue"
 import { useShareCapture } from "@/hooks/use-share-capture"
-import { getErrorMessage } from "@/lib/api/errors"
 import { newId } from "@/lib/ids"
 import { copyLink, shareOrCopy } from "@/lib/share-links"
 import type { ShareSubject } from "../types"
 import { labelFor, linkFor, shareable, textFor } from "../utils/subject"
+import { showNotice, showSuccess } from "@/lib/feedback"
 
 export function useShare() {
   const [subject, setSubject] = useState<ShareSubject | null>(null)
@@ -48,14 +47,13 @@ export function useShare() {
     },
     onSuccess: ({ sent, failed }) => {
       if (sent > 0) noteShare("dm")
-      if (failed === 0) toast.success("Sent")
+      if (failed === 0) showSuccess("Sent")
       else
-        toast(
+        showNotice(
           `Sent to ${sent}. Couldn't reach ${failed === 1 ? "1 person" : `${failed} people`}`
         )
       setOpen(false)
     },
-    onError: (error) => toast.error(getErrorMessage(error)),
   })
 
   return {

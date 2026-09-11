@@ -1,14 +1,11 @@
 import { ChevronRightIcon, CopyIcon, LandmarkIcon } from "lucide-react"
 import Link from "next/link"
-import { copyLink } from "@/lib/share-links"
+import type { AccountFooterView } from "../../hooks/home/use-wallet-home"
 import { RECEIVE_PATH } from "../../routes"
-import type { VirtualAccount } from "../../types"
-import { groupAccountNumber } from "../../utils/format"
 
 /** The balance card's footer: your account number where you can already see it. */
-export function AccountFooter({ account }: { account: VirtualAccount | null }) {
-  if (account?.status === "active" && account.account_number) {
-    const accountNumber = account.account_number
+export function AccountFooter({ footer }: { footer: AccountFooterView }) {
+  if (footer.kind === "number") {
     return (
       <div>
         <div className="-mx-5 h-px bg-border" />
@@ -20,15 +17,15 @@ export function AccountFooter({ account }: { account: VirtualAccount | null }) {
             aria-label="Open account details"
           >
             <span className="font-extrabold text-foreground tabular-nums">
-              {groupAccountNumber(accountNumber)}
+              {footer.number}
             </span>
             <span className="truncate text-xs text-muted-foreground">
-              {account.bank_name}
+              {footer.bankName}
             </span>
           </Link>
           <button
             type="button"
-            onClick={() => void copyLink(accountNumber, "Account number")}
+            onClick={footer.onCopy}
             aria-label="Copy account number"
             className="flex size-9 items-center justify-center rounded-full bg-muted transition-opacity active:opacity-70"
           >
@@ -38,8 +35,6 @@ export function AccountFooter({ account }: { account: VirtualAccount | null }) {
       </div>
     )
   }
-
-  const pending = account?.status === "pending"
 
   return (
     <div>
@@ -51,12 +46,12 @@ export function AccountFooter({ account }: { account: VirtualAccount | null }) {
         <LandmarkIcon className="size-5 shrink-0 text-muted-foreground" />
         <span className="flex min-w-0 flex-1 flex-col">
           <span className="text-sm font-bold text-foreground">
-            {pending
+            {footer.pending
               ? "Your account number is on the way"
               : "Get your account number"}
           </span>
           <span className="truncate text-xs text-muted-foreground">
-            {pending
+            {footer.pending
               ? "Usually takes a minute — tap to check."
               : "Receive money from any bank, straight into Snacc."}
           </span>

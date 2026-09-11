@@ -15,9 +15,14 @@ import { BottomTabBar } from "../components/bottom-tab-bar"
 import { RightRail } from "../components/right-rail"
 import { Sidebar } from "../components/sidebar"
 import { useAppNav } from "../hooks/use-app-nav"
+import { SUSPENDED_PATH } from "@/features/suspensions/routes"
+import { COMPLETE_PROFILE_PATH } from "@/features/onboarding/routes"
+import { COMPOSE_PATH } from "@/features/snaccs/routes"
+import { SETTINGS_PATH } from "@/features/settings/routes"
 
 const IMMERSIVE = [
   /^\/messages\/[^/]+/,
+  /^\/chat\/[^/]+/,
   /^\/compose/,
   /^\/moments/,
   /^\/wallet/,
@@ -35,8 +40,8 @@ function Gate({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (signedOut) router.replace(`/login?next=${encodeURIComponent(pathname)}`)
-    else if (suspended) router.replace("/suspended")
-    else if (incomplete) router.replace("/complete-profile")
+    else if (suspended) router.replace(SUSPENDED_PATH)
+    else if (incomplete) router.replace(COMPLETE_PROFILE_PATH)
   }, [signedOut, suspended, incomplete, pathname, router])
 
   if (me.isPending || signedOut || suspended || incomplete) {
@@ -60,7 +65,7 @@ function Shell({ children }: { children: ReactNode }) {
   const profile = nav.user?.profile
   const immersive = IMMERSIVE.some((pattern) => pattern.test(pathname))
 
-  const openCompose = () => router.push("/compose")
+  const openCompose = () => router.push(COMPOSE_PATH)
 
   return (
     <AppFrame
@@ -79,7 +84,7 @@ function Shell({ children }: { children: ReactNode }) {
               : null
           }
           onCompose={openCompose}
-          onSettings={() => router.push("/settings")}
+          onSettings={() => router.push(SETTINGS_PATH)}
           onLogout={() => logout.mutate()}
         />
       }

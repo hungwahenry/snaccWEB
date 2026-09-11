@@ -1,173 +1,140 @@
 "use client"
 
-import {
-  FilmIcon,
-  HeartIcon,
-  SearchXIcon,
-  StickerIcon,
-  type LucideIcon,
-} from "lucide-react"
-import { useState } from "react"
-import { toast } from "sonner"
-import { confirm } from "@/components/ui/confirm"
+import { useCallback, useMemo, useState } from "react"
 import { useFlag } from "@/features/config/hooks/use-flag"
-import { useGifSearch, useGifTrending } from "@/features/giphy/hooks/use-gifs"
+import { useGiphyFeed } from "@/features/giphy/hooks/use-giphy-feed"
 import type { Gif } from "@/features/giphy/types"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
-import { getErrorMessage } from "@/lib/api/errors"
-import { saveGiphySticker } from "../api"
-import type { Sticker } from "../types"
+import type { Sticker, TrayGridState, TrayTab } from "../types"
 import {
-  confirmKeepSticker,
-  useDeleteSticker,
-  useSaveGiphySticker,
-} from "./use-keep-sticker"
-import { invalidateStickers, useStickerLibrary } from "./use-sticker-library"
-import { useStickerSearch, useStickerTrending } from "./use-sticker-search"
+  shownTab,
+  trayEmpty,
+  trayItemLabel,
+  traySearchPlaceholder,
+  trayTabs,
+  trayTitle,
+} from "../utils/tray"
+import { useKeepGiphySticker } from "./use-keep-sticker"
+import { useRemoveSticker } from "./use-remove-sticker"
+import { useSendGiphySticker } from "./use-send-giphy-sticker"
+import { useStickerLibrary } from "./use-sticker-library"
 
-export type TrayTab = "stickers" | "gifs" | "mine"
-
-export interface TrayTile {
-  id: string
-  url: string
-  preview_url: string | null
-  width: number
-  height: number
-}
-
-export interface TrayGrid {
-  items: TrayTile[]
-  loading: boolean
-  empty: { icon: LucideIcon; title: string; description?: string }
-  onPick: (item: TrayTile) => void
-  onLongPress?: (item: TrayTile) => void
-  onEndReached?: () => void
-}
-
-interface TrayOptions {
+export interface StickerTrayOptions {
+  open: boolean
+  onOpenChange: (open: boolean) => void
   onPickSticker?: (sticker: Sticker) => void
   onPickGif?: (gif: Gif) => void
-  close: () => void
 }
 
 export function useStickerTray({
+  open,
+  onOpenChange,
   onPickSticker,
   onPickGif,
-  close,
-}: TrayOptions) {
-  const gifsEnabled = useFlag("giphy") && !!onPickGif
-  const stickersEnabled = useFlag("stickers") && !!onPickSticker
-  const [tab, setTab] = useState<TrayTab>(stickersEnabled ? "stickers" : "gifs")
+}: StickerTrayOptions) {
+  const stickersOn = useFlag("stickers") && !!onPickSticker
+  const gifsOn = useFlag("giphy") && !!onPickGif
+  const tabs = useMemo(
+    () => trayTabs({ stickers: stickersOn, gifs: gifsOn }),
+    [stickersOn, gifsOn]
+  )
+  const [picked, setPicked] = useState<TrayTab | null>(null)
+  const tab = shownTab(tabs, picked)
+
   const [query, setQuery] = useState("")
   const debounced = useDebouncedValue(query, 300)
-  const searching = debounced.trim().length > 0
+  const mine = tab === "mine"
 
-  const save = useSaveGiphySticker()
-  const remove = useDeleteSticker()
-  const library = useStickerLibrary({ enabled: tab === "mine" })
-  const stickerSearch = useStickerSearch(
+  const [wasOpen, setWasOpen] = useState(open)
+  if (wasOpen !== open) {
+    setWasOpen(open)
+    if (!open) setQuery("")
+  }
+
+  const feed = useGiphyFeed(
+    tab === "gifs" ? "gifs" : "stickers",
     debounced,
-    tab === "stickers" && searching
+    open && !mine
   )
-  const stickerTrending = useStickerTrending(tab === "stickers" && !searching)
-  const gifSearch = useGifSearch(tab === "gifs" && searching ? debounced : "")
-  const gifTrending = useGifTrending(tab === "gifs" && !searching)
+  const library = useStickerLibrary(open && mine)
+  const keepGiphy = useKeepGiphySticker()
+  const remove = useRemoveSticker()
+  const sendGiphy = useSendGiphySticker(onPickSticker)
 
-  function pickTab(next: TrayTab) {
-    setTab(next)
+  const close = useCallback(() => onOpenChange(false), [onOpenChange])
+
+  const pickTab = useCallback((next: TrayTab) => {
+    setPicked(next)
     setQuery("")
-  }
+  }, [])
 
-  function sendGiphySticker(sticker: Gif) {
-    close()
-    // Save-then-send as a bare promise: the mutation hook unmounts with the tray and drops its
-    // callbacks, which would eat the send.
-    void saveGiphySticker(sticker.id)
-      .then((saved) => {
-        invalidateStickers()
-        onPickSticker?.(saved)
-      })
-      .catch((error) => toast.error(getErrorMessage(error)))
-  }
+  const onPick = useCallback(
+    (id: string) => {
+      if (tab === "stickers") {
+        close()
+        sendGiphy(id)
+        return
+      }
+      if (tab === "gifs") {
+        const gif = feed.items.find((item) => item.id === id)
+        if (!gif) return
+        close()
+        onPickGif?.(gif)
+        return
+      }
+      const sticker = library.stickers.find((item) => item.id === id)
+      if (!sticker) return
+      close()
+      onPickSticker?.(sticker)
+    },
+    [
+      tab,
+      feed.items,
+      library.stickers,
+      close,
+      sendGiphy,
+      onPickGif,
+      onPickSticker,
+    ]
+  )
 
-  function confirmDelete(sticker: Sticker) {
-    confirm({
-      title: "Remove this sticker?",
-      message: "It leaves your library; anywhere you sent it stays.",
-      actions: [
-        {
-          label: "Remove",
-          destructive: true,
-          onPress: () => remove.mutate(sticker.id),
-        },
-      ],
-    })
-  }
+  const onHold =
+    tab === "stickers" ? keepGiphy : tab === "mine" ? remove : undefined
 
-  const grid: TrayGrid =
-    tab === "stickers"
-      ? {
-          items: (searching ? stickerSearch.data : stickerTrending.data) ?? [],
-          loading: (searching ? stickerSearch : stickerTrending).isFetching,
-          empty: searching
-            ? {
-                icon: SearchXIcon,
-                title: "Nothing matched",
-                description: "Try another word.",
-              }
-            : {
-                icon: StickerIcon,
-                title: "No stickers right now",
-                description: "Check back in a bit.",
-              },
-          onPick: (item) => sendGiphySticker(item as Gif),
-          onLongPress: (item) => confirmKeepSticker(() => save.mutate(item.id)),
-        }
-      : tab === "gifs"
-        ? {
-            items: (searching ? gifSearch.data : gifTrending.data) ?? [],
-            loading: (searching ? gifSearch : gifTrending).isFetching,
-            empty: searching
-              ? {
-                  icon: SearchXIcon,
-                  title: "Nothing matched",
-                  description: "Try another word.",
-                }
-              : {
-                  icon: FilmIcon,
-                  title: "No GIFs right now",
-                  description: "Check back in a bit.",
-                },
-            onPick: (item) => {
-              close()
-              onPickGif?.(item as Gif)
-            },
-          }
-        : {
-            items: library.stickers,
-            loading: library.loading,
-            empty: {
-              icon: HeartIcon,
-              title: "Nothing saved yet",
-              description: "Hold any sticker to keep it here.",
-            },
-            onPick: (item) => {
-              close()
-              onPickSticker?.(item as Sticker)
-            },
-            onLongPress: (item) => confirmDelete(item as Sticker),
-            onEndReached: library.loadMore,
-          }
+  const grid: TrayGridState = mine
+    ? {
+        items: library.stickers,
+        itemLabel: trayItemLabel(tab),
+        loading: library.loading,
+        loadingMore: library.loadingMore,
+        failed: library.failed,
+        empty: trayEmpty(tab, false),
+        onRetry: library.retry,
+        onPick,
+        onHold,
+        onEndReached: library.hasMore ? library.loadMore : undefined,
+      }
+    : {
+        items: feed.items,
+        itemLabel: trayItemLabel(tab),
+        loading: feed.loading,
+        loadingMore: false,
+        failed: feed.failed,
+        empty: trayEmpty(tab, feed.searching),
+        onRetry: feed.retry,
+        onPick,
+        onHold,
+      }
 
   return {
+    title: trayTitle(tabs),
+    tabs,
     tab,
-    pickTab,
-    gifsEnabled,
-    stickersEnabled,
+    onTabChange: pickTab,
     query,
-    setQuery,
-    showSearch: tab !== "mine",
-    searchPlaceholder: tab === "gifs" ? "Search GIFs" : "Search stickers",
+    onQueryChange: setQuery,
+    searchPlaceholder: traySearchPlaceholder(tab),
+    showAttribution: !mine,
     grid,
   }
 }

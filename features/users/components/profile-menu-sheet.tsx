@@ -11,7 +11,8 @@ export type ProfileMenuSheetProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   isMe: boolean
-  username: string | null
+  reportLabel: string
+  blockLabel: string
   onSettings: () => void
   onShare: () => void
   onCopyLink: () => void
@@ -23,7 +24,8 @@ export function ProfileMenuSheet({
   open,
   onOpenChange,
   isMe,
-  username,
+  reportLabel,
+  blockLabel,
   onSettings,
   onShare,
   onCopyLink,
@@ -56,14 +58,14 @@ export function ProfileMenuSheet({
         <>
           <ActionSheetChoice
             icon={FlagIcon}
-            label={username ? `Report @${username}` : "Report this person"}
+            label={reportLabel}
             hint="Something wrong with the person"
             destructive
             onPress={onReport}
           />
           <ActionSheetChoice
             icon={BanIcon}
-            label={username ? `Block @${username}` : "Block this person"}
+            label={blockLabel}
             hint="Hide each other everywhere"
             destructive
             onPress={onBlock}

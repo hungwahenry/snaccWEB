@@ -1,9 +1,20 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { showErrorMessage } from "@/lib/feedback"
 import type { VoiceNote } from "../types"
-import { claimPlayback, releasePlayback } from "../utils/playback"
-import { cyclePlaybackSpeed, usePlaybackSpeed } from "./use-playback-speed"
+import {
+  claimPlayback,
+  mediaDurationMs,
+  playedFraction,
+  releasePlayback,
+  shownElapsed,
+} from "../utils/playback"
+import {
+  currentPlaybackSpeed,
+  cyclePlaybackSpeed,
+  usePlaybackSpeed,
+} from "./use-playback-speed"
 
 type Status = {
   loading: boolean
@@ -12,14 +23,19 @@ type Status = {
   totalMs: number
 }
 
+function isAbort(error: unknown): boolean {
+  return error instanceof DOMException && error.name === "AbortError"
+}
+
+/** Plays one note from the moment it mounts; `onRelease` hands the row back to its idle look. */
 export function useVoiceNotePlayback(note: VoiceNote, onRelease: () => void) {
   const audio = useRef<HTMLAudioElement | null>(null)
-  const [status, setStatus] = useState<Status>({
+  const [status, setStatus] = useState<Status>(() => ({
     loading: true,
     playing: true,
     elapsedMs: 0,
     totalMs: note.duration_ms,
-  })
+  }))
   const [scrub, setScrub] = useState<number | null>(null)
   const speed = usePlaybackSpeed()
 
@@ -28,57 +44,77 @@ export function useVoiceNotePlayback(note: VoiceNote, onRelease: () => void) {
     release.current = onRelease
   }, [onRelease])
 
+  const handle = useMemo(
+    () => ({
+      pause: () => {
+        audio.current?.pause()
+        setStatus((current) => ({ ...current, playing: false }))
+      },
+    }),
+    []
+  )
+
+  const failed = useRef(false)
+  const fail = useCallback((error?: unknown) => {
+    if (failed.current || isAbort(error)) return
+    failed.current = true
+    showErrorMessage("Could not play this voice note.")
+    release.current()
+  }, [])
+
   useEffect(() => {
     const element = new Audio(note.url)
     element.preload = "auto"
+    element.defaultPlaybackRate = currentPlaybackSpeed()
+    element.playbackRate = element.defaultPlaybackRate
     audio.current = element
-
-    const handle = {
-      pause: () => {
-        element.pause()
-        setStatus((current) => ({ ...current, playing: false }))
-      },
-    }
+    failed.current = false
     claimPlayback(handle)
 
-    const onReady = () => {
+    const onMetadata = () =>
       setStatus((current) => ({
         ...current,
-        loading: false,
-        totalMs:
-          Number.isFinite(element.duration) && element.duration > 0
-            ? element.duration * 1000
-            : note.duration_ms,
+        totalMs: mediaDurationMs(element.duration, note.duration_ms),
       }))
-      void element.play().catch(() => release.current())
-    }
+    const onPlaying = () =>
+      setStatus((current) => ({ ...current, loading: false, playing: true }))
     const onTime = () =>
       setStatus((current) => ({
         ...current,
         elapsedMs: element.currentTime * 1000,
       }))
     const onEnded = () => release.current()
+    const onError = () => fail()
 
-    element.addEventListener("loadedmetadata", onReady, { once: true })
+    element.addEventListener("loadedmetadata", onMetadata)
+    element.addEventListener("playing", onPlaying)
     element.addEventListener("timeupdate", onTime)
     element.addEventListener("ended", onEnded)
-    element.addEventListener("error", onEnded)
+    element.addEventListener("error", onError)
+    // Called here rather than after loading so the play still counts as the tap's own (Safari).
+    element.play().catch(fail)
 
     return () => {
-      element.pause()
-      element.removeEventListener("loadedmetadata", onReady)
+      failed.current = true
+      element.removeEventListener("loadedmetadata", onMetadata)
+      element.removeEventListener("playing", onPlaying)
       element.removeEventListener("timeupdate", onTime)
       element.removeEventListener("ended", onEnded)
-      element.removeEventListener("error", onEnded)
-      element.src = ""
+      element.removeEventListener("error", onError)
+      element.pause()
+      element.removeAttribute("src")
+      element.load()
       releasePlayback(handle)
       audio.current = null
     }
-  }, [note.url, note.duration_ms])
+  }, [note.url, note.duration_ms, handle, fail])
 
   useEffect(() => {
-    if (audio.current) audio.current.playbackRate = speed
-  }, [speed, status.loading])
+    const element = audio.current
+    if (!element) return
+    element.defaultPlaybackRate = speed
+    element.playbackRate = speed
+  }, [speed])
 
   const toggle = useCallback(() => {
     const element = audio.current
@@ -87,19 +123,13 @@ export function useVoiceNotePlayback(note: VoiceNote, onRelease: () => void) {
       return
     }
     if (status.playing) {
-      element.pause()
-      setStatus((current) => ({ ...current, playing: false }))
+      handle.pause()
       return
     }
-    claimPlayback({
-      pause: () => {
-        element.pause()
-        setStatus((current) => ({ ...current, playing: false }))
-      },
-    })
-    void element.play()
+    claimPlayback(handle)
+    element.play().catch(fail)
     setStatus((current) => ({ ...current, playing: true }))
-  }, [status.loading, status.playing])
+  }, [status.loading, status.playing, handle, fail])
 
   const seek = useCallback(
     (fraction: number) => {
@@ -109,31 +139,26 @@ export function useVoiceNotePlayback(note: VoiceNote, onRelease: () => void) {
       element.currentTime = (status.totalMs / 1000) * fraction
       setStatus((current) => ({
         ...current,
-        elapsedMs: status.totalMs * fraction,
+        elapsedMs: current.totalMs * fraction,
       }))
     },
     [status.loading, status.totalMs]
   )
 
-  const played =
-    status.totalMs > 0 ? Math.min(1, status.elapsedMs / status.totalMs) : 0
+  const cancelScrub = useCallback(() => setScrub(null), [])
 
   return {
     playing: status.playing,
     loading: status.loading,
-    progress: scrub ?? played,
-    toggle,
+    progress: scrub ?? playedFraction(status.elapsedMs, status.totalMs),
+    totalMs: status.totalMs,
+    elapsedMs: shownElapsed({ scrub, ...status }),
     speed,
+    toggle,
     cycleSpeed: cyclePlaybackSpeed,
-    scrubbing: scrub !== null,
     beginScrub: setScrub,
     moveScrub: setScrub,
     endScrub: seek,
-    elapsedMs:
-      scrub !== null
-        ? status.totalMs * scrub
-        : status.playing || status.elapsedMs > 0
-          ? status.elapsedMs
-          : status.totalMs,
+    cancelScrub,
   }
 }

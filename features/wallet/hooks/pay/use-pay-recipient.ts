@@ -1,172 +1,135 @@
 "use client"
 
-import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
-import type { FollowUser } from "@/features/follows/types"
-import { searchUsers } from "@/features/search/api"
+import { useSearchUsers } from "@/features/search/hooks/use-search"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
-import { getErrorMessage } from "@/lib/api/errors"
-import { resolveBankAccount } from "../../api"
-import type { PayMode } from "../../routes"
-import type { Bank, WalletRecipient } from "../../types"
-import { useBanks } from "./use-banks"
+import type {
+  Payee,
+  PayMode,
+  PayPrefill,
+  SendTarget,
+  WalletRecipient,
+} from "../../types"
+import {
+  bankTarget,
+  canTarget,
+  isAccountNumber,
+  recipientsFor,
+  targetFromRecipient,
+  userNamed,
+} from "../../utils/recipients"
+import { useBankAccountName } from "./use-bank-account-name"
+import { useBankChoice } from "./use-bank-choice"
 import { useRecipients } from "./use-recipients"
 
-export type SendTarget =
-  | { kind: "user"; user: FollowUser }
-  | {
-      kind: "bank"
-      bankName: string
-      accountName: string
-      accountLast4: string
-      source:
-        { recipientId: string } | { bankCode: string; accountNumber: string }
-    }
-
-const ACCOUNT_NUMBER = /^\d{10}$/
-
-function targetFromRecipient(
-  recipient: WalletRecipient | null
-): SendTarget | null {
-  if (!recipient) return null
-  if (recipient.kind === "user") {
-    return recipient.user ? { kind: "user", user: recipient.user } : null
-  }
-  if (!recipient.bank) return null
-  return {
-    kind: "bank",
-    bankName: recipient.bank.bank_name,
-    accountName: recipient.bank.account_name,
-    accountLast4: recipient.bank.account_last4,
-    source: { recipientId: recipient.id },
-  }
-}
+const SUGGESTIONS = 5
+const RECENTS = 6
 
 export function usePayRecipient(
   mode: PayMode,
-  prefill: { username?: string; recipientId?: string },
+  prefill: PayPrefill,
   searching: boolean
 ) {
   const recipients = useRecipients({ enabled: mode !== "topup" })
-  const banks = useBanks()
+  const bankChoice = useBankChoice()
 
-  const [query, setQuery] = useState(prefill.username ?? "")
-  const [picked, setPicked] = useState<FollowUser | null>(null)
-  const [bank, setBank] = useState<Bank | null>(null)
+  const [query, setQuery] = useState(prefill.to ?? "")
+  const [picked, setPicked] = useState<Payee | null>(null)
   const [chosen, setChosen] = useState<WalletRecipient | null>(null)
-  const [bankPickerOpen, setBankPickerOpen] = useState(false)
 
-  const trimmedQuery = query.trim()
-  const bankMode = mode === "send" && ACCOUNT_NUMBER.test(trimmedQuery)
-  const debounced = useDebouncedValue(trimmedQuery.replace(/^@/, ""), 300)
+  const trimmed = query.trim()
+  const bankMode = mode === "send" && isAccountNumber(trimmed)
+  const resolved = useBankAccountName(bankChoice.bank, trimmed, bankMode)
 
+  const debounced = useDebouncedValue(trimmed.replace(/^@/, ""), 300)
   const searchActive = searching && !bankMode && !picked && debounced.length > 1
-  const suggestions = useQuery({
-    queryKey: ["wallet", "pay", "users", debounced],
-    queryFn: () => searchUsers(debounced, 1),
-    enabled: searchActive,
-  })
+  const search = useSearchUsers(debounced, searchActive)
 
-  const resolved = useQuery({
-    queryKey: ["wallet", "pay", "resolve", bank?.code, trimmedQuery],
-    queryFn: () =>
-      resolveBankAccount({ bankCode: bank!.code, accountNumber: trimmedQuery }),
-    enabled: bankMode && bank !== null,
-    retry: false,
-  })
+  const linkedUsername = prefill.recipientId ? undefined : prefill.to
+  const linkedSearch = useSearchUsers(
+    linkedUsername ?? "",
+    Boolean(linkedUsername)
+  )
+  const linkedUser = linkedUsername
+    ? userNamed(linkedSearch.users, linkedUsername)
+    : null
+  const linkedSettled = !linkedSearch.loading && !linkedSearch.stale
+  const linkedUnknown =
+    Boolean(linkedUsername) && linkedSettled && linkedUser === null
 
-  const pinnedRecipient = prefill.recipientId
+  const savedRecipient = prefill.recipientId
     ? (recipients.data?.find(
         (recipient) => recipient.id === prefill.recipientId
       ) ?? null)
     : null
-  const askable = (recipient: WalletRecipient | null) =>
-    recipient && (mode !== "request" || recipient.kind === "user")
-      ? recipient
-      : null
-  const pinnedUser = useQuery({
-    queryKey: ["wallet", "pay", "user", prefill.username],
-    queryFn: () => searchUsers(prefill.username!, 1),
-    enabled: Boolean(prefill.username) && !prefill.recipientId,
-    select: (page) =>
-      page.items.find(
-        (user) =>
-          user.username?.toLowerCase() === prefill.username?.toLowerCase()
-      ) ?? null,
-  })
-  const usernameUnknown = pinnedUser.isSuccess && pinnedUser.data === null
-  const pinnedUnaskable =
-    pinnedRecipient !== null && askable(pinnedRecipient) === null
+  const savedGone =
+    Boolean(prefill.recipientId) &&
+    recipients.isSuccess &&
+    savedRecipient === null
+  const savedUsable = savedRecipient === null || canTarget(mode, savedRecipient)
+
   const pinned =
-    (Boolean(prefill.recipientId) && !pinnedUnaskable) ||
-    (Boolean(prefill.username) && !usernameUnknown)
+    (Boolean(prefill.recipientId) && !savedGone && savedUsable) ||
+    (Boolean(linkedUsername) && !linkedUnknown)
+
   const searchTarget: SendTarget | null = picked
     ? { kind: "user", user: picked }
-    : bankMode && bank && resolved.data
-      ? {
-          kind: "bank",
-          bankName: bank.name,
-          accountName: resolved.data.account_name,
-          accountLast4: trimmedQuery.slice(-4),
-          source: { bankCode: bank.code, accountNumber: trimmedQuery },
-        }
+    : bankMode && bankChoice.bank && resolved.name
+      ? bankTarget(bankChoice.bank, trimmed, resolved.name)
       : null
+
   const target =
-    targetFromRecipient(askable(chosen) ?? askable(pinnedRecipient)) ??
-    (pinnedUser.data
-      ? { kind: "user" as const, user: pinnedUser.data }
-      : null) ??
+    targetFromRecipient(canTarget(mode, chosen) ? chosen : null) ??
+    targetFromRecipient(savedUsable ? savedRecipient : null) ??
+    (linkedUser ? { kind: "user" as const, user: linkedUser } : null) ??
     searchTarget
 
-  function pickUser(user: FollowUser) {
+  function changeQuery(next: string) {
+    setQuery(next)
+    setPicked(null)
+    setChosen(null)
+    if (!isAccountNumber(next)) bankChoice.clear()
+  }
+
+  function pickUser(user: Payee) {
     setPicked(user)
     setQuery(`@${user.username ?? ""}`)
   }
 
   function choose(recipient: WalletRecipient): boolean {
-    if (!askable(recipient)) return false
+    if (!canTarget(mode, recipient)) return false
     setChosen(recipient)
     return true
   }
 
   return {
-    query,
-    setQuery: (next: string) => {
-      setQuery(next)
-      setPicked(null)
-      setChosen(null)
-      if (!ACCOUNT_NUMBER.test(next.trim())) setBank(null)
-    },
-    bankMode,
-    suggestions: picked ? [] : (suggestions.data?.items ?? []),
-    searching: searchActive && suggestions.isFetching,
-    noMatches:
-      searchActive &&
-      !suggestions.isFetching &&
-      suggestions.data?.items.length === 0,
-    picked,
-    pickUser,
-    recipients:
-      mode === "send"
-        ? (recipients.data ?? [])
-        : (recipients.data ?? []).filter(
-            (recipient) => recipient.kind === "user"
-          ),
-    chosen,
-    choose,
-    clearChosen: () => setChosen(null),
-    banks: banks.data ?? [],
-    bank,
-    bankPickerOpen,
-    setBankPickerOpen,
-    selectBank: (next: Bank) => {
-      setBank(next)
-      setBankPickerOpen(false)
-    },
-    accountName: resolved.data?.account_name ?? null,
-    resolving: resolved.isFetching,
-    resolveFailed: resolved.isError ? getErrorMessage(resolved.error) : null,
     target,
     pinned,
+    bankMode,
+    chosen: chosen !== null,
+    clearChosen: () => setChosen(null),
+    choose,
+    step: {
+      query,
+      setQuery: changeQuery,
+      bankMode,
+      bankName: bankChoice.bank?.name ?? null,
+      openBankPicker: bankChoice.open,
+      bankPicker: bankChoice.picker,
+      resolved,
+      suggestions:
+        picked || !searchActive ? [] : search.users.slice(0, SUGGESTIONS),
+      searching: searchActive && search.loading,
+      noMatches:
+        searchActive &&
+        !search.loading &&
+        !search.stale &&
+        search.users.length === 0,
+      onPickUser: pickUser,
+      recents:
+        !bankMode && !picked && trimmed.length === 0
+          ? recipientsFor(mode, recipients.data ?? []).slice(0, RECENTS)
+          : [],
+    },
   }
 }

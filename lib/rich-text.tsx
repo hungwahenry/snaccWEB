@@ -1,5 +1,6 @@
 import Link from "next/link"
 import type { ReactNode } from "react"
+import { profilePath } from "@/features/users/routes"
 
 // The same detectors the app uses for bios: web addresses with a lowercase ending so prose like
 // "nice.Also" stays prose, and @mentions with the username rules.
@@ -46,7 +47,7 @@ function spansOf(text: string): Span[] {
       node: (
         <Link
           key={match.index}
-          href={`/@${match[1]}`}
+          href={profilePath(match[1])}
           onClick={(event) => event.stopPropagation()}
           className="font-extrabold hover:underline"
         >

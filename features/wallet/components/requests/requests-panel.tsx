@@ -1,79 +1,71 @@
-"use client"
-
 import { InboxIcon, SendIcon } from "lucide-react"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ListFooter } from "@/components/ui/list-footer"
+import { LoadFailed } from "@/components/ui/load-failed"
 import { LoadMore } from "@/components/ui/load-more"
-import { PillTabs } from "@/components/ui/pill-tabs"
+import { PillTabs, type PillTab } from "@/components/ui/pill-tabs"
 import { Spinner } from "@/components/ui/spinner"
-import { useRequestsScreen } from "../../hooks/requests/use-requests-screen"
-import type { RequestBox } from "../../utils/requests"
+import type { RequestsScreenProps } from "../../hooks/requests/use-requests-screen"
+import type { RequestBox } from "../../types"
 import { RequestDetailSheet } from "./request-detail-sheet"
 import { RequestRow } from "./request-row"
 
-const TABS: { value: RequestBox; label: string; icon: typeof InboxIcon }[] = [
+const TABS: PillTab<RequestBox>[] = [
   { value: "incoming", label: "For you", icon: InboxIcon },
   { value: "outgoing", label: "By you", icon: SendIcon },
 ]
 
-export function RequestsPanel() {
-  const screen = useRequestsScreen()
-  const incoming = screen.box === "incoming"
-  const loading = screen.list.loading || screen.list.stale
-
+export function RequestsPanel({
+  box,
+  setBox,
+  list,
+  empty,
+  isBusy,
+  open,
+  sheet,
+}: RequestsScreenProps) {
   return (
     <>
-      <PillTabs
-        tabs={TABS}
-        value={screen.box}
-        onChange={screen.setBox}
-        divider={false}
-      />
+      <PillTabs tabs={TABS} value={box} onChange={setBox} divider={false} />
 
       <div className="px-6 pt-3">
-        {loading ? (
+        {list.loading ? (
           <div className="flex justify-center py-10">
             <Spinner className="text-muted-foreground" />
           </div>
-        ) : screen.list.items.length === 0 ? (
+        ) : list.failed && list.items.length === 0 ? (
+          <div className="py-10">
+            <LoadFailed
+              title="Could not load your requests"
+              onRetry={list.retry}
+            />
+          </div>
+        ) : list.items.length === 0 ? (
           <EmptyState
-            icon={incoming ? InboxIcon : SendIcon}
-            title={incoming ? "No requests yet" : "Nothing asked yet"}
-            description={
-              incoming
-                ? "No one is asking you for money."
-                : "You have not asked anyone yet."
-            }
+            icon={box === "incoming" ? InboxIcon : SendIcon}
+            title={empty.title}
+            description={empty.description}
             className="py-10"
           />
         ) : (
-          screen.list.items.map((item) => (
+          list.items.map((item) => (
             <RequestRow
               key={item.id}
               request={item}
-              box={screen.box}
-              busy={screen.busyId === item.id}
-              onPress={screen.open}
+              box={box}
+              busy={isBusy(item.id)}
+              onPress={open}
             />
           ))
         )}
         <LoadMore
-          onReach={screen.list.loadMore}
-          disabled={loading || screen.list.loadingMore}
+          onReach={list.loadMore}
+          disabled={list.loading || list.loadingMore}
         />
-        <ListFooter loading={screen.list.loadingMore} />
+        <ListFooter loading={list.loadingMore} />
       </div>
 
-      <RequestDetailSheet
-        open={screen.detailOpen}
-        onOpenChange={screen.setDetailOpen}
-        request={screen.detail}
-        box={screen.box}
-        busy={!!screen.detail && screen.busyId === screen.detail.id}
-        onPay={screen.fromSheet(screen.pay)}
-        onDecline={screen.fromSheet(screen.decline)}
-        onCancel={screen.fromSheet(screen.cancel)}
-      />
+      <RequestDetailSheet {...sheet} />
     </>
   )
 }

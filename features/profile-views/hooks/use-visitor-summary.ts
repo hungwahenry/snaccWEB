@@ -1,13 +1,13 @@
 "use client"
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
 import { getVisitorSummary, updateVisitorSettings } from "../api"
+import { followKeys } from "@/features/follows/utils/keys"
 import type { VisitorSummary } from "../types"
-import { VISITORS_KEY } from "./use-profile-visitors"
+import { profileViewKeys } from "../utils/keys"
+import { showError } from "@/lib/feedback"
 
-const VISITOR_SUMMARY_KEY = ["profile-views", "summary"]
+const VISITOR_SUMMARY_KEY = profileViewKeys.summary()
 
 export function useVisitorSummary(enabled = true) {
   const queryClient = useQueryClient()
@@ -31,10 +31,10 @@ export function useVisitorSummary(enabled = true) {
     onError: (error, _show, context) => {
       if (context?.previous)
         queryClient.setQueryData(VISITOR_SUMMARY_KEY, context.previous)
-      toast.error(getErrorMessage(error))
+      showError(error)
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: VISITORS_KEY })
+      void queryClient.invalidateQueries({ queryKey: followKeys.visitors() })
       void queryClient.invalidateQueries({ queryKey: VISITOR_SUMMARY_KEY })
     },
   })

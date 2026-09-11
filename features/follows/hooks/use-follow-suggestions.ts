@@ -1,8 +1,9 @@
 "use client"
 
-import { getFollowSuggestions } from "../api"
-import { useFollowableList } from "./use-followable-list"
+import { listFollowSuggestions } from "../api"
+import { followKeys } from "../utils/keys"
+import { usePeopleList } from "./use-people-list"
 
 export function useFollowSuggestions() {
-  return useFollowableList(["follows", "suggestions"], getFollowSuggestions)
+  return usePeopleList(followKeys.suggestions(), listFollowSuggestions)
 }

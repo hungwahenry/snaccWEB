@@ -1,38 +1,28 @@
 "use client"
 
 import { PageHeader } from "@/features/admin/shell/components/page-header"
-import { Spinner } from "@/components/ui/spinner"
-import { FlagsTable } from "@/features/admin/feature-flags/components/flags-table"
-import {
-  useFlags,
-  useUpdateFlag,
-} from "@/features/admin/feature-flags/hooks/use-flags"
+import { QueryView } from "@/features/admin/shell/components/query-view"
+import { FlagsTables } from "../components/flags-tables"
+import { useFlagsScreen } from "../hooks/use-flags-screen"
 
 export function FlagsScreen() {
-  const query = useFlags()
-  const update = useUpdateFlag()
+  const { query, actions } = useFlagsScreen()
 
   return (
     <>
       <PageHeader
         title="Feature flags"
-        description="Turn features on or off across the app."
+        description="Turn features on or off, and choose which app builds get them."
       />
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load flags.
-        </p>
-      ) : (
-        <FlagsTable
-          flags={query.data}
-          onToggle={update.mutate}
-          pending={update.isPending}
-        />
-      )}
+      <QueryView query={query} what="flags">
+        {(groups) => (
+          <FlagsTables
+            groups={groups}
+            onSetEnabled={actions.setEnabled}
+            onSaveAvailability={actions.saveAvailability}
+          />
+        )}
+      </QueryView>
     </>
   )
 }

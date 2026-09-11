@@ -1,89 +1,88 @@
 "use client"
 
+import type { UseQueryResult } from "@tanstack/react-query"
 import Link from "next/link"
+import { useMemo } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { UserCell } from "@/features/admin/shell/ui/user-cell"
-import { TableFrame } from "@/components/data-table/table-frame"
+  HiddenHeader,
+  type Column,
+} from "@/features/admin/shell/components/data-table"
+import { QueryTable } from "@/features/admin/shell/components/query-table"
+import { UserCell } from "@/features/admin/shell/components/user-cell"
+import { userPath } from "@/features/admin/shell/routes"
 import { formatDate } from "@/lib/format"
 import type { AdminAccount } from "../types"
+import { grantLabel, grantVariant } from "@/features/admin/roles/utils/roles"
+import { adminRef, adminSince } from "../utils/admins"
 
-export function AdminsTable({ admins }: { admins: AdminAccount[] }) {
+export function AdminsTable({
+  query,
+  acronyms,
+}: {
+  query: UseQueryResult<AdminAccount[]>
+  acronyms: ReadonlyMap<string, string>
+}) {
+  const columns = useMemo<Column<AdminAccount>[]>(
+    () => [
+      {
+        id: "person",
+        header: "Person",
+        cell: (admin) => <UserCell user={adminRef(admin)} />,
+      },
+      {
+        id: "email",
+        header: "Email",
+        className: "text-muted-foreground",
+        cell: (admin) => admin.email,
+      },
+      {
+        id: "roles",
+        header: "Roles",
+        className: "whitespace-normal",
+        cell: (admin) => (
+          <div className="flex flex-wrap gap-1">
+            {admin.is_owner_account ? <Badge>Owner</Badge> : null}
+            {admin.grants.map((grant) => (
+              <Badge key={grant.id} variant={grantVariant(grant)}>
+                {grantLabel(grant, acronyms)}
+              </Badge>
+            ))}
+          </div>
+        ),
+      },
+      {
+        id: "since",
+        header: "Admin since",
+        className: "text-muted-foreground",
+        cell: (admin) => formatDate(adminSince(admin)),
+      },
+      {
+        id: "actions",
+        header: <HiddenHeader>Actions</HiddenHeader>,
+        align: "end",
+        cell: (admin) => (
+          <Button
+            variant="outline"
+            size="sm"
+            render={<Link href={userPath(admin.id)} />}
+          >
+            Manage
+          </Button>
+        ),
+      },
+    ],
+    [acronyms]
+  )
+
   return (
-    <TableFrame>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Person</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Roles</TableHead>
-            <TableHead>Since</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {admins.length === 0 ? (
-            <TableRow>
-              <TableCell
-                colSpan={5}
-                className="py-10 text-center text-sm text-muted-foreground"
-              >
-                Nobody holds a role yet.
-              </TableCell>
-            </TableRow>
-          ) : (
-            admins.map((admin) => (
-              <TableRow key={admin.id}>
-                <TableCell>
-                  <UserCell
-                    user={{
-                      id: admin.id,
-                      username: admin.username,
-                      display_name: admin.display_name,
-                      avatar_url: admin.avatar_url,
-                    }}
-                  />
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {admin.email}
-                </TableCell>
-                <TableCell>
-                  <div className="flex flex-wrap gap-1">
-                    {admin.grants.map((grant) => (
-                      <Badge
-                        key={grant.id}
-                        variant={grant.role.allow_all ? "default" : "outline"}
-                      >
-                        {grant.role.name}
-                      </Badge>
-                    ))}
-                  </div>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {formatDate(admin.created_at)}
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    render={<Link href={`/admin/users/${admin.id}`} />}
-                  >
-                    Manage
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-    </TableFrame>
+    <QueryTable
+      query={query}
+      what="admins"
+      columns={columns}
+      rowKey={(admin) => admin.id}
+      empty="Nobody holds a role yet."
+    />
   )
 }

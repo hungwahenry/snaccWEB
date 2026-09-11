@@ -17,3 +17,13 @@ export function liveMatchCard(match: LiveMatch): SnaccMatch {
     live: true,
   }
 }
+
+/** A fixture in one line: "Arsenal 2–1 Chelsea", or "Arsenal vs Chelsea" before kickoff. */
+export function matchLine(
+  match: Pick<SnaccMatch, "home" | "away" | "home_score" | "away_score">
+): string {
+  if (match.home_score === null || match.away_score === null) {
+    return `${match.home.name} vs ${match.away.name}`
+  }
+  return `${match.home.name} ${match.home_score}–${match.away_score} ${match.away.name}`
+}

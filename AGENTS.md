@@ -16,21 +16,42 @@ Every folder under `features/` (the public app; `features/admin/*` for the admin
 - `screens/*.tsx` — route-level wiring: call hooks, compose components, mount sheets. Pages in `app/` call `requireSession()` and render a screen; nothing else.
 - `utils/*.ts` — pure helpers. Never `lib/` inside a slice, never loose helper files at the slice root.
 - `schemas/*.ts` — zod schemas, only where a slice validates input (auth, onboarding).
-- Allowed at the slice root only: `routes.ts` (path builders), `realtime.ts` (socket handlers), `cache/` (query-cache patchers, snaccs only) and generated files.
+- Allowed at the slice root only: `routes.ts` (path builders), `realtime.ts` (socket handlers), `cache/` (query-cache patchers that other slices or sockets call) and generated files.
 
 App-wide providers live in `providers/`, shared hooks in `hooks/`, shared primitives in `components/ui/`.
 
-# The admin panel is a known exception
+## Shared rules for the public app
 
-`features/admin/*` follows the slice shape above for `api`/`types`/`hooks`/`components`, but deviates in four
-ways. This is a deliberate, deferred choice, not a pattern to copy: a full refactor is planned once the web
-app has shipped. Do not extend the deviations, and do not patch around them piecemeal.
+- Query keys: one factory per slice in `utils/keys.ts` (`snaccKeys`, `messageKeys`, …), functions returning `as const` arrays. No inline array keys anywhere else. Lists that one change must reach share a root: every list of snaccs sits under `snaccKeys.lists()`, every list of people with a Follow button under `followKeys.lists()`. A single item never sits under a prefix that a list's key also starts with.
+- Cache pages: patch paged lists with `lib/query/pages.ts` (`mapItems`, `filterItems`, `prependItem`, …), never by hand.
+- Feedback: `lib/feedback.tsx` (`showError`, `showSuccess`, `showUndo`, `showHeld`) and `lib/undoable.ts` (`commitWithUndo`). Features never import `toast` themselves. A mutation with no `onError` gets `showError` from the query client; one with its own `onError` (a rollback) calls `showError` itself; one whose screen shows the error inline sets `meta: { silent: true }`.
+- Names: `features/users/utils/names.ts` (`nameOf`, `handleOf`, `authorNameOf`). Never write `display_name ?? username` again.
+- Paths: every URL comes from a `routes.ts` builder (`lib/routes.ts` for site pages such as terms and download). Components and hooks never hand-build one.
+- Per-row pending state: give the mutation a `mutationKey` and read `usePendingVariables` (`hooks/`), so two rows can be busy at once.
+- Tests: vitest, next to the code as `*.test.ts(x)`. Every pure util is tested.
 
-- No `screens/`. The page under `app/admin/(panel)/` does the composition, and ten of them hold their own
-  query params in `useState` rather than in a `use-*-screen` hook.
-- No server gating. Every admin page is `"use client"` and nothing reads a cookie on the server, so the shell
-  prerenders at build time and anyone can fetch it. The backend is the real gate; the client guards are
-  cosmetic.
-- Admin-only modules live in shared roots: `components/app-sidebar.tsx`, `components/auth-guard.tsx`,
-  `components/rbac/` and `lib/nav.ts` all belong under `features/admin/`.
-- The panel has its own session cookie (`snacc_admin_token`) and login, separate from the app's.
+# The admin panel
+
+`features/admin/*` follows the slice shape above in full: every slice has `screens/` driven by one
+`use-*-screen` hook, and every page under `app/admin/(panel)/` only renders a screen. The feedback rules
+above apply too. Where it differs from the public app:
+
+- Shared admin pieces live in two slices, never in the app-wide roots. `features/admin/shell/` holds the panel
+  frame and sidebar, tables, dialogs, form fields, `routes.ts`, `utils/nav.ts` and the list, draft and
+  mutation hooks. `features/admin/auth/` holds `containers/can-act.tsx` and the permission and access hooks.
+  Use these before writing a new table, dialog or confirm.
+- Writes go through `useAdminMutation` (`shell/hooks/`). It shows the success message, refetches the keys it
+  is given before it settles, and leaves failures to the query client. A slice gathers its writes in one
+  `use<Thing>Actions()` hook of functions that return promises. `ConfirmAction`, `DialogForm`, `ActionButton`
+  and `ActionSwitch` wait on those and show their own progress, so the panel does not use
+  `usePendingVariables`.
+- Paging, search and filters live in the URL through `useListParams` (`shell/hooks/`), called from the
+  screen hook with a module-level map of nuqs parsers.
+- Query keys: one `admin<Slice>Keys` factory per slice in `utils/keys.ts`, all under `["admin", …]`. Paths
+  come from `shell/routes.ts`.
+- A control that needs a permission is wrapped in `CanAct`, which disables it and says why rather than
+  hiding it. Pages need no check of their own: the permission on a sidebar entry in `shell/utils/nav.ts`
+  also guards its route.
+- `app/admin/(panel)/layout.tsx` calls `requireAdminSession()` on the server. It uses the app's own session:
+  no session goes to login, no role goes home. `PanelShell` then catches a role taken away mid-session and
+  shows "Not your area" on a page the admin lacks. The backend is still the real gate.

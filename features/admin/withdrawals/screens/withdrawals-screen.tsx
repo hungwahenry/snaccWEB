@@ -1,37 +1,45 @@
 "use client"
 
-import { useWithdrawalsScreen } from "@/features/admin/withdrawals/hooks/use-withdrawals-screen"
+import { OptionSelect } from "@/features/admin/shell/components/option-select"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
-import { Spinner } from "@/components/ui/spinner"
-import { WithdrawalsSummary } from "@/features/admin/withdrawals/components/withdrawals-summary"
-import { WithdrawalsTable } from "@/features/admin/withdrawals/components/withdrawals-table"
+import { SearchField } from "@/features/admin/shell/components/search-field"
+import { TableToolbar } from "@/features/admin/shell/components/table-toolbar"
+import { WithdrawalsSummary } from "../components/withdrawals-summary"
+import { WithdrawalsTable } from "../components/withdrawals-table"
+import { useWithdrawalsScreen } from "../hooks/use-withdrawals-screen"
+import { STATUS_OPTIONS } from "../utils/status"
 
 export function WithdrawalsScreen() {
-  const { params, patch, query } = useWithdrawalsScreen()
+  const { list, query, summary } = useWithdrawalsScreen()
 
   return (
     <>
       <PageHeader
         title="Withdrawals"
-        description="Payouts on their way to a bank, and what has landed."
+        description="Money on its way to a bank, and what has landed."
       />
       <div className="flex flex-col gap-6">
-        <WithdrawalsSummary />
-        {query.isPending ? (
-          <div className="flex justify-center py-24">
-            <Spinner />
-          </div>
-        ) : query.isError || !query.data ? (
-          <p className="text-sm text-muted-foreground">
-            Couldn&apos;t load withdrawals.
-          </p>
-        ) : (
-          <WithdrawalsTable
-            data={query.data}
-            params={params}
-            onParams={patch}
-          />
-        )}
+        <WithdrawalsSummary summary={summary.data} />
+        <WithdrawalsTable
+          query={query}
+          onPageChange={list.setPage}
+          toolbar={
+            <TableToolbar onReset={list.filtered ? list.reset : undefined}>
+              <SearchField
+                value={list.values.q}
+                onChange={(q) => list.setFilter({ q })}
+                placeholder="Search by name, handle or email"
+              />
+              <OptionSelect
+                label="Status"
+                allLabel="Any status"
+                value={list.values.status}
+                onChange={(status) => list.setFilter({ status })}
+                options={STATUS_OPTIONS}
+              />
+            </TableToolbar>
+          }
+        />
       </div>
     </>
   )

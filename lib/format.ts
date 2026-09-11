@@ -37,6 +37,15 @@ function trimOne(value: number): string {
   return (Math.floor(value * 10) / 10).toString().replace(/\.0$/, "")
 }
 
+/** "1 snacc", "12 snaccs", "1.2k snaccs". */
+export function countLabel(
+  count: number,
+  singular: string,
+  plural = `${singular}s`
+): string {
+  return `${compactCount(count)} ${count === 1 ? singular : plural}`
+}
+
 export function shortDate(iso: string): string {
   const date = new Date(iso)
   const options: Intl.DateTimeFormatOptions = { day: "numeric", month: "short" }
@@ -160,4 +169,9 @@ export function hourLabel(hour: number): string {
   at.setHours(hour, 0, 0, 0)
 
   return at.toLocaleTimeString(LOCALE, { hour: "numeric" }).replace(/\s/g, "")
+}
+
+/** An unread count on a badge: exact up to 99, then just "a lot". */
+export function badgeCount(count: number): string {
+  return count > 99 ? "99+" : String(count)
 }

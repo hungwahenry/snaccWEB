@@ -1,43 +1,17 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { LandingShell } from "@/components/marketing/landing-shell"
+import { getPublicCampus } from "@/features/campus/api/public"
+import { PublicCampus } from "@/features/campus/components/public-campus"
 import { CampusScreen } from "@/features/campus/screens/campus-screen"
+import { campusMetadata } from "@/features/campus/utils/metadata"
 import { getCampusSnaccs } from "@/features/snaccs/api/public"
-import { PublicSnaccCard } from "@/features/snaccs/components/public/public-snacc-card"
-import { getPublicCampus } from "@/features/universities/api/public"
-import { CampusHeader } from "@/features/universities/components/campus-header"
 import { hasSession } from "@/lib/auth-server"
 
 type Props = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const campus = await getPublicCampus(slug)
-  if (!campus) return { title: "Campus not found" }
-
-  const title = `${campus.name} on Snacc`
-  const description = campus.motto
-    ? `${campus.motto} — ${campus.members_count.toLocaleString()} students on Snacc.`
-    : `See what ${campus.acronym} is talking about on Snacc.`
-  const image = campus.logo_url ?? undefined
-
-  return {
-    title,
-    description,
-    alternates: { canonical: `/campus/${campus.slug}` },
-    openGraph: {
-      title,
-      description,
-      url: `/campus/${campus.slug}`,
-      images: image ? [image] : undefined,
-    },
-    twitter: {
-      card: "summary",
-      title,
-      description,
-      images: image ? [image] : undefined,
-    },
-  }
+  return campusMetadata(await getPublicCampus(slug))
 }
 
 export default async function CampusPage({ params }: Props) {
@@ -48,21 +22,7 @@ export default async function CampusPage({ params }: Props) {
   const campus = await getPublicCampus(slug)
   if (!campus) notFound()
 
-  const snaccs = await getCampusSnaccs(campus.slug)
-
   return (
-    <LandingShell
-      cta="See what your campus is saying"
-      next={`/campus/${campus.slug}`}
-    >
-      <CampusHeader campus={campus} />
-      {snaccs.map((snacc) => (
-        <PublicSnaccCard
-          key={snacc.id}
-          snacc={snacc}
-          href={`/snacc/${snacc.id}`}
-        />
-      ))}
-    </LandingShell>
+    <PublicCampus campus={campus} snaccs={await getCampusSnaccs(campus.slug)} />
   )
 }

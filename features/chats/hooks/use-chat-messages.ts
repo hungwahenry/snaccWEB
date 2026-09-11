@@ -2,11 +2,11 @@
 
 import { useInfiniteList } from "@/hooks/use-infinite-list"
 import { listChatMessages } from "../api"
-import { chatMessagesKey } from "../keys"
+import { chatKeys } from "../utils/keys"
 
 export function useChatMessages(roomId: string) {
   const { items, ...list } = useInfiniteList(
-    chatMessagesKey(roomId),
+    chatKeys.messages(roomId),
     (page) => listChatMessages(roomId, page),
     { enabled: roomId.length > 0 }
   )

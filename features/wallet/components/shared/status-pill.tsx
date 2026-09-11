@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import type { MoneyTone } from "../../utils/requests"
+import type { MoneyTone } from "../../types"
 
 const TONE: Record<MoneyTone, string> = {
   good: "bg-success/10 text-success",

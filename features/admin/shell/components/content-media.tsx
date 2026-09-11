@@ -1,0 +1,85 @@
+import { cn } from "@/lib/utils"
+import type { MediaGif, MediaImage, MediaSticker, MediaVoice } from "../types"
+import { clock } from "../utils/format"
+
+function Frame({
+  url,
+  alt,
+  className,
+}: {
+  url: string
+  alt: string
+  className?: string
+}) {
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noreferrer"
+      className="block overflow-hidden rounded-lg border bg-muted/40 transition-opacity hover:opacity-90"
+      title="Open the original"
+    >
+      <img
+        src={url}
+        alt={alt}
+        loading="lazy"
+        className={cn("max-h-72 w-auto object-contain", className)}
+      />
+    </a>
+  )
+}
+
+/** Whatever is attached to a post or message, each piece opening its original. */
+export function ContentMedia({
+  images = [],
+  gif = null,
+  sticker = null,
+  voice = null,
+}: {
+  images?: MediaImage[]
+  gif?: MediaGif | null
+  sticker?: MediaSticker | null
+  voice?: MediaVoice | null
+}) {
+  const visual = images.length > 0 || gif !== null || sticker !== null
+  if (!visual && voice === null) return null
+
+  return (
+    <div className="flex flex-col gap-2">
+      {visual ? (
+        <div className="flex flex-wrap items-start gap-2">
+          {images.map((image, index) => (
+            <Frame
+              key={image.id ?? image.url}
+              url={image.url}
+              alt={`Attached image ${index + 1}`}
+            />
+          ))}
+          {gif ? <Frame url={gif.url} alt="Attached GIF" /> : null}
+          {sticker ? (
+            <Frame
+              url={sticker.url}
+              alt="Attached sticker"
+              className="max-h-40"
+            />
+          ) : null}
+        </div>
+      ) : null}
+
+      {voice ? (
+        <div className="flex items-center gap-3 rounded-lg border px-3 py-2">
+          <audio
+            controls
+            preload="none"
+            src={voice.url}
+            className="h-8"
+            aria-label="Voice note"
+          />
+          <span className="text-xs text-muted-foreground tabular-nums">
+            {clock(voice.duration_ms)}
+          </span>
+        </div>
+      ) : null}
+    </div>
+  )
+}

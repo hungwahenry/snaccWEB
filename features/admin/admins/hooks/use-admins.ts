@@ -2,9 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query"
 import { listAdmins } from "../api"
-
-export const ADMINS_KEY = ["admin", "admins"]
+import { adminAdminKeys } from "../utils/keys"
 
 export function useAdmins() {
-  return useQuery({ queryKey: ADMINS_KEY, queryFn: listAdmins })
+  return useQuery({ queryKey: adminAdminKeys.list(), queryFn: listAdmins })
 }

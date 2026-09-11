@@ -1,31 +1,20 @@
 "use client"
 
 import { SettingsIcon } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
 import { IconButton } from "@/components/ui/icon-button"
 import { useFlag } from "@/features/config/hooks/use-flag"
-import { EarningsHome } from "@/features/earnings/components/earnings-home"
-import { MonetisationHome } from "@/features/earnings/components/monetisation-home"
+import { MyEarnings } from "@/features/earnings/containers/my-earnings"
 import { BackHeader } from "@/features/navigation/components/back-header"
-import { signal } from "@/features/signals/utils/queue"
 import { useBack } from "@/hooks/use-back"
 import { TransactionsPanel } from "../components/history/transactions-panel"
 import { WalletHome } from "../components/home/wallet-home"
-import { MoneyTabBar, type MoneySection } from "../components/money-tab-bar"
+import { MoneyTabBar } from "../components/money-tab-bar"
 import { RequestsPanel } from "../components/requests/requests-panel"
-import { WalletGate } from "../components/shared/wallet-gate"
+import { WalletGate } from "../containers/wallet-gate"
+import { useTransactionsScreen } from "../hooks/history/use-transactions-screen"
+import { useMoneyScreen } from "../hooks/home/use-money-screen"
 import { useWalletHome } from "../hooks/home/use-wallet-home"
-import { useRequests } from "../hooks/requests/use-requests"
-import { MONEY_SETTINGS_PATH, payPath } from "../routes"
-import { isOpenRequest } from "../utils/requests"
-
-const TITLES: Record<MoneySection, string> = {
-  home: "Money",
-  transactions: "Transactions",
-  requests: "Requests",
-  earnings: "Monetisation",
-}
+import { useRequestsScreen } from "../hooks/requests/use-requests-screen"
 
 export function WalletScreen() {
   const back = useBack()
@@ -36,66 +25,41 @@ export function WalletScreen() {
     return (
       <>
         <BackHeader title="Money" onBack={back} />
-        {earningsEnabled ? <EarningsHome /> : null}
+        {earningsEnabled ? <MyEarnings /> : null}
       </>
     )
   }
 
-  return <MoneyScreen earningsEnabled={earningsEnabled} onBack={back} />
+  return <MoneyScreen onBack={back} />
 }
 
-function MoneyScreen({
-  earningsEnabled,
-  onBack,
-}: {
-  earningsEnabled: boolean
-  onBack: () => void
-}) {
-  const router = useRouter()
-  const [section, setSection] = useState<MoneySection>("home")
-  const incoming = useRequests("incoming")
-  const openRequests = incoming.items.filter(isOpenRequest).length
-
-  useEffect(() => {
-    signal("wallet_open")
-  }, [])
-
-  const active = section === "earnings" && !earningsEnabled ? "home" : section
-  const sendAgain = (username: string) =>
-    router.push(payPath({ mode: "send", to: username }))
+function MoneyScreen({ onBack }: { onBack: () => void }) {
+  const screen = useMoneyScreen()
 
   return (
     <>
       <BackHeader
-        title={TITLES[active]}
+        title={screen.title}
         onBack={onBack}
         right={
           <IconButton
             icon={SettingsIcon}
             label="Money settings"
-            onClick={() => router.push(MONEY_SETTINGS_PATH)}
+            onClick={screen.onSettings}
           />
         }
       />
       <WalletGate>
-        <MoneyTabBar
-          section={active}
-          onChange={setSection}
-          earningsEnabled={earningsEnabled}
-          badges={{ requests: openRequests }}
-        />
+        <MoneyTabBar {...screen.tabBar} />
         <div className="pb-[calc(var(--money-bar-height)+16px)] md:pb-8">
-          {active === "home" ? (
-            <Home
-              onOpenTransactions={() => setSection("transactions")}
-              onSendAgain={sendAgain}
-            />
-          ) : active === "transactions" ? (
-            <TransactionsPanel onSendAgain={sendAgain} />
-          ) : active === "requests" ? (
-            <RequestsPanel />
+          {screen.section === "home" ? (
+            <HomeSection onSeeAll={screen.onSeeAllTransactions} />
+          ) : screen.section === "transactions" ? (
+            <TransactionsSection />
+          ) : screen.section === "requests" ? (
+            <RequestsSection />
           ) : (
-            <MonetisationHome />
+            <MyEarnings />
           )}
         </div>
       </WalletGate>
@@ -103,19 +67,17 @@ function MoneyScreen({
   )
 }
 
-function Home({
-  onOpenTransactions,
-  onSendAgain,
-}: {
-  onOpenTransactions: () => void
-  onSendAgain: (username: string) => void
-}) {
+function HomeSection({ onSeeAll }: { onSeeAll: () => void }) {
   const home = useWalletHome()
-  return (
-    <WalletHome
-      home={home}
-      onOpenTransactions={onOpenTransactions}
-      onSendAgain={onSendAgain}
-    />
-  )
+  return <WalletHome {...home} onSeeAll={onSeeAll} />
+}
+
+function TransactionsSection() {
+  const screen = useTransactionsScreen()
+  return <TransactionsPanel {...screen} />
+}
+
+function RequestsSection() {
+  const screen = useRequestsScreen()
+  return <RequestsPanel {...screen} />
 }

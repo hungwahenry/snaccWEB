@@ -1,102 +1,88 @@
-"use client"
-
-import Link from "next/link"
+import type { UseQueryResult } from "@tanstack/react-query"
 import { ArrowRight } from "lucide-react"
-import { TableFrame } from "@/components/data-table/table-frame"
+import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { formatNumber, timeAgo } from "@/lib/format"
+import type { Column } from "@/features/admin/shell/components/data-table"
+import { QueryTable } from "@/features/admin/shell/components/query-table"
+import { UserCell } from "@/features/admin/shell/components/user-cell"
+import { threadPath } from "@/features/admin/shell/routes"
 import type { Paginated } from "@/lib/api/types"
-import { UserInline } from "@/features/admin/shell/ui/user-inline"
-import type { AdminConversationRow, ListConversationsParams } from "../types"
+import { formatNumber, timeAgo } from "@/lib/format"
+import type { AdminConversationRow } from "../types"
+
+const COLUMNS: Column<AdminConversationRow>[] = [
+  {
+    id: "participants",
+    header: "Participants",
+    cell: (conversation) => (
+      <span className="flex flex-wrap items-center gap-1.5">
+        <UserCell user={conversation.ghost} size="sm" />
+        <ArrowRight className="size-3.5 text-muted-foreground" />
+        <UserCell user={conversation.target} size="sm" />
+      </span>
+    ),
+  },
+  {
+    id: "mask",
+    header: "Mask",
+    className: "text-muted-foreground",
+    cell: (conversation) => `“${conversation.pseudonym}”`,
+  },
+  {
+    id: "state",
+    header: "State",
+    cell: (conversation) =>
+      conversation.revealed ? (
+        <Badge variant="outline">Revealed</Badge>
+      ) : (
+        <Badge variant="secondary">Anonymous</Badge>
+      ),
+  },
+  {
+    id: "messages",
+    header: "Messages",
+    align: "end",
+    className: "tabular-nums",
+    cell: (conversation) => formatNumber(conversation.message_count),
+  },
+  {
+    id: "last",
+    header: "Last activity",
+    className: "text-muted-foreground",
+    cell: (conversation) => timeAgo(conversation.last_message_at),
+  },
+  {
+    id: "review",
+    header: "Review",
+    align: "end",
+    cell: (conversation) => (
+      <Button
+        variant="outline"
+        size="sm"
+        render={<Link href={threadPath(conversation.id)} />}
+      >
+        Open thread
+      </Button>
+    ),
+  },
+]
 
 export function ConversationsTable({
-  data,
-  onParams,
+  query,
+  onPageChange,
 }: {
-  data: Paginated<AdminConversationRow>
-  onParams: (patch: Partial<ListConversationsParams>) => void
+  query: UseQueryResult<Paginated<AdminConversationRow>>
+  onPageChange: (page: number) => void
 }) {
   return (
-    <div className="flex flex-col gap-4">
-      <TableFrame
-        page={data.page}
-        perPage={data.per_page}
-        total={data.total}
-        onPageChange={(page) => onParams({ page })}
-      >
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Participants</TableHead>
-              <TableHead>Mask</TableHead>
-              <TableHead>State</TableHead>
-              <TableHead className="text-right">Messages</TableHead>
-              <TableHead>Last activity</TableHead>
-              <TableHead className="text-right">Review</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.items.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="py-10 text-center text-sm text-muted-foreground"
-                >
-                  No conversations yet.
-                </TableCell>
-              </TableRow>
-            ) : (
-              data.items.map((conversation) => (
-                <TableRow key={conversation.id}>
-                  <TableCell>
-                    <span className="flex flex-wrap items-center gap-1.5">
-                      <UserInline user={conversation.ghost} size="sm" />
-                      <ArrowRight className="size-3.5 text-muted-foreground" />
-                      <UserInline user={conversation.target} size="sm" />
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    “{conversation.pseudonym}”
-                  </TableCell>
-                  <TableCell>
-                    {conversation.revealed ? (
-                      <Badge variant="outline">Revealed</Badge>
-                    ) : (
-                      <Badge variant="secondary">Anonymous</Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right text-sm tabular-nums">
-                    {formatNumber(conversation.message_count)}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {timeAgo(conversation.last_message_at)}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      render={
-                        <Link href={`/admin/messages/${conversation.id}`} />
-                      }
-                    >
-                      Open thread
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableFrame>
-    </div>
+    <QueryTable
+      query={query}
+      what="conversations"
+      columns={COLUMNS}
+      rowKey={(conversation) => conversation.id}
+      empty="No conversations yet."
+      onPageChange={onPageChange}
+    />
   )
 }

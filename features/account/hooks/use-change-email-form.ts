@@ -2,13 +2,12 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
-import { toast } from "sonner"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { useBack } from "@/hooks/use-back"
-import { getErrorMessage } from "@/lib/api/errors"
-import { ME_KEY } from "@/lib/query-keys"
+import { authKeys } from "@/features/auth/utils/keys"
 import { useStepUp } from "@/providers/step-up-provider"
 import { changeEmail } from "../api"
+import { showSuccess } from "@/lib/feedback"
 
 export function useChangeEmailForm() {
   const me = useMe()
@@ -20,11 +19,10 @@ export function useChangeEmailForm() {
   const change = useMutation({
     mutationFn: changeEmail,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ME_KEY })
-      toast.success("Email updated. Other devices were signed out.")
+      void queryClient.invalidateQueries({ queryKey: authKeys.me() })
+      showSuccess("Email updated. Other devices were signed out.")
       back()
     },
-    onError: (error) => toast.error(getErrorMessage(error)),
   })
 
   const valid = /^\S+@\S+\.\S+$/.test(newEmail.trim())

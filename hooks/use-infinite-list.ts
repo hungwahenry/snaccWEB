@@ -1,25 +1,17 @@
 "use client"
 
-import type { Paginated } from "@/lib/api/types"
 import {
   keepPreviousData,
   useInfiniteQuery,
   useQueryClient,
-  type InfiniteData,
   type QueryKey,
 } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
+import type { Paginated, PaginatedPages } from "@/lib/api/types"
+import { allItems, firstPageOnly, uniqueById } from "@/lib/query/pages"
 
 interface InfiniteListOptions {
   enabled?: boolean
-}
-
-function idOf(item: unknown): string | null {
-  if (item && typeof item === "object" && "id" in item) {
-    const id = (item as { id: unknown }).id
-    if (typeof id === "string") return id
-  }
-  return null
 }
 
 export function useInfiniteList<T>(
@@ -41,14 +33,7 @@ export function useInfiniteList<T>(
 
   async function refresh() {
     setRefreshing(true)
-    queryClient.setQueryData<InfiniteData<Paginated<T>, number>>(
-      queryKey,
-      (data) =>
-        data && {
-          pages: data.pages.slice(0, 1),
-          pageParams: data.pageParams.slice(0, 1),
-        }
-    )
+    queryClient.setQueryData<PaginatedPages<T>>(queryKey, firstPageOnly)
     try {
       await query.refetch()
     } finally {
@@ -56,18 +41,7 @@ export function useInfiniteList<T>(
     }
   }
 
-  const items = useMemo(() => {
-    const flat = query.data?.pages.flatMap((page) => page.items) ?? []
-    const seen = new Set<string>()
-
-    return flat.filter((item) => {
-      const id = idOf(item)
-      if (id === null) return true
-      if (seen.has(id)) return false
-      seen.add(id)
-      return true
-    })
-  }, [query.data])
+  const items = useMemo(() => uniqueById(allItems(query.data)), [query.data])
 
   return {
     items,

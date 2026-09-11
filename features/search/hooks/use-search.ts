@@ -1,34 +1,47 @@
 "use client"
 
-import { useFollowableList } from "@/features/follows/hooks/use-followable-list"
-import type { SearchHashtag } from "@/features/hashtags/types"
+import { useMemo } from "react"
+import { usePeopleList } from "@/features/follows/hooks/use-people-list"
+import { followKeys } from "@/features/follows/utils/keys"
+import type { Hashtag } from "@/features/hashtags/types"
+import { uniqueHashtags } from "@/features/hashtags/utils/unique"
+import { snaccKeys } from "@/features/snaccs/utils/keys"
+import { listUniversities } from "@/features/universities/api"
+import type { University } from "@/features/universities/types"
 import { useInfiniteList } from "@/hooks/use-infinite-list"
 import { searchHashtags, searchSnaccs, searchUsers } from "../api"
+import { searchKeys } from "../utils/keys"
 
-export function useSearchUsers(q: string) {
-  return useFollowableList(
-    ["search", "users", q],
-    (page) => searchUsers(q, page),
-    { enabled: q.length > 0 }
-  )
+export function useSearchUsers(q: string, enabled = true) {
+  return usePeopleList(followKeys.search(q), (page) => searchUsers(q, page), {
+    enabled: enabled && q.length > 0,
+  })
 }
 
-export function useSearchSnaccs(q: string) {
+export function useSearchSnaccs(q: string, enabled = true) {
   const { items, ...list } = useInfiniteList(
-    ["search", "snaccs", q],
+    snaccKeys.search(q),
     (page) => searchSnaccs(q, page),
-    { enabled: q.length > 0 }
+    { enabled: enabled && q.length > 0 }
   )
   return { snaccs: items, ...list }
 }
 
-export function useSearchHashtags(q: string) {
-  const { items, ...list } = useInfiniteList<SearchHashtag>(
-    ["search", "hashtags", q],
+export function useSearchHashtags(q: string, enabled = true) {
+  const { items, ...list } = useInfiniteList<Hashtag>(
+    searchKeys.hashtags(q),
     (page) => searchHashtags(q, page),
-    {
-      enabled: q.length > 0,
-    }
+    { enabled: enabled && q.length > 0 }
   )
-  return { hashtags: items, ...list }
+  const hashtags = useMemo(() => uniqueHashtags(items), [items])
+  return { hashtags, ...list }
+}
+
+export function useSearchCampuses(q: string, enabled = true) {
+  const { items, ...list } = useInfiniteList<University>(
+    searchKeys.campuses(q),
+    (page) => listUniversities({ search: q, page }),
+    { enabled: enabled && q.length > 0 }
+  )
+  return { campuses: items, ...list }
 }

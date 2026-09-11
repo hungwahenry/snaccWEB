@@ -1,273 +1,132 @@
 "use client"
 
-import { CanAct } from "@/features/admin/auth/components/can"
-import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
-import { useState } from "react"
-import { Badge } from "@/components/ui/badge"
+import type { UseQueryResult } from "@tanstack/react-query"
+import { useMemo } from "react"
 import { Button } from "@/components/ui/button"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
+import { ActionButton } from "@/features/admin/shell/components/action-button"
+import { ConfirmAction } from "@/features/admin/shell/components/confirm-action"
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Field, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { TableFrame } from "@/components/data-table/table-frame"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import type { useReasonMutations } from "../hooks/use-report-reasons"
-import type { AdminReportReason } from "../types"
-
-type Mutations = ReturnType<typeof useReasonMutations>
-
-function ReasonDialog({
-  reason,
-  mutations,
-  trigger,
-}: {
-  reason?: AdminReportReason
-  mutations: Mutations
-  trigger: React.ReactElement
-}) {
-  const [open, setOpen] = useState(false)
-  const [slug, setSlug] = useState(reason?.slug ?? "")
-  const [label, setLabel] = useState(reason?.label ?? "")
-  const [hint, setHint] = useState(reason?.hint ?? "")
-  const [appliesTo, setAppliesTo] = useState<"snacc" | "user">(
-    reason?.applies_to ?? "snacc"
-  )
-  const [requiresDetail, setRequiresDetail] = useState(
-    reason?.requires_detail ?? false
-  )
-  const [position, setPosition] = useState(String(reason?.position ?? 0))
-
-  const editing = Boolean(reason)
-  const valid = editing
-    ? label.trim() !== ""
-    : slug.trim() !== "" && label.trim() !== ""
-
-  function save() {
-    const base = {
-      label: label.trim(),
-      hint: hint.trim() || undefined,
-      appliesTo,
-      requiresDetail,
-      position: Number(position) || 0,
-    }
-    if (editing && reason) {
-      mutations.update.mutate(
-        { id: reason.id, input: base },
-        { onSuccess: () => setOpen(false) }
-      )
-    } else {
-      mutations.create.mutate(
-        { slug: slug.trim(), ...base },
-        { onSuccess: () => setOpen(false) }
-      )
-    }
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <CanAct permission="report_reasons.write">
-        <DialogTrigger render={trigger} />
-      </CanAct>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>
-            {editing ? "Edit reason" : "New report reason"}
-          </DialogTitle>
-        </DialogHeader>
-        {!editing && (
-          <Field>
-            <FieldLabel>Slug</FieldLabel>
-            <Input
-              value={slug}
-              onChange={(event) => setSlug(event.target.value)}
-              placeholder="spam"
-              maxLength={50}
-            />
-          </Field>
-        )}
-        <Field>
-          <FieldLabel>Label</FieldLabel>
-          <Input
-            value={label}
-            onChange={(event) => setLabel(event.target.value)}
-            maxLength={100}
-          />
-        </Field>
-        <Field>
-          <FieldLabel>Hint (optional)</FieldLabel>
-          <Input
-            value={hint}
-            onChange={(event) => setHint(event.target.value)}
-            maxLength={200}
-          />
-        </Field>
-        <div className="flex gap-3">
-          <Field className="flex-1">
-            <FieldLabel>Applies to</FieldLabel>
-            <Select
-              value={appliesTo}
-              onValueChange={(value) => value && setAppliesTo(value as never)}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="snacc">Snacc</SelectItem>
-                <SelectItem value="user">User</SelectItem>
-              </SelectContent>
-            </Select>
-          </Field>
-          <Field className="w-28">
-            <FieldLabel>Position</FieldLabel>
-            <Input
-              type="number"
-              value={position}
-              onChange={(event) => setPosition(event.target.value)}
-            />
-          </Field>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">Requires a written detail</span>
-          <Switch
-            checked={requiresDetail}
-            onCheckedChange={setRequiresDetail}
-          />
-        </div>
-        <DialogFooter>
-          <DialogClose render={<Button variant="ghost">Cancel</Button>} />
-          <Button
-            disabled={
-              !valid || mutations.create.isPending || mutations.update.isPending
-            }
-            onClick={save}
-          >
-            Save
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-}
+  HiddenHeader,
+  type Column,
+} from "@/features/admin/shell/components/data-table"
+import { QueryTable } from "@/features/admin/shell/components/query-table"
+import { StatusBadge } from "@/features/admin/shell/components/status-badge"
+import type { AdminReportReason, ReasonDraft } from "../types"
+import { reasonStatus } from "../utils/report-reasons"
+import { ReportReasonDialog } from "./report-reason-dialog"
 
 export function ReasonsTable({
-  reasons,
-  mutations,
+  query,
+  onSave,
+  onRetire,
+  onRestore,
 }: {
-  reasons: AdminReportReason[]
-  mutations: Mutations
+  query: UseQueryResult<AdminReportReason[]>
+  onSave: (draft: ReasonDraft, id?: string) => Promise<unknown>
+  onRetire: (id: string) => Promise<unknown>
+  onRestore: (id: string) => Promise<unknown>
 }) {
-  return (
-    <TableFrame
-      toolbar={
-        <div className="flex justify-end">
-          <ReasonDialog
-            mutations={mutations}
-            trigger={<Button size="sm">Add reason</Button>}
-          />
-        </div>
-      }
-    >
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Reason</TableHead>
-            <TableHead>Applies to</TableHead>
-            <TableHead>Detail</TableHead>
-            <TableHead className="text-right">Position</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {reasons.map((reason) => (
-            <TableRow key={reason.id}>
-              <TableCell>
-                <div className="font-medium">{reason.label}</div>
-                <div className="font-mono text-xs text-muted-foreground">
-                  {reason.slug}
-                </div>
-              </TableCell>
-              <TableCell className="text-sm capitalize">
-                {reason.applies_to}
-              </TableCell>
-              <TableCell className="text-sm text-muted-foreground">
-                {reason.requires_detail ? "Required" : "Optional"}
-              </TableCell>
-              <TableCell className="text-right tabular-nums">
-                {reason.position}
-              </TableCell>
-              <TableCell>
-                {reason.retired_at ? (
-                  <Badge variant="outline">retired</Badge>
-                ) : (
-                  <Badge variant="secondary">active</Badge>
-                )}
-              </TableCell>
-              <TableCell className="text-right">
-                <div className="flex justify-end gap-2">
-                  <ReasonDialog
-                    reason={reason}
-                    mutations={mutations}
-                    trigger={
-                      <Button variant="outline" size="sm">
-                        Edit
-                      </Button>
-                    }
-                  />
-                  {reason.retired_at ? (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      disabled={mutations.unretire.isPending}
-                      onClick={() => mutations.unretire.mutate(reason.id)}
-                    >
-                      Restore
+  const columns = useMemo<Column<AdminReportReason>[]>(
+    () => [
+      {
+        id: "reason",
+        header: "Reason",
+        cell: (reason) => (
+          <div className="min-w-0">
+            <p className="font-medium">{reason.label}</p>
+            <p className="font-mono text-xs text-muted-foreground">
+              {reason.slug}
+            </p>
+          </div>
+        ),
+      },
+      {
+        id: "applies",
+        header: "Applies to",
+        className: "text-sm capitalize",
+        cell: (reason) => reason.applies_to,
+      },
+      {
+        id: "detail",
+        header: "Detail",
+        className: "text-sm text-muted-foreground",
+        cell: (reason) => (reason.requires_detail ? "Required" : "Optional"),
+      },
+      {
+        id: "position",
+        header: "Position",
+        align: "end",
+        className: "tabular-nums",
+        cell: (reason) => reason.position,
+      },
+      {
+        id: "status",
+        header: "Status",
+        cell: (reason) => <StatusBadge status={reasonStatus(reason)} />,
+      },
+      {
+        id: "actions",
+        header: <HiddenHeader>Actions</HiddenHeader>,
+        align: "end",
+        cell: (reason) => (
+          <div className="flex justify-end gap-2">
+            <CanAct permission="report_reasons.write">
+              <ReportReasonDialog
+                reason={reason}
+                trigger={
+                  <Button variant="outline" size="sm">
+                    Edit
+                  </Button>
+                }
+                onSubmit={(draft) => onSave(draft, reason.id)}
+              />
+            </CanAct>
+            {reason.retired_at ? (
+              <ActionButton
+                variant="ghost"
+                size="sm"
+                onClick={() => onRestore(reason.id)}
+              >
+                Restore
+              </ActionButton>
+            ) : (
+              <CanAct permission="report_reasons.retire">
+                <ConfirmAction
+                  trigger={
+                    <Button variant="ghost" size="sm">
+                      Retire
                     </Button>
-                  ) : (
-                    <CanAct permission="report_reasons.retire">
-                      <ConfirmAction
-                        label="Retire"
-                        variant="ghost"
-                        title={`Retire "${reason.label}"?`}
-                        description="Nobody can pick it when reporting any more. Reports already filed under it keep their reason."
-                        confirmLabel="Retire it"
-                        pending={mutations.retire.isPending}
-                        onConfirm={(close) =>
-                          mutations.retire.mutate(reason.id, {
-                            onSuccess: close,
-                          })
-                        }
-                      />
-                    </CanAct>
-                  )}
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableFrame>
+                  }
+                  title={`Retire "${reason.label}"?`}
+                  description="Nobody can pick it when reporting any more. Reports already filed under it keep their reason."
+                  confirmLabel="Retire it"
+                  onConfirm={() => onRetire(reason.id)}
+                />
+              </CanAct>
+            )}
+          </div>
+        ),
+      },
+    ],
+    [onSave, onRetire, onRestore]
+  )
+
+  return (
+    <QueryTable
+      query={query}
+      what="reasons"
+      columns={columns}
+      rowKey={(reason) => reason.id}
+      empty="No report reasons yet."
+      actions={
+        <CanAct permission="report_reasons.write">
+          <ReportReasonDialog
+            trigger={<Button size="sm">Add reason</Button>}
+            onSubmit={(draft) => onSave(draft)}
+          />
+        </CanAct>
+      }
+    />
   )
 }

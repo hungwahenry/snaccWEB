@@ -1,51 +1,39 @@
 "use client"
 
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { useMemo } from "react"
+import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
 import {
   createAnnouncement,
   deleteAnnouncement,
   listAnnouncements,
 } from "../api"
-import type { ListAnnouncementsParams } from "../types"
+import type { AnnouncementDraft, AnnouncementListQuery } from "../types"
+import { toCreateInput } from "../utils/announcement"
+import { adminAnnouncementKeys } from "../utils/keys"
 
-export function useAnnouncements(params: ListAnnouncementsParams) {
+export function useAnnouncements(query: AnnouncementListQuery) {
   return useQuery({
-    queryKey: ["admin", "announcements", params],
-    queryFn: () => listAnnouncements(params),
+    queryKey: adminAnnouncementKeys.list(query),
+    queryFn: () => listAnnouncements(query),
     placeholderData: keepPreviousData,
   })
 }
 
-export function useAnnouncementMutations() {
-  const queryClient = useQueryClient()
+export function useAnnouncementActions() {
+  const invalidates = [adminAnnouncementKeys.all()]
 
-  function onSuccess(message: string) {
-    return () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "announcements"] })
-      toast.success(message)
-    }
-  }
-  function onError(error: unknown) {
-    toast.error(getErrorMessage(error))
-  }
+  const { run: send } = useAdminMutation({
+    mutationFn: (draft: AnnouncementDraft) =>
+      createAnnouncement(toCreateInput(draft)),
+    success: "Announcement sent.",
+    invalidates,
+  })
+  const { run: remove } = useAdminMutation({
+    mutationFn: (id: string) => deleteAnnouncement(id),
+    success: "Announcement deleted.",
+    invalidates,
+  })
 
-  return {
-    create: useMutation({
-      mutationFn: createAnnouncement,
-      onSuccess: onSuccess("Announcement broadcast."),
-      onError,
-    }),
-    remove: useMutation({
-      mutationFn: (id: string) => deleteAnnouncement(id),
-      onSuccess: onSuccess("Announcement deleted."),
-      onError,
-    }),
-  }
+  return useMemo(() => ({ send, remove }), [send, remove])
 }

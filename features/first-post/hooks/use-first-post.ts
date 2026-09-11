@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import type { User } from "@/features/users/types"
-import { ME_KEY } from "@/lib/query-keys"
+import { authKeys } from "@/features/auth/utils/keys"
 
 export function useFirstPostPrompt() {
   const me = useMe()
@@ -18,7 +18,7 @@ export function useFirstPostPrompt() {
   return {
     show: enabled && completed && !hasPosted,
     markPosted() {
-      queryClient.setQueryData<User>(ME_KEY, (old) =>
+      queryClient.setQueryData<User>(authKeys.me(), (old) =>
         old?.profile
           ? {
               ...old,

@@ -2,7 +2,6 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useCallback, useState } from "react"
-import { toast } from "sonner"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { newId } from "@/lib/ids"
@@ -11,7 +10,7 @@ import { createMoment } from "../api"
 import type { MomentMode } from "../types"
 import { DEFAULT_BACKGROUND } from "../utils/backgrounds"
 import { authorMomentsKey, MOMENTS_TRAY_KEY } from "../utils/keys"
-import { toastError } from "@/features/premium/utils/limit-toast"
+import { showError, showHeld } from "@/lib/feedback"
 
 const COUNTER_APPEARS_AT = 80
 
@@ -29,9 +28,7 @@ export function useMomentComposer(onPosted: () => void) {
     mutationFn: createMoment,
     onSuccess: (moment) => {
       if (moment.held) {
-        toast.error("Hold on 👀", {
-          description: "That post was flagged for review and not posted.",
-        })
+        showHeld()
         onPosted()
         return
       }
@@ -42,7 +39,7 @@ export function useMomentComposer(onPosted: () => void) {
         queryKey: authorMomentsKey(moment.author.id),
       })
     },
-    onError: (error) => toastError(error),
+    onError: (error) => showError(error),
   })
 
   const trimmed = body.trim()

@@ -1,37 +1,115 @@
-"use client"
-
 import { ExternalLink } from "lucide-react"
 import Link from "next/link"
-import { Fact, Facts, Section } from "@/features/admin/shell/ui/detail"
-import { TableFrame } from "@/components/data-table/table-frame"
-import { CanAct } from "@/features/admin/auth/components/can"
-import { SettingRow } from "@/features/admin/shell/ui/setting-row"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+  DataTable,
+  type Column,
+} from "@/features/admin/shell/components/data-table"
+import {
+  EmptyNote,
+  Fact,
+  Facts,
+  Section,
+} from "@/features/admin/shell/components/detail"
+import { SettingRow } from "@/features/admin/shell/components/setting-row"
+import { StatusBadge } from "@/features/admin/shell/components/status-badge"
+import { TableFrame } from "@/features/admin/shell/components/table-frame"
+import { walletPath, withdrawalPath } from "@/features/admin/shell/routes"
+import { humanize, plural } from "@/features/admin/shell/utils/format"
+import { WITHDRAWAL_STATUS } from "@/features/admin/withdrawals/utils/status"
 import { formatDate, formatNaira, formatNumber } from "@/lib/format"
-import type { AdminUserDetail } from "../types"
+import type { AdminUserDetail, BankRecipient, UserBooster } from "../types"
+
+type Withdrawal = AdminUserDetail["recent_withdrawals"][number]
+
+const BOOSTERS: Column<UserBooster>[] = [
+  {
+    id: "account",
+    header: "Account",
+    cell: (booster) =>
+      booster.username ? `@${booster.username}` : booster.email,
+  },
+  {
+    id: "events",
+    header: "Times",
+    align: "end",
+    className: "tabular-nums",
+    cell: (booster) => formatNumber(booster.events),
+  },
+  {
+    id: "paid",
+    header: "Paid them",
+    align: "end",
+    className: "tabular-nums",
+    cell: (booster) => formatNaira(booster.kobo),
+  },
+]
+
+const BANKS: Column<BankRecipient>[] = [
+  { id: "bank", header: "Bank", cell: (bank) => bank.bank_name ?? "—" },
+  {
+    id: "account",
+    header: "Account",
+    cell: (bank) =>
+      `${bank.account_name ?? "—"}${bank.account_last4 ? ` ···· ${bank.account_last4}` : ""}`,
+  },
+  {
+    id: "used",
+    header: "Last used",
+    className: "text-muted-foreground",
+    cell: (bank) => formatDate(bank.last_used_at),
+  },
+]
+
+const WITHDRAWALS: Column<Withdrawal>[] = [
+  {
+    id: "reference",
+    header: "Reference",
+    cell: (withdrawal) => (
+      <Link
+        href={withdrawalPath(withdrawal.id)}
+        className="font-mono text-xs underline-offset-4 hover:underline"
+      >
+        {withdrawal.reference}
+      </Link>
+    ),
+  },
+  {
+    id: "amount",
+    header: "Amount",
+    align: "end",
+    className: "tabular-nums",
+    cell: (withdrawal) => formatNaira(withdrawal.amount),
+  },
+  {
+    id: "status",
+    header: "Status",
+    cell: (withdrawal) => (
+      <StatusBadge status={WITHDRAWAL_STATUS[withdrawal.status]} />
+    ),
+  },
+  {
+    id: "requested",
+    header: "Asked for",
+    className: "text-muted-foreground",
+    cell: (withdrawal) => formatDate(withdrawal.created_at),
+  },
+]
 
 export function UserMoneyTab({ user }: { user: AdminUserDetail }) {
   return (
-    <div className="flex flex-col gap-6 pt-4">
+    <div className="flex flex-col gap-6">
       <Section
         title="Unclaimed earnings"
-        description="Accrued from engagement. Not spendable — it becomes wallet money only when they claim it, and their milestones have to allow that."
+        description="Paid for engagement but not spendable yet. It becomes wallet money only when they claim it, and their milestones have to allow that."
       >
         <Facts>
           <Fact label="Balance" value={formatNaira(user.earnings.balance)} />
           {user.earnings.by_type.map((entry) => (
             <Fact
               key={entry.type}
-              label={`${entry.type} · ${formatNumber(entry.events)} events`}
+              label={`${humanize(entry.type)}, ${plural(entry.events, "time")}`}
               value={formatNaira(entry.kobo)}
             />
           ))}
@@ -39,51 +117,29 @@ export function UserMoneyTab({ user }: { user: AdminUserDetail }) {
       </Section>
 
       {user.earnings.top_boosters.length > 0 ? (
-        <Section
-          title="Top boosters"
-          description="Who paid the most into this balance. One account dominating is what farming looks like."
+        <TableFrame
+          title="Who paid into it most"
+          description="One account paying most of someone's earnings is what farming looks like."
         >
-          <TableFrame>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Account</TableHead>
-                  <TableHead className="text-right">Events</TableHead>
-                  <TableHead className="text-right">Paid</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {user.earnings.top_boosters.map((booster, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="text-sm">
-                      {booster.username
-                        ? `@${booster.username}`
-                        : booster.email}
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      {formatNumber(booster.events)}
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      {formatNaira(booster.kobo)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableFrame>
-        </Section>
+          <DataTable
+            columns={BOOSTERS}
+            rows={user.earnings.top_boosters}
+            rowKey={(booster) => booster.email}
+            empty=""
+          />
+        </TableFrame>
       ) : null}
 
       <div className="rounded-lg border">
         <SettingRow
           label="Wallet"
-          description="Real, spendable money, backed by the ledger. Every movement has two sides and can be traced."
+          description="Spendable money. Every movement in it has two sides and can be traced."
           action={
             <CanAct permission="wallet.read">
               <Button
                 variant="outline"
                 size="sm"
-                render={<Link href={`/admin/wallet/${user.id}`} />}
+                render={<Link href={walletPath(user.id)} />}
               >
                 Open wallet
                 <ExternalLink />
@@ -94,65 +150,35 @@ export function UserMoneyTab({ user }: { user: AdminUserDetail }) {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Section title="Payout account">
-          {user.payout_account ? (
-            <Facts>
-              <Fact label="Bank" value={user.payout_account.bank_name} />
-              <Fact
-                label="Account name"
-                value={user.payout_account.account_name}
-              />
-              <Fact
-                label="Account"
-                value={`•••• ${user.payout_account.account_last4}`}
-              />
-              <Fact
-                label="Linked"
-                value={formatDate(user.payout_account.created_at)}
-              />
-            </Facts>
+        <Section title="Bank accounts">
+          {user.bank_recipients.length === 0 ? (
+            <EmptyNote>They have not cashed out to a bank yet.</EmptyNote>
           ) : (
-            <p className="rounded-lg border border-dashed py-8 text-center text-sm text-muted-foreground">
-              No payout account linked.
-            </p>
+            <TableFrame>
+              <DataTable
+                columns={BANKS}
+                rows={user.bank_recipients}
+                rowKey={(bank) =>
+                  bank.recipient_code ??
+                  `${bank.bank_name}-${bank.account_last4}`
+                }
+                empty=""
+              />
+            </TableFrame>
           )}
         </Section>
 
         <Section title="Recent withdrawals">
           {user.recent_withdrawals.length === 0 ? (
-            <p className="rounded-lg border border-dashed py-8 text-center text-sm text-muted-foreground">
-              No withdrawals.
-            </p>
+            <EmptyNote>No withdrawals yet.</EmptyNote>
           ) : (
             <TableFrame>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Reference</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Requested</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {user.recent_withdrawals.map((withdrawal) => (
-                    <TableRow key={withdrawal.id}>
-                      <TableCell className="font-mono text-xs">
-                        {withdrawal.reference}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {formatNaira(withdrawal.amount)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{withdrawal.status}</Badge>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {formatDate(withdrawal.created_at)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <DataTable
+                columns={WITHDRAWALS}
+                rows={user.recent_withdrawals}
+                rowKey={(withdrawal) => withdrawal.id}
+                empty=""
+              />
             </TableFrame>
           )}
         </Section>

@@ -5,6 +5,7 @@ import { UserAvatar } from "@/components/ui/user-avatar"
 import { TierName } from "@/features/users/components/flair"
 import { profilePath } from "@/features/users/routes"
 import type { FollowUser } from "../types"
+import { nameOf } from "@/features/users/utils/names"
 
 type FollowUserRowProps = {
   user: FollowUser
@@ -23,7 +24,7 @@ export function FollowUserRow({
     <div className="flex items-center gap-3 px-4 py-3">
       <Link href={href} className="shrink-0">
         <UserAvatar
-          alt={user.display_name ?? "User"}
+          alt={nameOf(user)}
           avatarUrl={user.avatar_url}
           name={user.username}
         />
@@ -35,7 +36,7 @@ export function FollowUserRow({
             score={user.score}
             official={user.official}
             birthday={user.is_birthday}
-            name={user.display_name ?? user.username}
+            name={nameOf(user)}
             className="truncate font-extrabold text-foreground"
           />
           {user.follows_you ? (

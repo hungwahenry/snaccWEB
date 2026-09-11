@@ -1,6 +1,6 @@
 "use client"
 
-import { useLayoutEffect, useRef } from "react"
+import { useLayoutEffect, useRef, type KeyboardEvent } from "react"
 
 type ComposerInputProps = {
   value: string
@@ -8,6 +8,7 @@ type ComposerInputProps = {
   onCursorChange: (cursor: number) => void
   placeholder: string
   autoFocus?: boolean
+  onKeyDown?: (event: KeyboardEvent<HTMLTextAreaElement>) => void
 }
 
 export function ComposerInput({
@@ -16,6 +17,7 @@ export function ComposerInput({
   onCursorChange,
   placeholder,
   autoFocus = true,
+  onKeyDown,
 }: ComposerInputProps) {
   const ref = useRef<HTMLTextAreaElement>(null)
 
@@ -32,6 +34,7 @@ export function ComposerInput({
       value={value}
       autoFocus={autoFocus}
       placeholder={placeholder}
+      onKeyDown={onKeyDown}
       onChange={(event) => {
         onChange(event.target.value)
         onCursorChange(event.target.selectionStart ?? event.target.value.length)

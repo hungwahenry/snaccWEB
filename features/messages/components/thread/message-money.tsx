@@ -3,17 +3,12 @@ import {
   ArrowUpRightIcon,
   HandCoinsIcon,
 } from "lucide-react"
-import { formatNaira } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import type { MessageMoney as Money } from "../../types"
+import { moneyCard } from "../../utils/money"
 
-const REQUEST_STATUS: Record<string, string> = {
-  pending: "Waiting",
-  paid: "Paid",
-  declined: "Declined",
-  cancelled: "Cancelled",
-  expired: "Expired",
-}
+const CARD = "min-w-52 px-4 pt-3 pb-3 text-left"
+const PRESSABLE = "block w-full transition-opacity active:opacity-70"
 
 export function MessageMoney({
   money,
@@ -22,6 +17,7 @@ export function MessageMoney({
   onOpen,
   onPay,
   paying = false,
+  requestExpiryDays,
 }: {
   money: Money
   note?: string | null
@@ -31,31 +27,20 @@ export function MessageMoney({
   /** Pays an open request that was sent to you. */
   onPay?: () => void
   paying?: boolean
+  requestExpiryDays: number
 }) {
-  const request = money.kind === "request"
-  const received = !request && !mine
+  const card = moneyCard(money, mine, requestExpiryDays)
   const strong = mine ? "text-primary-foreground" : "text-foreground"
   const soft = mine ? "text-primary-foreground/70" : "text-muted-foreground"
-  const accent = received ? "text-success" : strong
-  const label = request
-    ? mine
-      ? "You asked for"
-      : "Asked you for"
-    : mine
-      ? "You sent"
-      : "Sent you"
-  const Icon = request
+  const accent = card.received ? "text-success" : strong
+  const Icon = card.request
     ? HandCoinsIcon
-    : received
+    : card.received
       ? ArrowDownLeftIcon
       : ArrowUpRightIcon
-  const amount = formatNaira(money.amount)
-  const status = request
-    ? (REQUEST_STATUS[money.request?.status ?? ""] ?? money.request?.status)
-    : null
-  const payable =
-    request && !mine && money.request?.status === "pending" && Boolean(onPay)
-  const openable = !request && Boolean(money.transaction_id) && Boolean(onOpen)
+  const payable = card.payable && onPay !== undefined
+  const openable = card.openable && onOpen !== undefined
+  const aria = `${card.label} ${card.amount}`
 
   const body = (
     <>
@@ -64,24 +49,24 @@ export function MessageMoney({
         <span
           className={cn("text-[11px] font-bold tracking-wider uppercase", soft)}
         >
-          {label}
+          {card.label}
         </span>
       </div>
       <p
         className={cn(
           "truncate font-extrabold tabular-nums",
-          amount.length > 10 ? "text-2xl" : "text-3xl",
+          card.amount.length > 10 ? "text-2xl" : "text-3xl",
           accent
         )}
       >
-        {amount}
+        {card.amount}
       </p>
       {note ? (
         <p className={cn("mt-1 line-clamp-3 text-sm leading-5", soft)}>
           {note}
         </p>
       ) : null}
-      {status ? (
+      {card.status ? (
         <>
           <div
             className={cn(
@@ -90,49 +75,25 @@ export function MessageMoney({
             )}
           />
           <p className={cn("mt-2 text-xs font-bold", payable ? strong : soft)}>
-            {payable ? (paying ? "Paying…" : "Tap to pay") : status}
+            {payable ? (paying ? "Paying…" : "Tap to pay") : card.status}
           </p>
         </>
       ) : null}
     </>
   )
 
-  const className = "min-w-52 px-4 pt-3 pb-3 text-left"
-  const aria = `${label} ${amount}`
-
-  if (payable) {
+  if (payable || openable) {
     return (
       <button
         type="button"
-        disabled={paying}
+        disabled={payable && paying}
         onClick={(event) => {
           event.stopPropagation()
-          onPay?.()
+          if (payable) onPay?.()
+          else onOpen?.()
         }}
-        aria-label={`${aria}. Pay this request`}
-        className={cn(
-          className,
-          "block w-full transition-opacity active:opacity-70"
-        )}
-      >
-        {body}
-      </button>
-    )
-  }
-
-  if (openable) {
-    return (
-      <button
-        type="button"
-        onClick={(event) => {
-          event.stopPropagation()
-          onOpen?.()
-        }}
-        aria-label={`${aria}. Open the receipt`}
-        className={cn(
-          className,
-          "block w-full transition-opacity active:opacity-70"
-        )}
+        aria-label={`${aria}. ${payable ? "Pay this request" : "Open the receipt"}`}
+        className={cn(CARD, PRESSABLE)}
       >
         {body}
       </button>
@@ -140,7 +101,7 @@ export function MessageMoney({
   }
 
   return (
-    <div className={className} aria-label={aria}>
+    <div className={CARD} aria-label={aria}>
       {body}
     </div>
   )

@@ -2,7 +2,6 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useCallback, useEffect, useRef, useState } from "react"
-import { toast } from "sonner"
 import { confirm } from "@/components/ui/confirm"
 import {
   deleteMoment,
@@ -16,6 +15,7 @@ import { MOMENT_DURATION_MS } from "../utils/constants"
 import { authorMomentsKey, MOMENTS_TRAY_KEY } from "../utils/keys"
 import { useAuthorMoments } from "./use-author-moments"
 import { useMomentClock } from "./use-moment-clock"
+import { showErrorMessage, showSuccess } from "@/lib/feedback"
 
 export function useMomentPlayer(
   authorId: string,
@@ -62,7 +62,7 @@ export function useMomentPlayer(
     },
     onError: () => {
       setPaused(false)
-      toast.error("Could not take that down. Try again.")
+      showErrorMessage("Could not take that down. Try again.")
     },
   })
 
@@ -159,7 +159,7 @@ export function useMomentPlayer(
     },
     onError: (_error, { momentId }, context) => {
       patchReaction(momentId, context?.before ?? null)
-      toast.error("Could not send that. Try again.")
+      showErrorMessage("Could not send that. Try again.")
     },
   })
 
@@ -179,10 +179,10 @@ export function useMomentPlayer(
     mutationFn: ({ momentId, body }: { momentId: string; body: string }) =>
       replyToMoment(momentId, body),
     onSuccess: () => {
-      toast.success("Sent to their DMs.")
+      showSuccess("Sent to their DMs.")
       setPaused(false)
     },
-    onError: () => toast.error("Could not send that. Try again."),
+    onError: () => showErrorMessage("Could not send that. Try again."),
   })
 
   const reply = useCallback(

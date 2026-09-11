@@ -1,63 +1,45 @@
 "use client"
 
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { useMemo } from "react"
+import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
 import {
   getWithdrawal,
   getWithdrawalSummary,
   listWithdrawals,
   retryWithdrawal,
 } from "../api"
-import type { ListWithdrawalsParams } from "../types"
+import type { WithdrawalListQuery } from "../types"
+import { adminWithdrawalKeys } from "../utils/keys"
 
-export function useWithdrawals(params: ListWithdrawalsParams) {
+export function useWithdrawals(query: WithdrawalListQuery) {
   return useQuery({
-    queryKey: ["admin", "withdrawals", params],
-    queryFn: () => listWithdrawals(params),
+    queryKey: adminWithdrawalKeys.list(query),
+    queryFn: () => listWithdrawals(query),
     placeholderData: keepPreviousData,
   })
 }
 
 export function useWithdrawalSummary() {
   return useQuery({
-    queryKey: ["admin", "withdrawals", "summary"],
+    queryKey: adminWithdrawalKeys.summary(),
     queryFn: getWithdrawalSummary,
   })
 }
 
 export function useWithdrawal(id: string) {
   return useQuery({
-    queryKey: ["admin", "withdrawal", id],
+    queryKey: adminWithdrawalKeys.detail(id),
     queryFn: () => getWithdrawal(id),
-    enabled: !!id,
   })
 }
 
-export function useWithdrawalMutations(id: string) {
-  const queryClient = useQueryClient()
+export function useWithdrawalActions(id: string) {
+  const { run: retry } = useAdminMutation({
+    mutationFn: () => retryWithdrawal(id),
+    success: "Sent to Paystack again.",
+    invalidates: [adminWithdrawalKeys.all()],
+  })
 
-  function invalidate() {
-    queryClient.invalidateQueries({ queryKey: ["admin", "withdrawals"] })
-    queryClient.invalidateQueries({ queryKey: ["admin", "withdrawal", id] })
-  }
-  function onError(error: unknown) {
-    toast.error(getErrorMessage(error))
-  }
-
-  return {
-    retry: useMutation({
-      mutationFn: () => retryWithdrawal(id),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Transfer retried.")
-      },
-      onError,
-    }),
-  }
+  return useMemo(() => ({ retry }), [retry])
 }

@@ -1,4 +1,5 @@
 import type { UserRefWithCampus } from "@/lib/api/types"
+
 export type EarningParty = UserRefWithCampus
 
 /** How the money moved. Only a `credit` was caused by somebody engaging. */
@@ -28,11 +29,18 @@ export interface AdminFund {
   created_at: string
 }
 
-export interface ListEarningsParams {
-  page?: number
-  perPage?: number
-  beneficiaryId?: string
-  actorId?: string
-  snaccId?: string
+export type EarningListQuery = {
+  page: number
+  perPage: number
   type?: string
+}
+
+export interface FundInput {
+  universityId: string
+  cap: number
+}
+
+export interface FundDraft {
+  universityId: string
+  cap: string
 }

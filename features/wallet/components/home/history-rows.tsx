@@ -1,5 +1,5 @@
-import type { HistoryRow } from "../../utils/history-sections"
 import type { WalletTransaction } from "../../types"
+import type { HistoryRow } from "../../utils/history"
 import { TransactionRow } from "./transaction-row"
 
 export function HistoryRows({

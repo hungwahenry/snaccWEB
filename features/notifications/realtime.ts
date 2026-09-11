@@ -1,4 +1,4 @@
-import { getQueryClient } from "@/lib/query-client"
+import { getQueryClient } from "@/lib/query/client"
 import { NOTIFICATIONS_KEY } from "./hooks/use-notifications"
 import { UNREAD_KEY } from "./hooks/use-unread-count"
 

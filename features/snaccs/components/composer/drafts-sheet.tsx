@@ -4,13 +4,8 @@ import { FileTextIcon, Trash2Icon } from "lucide-react"
 import { useEffect, useMemo } from "react"
 import { ActionSheet } from "@/components/ui/action-sheet"
 import { EmptyState } from "@/components/ui/empty-state"
-import { timeAgo } from "@/lib/format"
-import {
-  draftContextLabel,
-  draftPreview,
-  draftThumb,
-} from "../../drafts/preview"
-import type { StoredDraft } from "../../drafts/types"
+import type { StoredDraft } from "../../types"
+import { draftMeta, draftPreview, draftThumb } from "../../utils/drafts"
 
 export function DraftsSheet({
   open,
@@ -79,7 +74,6 @@ function DraftRow({
   onDelete: (draft: StoredDraft) => void
 }) {
   const thumb = useThumb(draft)
-  const context = draftContextLabel(draft)
 
   return (
     <div className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-accent/40">
@@ -100,8 +94,7 @@ function DraftRow({
             {draftPreview(draft)}
           </span>
           <span className="text-sm text-muted-foreground">
-            {context ? `${context} · ` : ""}
-            {timeAgo(draft.saved_at)}
+            {draftMeta(draft)}
           </span>
         </span>
       </button>

@@ -1,110 +1,91 @@
 "use client"
 
-import { CanAct } from "@/features/admin/auth/components/can"
-import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
-
+import type { UseQueryResult } from "@tanstack/react-query"
 import Link from "next/link"
-import { Badge } from "@/components/ui/badge"
+import { useMemo } from "react"
 import { Button } from "@/components/ui/button"
-import { TableFrame } from "@/components/data-table/table-frame"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
+import { ConfirmAction } from "@/features/admin/shell/components/confirm-action"
+import type { Column } from "@/features/admin/shell/components/data-table"
+import { QueryTable } from "@/features/admin/shell/components/query-table"
+import { StatusBadge } from "@/features/admin/shell/components/status-badge"
+import { pagePath } from "@/features/admin/shell/routes"
 import { formatDate } from "@/lib/format"
-import type { usePageMutations } from "../hooks/use-pages"
 import type { AdminPage } from "../types"
+import { PAGE_STATUS } from "../utils/page"
 
 export function PagesTable({
-  pages,
-  mutations,
+  query,
+  onDelete,
 }: {
-  pages: AdminPage[]
-  mutations: ReturnType<typeof usePageMutations>
+  query: UseQueryResult<AdminPage[]>
+  onDelete: (id: string) => Promise<unknown>
 }) {
-  return (
-    <TableFrame
-      toolbar={
-        <div className="flex justify-end">
-          <CanAct permission="pages.write">
-            <Button size="sm" render={<Link href="/admin/pages/new" />}>
-              New page
+  const columns = useMemo<Column<AdminPage>[]>(
+    () => [
+      {
+        id: "title",
+        header: "Title",
+        cell: (page) => (
+          <div className="min-w-0">
+            <p className="font-medium">{page.title}</p>
+            <p className="font-mono text-xs text-muted-foreground">
+              /{page.slug}
+            </p>
+          </div>
+        ),
+      },
+      {
+        id: "status",
+        header: "Status",
+        cell: (page) => <StatusBadge status={PAGE_STATUS[page.status]} />,
+      },
+      {
+        id: "updated",
+        header: "Updated",
+        className: "text-muted-foreground",
+        cell: (page) => formatDate(page.updated_at),
+      },
+      {
+        id: "actions",
+        header: "Actions",
+        align: "end",
+        cell: (page) => (
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              render={<Link href={pagePath(page.id)} />}
+            >
+              Edit
             </Button>
-          </CanAct>
-        </div>
-      }
-    >
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Updated</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {pages.length === 0 ? (
-            <TableRow>
-              <TableCell
-                colSpan={4}
-                className="py-10 text-center text-sm text-muted-foreground"
-              >
-                No pages yet.
-              </TableCell>
-            </TableRow>
-          ) : (
-            pages.map((page) => (
-              <TableRow key={page.id}>
-                <TableCell>
-                  <div className="font-medium">{page.title}</div>
-                  <div className="font-mono text-xs text-muted-foreground">
-                    /{page.slug}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  {page.status === "published" ? (
-                    <Badge variant="secondary">published</Badge>
-                  ) : (
-                    <Badge variant="outline">draft</Badge>
-                  )}
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {formatDate(page.updated_at)}
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      render={<Link href={`/admin/pages/${page.id}`} />}
-                    >
-                      Edit
-                    </Button>
-                    <CanAct permission="pages.delete">
-                      <ConfirmAction
-                        label="Delete"
-                        variant="ghost"
-                        title="Delete this page?"
-                        description="Anyone following its link gets a 404 from the moment you confirm."
-                        confirmLabel="Delete page"
-                        pending={mutations.remove.isPending}
-                        onConfirm={(close) =>
-                          mutations.remove.mutate(page.id, { onSuccess: close })
-                        }
-                      />
-                    </CanAct>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-    </TableFrame>
+            <CanAct permission="pages.delete">
+              <ConfirmAction
+                trigger={
+                  <Button variant="ghost" size="sm">
+                    Delete
+                  </Button>
+                }
+                title="Delete this page?"
+                description="Anyone following its link gets a 404 from the moment you confirm."
+                confirmLabel="Delete page"
+                onConfirm={() => onDelete(page.id)}
+              />
+            </CanAct>
+          </div>
+        ),
+      },
+    ],
+    [onDelete]
+  )
+
+  return (
+    <QueryTable
+      query={query}
+      what="pages"
+      columns={columns}
+      rowKey={(page) => page.id}
+      empty="No pages yet."
+    />
   )
 }

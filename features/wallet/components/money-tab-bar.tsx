@@ -1,42 +1,24 @@
-import {
-  ArrowLeftRightIcon,
-  HandCoinsIcon,
-  SparklesIcon,
-  WalletIcon,
-  type LucideIcon,
-} from "lucide-react"
 import { CountBadge } from "@/components/ui/count-badge"
 import { cn } from "@/lib/utils"
-
-export type MoneySection = "home" | "transactions" | "requests" | "earnings"
-
-const TABS: { key: MoneySection; label: string; icon: LucideIcon }[] = [
-  { key: "home", label: "Home", icon: WalletIcon },
-  { key: "requests", label: "Requests", icon: HandCoinsIcon },
-  { key: "transactions", label: "Transactions", icon: ArrowLeftRightIcon },
-  { key: "earnings", label: "Earnings", icon: SparklesIcon },
-]
+import type { MoneySection } from "../types"
+import type { MoneyTab } from "../utils/money-sections"
 
 export function MoneyTabBar({
+  tabs,
   section,
-  onChange,
-  earningsEnabled,
   badges,
+  onChange,
 }: {
+  tabs: MoneyTab[]
   section: MoneySection
+  badges: Partial<Record<MoneySection, number>>
   onChange: (next: MoneySection) => void
-  earningsEnabled: boolean
-  badges?: Partial<Record<MoneySection, number>>
 }) {
-  const tabs = earningsEnabled
-    ? TABS
-    : TABS.filter((tab) => tab.key !== "earnings")
-
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 flex h-(--money-bar-height) items-center border-t border-border bg-background/95 px-2 pt-2 pb-(--bar-inset) backdrop-blur md:sticky md:top-14 md:z-20 md:h-auto md:border-t-0 md:border-b md:py-0">
       {tabs.map((tab) => {
         const active = section === tab.key
-        const badge = badges?.[tab.key] ?? 0
+        const badge = badges[tab.key] ?? 0
         return (
           <button
             key={tab.key}

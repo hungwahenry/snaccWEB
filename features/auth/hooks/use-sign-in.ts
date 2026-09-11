@@ -1,14 +1,13 @@
 "use client"
 
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { ME_KEY } from "@/lib/query-keys"
-import { signIn } from "@/features/auth/api"
+import { useMutation } from "@tanstack/react-query"
+import { signIn } from "../api"
+import { meChanged } from "../cache"
 
 export function useSignIn() {
-  const queryClient = useQueryClient()
-
   return useMutation({
     mutationFn: signIn,
-    onSuccess: (result) => queryClient.setQueryData(ME_KEY, result.user),
+    meta: { silent: true },
+    onSuccess: (result) => meChanged(result.user),
   })
 }

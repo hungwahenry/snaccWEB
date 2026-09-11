@@ -1,4 +1,4 @@
-export type NotificationTypeRow = {
+export interface NotificationTypeRow {
   key: string
   label: string
   body_template: string
@@ -27,3 +27,13 @@ export type NotificationTypePatch = Partial<{
   groupWindowMinutes: number
   position: number
 }>
+
+export interface NotificationTypeDraft {
+  label: string
+  body: string
+  detail: string
+  push: boolean
+  email: boolean
+  instant: boolean
+  window: string
+}

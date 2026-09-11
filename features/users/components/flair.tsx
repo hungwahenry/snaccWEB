@@ -6,6 +6,7 @@ import type { UserScore } from "@/features/score/types"
 import { NamedIcon } from "@/lib/icons/named-icon"
 import { cn } from "@/lib/utils"
 
+/** Someone's name in their tier's colour, followed by the marks they have earned. */
 export function TierName({
   score,
   official,
@@ -40,9 +41,22 @@ export function TierName({
         />
       ) : null}
       {official ? (
-        <BadgeCheckIcon size={iconSize} className="shrink-0 text-foreground" />
+        <BadgeCheckIcon
+          size={iconSize}
+          role="img"
+          aria-label="Official account"
+          className="shrink-0 text-foreground"
+        />
       ) : null}
-      {birthday ? <span style={{ fontSize: iconSize - 2 }}>🎂</span> : null}
+      {birthday ? (
+        <span
+          role="img"
+          aria-label="Birthday today"
+          style={{ fontSize: iconSize - 2 }}
+        >
+          🎂
+        </span>
+      ) : null}
     </>
   )
 }
@@ -51,7 +65,7 @@ export function OgBadge({ score }: { score?: UserScore | null }) {
   if (!score?.og) return null
 
   return (
-    <span className="bg-success shrink-0 rounded-full px-1.5 py-0.5 text-[11px] font-bold text-white dark:text-black">
+    <span className="shrink-0 rounded-full bg-success px-1.5 py-0.5 text-[11px] font-bold text-white dark:text-black">
       OG
     </span>
   )

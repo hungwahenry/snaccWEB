@@ -1,13 +1,12 @@
 "use client"
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
 import {
   getNotificationPreferences,
   updateNotificationPreference,
 } from "../api"
 import type { NotificationPreference } from "../types"
+import { showError } from "@/lib/feedback"
 
 const PREFERENCES_KEY = ["notifications", "preferences"]
 
@@ -37,7 +36,7 @@ export function useNotificationPreferences() {
     onError: (error, _input, context) => {
       if (context?.previous)
         queryClient.setQueryData(PREFERENCES_KEY, context.previous)
-      toast.error(getErrorMessage(error))
+      showError(error)
     },
     onSuccess: (prefs) => queryClient.setQueryData(PREFERENCES_KEY, prefs),
   })

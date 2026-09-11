@@ -40,6 +40,20 @@ import {
 import { useBack } from "@/hooks/use-back"
 import { hasAdminAccess } from "@/lib/permissions"
 import { Row, Section } from "../components/rows"
+import { SAVED_PATH } from "@/features/bookmarks/routes"
+import { APPEARANCE_PATH } from "@/features/appearance/routes"
+import {
+  CHANGE_EMAIL_PATH,
+  DELETE_ACCOUNT_PATH,
+  EDIT_PROFILE_PATH,
+  EXPORT_DATA_PATH,
+} from "@/features/account/routes"
+import { MESSAGE_PRIVACY_PATH } from "@/features/messages/routes"
+import { ADMIN_PATH, PRIVACY_PATH, TERMS_PATH } from "@/lib/routes"
+import { BLOCKED_PATH } from "@/features/blocks/routes"
+import { MY_REPORTS_PATH } from "@/features/reports/routes"
+import { NOTIFICATION_SETTINGS_PATH } from "@/features/notifications/routes"
+import { ABOUT_PATH } from "../routes"
 
 export function SettingsScreen() {
   const back = useBack()
@@ -96,26 +110,26 @@ export function SettingsScreen() {
         ) : null}
 
         <Section title="Content">
-          <Row icon={BookmarkIcon} label="Saved snaccs" href="/saved" />
+          <Row icon={BookmarkIcon} label="Saved snaccs" href={SAVED_PATH} />
           {eggsEnabled ? (
             <Row icon={EggIcon} label="Easter eggs" href={EGGS_PATH} />
           ) : null}
           {accentsEnabled ? (
-            <Row
-              icon={PaletteIcon}
-              label="Appearance"
-              href="/settings/appearance"
-            />
+            <Row icon={PaletteIcon} label="Appearance" href={APPEARANCE_PATH} />
           ) : null}
         </Section>
 
         <Section title="Account">
-          <Row icon={MailIcon} label="Change email" href="/settings/email" />
-          <Row icon={UserRoundIcon} label="Edit profile" href="/edit-profile" />
+          <Row icon={MailIcon} label="Change email" href={CHANGE_EMAIL_PATH} />
+          <Row
+            icon={UserRoundIcon}
+            label="Edit profile"
+            href={EDIT_PROFILE_PATH}
+          />
           <Row
             icon={DownloadIcon}
             label="Download your data"
-            href="/settings/export"
+            href={EXPORT_DATA_PATH}
           />
         </Section>
 
@@ -124,38 +138,38 @@ export function SettingsScreen() {
             <Row
               icon={GhostIcon}
               label="Anonymous messages"
-              href="/settings/privacy"
+              href={MESSAGE_PRIVACY_PATH}
             />
           </Section>
         ) : null}
 
         {moderator ? (
           <Section title="Moderation">
-            <Row icon={ShieldIcon} label="Moderator tools" href="/admin" />
+            <Row icon={ShieldIcon} label="Moderator tools" href={ADMIN_PATH} />
           </Section>
         ) : null}
 
         <Section title="Safety">
-          <Row
-            icon={BanIcon}
-            label="Blocked accounts"
-            href="/settings/blocked"
-          />
-          <Row icon={FlagIcon} label="Your reports" href="/settings/reports" />
+          <Row icon={BanIcon} label="Blocked accounts" href={BLOCKED_PATH} />
+          <Row icon={FlagIcon} label="Your reports" href={MY_REPORTS_PATH} />
         </Section>
 
         <Section title="Preferences">
           <Row
             icon={HeartIcon}
             label="Notifications"
-            href="/settings/notifications"
+            href={NOTIFICATION_SETTINGS_PATH}
           />
         </Section>
 
         <Section title="About">
-          <Row icon={InfoIcon} label="About Snacc" href="/settings/about" />
-          <Row icon={FileTextIcon} label="Terms of Use" href="/terms" />
-          <Row icon={ShieldCheckIcon} label="Privacy Policy" href="/privacy" />
+          <Row icon={InfoIcon} label="About Snacc" href={ABOUT_PATH} />
+          <Row icon={FileTextIcon} label="Terms of Use" href={TERMS_PATH} />
+          <Row
+            icon={ShieldCheckIcon}
+            label="Privacy Policy"
+            href={PRIVACY_PATH}
+          />
         </Section>
 
         <Button
@@ -169,7 +183,7 @@ export function SettingsScreen() {
         </Button>
 
         <Link
-          href="/settings/delete"
+          href={DELETE_ACCOUNT_PATH}
           className="py-3 text-center text-base font-bold text-destructive transition-opacity active:opacity-60"
         >
           Delete account

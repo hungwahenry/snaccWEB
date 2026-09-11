@@ -5,6 +5,7 @@ import { PayEntry } from "@/features/pay/components/pay-entry"
 import { getPublicProfile } from "@/features/users/api/public"
 import { payPath } from "@/features/wallet/routes"
 import { hasSession } from "@/lib/auth-server"
+import { nameOf } from "@/features/users/utils/names"
 
 type Props = { params: Promise<{ username: string }> }
 
@@ -13,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const profile = await getPublicProfile(username)
   if (!profile) return { title: "Profile not found" }
 
-  const name = profile.display_name ?? `@${profile.username}`
+  const name = nameOf(profile)
   const title = `Pay ${name} on Snacc`
   const description = `Send ${name} money on Snacc — instant and free.`
 

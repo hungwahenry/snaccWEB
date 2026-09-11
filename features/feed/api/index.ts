@@ -1,7 +1,7 @@
 import { api } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
 import type { Snacc } from "@/features/snaccs/types"
-import type { FeedScope, FeedSort } from "@/features/feed/types"
+import type { FeedScope, FeedSort } from "../types"
 
 export function listFeed(
   scope: FeedScope,

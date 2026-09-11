@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { PanelShell } from "@/features/admin/shell/components/panel-shell"
+import { PanelShell } from "@/features/admin/shell/screens/panel-shell"
 import { requireAdminSession } from "@/lib/auth-server"
 
 export default async function PanelLayout({

@@ -40,18 +40,8 @@ export function NewMessageScreen({
       </div>
 
       <MessageComposer
-        body={composer.body}
-        onChange={composer.change}
-        onSend={composer.send}
-        canSend={composer.canSend}
-        sending={composer.sending}
-        editing={false}
-        context={null}
+        {...composer.field}
         placeholder="Say something anonymous…"
-        maxLength={composer.maxLength}
-        remaining={composer.remaining}
-        showCounter={composer.showCounter}
-        upgrade={composer.upgrade}
       />
     </ComposerScreen>
   )

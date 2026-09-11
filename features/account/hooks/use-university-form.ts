@@ -2,15 +2,14 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
-import { toast } from "sonner"
 import { useUniversities } from "@/features/universities/hooks/use-universities"
 import type { University } from "@/features/universities/types"
 import type { Profile } from "@/features/users/types"
 import { useBack } from "@/hooks/use-back"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
-import { getErrorMessage } from "@/lib/api/errors"
-import { ME_KEY } from "@/lib/query-keys"
+import { authKeys } from "@/features/auth/utils/keys"
 import { changeUniversity } from "../api"
+import { showSuccess } from "@/lib/feedback"
 
 export function useUniversityForm(profile: Profile) {
   const back = useBack("/edit-profile")
@@ -24,15 +23,14 @@ export function useUniversityForm(profile: Profile) {
   const change = useMutation({
     mutationFn: changeUniversity,
     onSuccess: (user) => {
-      queryClient.setQueryData(ME_KEY, user)
+      queryClient.setQueryData(authKeys.me(), user)
       void queryClient.invalidateQueries({
         predicate: (query) =>
           query.queryKey[0] === "users" && query.queryKey[1] === "profile",
       })
-      toast.success("Campus updated.")
+      showSuccess("Campus updated.")
       back()
     },
-    onError: (error) => toast.error(getErrorMessage(error)),
   })
 
   const valid = selected !== null && selected.id !== profile.university?.id

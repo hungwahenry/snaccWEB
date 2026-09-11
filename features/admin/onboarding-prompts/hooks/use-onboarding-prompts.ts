@@ -1,49 +1,37 @@
 "use client"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
+import { useQuery } from "@tanstack/react-query"
+import { useMemo } from "react"
+import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
 import { createPrompt, deletePrompt, listPrompts, updatePrompt } from "../api"
-import type { UpdatePromptInput } from "../types"
+import type { PromptDraft } from "../types"
+import { adminPromptKeys } from "../utils/keys"
+import { toInput } from "../utils/prompt"
 
 export function usePrompts() {
-  return useQuery({
-    queryKey: ["admin", "onboarding-prompts"],
-    queryFn: listPrompts,
-  })
+  return useQuery({ queryKey: adminPromptKeys.list(), queryFn: listPrompts })
 }
 
-export function usePromptMutations() {
-  const queryClient = useQueryClient()
+export function usePromptActions() {
+  const invalidates = [adminPromptKeys.all()]
 
-  function onSuccess(message: string) {
-    return () => {
-      queryClient.invalidateQueries({
-        queryKey: ["admin", "onboarding-prompts"],
-      })
-      toast.success(message)
-    }
-  }
-  function onError(error: unknown) {
-    toast.error(getErrorMessage(error))
-  }
+  const { run: save } = useAdminMutation({
+    mutationFn: ({ draft, id }: { draft: PromptDraft; id?: string }) =>
+      id ? updatePrompt(id, toInput(draft)) : createPrompt(toInput(draft)),
+    success: (_prompt, { id }) => (id ? "Prompt saved." : "Prompt added."),
+    invalidates,
+  })
+  const { run: remove } = useAdminMutation({
+    mutationFn: (id: string) => deletePrompt(id),
+    success: "Prompt deleted.",
+    invalidates,
+  })
 
-  return {
-    create: useMutation({
-      mutationFn: createPrompt,
-      onSuccess: onSuccess("Prompt created."),
-      onError,
+  return useMemo(
+    () => ({
+      save: (draft: PromptDraft, id?: string) => save({ draft, id }),
+      remove,
     }),
-    update: useMutation({
-      mutationFn: ({ id, input }: { id: string; input: UpdatePromptInput }) =>
-        updatePrompt(id, input),
-      onSuccess: onSuccess("Prompt updated."),
-      onError,
-    }),
-    remove: useMutation({
-      mutationFn: (id: string) => deletePrompt(id),
-      onSuccess: onSuccess("Prompt deleted."),
-      onError,
-    }),
-  }
+    [save, remove]
+  )
 }

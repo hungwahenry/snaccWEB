@@ -1,9 +1,7 @@
 import { api } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
-import {
-  voiceFileName,
-  type VoiceDraft,
-} from "@/features/voice/hooks/use-voice-recorder"
+import type { VoiceDraft } from "@/features/voice/types"
+import { voiceFileName } from "@/features/voice/utils/recording"
 import { appendImage, type PickedImage } from "@/lib/media"
 import type {
   Conversation,
@@ -12,6 +10,12 @@ import type {
   MessageSettings,
   OpenedPhoto,
 } from "../types"
+
+const conversationPath = (id: string) =>
+  `/conversations/${encodeURIComponent(id)}`
+
+const messagePath = (conversationId: string, messageId: string) =>
+  `${conversationPath(conversationId)}/messages/${encodeURIComponent(messageId)}`
 
 export function listConversations(
   page: number,
@@ -24,7 +28,7 @@ export function listConversations(
 }
 
 export function getConversation(id: string): Promise<Conversation> {
-  return api.get<Conversation>(`/conversations/${id}`)
+  return api.get<Conversation>(conversationPath(id))
 }
 
 export function listMessages(
@@ -32,7 +36,7 @@ export function listMessages(
   page: number
 ): Promise<Paginated<Message>> {
   return api.get<Paginated<Message>>(
-    `/conversations/${conversationId}/messages`,
+    `${conversationPath(conversationId)}/messages`,
     { page }
   )
 }
@@ -48,11 +52,39 @@ export interface SendMessageInput {
   voice?: VoiceDraft
 }
 
+/** The multipart body for a message carrying photos or a voice note, in a DM or a room. */
+export function messageUploadForm(
+  input: Omit<SendMessageInput, "giphyId">,
+  prefix: string
+): FormData {
+  const form = new FormData()
+  const fields: [string, string | undefined][] = [
+    ["id", input.id],
+    ["body", input.body],
+    ["replyToId", input.replyToId],
+    ["viewOnce", input.viewOnce ? "true" : undefined],
+    ["stickerId", input.stickerId],
+    [
+      "voiceDurationMs",
+      input.voice ? String(Math.round(input.voice.durationMs)) : undefined,
+    ],
+  ]
+  fields.forEach(([name, value]) => {
+    if (value) form.append(name, value)
+  })
+  input.images?.forEach((image, index) =>
+    appendImage(form, "images", image, `${prefix}-${index}`)
+  )
+  if (input.voice)
+    form.append("voice", input.voice.file, voiceFileName(input.voice.mimeType))
+  return form
+}
+
 export function sendMessage(
   conversationId: string,
   input: SendMessageInput
 ): Promise<Message> {
-  const path = `/conversations/${conversationId}/messages`
+  const path = `${conversationPath(conversationId)}/messages`
 
   if (!input.images?.length && !input.voice) {
     return api.post<Message>(path, {
@@ -64,28 +96,7 @@ export function sendMessage(
     })
   }
 
-  const form = new FormData()
-  const fields: [string, string | undefined][] = [
-    ["id", input.id],
-    ["body", input.body],
-    ["replyToId", input.replyToId],
-    ["viewOnce", input.viewOnce ? "true" : undefined],
-    ["stickerId", input.stickerId],
-    [
-      "voiceDurationMs",
-      input.voice ? String(input.voice.durationMs) : undefined,
-    ],
-  ]
-  fields.forEach(([name, value]) => {
-    if (value) form.append(name, value)
-  })
-  input.images?.forEach((image, index) =>
-    appendImage(form, "images", image, `message-${index}`)
-  )
-  if (input.voice)
-    form.append("voice", input.voice.file, voiceFileName(input.voice.mimeType))
-
-  return api.upload<Message>(path, form)
+  return api.upload<Message>(path, messageUploadForm(input, "message"))
 }
 
 export function editMessage(
@@ -93,19 +104,14 @@ export function editMessage(
   messageId: string,
   body: string
 ): Promise<Message> {
-  return api.patch<Message>(
-    `/conversations/${conversationId}/messages/${messageId}`,
-    { body }
-  )
+  return api.patch<Message>(messagePath(conversationId, messageId), { body })
 }
 
 export function deleteMessage(
   conversationId: string,
   messageId: string
 ): Promise<Message> {
-  return api.del<Message>(
-    `/conversations/${conversationId}/messages/${messageId}`
-  )
+  return api.del<Message>(messagePath(conversationId, messageId))
 }
 
 export function reactToMessage(
@@ -114,7 +120,7 @@ export function reactToMessage(
   emoji: string
 ): Promise<Message> {
   return api.put<Message>(
-    `/conversations/${conversationId}/messages/${messageId}/reaction`,
+    `${messagePath(conversationId, messageId)}/reaction`,
     { emoji }
   )
 }
@@ -123,36 +129,34 @@ export function unreactToMessage(
   conversationId: string,
   messageId: string
 ): Promise<Message> {
-  return api.del<Message>(
-    `/conversations/${conversationId}/messages/${messageId}/reaction`
-  )
+  return api.del<Message>(`${messagePath(conversationId, messageId)}/reaction`)
 }
 
 export async function markConversationRead(id: string): Promise<void> {
-  await api.post(`/conversations/${id}/read`)
+  await api.post(`${conversationPath(id)}/read`)
 }
 
 export async function sendTyping(id: string): Promise<void> {
-  await api.post(`/conversations/${id}/typing`)
+  await api.post(`${conversationPath(id)}/typing`)
 }
 
 export function revealSelf(id: string): Promise<Conversation> {
-  return api.post<Conversation>(`/conversations/${id}/reveal`)
+  return api.post<Conversation>(`${conversationPath(id)}/reveal`)
 }
 
 export async function blockGhost(id: string): Promise<void> {
-  await api.post(`/conversations/${id}/block`)
+  await api.post(`${conversationPath(id)}/block`)
 }
 
 export async function unblockGhost(id: string): Promise<void> {
-  await api.post(`/conversations/${id}/unblock`)
+  await api.post(`${conversationPath(id)}/unblock`)
 }
 
 export async function findConversationWith(
   userId: string
 ): Promise<string | null> {
   const result = await api.get<{ conversation_id: string | null }>(
-    `/conversations/with/${userId}`
+    `/conversations/with/${encodeURIComponent(userId)}`
   )
   return result.conversation_id
 }
@@ -174,7 +178,7 @@ export function searchMessages(
   })
 }
 
-export async function fetchUnreadMessages(): Promise<number> {
+export async function getUnreadMessageCount(): Promise<number> {
   const result = await api.get<{ count: number }>("/conversations/unread-count")
   return result.count
 }
@@ -185,26 +189,12 @@ export async function updateMessageSettings(
   await api.put("/conversations/settings", settings)
 }
 
-const photoPath = (
-  conversationId: string,
-  messageId: string,
-  photoId: string
-) => `/conversations/${conversationId}/messages/${messageId}/photos/${photoId}`
-
 export function openPhoto(
   conversationId: string,
   messageId: string,
   photoId: string
 ): Promise<OpenedPhoto> {
   return api.post<OpenedPhoto>(
-    `${photoPath(conversationId, messageId, photoId)}/open`
+    `${messagePath(conversationId, messageId)}/photos/${encodeURIComponent(photoId)}/open`
   )
-}
-
-export async function reportScreenshot(
-  conversationId: string,
-  messageId: string,
-  photoId: string
-): Promise<void> {
-  await api.post(`${photoPath(conversationId, messageId, photoId)}/screenshot`)
 }

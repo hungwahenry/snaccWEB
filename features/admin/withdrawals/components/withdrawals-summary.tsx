@@ -1,35 +1,27 @@
-"use client"
+import { Stat, StatGrid } from "@/features/admin/shell/components/detail"
+import { plural } from "@/features/admin/shell/utils/format"
+import { formatNaira } from "@/lib/format"
+import type { WithdrawalSummary } from "../types"
+import { waitingNote } from "../utils/withdrawals"
 
-import { Stat, StatGrid } from "@/features/admin/shell/ui/detail"
-import { formatNaira, formatNumber } from "@/lib/format"
-import { useWithdrawalSummary } from "../hooks/use-withdrawals"
-
-function waitingSince(oldestAt: string | null): string {
-  if (!oldestAt) return "nothing waiting"
-
-  const days = Math.floor(
-    (Date.now() - new Date(oldestAt).getTime()) / 86_400_000
-  )
-  if (days < 1) return "oldest today"
-
-  return `oldest ${days} day${days === 1 ? "" : "s"} ago`
-}
-
-export function WithdrawalsSummary() {
-  const { data } = useWithdrawalSummary()
-  if (!data) return null
+export function WithdrawalsSummary({
+  summary,
+}: {
+  summary: WithdrawalSummary | undefined
+}) {
+  if (!summary) return null
 
   return (
     <StatGrid columns={2}>
       <Stat
         label="Still with Paystack"
-        value={formatNaira(data.pending.total)}
-        hint={`${formatNumber(data.pending.count)} unsettled · ${waitingSince(data.pending.oldest_at)}`}
+        value={formatNaira(summary.pending.total)}
+        hint={waitingNote(summary.pending)}
       />
       <Stat
-        label={`Paid in ${data.paid.days} days`}
-        value={formatNaira(data.paid.total)}
-        hint={`${formatNumber(data.paid.count)} settled`}
+        label={`Paid in the last ${plural(summary.paid.days, "day")}`}
+        value={formatNaira(summary.paid.total)}
+        hint={`${plural(summary.paid.count, "withdrawal")} settled`}
       />
     </StatGrid>
   )

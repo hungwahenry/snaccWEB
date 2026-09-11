@@ -1,6 +1,6 @@
 "use client"
 
-import { Fact, Facts } from "@/features/admin/shell/ui/detail"
+import type { UseQueryResult } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -10,22 +10,77 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Spinner } from "@/components/ui/spinner"
+import { BarRow } from "@/features/admin/shell/components/bar-row"
+import {
+  EmptyNote,
+  Fact,
+  Facts,
+} from "@/features/admin/shell/components/detail"
+import {
+  LoadingBlock,
+  QueryView,
+} from "@/features/admin/shell/components/query-view"
 import { formatNumber } from "@/lib/format"
-import { useInsight } from "../hooks/use-moderation"
-import type { ModerationRule } from "../types"
+import type { CategoryInsight, ModerationRule } from "../types"
+import { catches, insightBars } from "../utils/insight"
+
+function Spread({
+  insight,
+  rule,
+}: {
+  insight: CategoryInsight
+  rule: ModerationRule | null
+}) {
+  if (insight.scans === 0) {
+    return (
+      <EmptyNote>
+        Nothing scored on this surface yet. Leave the pipeline running with
+        enforcement off and the shape of this category will fill in.
+      </EmptyNote>
+    )
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <p className="text-sm text-muted-foreground">
+        {formatNumber(insight.scans)} reviews scored for this category. The rule
+        currently fires at {rule?.threshold.toFixed(2)}.
+      </p>
+
+      <div className="flex flex-col gap-1">
+        {insightBars(insight, rule?.threshold ?? null).map((bar) => (
+          <BarRow
+            key={bar.from}
+            label={bar.label}
+            value={formatNumber(bar.count)}
+            fraction={bar.fraction}
+            highlighted={bar.catching}
+          />
+        ))}
+      </div>
+
+      <Facts>
+        {catches(insight).map((row) => (
+          <Fact
+            key={row.threshold}
+            label={`At ${row.threshold.toFixed(1)}`}
+            value={`${formatNumber(row.count)} caught`}
+          />
+        ))}
+      </Facts>
+    </div>
+  )
+}
 
 export function TuneSheet({
   rule,
+  insight,
   onClose,
 }: {
   rule: ModerationRule | null
+  insight: UseQueryResult<CategoryInsight>
   onClose: () => void
 }) {
-  const insight = useInsight(rule?.surface ?? null, rule?.category ?? null)
-  const data = insight.data
-  const peak = Math.max(1, ...(data?.buckets ?? []).map((b) => b.count))
-
   return (
     <Dialog open={rule !== null} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-2xl">
@@ -35,64 +90,13 @@ export function TuneSheet({
           </DialogTitle>
         </DialogHeader>
 
-        {insight.isPending ? (
-          <div className="flex justify-center py-12">
-            <Spinner />
-          </div>
-        ) : !data || data.scans === 0 ? (
-          <p className="rounded-lg border border-dashed py-10 text-center text-sm text-pretty text-muted-foreground">
-            Nothing scored on this surface yet. Leave the pipeline running with
-            enforcement off and the shape of this category will fill in.
-          </p>
-        ) : (
-          <div className="flex flex-col gap-4">
-            <p className="text-sm text-muted-foreground">
-              {formatNumber(data.scans)} reviews scored for this category. The
-              rule currently fires at {rule?.threshold.toFixed(2)}.
-            </p>
-
-            <div className="flex flex-col gap-1">
-              {data.buckets.map((bucket) => {
-                const catching = rule !== null && bucket.from >= rule.threshold
-
-                return (
-                  <div key={bucket.from} className="flex items-center gap-3">
-                    <span className="w-20 text-right font-mono text-xs text-muted-foreground tabular-nums">
-                      {bucket.from.toFixed(1)}–{(bucket.from + 0.1).toFixed(1)}
-                    </span>
-                    <div className="h-4 flex-1 overflow-hidden rounded bg-muted">
-                      <div
-                        className={
-                          catching
-                            ? "h-full bg-destructive"
-                            : "h-full bg-foreground/40"
-                        }
-                        style={{
-                          width: `${Math.round((bucket.count / peak) * 100)}%`,
-                        }}
-                      />
-                    </div>
-                    <span className="w-14 text-right text-xs tabular-nums">
-                      {formatNumber(bucket.count)}
-                    </span>
-                  </div>
-                )
-              })}
-            </div>
-
-            <Facts>
-              {data.would_catch
-                .filter((row) => row.count > 0)
-                .map((row) => (
-                  <Fact
-                    key={row.threshold}
-                    label={`At ${row.threshold.toFixed(1)}`}
-                    value={`${formatNumber(row.count)} caught`}
-                  />
-                ))}
-            </Facts>
-          </div>
-        )}
+        <QueryView
+          query={insight}
+          what="the score spread"
+          loading={<LoadingBlock className="py-12" />}
+        >
+          {(data) => <Spread insight={data} rule={rule} />}
+        </QueryView>
 
         <DialogFooter>
           <DialogClose render={<Button variant="ghost">Close</Button>} />

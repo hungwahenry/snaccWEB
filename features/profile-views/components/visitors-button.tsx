@@ -2,6 +2,8 @@ import { FootprintsIcon } from "lucide-react"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { compactCount } from "@/lib/format"
+import { VISITORS_PATH } from "../routes"
+import { visitorsButtonLabel } from "../utils/visitors"
 
 export function VisitorsButton({
   count,
@@ -12,10 +14,8 @@ export function VisitorsButton({
 }) {
   return (
     <Link
-      href="/visitors"
-      aria-label={
-        count > 0 ? `${count} profile visitors` : "See who visited your profile"
-      }
+      href={VISITORS_PATH}
+      aria-label={visitorsButtonLabel(count)}
       className="relative flex size-10 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-accent active:opacity-70"
     >
       <FootprintsIcon className="size-5" />

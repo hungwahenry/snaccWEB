@@ -2,11 +2,15 @@
 
 import { useCallback, useRef, useState } from "react"
 import type { CropRect } from "@/lib/media"
-import type { StickerCreator } from "./use-sticker-creator"
 
-type CreatorFlow = Pick<StickerCreator, "busy" | "create">
-
-export function useCreatorStage({ busy, create }: CreatorFlow) {
+/** The square the photo is framed in, sized to the room below the header, and the frame chosen. */
+export function useCreatorStage({
+  busy,
+  onCreate,
+}: {
+  busy: boolean
+  onCreate: (rect: CropRect) => void
+}) {
   const [floor, setFloor] = useState({ width: 0, height: 0 })
   const rect = useRef<CropRect | null>(null)
 
@@ -26,13 +30,15 @@ export function useCreatorStage({ busy, create }: CreatorFlow) {
     rect.current = current
   }, [])
 
+  const next = useCallback(() => {
+    if (busy || !rect.current) return
+    onCreate(rect.current)
+  }, [busy, onCreate])
+
   return {
     side: Math.min(floor.width, floor.height),
     measureFloor,
-    next: () => {
-      if (busy || !rect.current) return
-      create(rect.current)
-    },
     onCropChange,
+    next,
   }
 }

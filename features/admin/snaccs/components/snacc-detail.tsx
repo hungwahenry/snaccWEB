@@ -1,82 +1,92 @@
 "use client"
 
-import { STATUS_VARIANT } from "@/features/admin/reports/utils/status"
 import Link from "next/link"
-import { useState } from "react"
-import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
-import { DetailHeader, Section } from "@/features/admin/shell/ui/detail"
-import { CanAct } from "@/features/admin/auth/components/can"
-import { UserInline } from "@/features/admin/shell/ui/user-inline"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
+import { REPORT_STATUS } from "@/features/admin/reports/utils/status"
+import { ActionButton } from "@/features/admin/shell/components/action-button"
+import { ConfirmAction } from "@/features/admin/shell/components/confirm-action"
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Field, FieldLabel } from "@/components/ui/field"
-import { Textarea } from "@/components/ui/textarea"
+  DetailHeader,
+  EmptyNote,
+  Section,
+} from "@/features/admin/shell/components/detail"
+import { StatusBadge } from "@/features/admin/shell/components/status-badge"
+import { UserCell } from "@/features/admin/shell/components/user-cell"
+import { reportPath, snaccPath } from "@/features/admin/shell/routes"
 import { formatDate } from "@/lib/format"
+import type { AdminSnaccDetail, SnaccActions } from "../types"
+import { reportTally, snaccBadges } from "../utils/snaccs"
 import { SnaccView } from "./snacc-view"
-import type { useSnaccMutations } from "../hooks/use-snaccs"
-import type { AdminSnaccDetail } from "../types"
 
-function RemoveDialog({
+function HeaderActions({
   snacc,
   actions,
 }: {
   snacc: AdminSnaccDetail
-  actions: ReturnType<typeof useSnaccMutations>
+  actions: SnaccActions
 }) {
-  const [open, setOpen] = useState(false)
-  const [reason, setReason] = useState("")
-
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          <Button variant="destructive" size="sm">
-            Remove
-          </Button>
-        }
-      />
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Remove this snacc?</DialogTitle>
-        </DialogHeader>
-        <p className="text-sm text-muted-foreground">
-          It disappears from the app but stays here, and its replies go with it.
-        </p>
-        <Field>
-          <FieldLabel>Reason (optional)</FieldLabel>
-          <Textarea
-            value={reason}
-            onChange={(event) => setReason(event.target.value)}
-            rows={3}
-            maxLength={500}
-          />
-        </Field>
-        <DialogFooter>
-          <DialogClose render={<Button variant="ghost">Cancel</Button>} />
-          <Button
-            variant="destructive"
-            disabled={actions.remove.isPending}
-            onClick={() =>
-              actions.remove.mutate(
-                { id: snacc.id, reason: reason.trim() || undefined },
-                { onSuccess: () => setOpen(false) }
-              )
-            }
-          >
-            Remove
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <>
+      <CanAct permission="snaccs.pin">
+        <ActionButton
+          variant="outline"
+          size="sm"
+          onClick={() =>
+            snacc.pinned ? actions.unpin(snacc.id) : actions.pin(snacc.id)
+          }
+        >
+          {snacc.pinned ? "Unpin" : "Pin"}
+        </ActionButton>
+      </CanAct>
+      {snacc.deleted_at ? null : (
+        <>
+          <CanAct permission="snaccs.hold">
+            {snacc.held_at ? (
+              <ConfirmAction
+                trigger={
+                  <Button variant="outline" size="sm">
+                    Release
+                  </Button>
+                }
+                tone="default"
+                title="Put this snacc back?"
+                description="It becomes visible in every feed again, replies included."
+                confirmLabel="Release it"
+                onConfirm={() => actions.release(snacc.id)}
+              />
+            ) : (
+              <ConfirmAction
+                trigger={
+                  <Button variant="outline" size="sm">
+                    Hold
+                  </Button>
+                }
+                title="Hold this snacc?"
+                description="It is hidden from every feed while you decide, and its replies go with it. Nothing is deleted."
+                confirmLabel="Hold it"
+                onConfirm={() => actions.hold(snacc.id)}
+              />
+            )}
+          </CanAct>
+          <CanAct permission="snaccs.delete">
+            <ConfirmAction
+              trigger={
+                <Button variant="destructive" size="sm">
+                  Remove
+                </Button>
+              }
+              title="Remove this snacc?"
+              description="It disappears from the app but stays here, and its replies go with it."
+              confirmLabel="Remove"
+              reason={{ label: "Reason" }}
+              onConfirm={(reason) => actions.remove(snacc.id, reason)}
+            />
+          </CanAct>
+        </>
+      )}
+    </>
   )
 }
 
@@ -85,35 +95,24 @@ export function SnaccDetail({
   actions,
 }: {
   snacc: AdminSnaccDetail
-  actions: ReturnType<typeof useSnaccMutations>
+  actions: SnaccActions
 }) {
-  const open = snacc.reports.filter((report) => report.status === "open").length
+  const flagged = snacc.reports.length > 0
 
   return (
     <div className="flex flex-col gap-6">
       <DetailHeader
         title={snacc.parent_id ? "Reply" : "Snacc"}
-        badges={
-          <>
-            {snacc.pinned ? <Badge variant="outline">Pinned</Badge> : null}
-            {snacc.held_at ? <Badge variant="secondary">Held</Badge> : null}
-            {snacc.deleted_at ? (
-              <Badge variant="destructive">Removed</Badge>
-            ) : null}
-          </>
-        }
+        badges={snaccBadges(snacc).map((badge) => (
+          <StatusBadge key={badge.label} status={badge} />
+        ))}
         meta={
           <>
             <span>Posted {formatDate(snacc.created_at)}</span>
-            {snacc.reports.length > 0 ? (
-              <span>
-                {snacc.reports.length} reports
-                {open > 0 ? ` · ${open} open` : ""}
-              </span>
-            ) : null}
+            {flagged ? <span>{reportTally(snacc.reports)}</span> : null}
             {snacc.parent_id ? (
               <Link
-                href={`/admin/snaccs/${snacc.parent_id}`}
+                href={snaccPath(snacc.parent_id)}
                 className="underline underline-offset-4"
               >
                 Open the snacc it replies to
@@ -121,97 +120,32 @@ export function SnaccDetail({
             ) : null}
           </>
         }
-        actions={
-          <>
-            <CanAct permission="snaccs.pin">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={actions.pin.isPending || actions.unpin.isPending}
-                onClick={() =>
-                  snacc.pinned
-                    ? actions.unpin.mutate(snacc.id)
-                    : actions.pin.mutate(snacc.id)
-                }
-              >
-                {snacc.pinned ? "Unpin" : "Pin"}
-              </Button>
-            </CanAct>
-            {snacc.deleted_at ? null : (
-              <>
-                <CanAct permission="snaccs.hold">
-                  {snacc.held_at ? (
-                    <ConfirmAction
-                      label="Release"
-                      confirmVariant="default"
-                      title="Put this snacc back?"
-                      description="It becomes visible in every feed again, replies included."
-                      confirmLabel="Release it"
-                      pending={actions.release.isPending}
-                      onConfirm={(close) =>
-                        actions.release.mutate(snacc.id, { onSuccess: close })
-                      }
-                    />
-                  ) : (
-                    <ConfirmAction
-                      label="Hold"
-                      title="Hold this snacc?"
-                      description="It is hidden from every feed while you decide, and its replies go with it. Nothing is deleted."
-                      confirmLabel="Hold it"
-                      pending={actions.hold.isPending}
-                      onConfirm={(close) =>
-                        actions.hold.mutate(
-                          { id: snacc.id },
-                          { onSuccess: close }
-                        )
-                      }
-                    />
-                  )}
-                </CanAct>
-                <CanAct permission="snaccs.delete">
-                  <RemoveDialog snacc={snacc} actions={actions} />
-                </CanAct>
-              </>
-            )}
-          </>
-        }
+        actions={<HeaderActions snacc={snacc} actions={actions} />}
       />
 
       <SnaccView snacc={snacc} />
 
-      <Section
-        title={
-          snacc.reports.length === 0
-            ? "Reports"
-            : `${snacc.reports.length} ${snacc.reports.length === 1 ? "report" : "reports"}${open > 0 ? ` · ${open} open` : ""}`
-        }
-      >
-        {snacc.reports.length === 0 ? (
-          <p className="rounded-lg border border-dashed py-8 text-center text-sm text-muted-foreground">
-            Nobody has flagged this snacc.
-          </p>
-        ) : (
+      <Section title={flagged ? reportTally(snacc.reports) : "Reports"}>
+        {flagged ? (
           <div className="divide-y rounded-lg border">
             {snacc.reports.map((report) => (
               <div key={report.id} className="flex flex-col gap-2 px-4 py-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex flex-wrap items-center gap-2">
                     <Link
-                      href={`/admin/reports/${report.id}`}
+                      href={reportPath(report.id)}
                       className="text-sm font-medium underline-offset-4 hover:underline"
                     >
                       {report.reason.label}
                     </Link>
-                    <Badge variant={STATUS_VARIANT[report.status]}>
-                      {report.status}
-                    </Badge>
+                    <StatusBadge status={REPORT_STATUS[report.status]} />
                   </div>
                   <span className="text-xs text-muted-foreground">
                     {formatDate(report.created_at)}
                   </span>
                 </div>
                 {report.reporter ? (
-                  <UserInline user={report.reporter} size="sm" />
+                  <UserCell user={report.reporter} size="sm" />
                 ) : (
                   <Badge variant="outline">Automatic check</Badge>
                 )}
@@ -223,6 +157,8 @@ export function SnaccDetail({
               </div>
             ))}
           </div>
+        ) : (
+          <EmptyNote>Nobody has flagged this snacc.</EmptyNote>
         )}
       </Section>
     </div>

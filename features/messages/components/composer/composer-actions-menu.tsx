@@ -1,16 +1,9 @@
 "use client"
 
-import { PlusIcon, type LucideIcon } from "lucide-react"
+import { PlusIcon } from "lucide-react"
 import { useState } from "react"
 import { ActionSheet, ActionSheetChoice } from "@/components/ui/action-sheet"
-
-export interface ComposerAction {
-  key: string
-  icon: LucideIcon
-  label: string
-  hint: string
-  onPress: () => void
-}
+import type { ComposerAction } from "../../types"
 
 export function ComposerActionsMenu({
   actions,
@@ -18,6 +11,9 @@ export function ComposerActionsMenu({
   actions: ComposerAction[]
 }) {
   const [open, setOpen] = useState(false)
+  // A menu of one is a detour: the button becomes that action.
+  const only = actions.length === 1 ? actions[0] : null
+  const Glyph = only?.icon ?? PlusIcon
 
   function select(action: ComposerAction) {
     setOpen(false)
@@ -28,11 +24,11 @@ export function ComposerActionsMenu({
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
-        aria-label="Add to message"
+        onClick={() => (only ? only.onPress() : setOpen(true))}
+        aria-label={only?.label ?? "Add to message"}
         className="flex size-14 shrink-0 items-center justify-center rounded-full bg-input text-foreground transition-colors hover:bg-accent active:opacity-60"
       >
-        <PlusIcon className="size-6" />
+        <Glyph className="size-6" />
       </button>
 
       <ActionSheet open={open} onOpenChange={setOpen} title="Add to message">

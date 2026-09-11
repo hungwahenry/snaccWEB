@@ -1,9 +1,9 @@
 "use client"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
-import type { ModerationSurface, RuleInput, ScanQuery } from "../types"
+import { keepPreviousData, skipToken, useQuery } from "@tanstack/react-query"
+import { useCallback, useMemo } from "react"
+import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
+import { MINUTE_MS } from "@/lib/duration"
 import {
   createRule,
   getInsight,
@@ -12,99 +12,111 @@ import {
   listRules,
   listScans,
   listSurfaces,
-  removeRule,
   updateRule,
   updateSurface,
 } from "../api"
-
-const KEY = ["admin", "moderation"]
+import type {
+  ModerationMode,
+  ModerationRule,
+  ModerationSurface,
+  RuleDraft,
+  ScanQuery,
+  SurfaceChanges,
+} from "../types"
+import { adminModerationKeys } from "../utils/keys"
+import { rulesOn, toRuleInput } from "../utils/rules"
 
 export function useSurfaces() {
-  return useQuery({ queryKey: [...KEY, "surfaces"], queryFn: listSurfaces })
+  return useQuery({
+    queryKey: adminModerationKeys.surfaces(),
+    queryFn: listSurfaces,
+  })
 }
 
-export function useRules() {
-  return useQuery({ queryKey: [...KEY, "rules"], queryFn: listRules })
+export function useRules(surface: ModerationSurface | null) {
+  const select = useCallback(
+    (rules: ModerationRule[]) => rulesOn(rules, surface),
+    [surface]
+  )
+
+  return useQuery({
+    queryKey: adminModerationKeys.rules(),
+    queryFn: listRules,
+    select,
+  })
 }
 
 export function useCategories() {
   return useQuery({
-    queryKey: [...KEY, "categories"],
+    queryKey: adminModerationKeys.categories(),
     queryFn: listCategories,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 5 * MINUTE_MS,
   })
 }
 
 export function useSummary() {
-  return useQuery({ queryKey: [...KEY, "summary"], queryFn: getSummary })
-}
-
-export function useScans(params: ScanQuery) {
   return useQuery({
-    queryKey: [...KEY, "scans", params],
-    queryFn: () => listScans(params),
+    queryKey: adminModerationKeys.summary(),
+    queryFn: getSummary,
   })
 }
 
-export function useInsight(
-  surface: ModerationSurface | null,
-  category: string | null
-) {
+export function useScans(query: ScanQuery) {
   return useQuery({
-    queryKey: [...KEY, "insight", surface, category],
-    queryFn: () => getInsight(surface as ModerationSurface, category as string),
-    enabled: surface !== null && category !== null,
+    queryKey: adminModerationKeys.scans(query),
+    queryFn: () => listScans(query),
+    placeholderData: keepPreviousData,
   })
 }
 
-export function useModerationMutations() {
-  const qc = useQueryClient()
-  const onError = (error: unknown) => toast.error(getErrorMessage(error))
-  const invalidate = () => qc.invalidateQueries({ queryKey: KEY })
+/** How one rule's category has scored on its surface, for tuning where the rule sits. */
+export function useInsight(rule: ModerationRule | null) {
+  return useQuery({
+    queryKey: adminModerationKeys.insight(
+      rule?.surface ?? null,
+      rule?.category ?? null
+    ),
+    queryFn: rule ? () => getInsight(rule.surface, rule.category) : skipToken,
+  })
+}
 
-  return {
-    surface: useMutation({
-      mutationFn: ({
-        surface,
-        ...body
-      }: { surface: ModerationSurface } & Parameters<
-        typeof updateSurface
-      >[1]) => updateSurface(surface, body),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Surface updated.")
-      },
-      onError,
+export function useModerationActions() {
+  const invalidates = [adminModerationKeys.all()]
+
+  const { run: changeSurface } = useAdminMutation({
+    mutationFn: ({
+      surface,
+      changes,
+    }: {
+      surface: ModerationSurface
+      changes: SurfaceChanges
+    }) => updateSurface(surface, changes),
+    success: "Surface updated.",
+    invalidates,
+  })
+  const { run: save } = useAdminMutation({
+    mutationFn: ({ draft, id }: { draft: RuleDraft; id?: string }) =>
+      id ? updateRule(id, toRuleInput(draft)) : createRule(toRuleInput(draft)),
+    success: (_rule, { id }) => (id ? "Rule updated." : "Rule added."),
+    invalidates,
+  })
+  const { run: setRetired } = useAdminMutation({
+    mutationFn: ({ id, retired }: { id: string; retired: boolean }) =>
+      updateRule(id, { retired }),
+    success: "Rule updated.",
+    invalidates,
+  })
+
+  return useMemo(
+    () => ({
+      setSurfaceEnabled: (surface: ModerationSurface, enabled: boolean) =>
+        changeSurface({ surface, changes: { enabled } }),
+      setSurfaceMode: (surface: ModerationSurface, mode: ModerationMode) =>
+        changeSurface({ surface, changes: { mode } }),
+      saveRule: (draft: RuleDraft, id?: string) => save({ draft, id }),
+      setRuleRetired: (id: string, retired: boolean) =>
+        setRetired({ id, retired }),
     }),
-    create: useMutation({
-      mutationFn: createRule,
-      onSuccess: () => {
-        invalidate()
-        toast.success("Rule added.")
-      },
-      onError,
-    }),
-    update: useMutation({
-      mutationFn: ({
-        id,
-        input,
-      }: {
-        id: string
-        input: Partial<RuleInput> & { retired?: boolean }
-      }) => updateRule(id, input),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Rule updated.")
-      },
-      onError,
-    }),
-    remove: useMutation({
-      mutationFn: removeRule,
-      onSuccess: () => {
-        invalidate()
-        toast.success("Rule removed.")
-      },
-      onError,
-    }),
-  }
+    [changeSurface, save, setRetired]
+  )
 }

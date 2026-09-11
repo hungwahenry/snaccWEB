@@ -5,14 +5,10 @@ import type { SnaccMatch } from "@/features/football/types"
 import { StickerAttachmentView } from "@/features/stickers/components/sticker-attachment-view"
 import type { DraftSticker } from "@/features/stickers/types"
 import { VoiceComposerPanel } from "@/features/voice/components/voice-composer-panel"
-import type { VoiceDraft } from "@/features/voice/hooks/use-voice-recorder"
+import type { VoiceDraft } from "@/features/voice/types"
 import { aspectRatio } from "@/lib/aspect"
-import type { SnaccVoiceNote } from "../../types"
-import {
-  draftImageKey,
-  draftImageUri,
-  type DraftImage,
-} from "../../utils/draft-images"
+import type { DraftImage, SnaccVoiceNote } from "../../types"
+import { draftImageKey, draftImageUri } from "../../utils/draft-images"
 
 const STICKER_PREVIEW = 120
 

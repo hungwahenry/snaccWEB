@@ -1,10 +1,8 @@
 "use client"
 
 import { useSyncExternalStore } from "react"
-
-const SPEEDS = [1, 1.5, 2] as const
-
-export type PlaybackSpeed = (typeof SPEEDS)[number]
+import type { PlaybackSpeed } from "../types"
+import { nextSpeed } from "../utils/playback"
 
 let speed: PlaybackSpeed = 1
 const listeners = new Set<() => void>()
@@ -14,11 +12,16 @@ function subscribe(listener: () => void) {
   return () => listeners.delete(listener)
 }
 
+export function currentPlaybackSpeed(): PlaybackSpeed {
+  return speed
+}
+
 export function cyclePlaybackSpeed(): void {
-  speed = SPEEDS[(SPEEDS.indexOf(speed) + 1) % SPEEDS.length]
+  speed = nextSpeed(speed)
   listeners.forEach((listener) => listener())
 }
 
+/** One speed for every voice note, so a change carries to the next one played. */
 export function usePlaybackSpeed(): PlaybackSpeed {
   return useSyncExternalStore(
     subscribe,

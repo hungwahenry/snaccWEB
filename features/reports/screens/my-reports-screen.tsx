@@ -8,6 +8,7 @@ import { BackHeader } from "@/features/navigation/components/back-header"
 import { useBack } from "@/hooks/use-back"
 import { ReportRow, ReportRowSkeleton } from "../components/report-row"
 import { useMyReports } from "../hooks/use-my-reports"
+import { reportSubject } from "../utils/subject"
 
 export function MyReportsScreen() {
   const back = useBack()
@@ -32,7 +33,11 @@ export function MyReportsScreen() {
         />
       ) : (
         query.data.map((report) => (
-          <ReportRow key={report.id} report={report} />
+          <ReportRow
+            key={report.id}
+            report={report}
+            subject={reportSubject(report.target)}
+          />
         ))
       )}
     </>

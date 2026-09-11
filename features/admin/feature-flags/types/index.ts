@@ -25,11 +25,38 @@ export interface FlagPlatformRuleInput {
   maxVersion?: string | null
 }
 
-export interface FlagChanges {
+export interface UpdateFlagInput {
   enabled?: boolean
   minVersion?: string | null
   maxVersion?: string | null
   /** The whole set: a platform left out loses its rule, and [] puts every platform back on the
    * flag's own window. Leave it off entirely to change nothing but the flag itself. */
   overrides?: FlagPlatformRuleInput[]
+}
+
+export interface VersionWindow {
+  min_version: string | null
+  max_version: string | null
+}
+
+export interface FlagRuleDraft {
+  enabled: boolean
+  min: string
+  max: string
+}
+
+export interface FlagDraft {
+  min: string
+  max: string
+  rules: Partial<Record<FlagPlatform, FlagRuleDraft>>
+}
+
+export interface WindowErrors {
+  min: string | null
+  max: string | null
+}
+
+export interface FlagGroup {
+  category: string
+  flags: AdminFeatureFlag[]
 }

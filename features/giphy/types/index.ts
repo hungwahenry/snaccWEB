@@ -6,3 +6,6 @@ export interface Gif {
   height: number
   title: string | null
 }
+
+/** What Giphy is browsed for: GIFs, or stickers (GIFs with a see-through background). */
+export type GiphyKind = "gifs" | "stickers"

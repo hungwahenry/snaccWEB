@@ -1,14 +1,14 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
-import { ME_KEY } from "@/lib/query-keys"
 import { MINUTE_MS } from "@/lib/duration"
-import { fetchMe } from "@/features/auth/api"
+import { getMe } from "../api"
+import { authKeys } from "../utils/keys"
 
 export function useMe() {
   return useQuery({
-    queryKey: ME_KEY,
-    queryFn: fetchMe,
+    queryKey: authKeys.me(),
+    queryFn: getMe,
     retry: false,
     staleTime: 5 * MINUTE_MS,
   })

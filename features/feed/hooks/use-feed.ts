@@ -1,13 +1,13 @@
 "use client"
 
+import { snaccKeys } from "@/features/snaccs/utils/keys"
 import { useInfiniteList } from "@/hooks/use-infinite-list"
-import { FEED_KEY } from "@/lib/query-keys"
-import { listFeed } from "@/features/feed/api"
+import { listFeed } from "../api"
 import type { FeedScope, FeedSort } from "../types"
 
 export function useFeed(scope: FeedScope, sort: FeedSort) {
   const { items, ...list } = useInfiniteList(
-    [...FEED_KEY, scope, sort],
+    snaccKeys.feed(scope, sort),
     (page) => listFeed(scope, page, sort)
   )
   return { snaccs: items, ...list }

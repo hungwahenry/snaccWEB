@@ -1,39 +1,30 @@
 "use client"
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Spinner } from "@/components/ui/spinner"
-import { PageEditor } from "@/features/admin/pages/components/page-editor"
-import {
-  usePage,
-  usePageMutations,
-} from "@/features/admin/pages/hooks/use-pages"
+import { BackLink } from "@/features/admin/shell/components/back-link"
+import { QueryView } from "@/features/admin/shell/components/query-view"
+import { PAGES_PATH } from "@/features/admin/shell/routes"
+import { PageEditor } from "../components/page-editor"
+import { usePageEditorScreen } from "../hooks/use-page-editor-screen"
 
 export function PageEditorScreen({ id }: { id: string }) {
-  const query = usePage(id)
-  const mutations = usePageMutations(id)
+  const { query, editor } = usePageEditorScreen(id)
 
   return (
     <>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="mb-4 w-fit"
-        render={<Link href="/admin/pages" />}
-      >
-        ← Back to pages
-      </Button>
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load this page.
-        </p>
-      ) : (
-        <PageEditor page={query.data} mutations={mutations} />
-      )}
+      <BackLink href={PAGES_PATH} label="Back to pages" />
+      <QueryView query={query} what="this page">
+        {(page) => (
+          <PageEditor
+            page={page}
+            draft={editor.draft}
+            text={editor.text}
+            canSave={editor.ready}
+            onBodyChange={editor.setBody}
+            onSave={editor.save}
+            onToggleStatus={editor.toggleStatus}
+          />
+        )}
+      </QueryView>
     </>
   )
 }

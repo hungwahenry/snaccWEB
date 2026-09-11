@@ -3,11 +3,17 @@ import { notFound } from "next/navigation"
 import { LandingShell } from "@/components/marketing/landing-shell"
 import { getUserSnaccs } from "@/features/snaccs/api/public"
 import { PublicSnaccCard } from "@/features/snaccs/components/public/public-snacc-card"
+import { loginPath } from "@/features/auth/routes"
+import { newMessagePath } from "@/features/messages/routes"
+import { snaccPath } from "@/features/snaccs/routes"
 import { getPublicProfile } from "@/features/users/api/public"
 import { MessageCta } from "@/features/users/components/public/message-cta"
 import { PublicProfileHeader } from "@/features/users/components/public/public-profile-header"
 import { PublicProfileTabs } from "@/features/users/components/public/public-profile-tabs"
+import { profilePath } from "@/features/users/routes"
 import { ProfileScreen } from "@/features/users/screens/profile-screen"
+import { nameOf } from "@/features/users/utils/names"
+import { profileMeta, profileStats } from "@/features/users/utils/profile"
 import { hasSession } from "@/lib/auth-server"
 
 type Props = { params: Promise<{ username: string }> }
@@ -17,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const profile = await getPublicProfile(username)
   if (!profile) return { title: "Profile not found" }
 
-  const name = profile.display_name ?? `@${profile.username}`
+  const name = nameOf(profile)
   const title = `${name} (@${profile.username}) on Snacc`
   const description =
     profile.bio?.trim() ||
@@ -54,16 +60,20 @@ export default async function ProfilePage({ params }: Props) {
 
   return (
     <LandingShell
-      cta={`See everything ${profile.display_name ?? `@${profile.username}`} posts`}
-      next={`/profile/${username}`}
+      cta={`See everything ${nameOf(profile)} posts`}
+      next={profilePath(username)}
     >
-      <PublicProfileHeader profile={profile} />
-      {profile.username ? (
+      <PublicProfileHeader
+        profile={profile}
+        meta={profileMeta(profile)}
+        stats={profileStats(profile)}
+      />
+      {profile.username && profile.accepts_anonymous_messages ? (
         <MessageCta
-          id={profile.id}
-          username={profile.username}
-          name={profile.display_name ?? `@${profile.username}`}
-          accepting={profile.accepts_anonymous_messages}
+          name={nameOf(profile)}
+          href={loginPath(
+            newMessagePath({ id: profile.id, username: profile.username })
+          )}
         />
       ) : null}
       <PublicProfileTabs />
@@ -71,7 +81,7 @@ export default async function ProfilePage({ params }: Props) {
         <PublicSnaccCard
           key={snacc.id}
           snacc={snacc}
-          href={`/snacc/${snacc.id}`}
+          href={snaccPath(snacc.id)}
         />
       ))}
     </LandingShell>

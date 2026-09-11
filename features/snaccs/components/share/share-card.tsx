@@ -8,14 +8,16 @@ import { Mark } from "@/components/marketing/mark"
 import { GhostAvatar } from "@/components/ui/ghost-avatar"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { TierName } from "@/features/users/components/flair"
-import { barCount, VoiceBars } from "@/features/voice/components/voice-bars"
+import { VoiceBars } from "@/features/voice/components/voice-bars"
 import { clock } from "@/features/voice/utils/clock"
 import { levelsFor } from "@/features/voice/utils/levels"
+import { barCount } from "@/features/voice/utils/wave"
 import { compactCount, timeAgo } from "@/lib/format"
 import { sameOriginMedia } from "@/lib/media-url"
 import type { Snacc } from "../../types"
 import { TOP_REACTIONS_SHOWN } from "../../utils/constants"
 import { pollFooter } from "../../utils/polls"
+import { nameOf } from "@/features/users/utils/names"
 
 export const SHARE_CARD_WIDTH = 340
 
@@ -84,7 +86,7 @@ export function ShareCard({ snacc }: { snacc: Snacc }) {
           <GhostAvatar className="size-11" iconClassName="size-6" />
         ) : (
           <UserAvatar
-            alt={author.display_name ?? "Author"}
+            alt={nameOf(author)}
             className="size-11"
             avatarUrl={sameOriginMedia(author.avatar_url)}
             name={author.username}
@@ -101,7 +103,7 @@ export function ShareCard({ snacc }: { snacc: Snacc }) {
                 score={author.score}
                 official={author.official}
                 birthday={author.is_birthday}
-                name={author.display_name ?? author.username}
+                name={nameOf(author)}
                 className="font-extrabold text-foreground"
               />
             </span>

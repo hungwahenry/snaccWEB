@@ -2,12 +2,7 @@
 
 import { useHoldAction } from "@/hooks/use-hold-action"
 import { cn } from "@/lib/utils"
-
-interface StickerVisual {
-  url: string
-  width: number
-  height: number
-}
+import { stickerBox } from "../utils/size"
 
 export function StickerAttachmentView({
   sticker,
@@ -15,14 +10,12 @@ export function StickerAttachmentView({
   className,
   onHold,
 }: {
-  sticker: StickerVisual
+  sticker: { url: string; width: number; height: number }
   size: number
   className?: string
   onHold?: () => void
 }) {
   const hold = useHoldAction(onHold)
-  const ratio = sticker.height > 0 ? sticker.width / sticker.height : 1
-  const width = ratio >= 1 ? size : size * ratio
 
   return (
     <img
@@ -30,7 +23,7 @@ export function StickerAttachmentView({
       src={sticker.url}
       alt="Sticker"
       draggable={false}
-      style={{ width, height: width / ratio }}
+      style={stickerBox(sticker, size)}
       className={cn(
         "self-start object-contain [@media(pointer:coarse)]:select-none",
         className

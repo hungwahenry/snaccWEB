@@ -1,21 +1,18 @@
-import { toast } from "sonner"
+import { showError, showHeld } from "@/lib/feedback"
 import { newId } from "@/lib/ids"
-import { getQueryClient } from "@/lib/query-client"
-import { createSnacc, type CreateSnaccInput } from "../api"
-import type { Snacc, SnaccAuthor } from "../types"
+import { getQueryClient } from "@/lib/query/client"
+import { createSnacc } from "../api"
+import type { CreateSnaccInput, Snacc, SnaccAuthor, SnaccDraft } from "../types"
+import { snaccKeys } from "../utils/keys"
 import {
+  commentsChanged,
   findSnacc,
   insertSnacc,
   patchSnacc,
   removeSnacc,
   replaceSnacc,
 } from "."
-import { toastError } from "@/features/premium/utils/limit-toast"
-import {
-  buildOptimisticSnacc,
-  draftToInput,
-  type SnaccDraft,
-} from "./optimistic-snacc"
+import { buildOptimisticSnacc, draftToInput } from "./optimistic-snacc"
 
 const inputs = new Map<string, CreateSnaccInput>()
 
@@ -60,34 +57,21 @@ export function clearPendingSnaccs(): void {
 }
 
 async function send(id: string, input: CreateSnaccInput): Promise<void> {
-  const queryClient = getQueryClient()
   try {
     const real = await createSnacc(input)
     inputs.delete(id)
 
     if (real.held) {
       discardSnacc(id)
-      toast.error("Hold on 👀", {
-        description: "That post was flagged for review and not posted.",
-      })
+      showHeld()
       return
     }
 
     replaceSnacc(id, real)
-    queryClient.setQueryData(["snaccs", real.id], real)
-
-    if (real.parent_id) {
-      void queryClient.invalidateQueries({
-        queryKey: ["snaccs", real.parent_id, "comments"],
-        refetchType: "none",
-      })
-      void queryClient.invalidateQueries({
-        queryKey: ["snaccs", real.parent_id],
-        exact: true,
-      })
-    }
+    getQueryClient().setQueryData(snaccKeys.detail(real.id), real)
+    if (real.parent_id) commentsChanged(real.parent_id)
   } catch (error) {
     patchSnacc(id, (snacc) => ({ ...snacc, status: "failed" }))
-    toastError(error)
+    showError(error)
   }
 }

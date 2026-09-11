@@ -6,19 +6,20 @@ import {
   ZapIcon,
 } from "lucide-react"
 import { PayCode } from "@/features/pay/components/pay-code"
-import { bareLink } from "@/lib/share-links"
 import { PerkRow } from "../shared/perk-row"
 
 export function PayLinkPanel({
   username,
   avatarUrl,
   link,
+  shownLink,
   onCopy,
   onShare,
 }: {
   username: string
   avatarUrl: string | null
   link: string
+  shownLink: string
   onCopy: () => void
   onShare: () => void
 }) {
@@ -33,7 +34,7 @@ export function PayLinkPanel({
           <p className="text-xl font-extrabold text-primary-foreground">
             @{username}
           </p>
-          <p className="text-sm text-primary-foreground/70">{bareLink(link)}</p>
+          <p className="text-sm text-primary-foreground/70">{shownLink}</p>
         </div>
 
         <div className="flex w-full gap-3">

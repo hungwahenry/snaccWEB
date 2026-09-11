@@ -1,3 +1,4 @@
+import { badgeCount } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
 export function CountBadge({
@@ -16,7 +17,7 @@ export function CountBadge({
         className
       )}
     >
-      {count > 99 ? "99+" : count}
+      {badgeCount(count)}
     </span>
   )
 }

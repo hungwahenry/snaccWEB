@@ -1,24 +1,24 @@
 "use client"
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { PageEditor } from "@/features/admin/pages/components/page-editor"
-import { usePageMutations } from "@/features/admin/pages/hooks/use-pages"
+import { BackLink } from "@/features/admin/shell/components/back-link"
+import { PAGES_PATH } from "@/features/admin/shell/routes"
+import { PageEditor } from "../components/page-editor"
+import { useNewPageScreen } from "../hooks/use-new-page-screen"
 
 export function NewPageScreen() {
-  const mutations = usePageMutations()
+  const { editor } = useNewPageScreen()
 
   return (
     <>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="mb-4 w-fit"
-        render={<Link href="/admin/pages" />}
-      >
-        ← Back to pages
-      </Button>
-      <PageEditor mutations={mutations} />
+      <BackLink href={PAGES_PATH} label="Back to pages" />
+      <PageEditor
+        draft={editor.draft}
+        text={editor.text}
+        canSave={editor.ready}
+        onBodyChange={editor.setBody}
+        onSave={editor.save}
+        onToggleStatus={editor.toggleStatus}
+      />
     </>
   )
 }

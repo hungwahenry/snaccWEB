@@ -9,20 +9,20 @@ export interface AdminTier {
   created_at: string
 }
 
-export interface CreateTierInput {
+export interface TierInput {
   key: string
   minScore: number
   position: number
-  label?: string
-  icon?: string
-  color?: string
+  label: string
+  icon: string
+  color: string
 }
 
-export interface UpdateTierInput {
-  key?: string
-  minScore?: number
-  position?: number
-  label?: string
-  icon?: string
-  color?: string
+export interface TierDraft {
+  key: string
+  minScore: string
+  position: string
+  label: string
+  icon: string
+  color: string
 }

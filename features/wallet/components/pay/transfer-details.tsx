@@ -1,43 +1,51 @@
-"use client"
-
 import { CheckIcon, CopyIcon } from "lucide-react"
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Eyebrow } from "@/components/ui/eyebrow"
 import { Spinner } from "@/components/ui/spinner"
-import type { PayFlow } from "../../hooks/pay/use-pay-flow"
-import { useTransferCountdown } from "../../hooks/pay/use-transfer-countdown"
+import type { DepositAccount } from "../../types"
 
-export function TransferDetails({ flow }: { flow: PayFlow }) {
-  const transfer = flow.transfer!
-  const timer = useTransferCountdown(transfer.expires_at)
-  const [copied, setCopied] = useState(false)
-
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(transfer.account_number)
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 1600)
-    } catch {}
-  }
-
-  if (timer.expired) {
+export function TransferDetails({
+  transfer,
+  amount,
+  expired,
+  timeLeft,
+  copied,
+  onCopy,
+  starting,
+  onRestart,
+  checking,
+  nothingYet,
+  onCheck,
+}: {
+  transfer: DepositAccount
+  amount: string
+  expired: boolean
+  timeLeft: string
+  copied: boolean
+  onCopy: () => void
+  starting: boolean
+  onRestart: () => void
+  checking: boolean
+  nothingYet: boolean
+  onCheck: () => void
+}) {
+  if (expired) {
     return (
       <div className="flex flex-col items-center justify-center gap-5 px-8 py-24">
         <p className="text-center text-2xl font-extrabold text-foreground">
           That account number expired
         </p>
         <p className="text-center text-base leading-6 text-muted-foreground">
-          No harm done — nothing moved. Grab a fresh one and send{" "}
-          {flow.amountLabel} to it.
+          No harm done — nothing moved. Grab a fresh one and send {amount} to
+          it.
         </p>
         <Button
           size="lg"
           className="h-14 w-full text-base"
-          disabled={flow.starting}
-          onClick={flow.topUp}
+          disabled={starting}
+          onClick={onRestart}
         >
-          {flow.starting ? <Spinner /> : "Get a new account number"}
+          {starting ? <Spinner /> : "Get a new account number"}
         </Button>
       </div>
     )
@@ -47,7 +55,7 @@ export function TransferDetails({ flow }: { flow: PayFlow }) {
     <div className="flex flex-col gap-6 px-6 pt-6 pb-8">
       <div className="flex flex-col items-center gap-2">
         <p className="text-5xl font-extrabold text-foreground tabular-nums">
-          {flow.amountLabel}
+          {amount}
         </p>
         <p className="text-center text-base leading-6 text-muted-foreground">
           Transfer exactly this amount from any bank app. It lands on its own
@@ -57,7 +65,7 @@ export function TransferDetails({ flow }: { flow: PayFlow }) {
 
       <button
         type="button"
-        onClick={() => void copy()}
+        onClick={onCopy}
         aria-label="Copy account number"
         className="flex flex-col gap-1 rounded-3xl bg-muted px-5 py-4 text-left transition-opacity active:opacity-70"
       >
@@ -67,7 +75,7 @@ export function TransferDetails({ flow }: { flow: PayFlow }) {
             {transfer.account_number}
           </span>
           {copied ? (
-            <CheckIcon className="size-6 text-emerald-500" />
+            <CheckIcon className="size-6 text-success" />
           ) : (
             <CopyIcon className="size-6 text-muted-foreground" />
           )}
@@ -78,16 +86,22 @@ export function TransferDetails({ flow }: { flow: PayFlow }) {
       </button>
 
       <p className="text-center text-sm text-muted-foreground tabular-nums">
-        This account number is yours for {timer.label}
+        This account number is yours for {timeLeft}
       </p>
+
+      {nothingYet ? (
+        <p className="text-center text-sm text-muted-foreground">
+          Nothing yet — the moment your bank sends it, it lands.
+        </p>
+      ) : null}
 
       <Button
         size="lg"
         className="h-14 w-full text-base"
-        disabled={flow.checking}
-        onClick={flow.checkTopUp}
+        disabled={checking}
+        onClick={onCheck}
       >
-        {flow.checking ? <Spinner /> : "I have sent it"}
+        {checking ? <Spinner /> : "I have sent it"}
       </Button>
     </div>
   )

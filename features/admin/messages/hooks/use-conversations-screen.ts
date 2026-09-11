@@ -1,13 +1,14 @@
 "use client"
 
-import { useListState } from "@/features/admin/shell/hooks/use-list-state"
-import type { ListConversationsParams } from "../types"
+import { useListParams } from "@/features/admin/shell/hooks/use-list-params"
+import { PAGE_SIZE } from "@/features/admin/shell/utils/list-params"
 import { useConversations } from "./use-messages"
 
+const FILTERS = {}
+
 export function useConversationsScreen() {
-  const { params, patch } = useListState<ListConversationsParams>({
-    page: 1,
-    perPage: 20,
-  })
-  return { params, patch, query: useConversations(params) }
+  const list = useListParams(FILTERS)
+  const query = useConversations({ page: list.query.page, perPage: PAGE_SIZE })
+
+  return { list, query }
 }

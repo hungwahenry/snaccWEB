@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils"
 import type { TrayEntry } from "../types"
 import { ringColors, ringGradient } from "../utils/ring"
 import { AVATAR_SIZE, squircleRadius } from "../utils/shape"
+import { nameOf } from "@/features/users/utils/names"
 
 const RING = AVATAR_SIZE + 9
 
@@ -101,7 +102,7 @@ function TrayItem({ entry, label, onPress, onAdd }: TrayItemProps) {
               <UserAvatar
                 alt={label}
                 avatarUrl={entry.author.avatar_url}
-                name={entry.author.display_name ?? label}
+                name={nameOf(entry.author, label)}
                 className="size-14"
                 shapeClassName="rounded-[18px]"
               />

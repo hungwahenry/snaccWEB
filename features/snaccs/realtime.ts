@@ -1,6 +1,11 @@
-import { getQueryClient } from "@/lib/query-client"
 import { getSnacc } from "./api"
-import { patchSnacc, removeSnacc } from "./cache"
+import {
+  commentsChanged,
+  patchSnacc,
+  reactionsChanged,
+  removeSnacc,
+  resnaccsChanged,
+} from "./cache"
 import type { SnaccReaction } from "./types"
 
 export function onSnaccReaction(payload: {
@@ -13,18 +18,11 @@ export function onSnaccReaction(payload: {
     reactions: payload.reactions,
     reactions_count: payload.reactions_count,
   }))
+  reactionsChanged(payload.snacc_id)
 }
 
 export function onSnaccComment(payload: { snacc_id: string }): void {
-  const queryClient = getQueryClient()
-  void queryClient.invalidateQueries({
-    queryKey: ["snaccs", payload.snacc_id],
-    exact: true,
-  })
-  void queryClient.invalidateQueries({
-    queryKey: ["snaccs", payload.snacc_id, "comments"],
-    refetchType: "none",
-  })
+  commentsChanged(payload.snacc_id)
 }
 
 export function onSnaccEdited(payload: { snacc_id: string }): void {
@@ -41,9 +39,7 @@ export function onSnaccResnacc(payload: {
     ...snacc,
     resnaccs_count: payload.resnaccs_count,
   }))
-  void getQueryClient().invalidateQueries({
-    queryKey: ["snaccs", payload.snacc_id, "resnaccs"],
-  })
+  resnaccsChanged(payload.snacc_id)
 }
 
 export function onSnaccDeleted(payload: { snacc_ids: string[] }): void {

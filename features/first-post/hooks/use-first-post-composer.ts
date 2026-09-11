@@ -1,14 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { toast } from "sonner"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { useGhostWindow } from "@/features/ghost/hooks/use-ghost-window"
-import { toOptimisticAuthor } from "@/features/snaccs/cache/optimistic-snacc"
+import { authorFromUser } from "@/features/users/utils/author"
 import { submitSnacc } from "@/features/snaccs/cache/pending-snaccs"
 import { DEFAULT_PROMPTS } from "../types"
 import { useOnboardingPrompts } from "./use-onboarding-prompts"
+import { showErrorMessage } from "@/lib/feedback"
 
 export function useFirstPostComposer(onPosted: () => void) {
   const me = useMe()
@@ -30,7 +30,7 @@ export function useFirstPostComposer(onPosted: () => void) {
   function submit() {
     if (!canPost) return
     if (!me.data) {
-      toast.error("Could not post. Your session is still loading.")
+      showErrorMessage("Could not post. Your session is still loading.")
       return
     }
 
@@ -40,12 +40,12 @@ export function useFirstPostComposer(onPosted: () => void) {
         images: [],
         gif: null,
         sticker: null,
-      match: null,
+        match: null,
         voice: null,
         spoiler: false,
         anonymous: ghost.active,
       },
-      toOptimisticAuthor(me.data)
+      authorFromUser(me.data)
     )
     setText("")
     onPosted()

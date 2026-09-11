@@ -2,11 +2,11 @@
 
 import { useQuery } from "@tanstack/react-query"
 import { getConversation } from "../api"
-import { conversationKey } from "../utils/keys"
+import { messageKeys } from "../utils/keys"
 
 export function useConversation(id: string) {
   return useQuery({
-    queryKey: conversationKey(id),
+    queryKey: messageKeys.conversation(id),
     queryFn: () => getConversation(id),
     enabled: id.length > 0,
   })

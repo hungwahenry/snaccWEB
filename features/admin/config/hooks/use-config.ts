@@ -1,27 +1,39 @@
 "use client"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
+import { useQuery } from "@tanstack/react-query"
+import { useMemo } from "react"
+import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
 import { listConfig, updateConfig } from "../api"
+import type { AdminConfigSetting, ConfigDraft } from "../types"
+import { groupByCategory, toUpdateInput } from "../utils/config"
+import { adminConfigKeys } from "../utils/keys"
 
-const KEY = ["admin", "config"]
-
-export function useConfig() {
-  return useQuery({ queryKey: KEY, queryFn: listConfig })
+export function useConfigGroups() {
+  return useQuery({
+    queryKey: adminConfigKeys.list(),
+    queryFn: listConfig,
+    select: groupByCategory,
+  })
 }
 
-export function useUpdateConfig() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: (input: {
-      key: string
-      body: { value?: unknown; isPublic?: boolean }
-    }) => updateConfig(input.key, input.body),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: KEY })
-      toast.success("Config updated.")
-    },
-    onError: (error) => toast.error(getErrorMessage(error)),
+export function useConfigActions() {
+  const { run: save } = useAdminMutation({
+    mutationFn: ({
+      setting,
+      draft,
+    }: {
+      setting: AdminConfigSetting
+      draft: ConfigDraft
+    }) => updateConfig(setting.key, toUpdateInput(setting, draft)),
+    success: (setting) => `${setting.key} saved.`,
+    invalidates: [adminConfigKeys.all()],
   })
+
+  return useMemo(
+    () => ({
+      save: (setting: AdminConfigSetting, draft: ConfigDraft) =>
+        save({ setting, draft }),
+    }),
+    [save]
+  )
 }

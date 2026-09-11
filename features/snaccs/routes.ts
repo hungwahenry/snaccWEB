@@ -1,17 +1,14 @@
-export const snaccPath = (id: string) => `/snacc/${id}`
-export const resnaccsPath = (id: string) => `/resnaccs/${id}`
-export const editSnaccPath = (id: string) =>
-  `/compose?edit=${encodeURIComponent(id)}`
+import type { ComposeParams } from "./types"
 
-export function composePath(
-  params: {
-    parentId?: string
-    resnaccOfId?: string
-    initialBody?: string
-    draftId?: string
-    matchId?: string
-  } = {}
-): string {
+export const COMPOSE_PATH = "/compose"
+
+export const snaccPath = (id: string) => `/snacc/${encodeURIComponent(id)}`
+export const resnaccsPath = (id: string) =>
+  `/resnaccs/${encodeURIComponent(id)}`
+export const editSnaccPath = (id: string) =>
+  `${COMPOSE_PATH}?edit=${encodeURIComponent(id)}`
+
+export function composePath(params: ComposeParams = {}): string {
   const search = new URLSearchParams()
   if (params.draftId) search.set("draft", params.draftId)
   if (params.parentId) search.set("parentId", params.parentId)
@@ -19,5 +16,5 @@ export function composePath(
   if (params.initialBody) search.set("initialBody", params.initialBody)
   if (params.matchId) search.set("matchId", params.matchId)
   const qs = search.toString()
-  return qs ? `/compose?${qs}` : "/compose"
+  return qs ? `${COMPOSE_PATH}?${qs}` : COMPOSE_PATH
 }

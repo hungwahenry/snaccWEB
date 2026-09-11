@@ -1,13 +1,19 @@
 "use client"
 
-import { useListState } from "@/features/admin/shell/hooks/use-list-state"
-import type { ListUniversitiesParams } from "../types"
-import { useUniversities } from "./use-universities"
+import { parseAsString } from "nuqs"
+import { useListParams } from "@/features/admin/shell/hooks/use-list-params"
+import { PAGE_SIZE } from "@/features/admin/shell/utils/list-params"
+import { useUniversities, useUniversityActions } from "./use-universities"
+
+const FILTERS = { q: parseAsString.withDefault("") }
 
 export function useUniversitiesScreen() {
-  const { params, patch } = useListState<ListUniversitiesParams>({
-    page: 1,
-    perPage: 20,
+  const list = useListParams(FILTERS)
+  const query = useUniversities({
+    page: list.query.page,
+    perPage: PAGE_SIZE,
+    q: list.query.q || undefined,
   })
-  return { params, patch, query: useUniversities(params) }
+
+  return { list, query, actions: useUniversityActions() }
 }

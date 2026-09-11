@@ -1,9 +1,8 @@
 "use client"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
+import { useQuery } from "@tanstack/react-query"
+import { useMemo } from "react"
+import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
 import {
   createPage,
   deletePage,
@@ -12,71 +11,57 @@ import {
   setPageStatus,
   updatePage,
 } from "../api"
-import type { PageStatus, UpdatePageInput } from "../types"
+import type { CreatePageInput, PageStatus, UpdatePageInput } from "../types"
+import { adminPageKeys } from "../utils/keys"
 
 export function usePages() {
-  return useQuery({ queryKey: ["admin", "pages"], queryFn: listPages })
+  return useQuery({ queryKey: adminPageKeys.list(), queryFn: listPages })
 }
 
 export function usePage(id: string) {
   return useQuery({
-    queryKey: ["admin", "page", id],
+    queryKey: adminPageKeys.detail(id),
     queryFn: () => getPage(id),
-    enabled: !!id,
   })
 }
 
-export function usePageMutations(id?: string) {
-  const queryClient = useQueryClient()
-  const router = useRouter()
+export function usePageActions(onCreated?: () => void) {
+  const touched = (_page: unknown, { id }: { id: string }) => [
+    adminPageKeys.list(),
+    adminPageKeys.detail(id),
+  ]
 
-  function invalidate() {
-    queryClient.invalidateQueries({ queryKey: ["admin", "pages"] })
-    if (id) queryClient.invalidateQueries({ queryKey: ["admin", "page", id] })
-  }
-  function onError(error: unknown) {
-    toast.error(getErrorMessage(error))
-  }
+  const { run: create } = useAdminMutation({
+    mutationFn: (input: CreatePageInput) => createPage(input),
+    success: "Page created.",
+    invalidates: [adminPageKeys.list()],
+    onSuccess: onCreated,
+  })
+  const { run: update } = useAdminMutation({
+    mutationFn: ({ id, input }: { id: string; input: UpdatePageInput }) =>
+      updatePage(id, input),
+    success: "Page saved.",
+    invalidates: touched,
+  })
+  const { run: setStatus } = useAdminMutation({
+    mutationFn: ({ id, status }: { id: string; status: PageStatus }) =>
+      setPageStatus(id, status),
+    success: "Page status updated.",
+    invalidates: touched,
+  })
+  const { run: remove } = useAdminMutation({
+    mutationFn: (id: string) => deletePage(id),
+    success: "Page deleted.",
+    invalidates: [adminPageKeys.list()],
+  })
 
-  return {
-    create: useMutation({
-      mutationFn: createPage,
-      onSuccess: () => {
-        invalidate()
-        toast.success("Page created.")
-        router.replace("/admin/pages")
-      },
-      onError,
+  return useMemo(
+    () => ({
+      create,
+      update: (id: string, input: UpdatePageInput) => update({ id, input }),
+      setStatus: (id: string, status: PageStatus) => setStatus({ id, status }),
+      remove,
     }),
-    update: useMutation({
-      mutationFn: (input: UpdatePageInput) => updatePage(id!, input),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Page saved.")
-      },
-      onError,
-    }),
-    setStatus: useMutation({
-      mutationFn: ({
-        pageId,
-        status,
-      }: {
-        pageId: string
-        status: PageStatus
-      }) => setPageStatus(pageId, status),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Page status updated.")
-      },
-      onError,
-    }),
-    remove: useMutation({
-      mutationFn: (pageId: string) => deletePage(pageId),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Page deleted.")
-      },
-      onError,
-    }),
-  }
+    [create, update, setStatus, remove]
+  )
 }

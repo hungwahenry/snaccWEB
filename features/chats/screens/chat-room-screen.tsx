@@ -1,109 +1,93 @@
 "use client"
 
-import { BellIcon, BellOffIcon, LockIcon, SendIcon } from "lucide-react"
+import {
+  BellIcon,
+  BellOffIcon,
+  LockIcon,
+  MessagesSquareIcon,
+} from "lucide-react"
+import { useRef } from "react"
+import { ComposerScreen } from "@/components/ui/composer-screen"
 import { EmptyState } from "@/components/ui/empty-state"
-import { Spinner } from "@/components/ui/spinner"
-import { ChatBubble } from "../components/chat-bubble"
+import { IconButton } from "@/components/ui/icon-button"
+import { MessageComposer } from "@/features/messages/components/composer/message-composer"
+import { ThreadView } from "@/features/messages/components/thread/thread-view"
+import { MESSAGES_PATH } from "@/features/messages/routes"
+import { BackHeader } from "@/features/navigation/components/back-header"
+import { ReportSheet } from "@/features/reports/components/report-sheet"
+import { ReactionBreakdownSheet } from "@/features/snaccs/components/card/reactions/reaction-breakdown-sheet"
+import { StickerCreator } from "@/features/stickers/components/sticker-creator"
+import { StickerTraySheet } from "@/features/stickers/containers/sticker-tray-sheet"
+import { useBack } from "@/hooks/use-back"
+import { ChatMessageActionsSheet } from "../components/chat-message-actions-sheet"
+import { ChatMessageRow } from "../components/chat-message-row"
+import { RoomIcon } from "../components/room-icon"
 import { useChatRoomScreen } from "../hooks/use-chat-room-screen"
 
 export function ChatRoomScreen({ roomId }: { roomId: string }) {
-  const screen = useChatRoomScreen(roomId)
-  const room = screen.room
+  const back = useBack(MESSAGES_PATH)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
+  const screen = useChatRoomScreen(roomId, { scrollRef, inputRef })
+  const { room } = screen
 
   return (
-    <div className="flex h-full flex-col">
-      <header className="flex items-center justify-between border-b border-border px-4 py-3">
-        <div>
-          <h1 className="text-base font-bold">
-            {room?.campus ? room.campus.acronym : "Everyone"}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {room?.campus ? room.campus.name : "Everyone on Snacc"}
-          </p>
-        </div>
-        {room ? (
-          <button
-            type="button"
-            aria-label={room.muted ? "Unmute room" : "Mute room"}
-            onClick={screen.toggleMuted}
-            className="cursor-pointer rounded-full p-2 hover:bg-muted"
-          >
-            {room.muted ? (
-              <BellOffIcon className="size-5" />
-            ) : (
-              <BellIcon className="size-5" />
-            )}
-          </button>
-        ) : null}
-      </header>
+    <ComposerScreen>
+      <BackHeader
+        title={screen.title}
+        subtitle={screen.subtitle}
+        onBack={back}
+        right={
+          room ? (
+            <>
+              <RoomIcon room={room} small />
+              <IconButton
+                icon={screen.muted ? BellOffIcon : BellIcon}
+                label={screen.muted ? "Unmute room" : "Mute room"}
+                onClick={screen.onToggleMuted}
+              />
+            </>
+          ) : undefined
+        }
+      />
 
-      {/* Reversed so the newest sits at the bottom without reordering what the API returned. */}
-      <div className="flex flex-1 flex-col-reverse overflow-y-auto py-3">
-        {screen.loading ? (
-          <div className="flex justify-center py-12">
-            <Spinner />
-          </div>
-        ) : screen.messages.length === 0 ? (
+      <ThreadView
+        scrollRef={scrollRef}
+        onScroll={screen.onScroll}
+        list={screen.messages}
+        items={screen.thread}
+        typing={screen.typingLabel}
+        failedTitle="Could not load this room"
+        empty={
           <EmptyState
+            icon={MessagesSquareIcon}
             title="Nothing here yet"
             description="Be the first to say something."
           />
-        ) : (
-          screen.messages.map((message, index) => (
-            <ChatBubble
-              key={message.id}
-              message={message}
-              leadsRun={
-                screen.messages[index + 1]?.sender.id !== message.sender.id
-              }
-              onRemove={() => screen.remove(message.id)}
-            />
-          ))
+        }
+        renderRow={(item) => (
+          <ChatMessageRow
+            key={item.message.id}
+            {...item}
+            handlers={screen.handlers}
+          />
         )}
-      </div>
+      />
 
-      {screen.typingLabel ? (
-        <p className="px-4 pb-1 text-xs italic text-muted-foreground">
-          {screen.typingLabel}
-        </p>
-      ) : null}
-
-      {room?.locked ? (
+      {screen.canPost ? (
+        <MessageComposer {...screen.composer} placeholder="Message the room…" />
+      ) : (
         <div className="flex items-center justify-center gap-2 border-t border-border px-4 py-4 text-sm text-muted-foreground">
           <LockIcon className="size-4" />
           This room is closed for now.
         </div>
-      ) : (
-        <form
-          onSubmit={(event) => {
-            event.preventDefault()
-            screen.post()
-          }}
-          className="flex items-end gap-2 border-t border-border px-3 py-2"
-        >
-          <input
-            value={screen.draft}
-            onChange={(event) => setDraftFrom(event, screen.setDraft)}
-            placeholder="Message the room"
-            className="flex-1 rounded-2xl bg-muted px-4 py-2.5 outline-none"
-          />
-          <button
-            type="submit"
-            aria-label="Send"
-            disabled={!screen.canSend}
-            className="cursor-pointer rounded-full bg-primary p-3 text-primary-foreground disabled:opacity-40"
-          >
-            <SendIcon className="size-4" />
-          </button>
-        </form>
       )}
-    </div>
-  )
-}
 
-function setDraftFrom(
-  event: React.ChangeEvent<HTMLInputElement>,
-  set: (value: string) => void
-): void {
-  set(event.target.value)
+      <ChatMessageActionsSheet {...screen.actions} />
+      <ReactionBreakdownSheet {...screen.reactions} />
+      {screen.stickerTray ? <StickerTraySheet {...screen.stickerTray} /> : null}
+      <StickerCreator {...screen.stickerCreator} />
+      <ReportSheet {...screen.report} />
+    </ComposerScreen>
+  )
 }

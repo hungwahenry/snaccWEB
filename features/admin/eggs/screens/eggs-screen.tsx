@@ -1,31 +1,42 @@
 "use client"
 
+import { Egg } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
-import { Spinner } from "@/components/ui/spinner"
-import { EggsTable } from "@/features/admin/eggs/components/eggs-table"
-import { useEggMutations, useEggs } from "@/features/admin/eggs/hooks/use-eggs"
+import { EggDialog } from "../components/egg-dialog"
+import { EggsTable } from "../components/eggs-table"
+import { useEggsScreen } from "../hooks/use-eggs-screen"
 
 export function EggsScreen() {
-  const query = useEggs()
-  const mutations = useEggMutations()
+  const { query, actions } = useEggsScreen()
 
   return (
     <>
       <PageHeader
         title="Easter eggs"
-        description="Hidden discoveries and what trips them. Trigger specs arm every phone on its next refresh — a new egg here is live without a release."
+        description="Hidden discoveries and what sets them off. A trigger reaches every phone on its next refresh, so a new egg here goes live without an app release."
+        action={
+          <CanAct permission="easter_eggs.write">
+            <EggDialog
+              trigger={
+                <Button size="sm">
+                  <Egg />
+                  Hide an egg
+                </Button>
+              }
+              onSubmit={(draft) => actions.save(draft)}
+            />
+          </CanAct>
+        }
       />
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load eggs.
-        </p>
-      ) : (
-        <EggsTable eggs={query.data} mutations={mutations} />
-      )}
+      <EggsTable
+        query={query}
+        onSave={actions.save}
+        onDelete={actions.remove}
+        onUploadArt={actions.uploadArt}
+        onRemoveArt={actions.removeArt}
+      />
     </>
   )
 }

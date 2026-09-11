@@ -1,32 +1,44 @@
 "use client"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
-import type { NotificationTypePatch } from "../types"
+import { useQuery } from "@tanstack/react-query"
+import { useCallback, useMemo } from "react"
+import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
 import { listNotificationTypes, updateNotificationType } from "../api"
+import type { NotificationTypeDraft, NotificationTypeRow } from "../types"
+import { adminNotificationTypeKeys } from "../utils/keys"
+import { filterTypes, toPatch } from "../utils/notification-types"
 
-const KEY = ["admin", "notification-types"]
+/** Every notification type there is, narrowed on the client to what was searched for. */
+export function useNotificationTypes(search: string) {
+  const select = useCallback(
+    (rows: NotificationTypeRow[]) => filterTypes(rows, search),
+    [search]
+  )
 
-export function useNotificationTypes() {
-  return useQuery({ queryKey: KEY, queryFn: listNotificationTypes })
+  return useQuery({
+    queryKey: adminNotificationTypeKeys.list(),
+    queryFn: listNotificationTypes,
+    select,
+  })
 }
 
-export function useUpdateNotificationType() {
-  const qc = useQueryClient()
-
-  return useMutation({
+export function useNotificationTypeActions() {
+  const { run: save } = useAdminMutation({
     mutationFn: ({
       key,
-      patch,
+      draft,
     }: {
       key: string
-      patch: NotificationTypePatch
-    }) => updateNotificationType(key, patch),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: KEY })
-      toast.success("Notification updated.")
-    },
-    onError: (error: unknown) => toast.error(getErrorMessage(error)),
+      draft: NotificationTypeDraft
+    }) => updateNotificationType(key, toPatch(draft)),
+    success: "Notification updated.",
+    invalidates: [adminNotificationTypeKeys.all()],
   })
+
+  return useMemo(
+    () => ({
+      save: (key: string, draft: NotificationTypeDraft) => save({ key, draft }),
+    }),
+    [save]
+  )
 }

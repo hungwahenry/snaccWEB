@@ -1,7 +1,12 @@
 import { api } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
 import type { SnaccWithParent } from "@/features/snaccs/types"
-import type { ProfileTab, PublicProfile, UserSuggestion } from "../types"
+import type {
+  ProfileTab,
+  PublicProfile,
+  UsernameAvailability,
+  UserSuggestion,
+} from "../types"
 
 export function getProfile(username: string): Promise<PublicProfile> {
   return api.get<PublicProfile>(`/users/${encodeURIComponent(username)}`)
@@ -20,4 +25,10 @@ export function listUserSnaccs(
 
 export function suggestUsers(query: string): Promise<UserSuggestion[]> {
   return api.get<UserSuggestion[]>("/users/suggest", { query })
+}
+
+export function checkUsername(username: string): Promise<UsernameAvailability> {
+  return api.get<UsernameAvailability>("/onboarding/check-username", {
+    username,
+  })
 }

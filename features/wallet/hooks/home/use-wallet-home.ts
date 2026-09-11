@@ -1,118 +1,134 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useState } from "react"
-import { confirm } from "@/components/ui/confirm"
+import { useMemo } from "react"
 import { useFlag } from "@/features/config/hooks/use-flag"
+import { earningsLine } from "@/features/earnings/utils/milestones"
+import { usePendingVariables } from "@/hooks/use-pending-variables"
+import { copyLink } from "@/lib/share-links"
 import { PAY_LINK_PATH, payPath, RECEIVE_PATH } from "../../routes"
-import type {
-  MoneyRequest,
-  WalletRecipient,
-  WalletTransaction,
-} from "../../types"
-import { isOpenRequest } from "../../utils/requests"
+import type { PayMode, WalletRecipient } from "../../types"
+import { balanceText, groupAccountNumber } from "../../utils/format"
+import { toHistoryRows } from "../../utils/history"
+import { walletMutationKeys } from "../../utils/keys"
+import { openRequests } from "../../utils/requests"
+import { activeAccountNumber } from "../../utils/virtual-account"
 import { useWalletOverview } from "../account/use-wallet-overview"
+import { useTransactionSheet } from "../history/use-transaction-sheet"
 import { useWalletTransactions } from "../history/use-wallet-transactions"
-import { useHideBalance } from "../lock/use-hide-balance"
-import { useRecipients, useRemoveRecipient } from "../pay/use-recipients"
+import { useForgetRecipient, useRecipients } from "../pay/use-recipients"
 import { useVirtualAccount } from "../receive/use-virtual-account"
-import { useRequestActions } from "../requests/use-request-actions"
+import { useRequestSheet } from "../requests/use-request-sheet"
 import { useRequests } from "../requests/use-requests"
+import { useHideBalance } from "./use-hide-balance"
+
+const RECENT = 6
+const PENDING_SHOWN = 2
+
+export type AccountFooterView =
+  | { kind: "number"; number: string; bankName: string; onCopy: () => void }
+  | { kind: "invite"; pending: boolean }
 
 export function useWalletHome() {
   const router = useRouter()
   const overview = useWalletOverview()
-  const transactions = useWalletTransactions({})
-  const removeRecipient = useRemoveRecipient()
-
+  const transactions = useWalletTransactions()
   const recipients = useRecipients()
   const incoming = useRequests("incoming")
-  const requestActions = useRequestActions()
-  const balancePrivacy = useHideBalance()
-  const earningsEnabled = useFlag("earnings")
   const accountNumberEnabled = useFlag("wallet_dva")
   const virtualAccount = useVirtualAccount({ enabled: accountNumberEnabled })
+  const earningsEnabled = useFlag("earnings")
+  const privacy = useHideBalance()
+  const forgetRecipient = useForgetRecipient()
+  const removing = usePendingVariables<WalletRecipient>(
+    walletMutationKeys.removeRecipient()
+  )
+  const requestSheet = useRequestSheet()
+  const transactionSheet = useTransactionSheet()
 
-  const [detailId, setDetailId] = useState<string | null>(null)
-  const [detailOpen, setDetailOpen] = useState(false)
-  const [openRequest, setOpenRequest] = useState<MoneyRequest | null>(null)
-  const [requestOpen, setRequestOpen] = useState(false)
+  const rows = useMemo(
+    () => toHistoryRows(transactions.items.slice(0, RECENT)),
+    [transactions.items]
+  )
+  const pending = useMemo(
+    () => openRequests(incoming.items).slice(0, PENDING_SHOWN),
+    [incoming.items]
+  )
 
-  const open = incoming.items.filter(isOpenRequest)
-  const pending = open.slice(0, 2)
-
+  const data = overview.data
   const loading =
     overview.isLoading ||
     recipients.isLoading ||
     incoming.loading ||
     transactions.loading ||
     (accountNumberEnabled && virtualAccount.isLoading)
+  const listLoading = transactions.loading || transactions.stale
+  const pay = (mode: PayMode) => router.push(payPath({ mode }))
 
-  function forgetRecipient(recipient: WalletRecipient) {
-    const name =
-      recipient.kind === "user"
-        ? `@${recipient.user?.username ?? ""}`
-        : `${recipient.bank?.bank_name ?? "this account"} ••${recipient.bank?.account_last4 ?? ""}`
-    confirm({
-      title: `Remove ${name} from recents?`,
-      actions: [
-        {
-          label: "Remove",
-          destructive: true,
-          onPress: () => removeRecipient.mutate(recipient.id),
-        },
-      ],
-    })
-  }
-
-  function fromSheet(act: (request: MoneyRequest) => void) {
-    return (request: MoneyRequest) => {
-      setRequestOpen(false)
-      act(request)
-    }
-  }
+  const accountNumber = activeAccountNumber(virtualAccount.data)
+  const footer: AccountFooterView | null =
+    !accountNumberEnabled || virtualAccount.isPending || virtualAccount.isError
+      ? null
+      : accountNumber
+        ? {
+            kind: "number",
+            number: groupAccountNumber(accountNumber),
+            bankName: virtualAccount.data?.bank_name ?? "",
+            onCopy: () => void copyLink(accountNumber, "Account number"),
+          }
+        : { kind: "invite", pending: virtualAccount.data?.status === "pending" }
 
   return {
     loading,
-    overview,
-    transactions,
-    recipients: recipients.data ?? [],
-    pending,
-    requestActions,
-    balancePrivacy,
-    earningsEnabled,
-    accountNumberEnabled,
-    virtualAccount: accountNumberEnabled ? virtualAccount : null,
-    detail: { id: detailId, open: detailOpen, onOpenChange: setDetailOpen },
-    openDetail: (transaction: WalletTransaction) => {
-      setDetailId(transaction.id)
-      setDetailOpen(true)
+    skeleton: {
+      accountNumber: accountNumberEnabled,
+      earnings: earningsEnabled,
     },
-    request: {
-      value: openRequest,
-      open: requestOpen,
-      onOpenChange: setRequestOpen,
+    failed: !data,
+    retry: () => void overview.refetch(),
+    card: data
+      ? {
+          balance: balanceText(data.balance, privacy.hidden),
+          hidden: privacy.hidden,
+          onToggleHidden: privacy.toggle,
+          frozen: data.frozen,
+          showAccount: accountNumberEnabled,
+          footer,
+          onSend: () => pay("send"),
+          onRequest: () => pay("request"),
+          onTopUp: () => pay("topup"),
+          onReceive: () => router.push(RECEIVE_PATH),
+          onPayLink: () => router.push(PAY_LINK_PATH),
+        }
+      : null,
+    pending: {
+      requests: pending,
+      isBusy: requestSheet.actions.isBusy,
+      onOpen: requestSheet.open,
+      onPay: requestSheet.actions.pay,
+      onDecline: requestSheet.actions.decline,
     },
-    showRequest: (request: MoneyRequest) => {
-      setOpenRequest(request)
-      setRequestOpen(true)
+    recipients: {
+      items: (recipients.data ?? []).filter(
+        (recipient) => !removing.some((gone) => gone.id === recipient.id)
+      ),
+      onPress: (recipient: WalletRecipient) =>
+        router.push(payPath({ mode: "send", recipient: recipient.id })),
+      onLongPress: forgetRecipient,
     },
-    fromSheet,
-    openRecipient: (recipient: WalletRecipient) =>
-      router.push(payPath({ mode: "send", recipient: recipient.id })),
-    forgetRecipient,
-    refresh: () => {
-      void overview.refetch()
-      void recipients.refetch()
-      incoming.refresh()
-      transactions.refresh()
+    earnings:
+      earningsEnabled && data ? { line: earningsLine(data.earnings) } : null,
+    activity: {
+      rows,
+      loading: listLoading,
+      more: transactions.hasMore || transactions.items.length > RECENT,
+      firstRun: rows.length === 0 && !listLoading && data?.balance === 0,
+      onOpen: transactionSheet.open,
+      onTopUp: () => pay("topup"),
     },
-    onSend: () => router.push(payPath({ mode: "send" })),
-    onRequest: () => router.push(payPath({ mode: "request" })),
-    onTopUp: () => router.push(payPath({ mode: "topup" })),
-    onReceive: () => router.push(RECEIVE_PATH),
-    onPayLink: () => router.push(PAY_LINK_PATH),
+    transactionSheet: transactionSheet.sheet,
+    requestSheet: { ...requestSheet.sheet, box: "incoming" as const },
   }
 }
 
-export type WalletHome = ReturnType<typeof useWalletHome>
+export type WalletHomeProps = ReturnType<typeof useWalletHome>

@@ -1,17 +1,14 @@
-import { api, type QueryParams } from "@/lib/api/client"
+import { api } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
 import type {
   AdminReport,
   AdminReportDetail,
-  ListReportsParams,
+  ReportListQuery,
   ResolveReportInput,
 } from "../types"
 
-export function listReports(params: ListReportsParams) {
-  return api.get<Paginated<AdminReport>>(
-    "/admin/reports",
-    params as QueryParams
-  )
+export function listReports(query: ReportListQuery) {
+  return api.get<Paginated<AdminReport>>("/admin/reports", query)
 }
 
 export function getReport(id: string) {

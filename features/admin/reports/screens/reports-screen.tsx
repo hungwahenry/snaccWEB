@@ -1,14 +1,14 @@
 "use client"
 
-import { useReportsScreen } from "@/features/admin/reports/hooks/use-reports-screen"
+import { OptionSelect } from "@/features/admin/shell/components/option-select"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
-import { Spinner } from "@/components/ui/spinner"
-import { ReportsTable } from "@/features/admin/reports/components/reports-table"
-import { useResolveReport } from "@/features/admin/reports/hooks/use-reports"
+import { TableToolbar } from "@/features/admin/shell/components/table-toolbar"
+import { ReportsTable } from "../components/reports-table"
+import { useReportsScreen } from "../hooks/use-reports-screen"
+import { STATUS_OPTIONS, TARGET_OPTIONS } from "../utils/status"
 
 export function ReportsScreen() {
-  const { params, patch, query } = useReportsScreen()
-  const resolve = useResolveReport()
+  const { list, query, actions, suspension } = useReportsScreen()
 
   return (
     <>
@@ -16,22 +16,29 @@ export function ReportsScreen() {
         title="Reports"
         description="Triage flagged snaccs and users."
       />
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load reports.
-        </p>
-      ) : (
-        <ReportsTable
-          data={query.data}
-          params={params}
-          onParams={patch}
-          resolve={resolve}
-        />
-      )}
+      <ReportsTable
+        query={query}
+        onPageChange={list.setPage}
+        suspension={suspension}
+        onResolve={actions.resolve}
+        toolbar={
+          <TableToolbar onReset={list.filtered ? list.reset : undefined}>
+            <OptionSelect
+              label="Status"
+              value={list.values.status}
+              onChange={(status) => list.setFilter({ status })}
+              options={STATUS_OPTIONS}
+            />
+            <OptionSelect
+              label="Target"
+              allLabel="All targets"
+              value={list.values.target}
+              onChange={(target) => list.setFilter({ target })}
+              options={TARGET_OPTIONS}
+            />
+          </TableToolbar>
+        }
+      />
     </>
   )
 }

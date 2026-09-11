@@ -1,24 +1,5 @@
 import { serverGet } from "@/lib/api/server"
-
-export interface PublicProfile {
-  id: string
-  username: string | null
-  display_name: string | null
-  avatar_url: string
-  cover_url: string | null
-  bio: string | null
-  major: string | null
-  graduation_year: number | null
-  graduated: boolean
-  university: { name: string; acronym: string; slug: string } | null
-  snaccs_count: number
-  followers_count: number
-  following_count: number
-  total_views_received: number
-  official: boolean
-  premium: boolean
-  accepts_anonymous_messages: boolean
-}
+import type { PublicProfile } from "../types"
 
 export function getPublicProfile(username: string) {
   return serverGet<PublicProfile>(`/users/${encodeURIComponent(username)}`)

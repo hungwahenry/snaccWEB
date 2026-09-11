@@ -1,95 +1,38 @@
 "use client"
 
-import { useState } from "react"
-import { CanAct } from "@/features/admin/auth/components/can"
-import { ConfirmAction } from "@/features/admin/shell/ui/confirm-action"
-import { ContentMedia } from "@/features/admin/shell/ui/content-media"
-import { DetailHeader, Section } from "@/features/admin/shell/ui/detail"
-import { UserInline } from "@/features/admin/shell/ui/user-inline"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
+import { ConfirmAction } from "@/features/admin/shell/components/confirm-action"
+import { ContentMedia } from "@/features/admin/shell/components/content-media"
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Field, FieldLabel } from "@/components/ui/field"
-import { Textarea } from "@/components/ui/textarea"
+  DetailHeader,
+  EmptyNote,
+  Section,
+} from "@/features/admin/shell/components/detail"
+import { UserCell } from "@/features/admin/shell/components/user-cell"
+import { plural } from "@/features/admin/shell/utils/format"
 import { formatDate, handleOf, timeAgo } from "@/lib/format"
-import type { useMessageModeration } from "../hooks/use-messages"
-import type { AdminConversationDetail, AdminThreadMessage } from "../types"
+import type {
+  AdminConversationDetail,
+  AdminThreadMessage,
+  MessageAuthor,
+} from "../types"
 
-function DeleteMessageDialog({
-  message,
-  actions,
-}: {
-  message: AdminThreadMessage
-  actions: ReturnType<typeof useMessageModeration>
-}) {
-  const [open, setOpen] = useState(false)
-  const [reason, setReason] = useState("")
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <CanAct permission="messages.delete">
-        <DialogTrigger
-          render={
-            <Button variant="ghost" size="sm" className="text-destructive">
-              Remove
-            </Button>
-          }
-        />
-      </CanAct>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Remove this message?</DialogTitle>
-        </DialogHeader>
-        <p className="text-sm text-muted-foreground">
-          It stays in the thread as a tombstone — both people see “This message
-          was removed.”
-        </p>
-        <Field>
-          <FieldLabel>Reason (optional)</FieldLabel>
-          <Textarea
-            value={reason}
-            onChange={(event) => setReason(event.target.value)}
-            rows={3}
-            maxLength={500}
-          />
-        </Field>
-        <DialogFooter>
-          <DialogClose render={<Button variant="ghost">Cancel</Button>} />
-          <Button
-            variant="destructive"
-            disabled={actions.remove.isPending}
-            onClick={() =>
-              actions.remove.mutate(
-                { id: message.id, reason: reason.trim() || undefined },
-                { onSuccess: () => setOpen(false) }
-              )
-            }
-          >
-            Remove message
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-}
+type RemoveMessage = (id: string, reason?: string) => Promise<unknown>
+type RestoreMessage = (id: string) => Promise<unknown>
 
 function MessageRow({
   message,
   ghostId,
-  actions,
+  onRemove,
+  onRestore,
 }: {
   message: AdminThreadMessage
   ghostId: string
-  actions: ReturnType<typeof useMessageModeration>
+  onRemove: RemoveMessage
+  onRestore: RestoreMessage
 }) {
   const removed = message.deleted_at !== null
   const isGhost = message.sender.id === ghostId
@@ -151,32 +94,62 @@ function MessageRow({
         {removed ? (
           <CanAct permission="messages.restore">
             <ConfirmAction
-              label="Restore"
-              variant="ghost"
-              confirmVariant="default"
+              trigger={
+                <Button variant="ghost" size="sm">
+                  Restore
+                </Button>
+              }
+              tone="default"
               title="Put this message back?"
               description="Both people in the thread will see it again."
               confirmLabel="Restore message"
-              pending={actions.restore.isPending}
-              onConfirm={(close) =>
-                actions.restore.mutate(message.id, { onSuccess: close })
-              }
+              onConfirm={() => onRestore(message.id)}
             />
           </CanAct>
         ) : (
-          <DeleteMessageDialog message={message} actions={actions} />
+          <CanAct permission="messages.delete">
+            <ConfirmAction
+              trigger={
+                <Button variant="ghost" size="sm" className="text-destructive">
+                  Remove
+                </Button>
+              }
+              title="Remove this message?"
+              description="It stays in the thread as a tombstone — both people see “This message was removed.”"
+              confirmLabel="Remove message"
+              reason={{ label: "Reason" }}
+              onConfirm={(reason) => onRemove(message.id, reason)}
+            />
+          </CanAct>
         )}
       </div>
     </div>
   )
 }
 
+function Participant({ label, user }: { label: string; user: MessageAuthor }) {
+  return (
+    <div className="rounded-lg border px-4 py-3">
+      <p className="text-xs tracking-wide text-muted-foreground uppercase">
+        {label}
+      </p>
+      <UserCell
+        user={user}
+        note={user.university?.name ?? undefined}
+        className="mt-1.5"
+      />
+    </div>
+  )
+}
+
 export function ConversationThread({
   conversation,
-  actions,
+  onRemove,
+  onRestore,
 }: {
   conversation: AdminConversationDetail
-  actions: ReturnType<typeof useMessageModeration>
+  onRemove: RemoveMessage
+  onRestore: RestoreMessage
 }) {
   return (
     <div className="flex flex-col gap-6">
@@ -193,7 +166,7 @@ export function ConversationThread({
         meta={
           <>
             <span>Started {formatDate(conversation.created_at)}</span>
-            <span>{conversation.messages.length} messages</span>
+            <span>{plural(conversation.messages.length, "message")}</span>
             {conversation.revealed ? (
               <span>Revealed {formatDate(conversation.revealed_at)}</span>
             ) : null}
@@ -202,33 +175,13 @@ export function ConversationThread({
       />
 
       <div className="grid gap-3 sm:grid-cols-2">
-        <div className="rounded-lg border px-4 py-3">
-          <p className="text-xs tracking-wide text-muted-foreground uppercase">
-            Ghost (initiator)
-          </p>
-          <UserInline
-            user={conversation.ghost}
-            note={conversation.ghost.university?.name ?? undefined}
-            className="mt-1.5"
-          />
-        </div>
-        <div className="rounded-lg border px-4 py-3">
-          <p className="text-xs tracking-wide text-muted-foreground uppercase">
-            Target
-          </p>
-          <UserInline
-            user={conversation.target}
-            note={conversation.target.university?.name ?? undefined}
-            className="mt-1.5"
-          />
-        </div>
+        <Participant label="Ghost (initiator)" user={conversation.ghost} />
+        <Participant label="Target" user={conversation.target} />
       </div>
 
       <Section title="Messages">
         {conversation.messages.length === 0 ? (
-          <p className="rounded-lg border border-dashed py-8 text-center text-sm text-muted-foreground">
-            No messages.
-          </p>
+          <EmptyNote>No messages.</EmptyNote>
         ) : (
           <div className="divide-y rounded-lg border">
             {conversation.messages.map((message) => (
@@ -236,7 +189,8 @@ export function ConversationThread({
                 key={message.id}
                 message={message}
                 ghostId={conversation.ghost.id}
-                actions={actions}
+                onRemove={onRemove}
+                onRestore={onRestore}
               />
             ))}
           </div>

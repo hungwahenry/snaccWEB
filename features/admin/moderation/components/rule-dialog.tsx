@@ -1,231 +1,134 @@
 "use client"
 
-import { useState, type ReactElement } from "react"
-import { Button } from "@/components/ui/button"
+import { useMemo, type ReactElement } from "react"
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Field, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+  DialogForm,
+  FormDialog,
+} from "@/features/admin/shell/components/form-dialog"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { useCategories } from "../hooks/use-moderation"
+  SelectField,
+  TextField,
+} from "@/features/admin/shell/components/form-fields"
+import { useDraft } from "@/features/admin/shell/hooks/use-draft"
 import type {
-  ModerationAction,
+  CategoryUsage,
   ModerationRule,
   ModerationSurface,
+  RuleDraft,
 } from "../types"
-import type { useModerationMutations } from "../hooks/use-moderation"
+import { ACTION_HINTS, ACTION_OPTIONS } from "../utils/actions"
+import {
+  categoryOptions,
+  draftFrom,
+  isDraftReady,
+  RULE_NOTE_LIMIT,
+} from "../utils/rules"
+import { SURFACE_KEY_OPTIONS } from "../utils/surfaces"
 
-const ACTIONS: { value: ModerationAction; label: string; hint: string }[] = [
-  {
-    value: "allow",
-    label: "Allow",
-    hint: "An exemption: never escalate this category here.",
-  },
-  {
-    value: "flag",
-    label: "Flag",
-    hint: "Open a report. The content stays up.",
-  },
-  { value: "hold", label: "Hold", hint: "Hide it and open a report." },
-  {
-    value: "block",
-    label: "Block",
-    hint: "Refuse it outright, if the surface checks inline.",
-  },
-]
+function CategoryHint({ category }: { category: CategoryUsage }) {
+  return (
+    <>
+      {category.description}
+      {category.scores_image ? null : (
+        <span className="block text-destructive">
+          Scored from text only — this rule will never fire on a picture.
+        </span>
+      )}
+    </>
+  )
+}
 
-const SURFACES: ModerationSurface[] = [
-  "snacc",
-  "comment",
-  "moment",
-  "message",
-  "anon_message",
-  "profile",
-]
+function RuleForm({
+  rule,
+  surface,
+  categories,
+  onSubmit,
+}: {
+  rule?: ModerationRule
+  surface?: ModerationSurface | null
+  categories: CategoryUsage[]
+  onSubmit: (draft: RuleDraft) => Promise<unknown>
+}) {
+  const { draft, set, text } = useDraft(() => draftFrom(rule, surface))
+  const options = useMemo(() => categoryOptions(categories), [categories])
+  const chosen = categories.find((entry) => entry.category === draft.category)
+
+  return (
+    <DialogForm
+      submitLabel="Save"
+      canSubmit={isDraftReady(draft)}
+      onSubmit={() => onSubmit(draft)}
+    >
+      <div className="flex gap-3">
+        <SelectField
+          label="Surface"
+          className="flex-1"
+          value={draft.surface}
+          onChange={(next) => set("surface", next)}
+          options={SURFACE_KEY_OPTIONS}
+        />
+        <TextField
+          label="Threshold"
+          className="w-32"
+          inputMode="decimal"
+          placeholder="0.85"
+          {...text("threshold")}
+        />
+      </div>
+      <SelectField
+        label="Category"
+        value={draft.category || null}
+        onChange={(next) => set("category", next)}
+        options={options}
+        placeholder="Pick a category…"
+        hint={chosen ? <CategoryHint category={chosen} /> : undefined}
+      />
+      <SelectField
+        label="What it does"
+        value={draft.action}
+        onChange={(next) => set("action", next)}
+        options={ACTION_OPTIONS}
+        hint={ACTION_HINTS[draft.action]}
+      />
+      <TextField
+        label="Why this number"
+        multiline
+        rows={3}
+        maxLength={RULE_NOTE_LIMIT}
+        placeholder="What you measured, or what you are trading off."
+        {...text("note")}
+      />
+    </DialogForm>
+  )
+}
 
 export function RuleDialog({
   rule,
   surface,
-  mutations,
+  categories,
   trigger,
+  disabled,
+  onSubmit,
 }: {
   rule?: ModerationRule
-  surface?: ModerationSurface
-  mutations: ReturnType<typeof useModerationMutations>
+  surface?: ModerationSurface | null
+  categories: CategoryUsage[]
   trigger: ReactElement
+  disabled?: boolean
+  onSubmit: (draft: RuleDraft) => Promise<unknown>
 }) {
-  const [open, setOpen] = useState(false)
-  const [form, setForm] = useState({
-    surface: rule?.surface ?? surface ?? "snacc",
-    category: rule?.category ?? "",
-    threshold: String(rule?.threshold ?? 0.85),
-    action: rule?.action ?? ("flag" as ModerationAction),
-    note: rule?.note ?? "",
-  })
-
-  const categories = useCategories().data ?? []
-  const chosen = categories.find((entry) => entry.category === form.category)
-  const editing = Boolean(rule)
-  const threshold = Number(form.threshold)
-  const valid =
-    form.category.trim() !== "" &&
-    Number.isFinite(threshold) &&
-    threshold >= 0 &&
-    threshold <= 1
-
-  function save() {
-    const input = {
-      surface: form.surface as ModerationSurface,
-      category: form.category.trim(),
-      threshold,
-      action: form.action,
-      note: form.note.trim() || undefined,
-    }
-
-    if (editing && rule) {
-      mutations.update.mutate(
-        { id: rule.id, input },
-        { onSuccess: () => setOpen(false) }
-      )
-    } else {
-      mutations.create.mutate(input, { onSuccess: () => setOpen(false) })
-    }
-  }
-
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={trigger} />
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{editing ? "Edit rule" : "New rule"}</DialogTitle>
-        </DialogHeader>
-
-        <div className="flex gap-3">
-          <Field className="flex-1">
-            <FieldLabel>Surface</FieldLabel>
-            <Select
-              value={form.surface}
-              onValueChange={(next) =>
-                next && setForm({ ...form, surface: next as ModerationSurface })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {SURFACES.map((value) => (
-                  <SelectItem key={value} value={value}>
-                    {value.replace("_", " ")}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-          <Field className="w-32">
-            <FieldLabel>Threshold</FieldLabel>
-            <Input
-              inputMode="decimal"
-              value={form.threshold}
-              onChange={(event) =>
-                setForm({ ...form, threshold: event.target.value })
-              }
-              placeholder="0.85"
-            />
-          </Field>
-        </div>
-
-        <Field>
-          <FieldLabel>Category</FieldLabel>
-          <Select
-            value={form.category}
-            onValueChange={(next) =>
-              next && setForm({ ...form, category: next })
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Pick a category…" />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map((entry) => (
-                <SelectItem key={entry.category} value={entry.category}>
-                  {entry.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {chosen ? (
-            <p className="text-xs text-pretty text-muted-foreground">
-              {chosen.description}
-            </p>
-          ) : null}
-          {chosen && !chosen.scores_image ? (
-            <p className="text-xs text-pretty text-destructive">
-              Scored from text only — this rule will never fire on a picture.
-            </p>
-          ) : null}
-        </Field>
-
-        <Field>
-          <FieldLabel>What it does</FieldLabel>
-          <Select
-            value={form.action}
-            onValueChange={(next) =>
-              next && setForm({ ...form, action: next as ModerationAction })
-            }
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {ACTIONS.map((action) => (
-                <SelectItem key={action.value} value={action.value}>
-                  {action.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground">
-            {ACTIONS.find((action) => action.value === form.action)?.hint}
-          </p>
-        </Field>
-
-        <Field>
-          <FieldLabel>Why this number</FieldLabel>
-          <Textarea
-            value={form.note}
-            onChange={(event) => setForm({ ...form, note: event.target.value })}
-            rows={3}
-            maxLength={500}
-            placeholder="What you measured, or what you are trading off."
-          />
-        </Field>
-
-        <DialogFooter>
-          <DialogClose render={<Button variant="ghost">Cancel</Button>} />
-          <Button
-            disabled={
-              !valid || mutations.create.isPending || mutations.update.isPending
-            }
-            onClick={save}
-          >
-            Save
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <FormDialog
+      trigger={trigger}
+      disabled={disabled}
+      title={rule ? "Edit rule" : "New rule"}
+    >
+      <RuleForm
+        rule={rule}
+        surface={surface}
+        categories={categories}
+        onSubmit={onSubmit}
+      />
+    </FormDialog>
   )
 }

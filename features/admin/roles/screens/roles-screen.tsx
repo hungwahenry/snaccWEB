@@ -1,34 +1,42 @@
 "use client"
 
+import { Plus } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
-import { Spinner } from "@/components/ui/spinner"
-import { RolesTable } from "@/features/admin/roles/components/roles-table"
-import {
-  useRoleMutations,
-  useRoles,
-} from "@/features/admin/roles/hooks/use-roles"
+import { RoleDialog } from "../components/role-dialog"
+import { RolesTable } from "../components/roles-table"
+import { useRolesScreen } from "../hooks/use-roles-screen"
 
 export function RolesScreen() {
-  const query = useRoles()
-  const mutations = useRoleMutations()
+  const { query, groups, actions } = useRolesScreen()
 
   return (
     <>
       <PageHeader
         title="Roles"
-        description="Bundles of permissions you can grant to admins."
+        description="Bundles of permissions you can give to admins."
+        action={
+          <CanAct permission="roles.write">
+            <RoleDialog
+              trigger={
+                <Button size="sm">
+                  <Plus />
+                  New role
+                </Button>
+              }
+              onSubmit={(draft) => actions.save(draft)}
+            />
+          </CanAct>
+        }
       />
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load roles.
-        </p>
-      ) : (
-        <RolesTable roles={query.data} mutations={mutations} />
-      )}
+      <RolesTable
+        query={query}
+        groups={groups}
+        onSave={actions.save}
+        onSetPermissions={actions.setPermissions}
+        onDelete={actions.remove}
+      />
     </>
   )
 }

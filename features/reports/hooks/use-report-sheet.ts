@@ -1,23 +1,16 @@
 "use client"
 
-import { useMutation, useQuery } from "@tanstack/react-query"
-import { useState } from "react"
-import { toast } from "sonner"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useCallback, useState } from "react"
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
-import { getErrorMessage } from "@/lib/api/errors"
-import { createReport, listReportReasons } from "../api"
+import { showSuccess } from "@/lib/feedback"
+import { createReport, getReportReasons } from "../api"
 import type { ReportReason, ReportTarget } from "../types"
-
-function titleFor(target: ReportTarget | null): string {
-  if (!target) return "Report"
-  if (target.type === "user")
-    return target.username ? `Report @${target.username}` : "Report this person"
-  if (target.type === "moment") return "Report this moment"
-  if (target.type === "message") return "Report this message"
-  return "Report this snacc"
-}
+import { reportKeys } from "../utils/keys"
+import { reportTitle } from "../utils/subject"
 
 export function useReportSheet() {
+  const queryClient = useQueryClient()
   const [target, setTarget] = useState<ReportTarget | null>(null)
   const [open, setOpen] = useState(false)
   const [asking, setAsking] = useState<ReportReason | null>(null)
@@ -25,25 +18,23 @@ export function useReportSheet() {
 
   const detailMaxLength = useConfigValue("content.report.detail_max_length")
   const reasons = useQuery({
-    queryKey: ["reports", "reasons", target?.type ?? null],
-    queryFn: () => listReportReasons(target!.type),
+    queryKey: reportKeys.reasons(target?.type ?? "snacc"),
+    queryFn: () => getReportReasons(target!.type),
     enabled: target !== null,
     staleTime: Infinity,
   })
-  const send = useMutation({ mutationFn: createReport })
+  const send = useMutation({
+    mutationFn: createReport,
+    onSuccess: () => {
+      setOpen(false)
+      void queryClient.invalidateQueries({ queryKey: reportKeys.mine() })
+      showSuccess("Thanks. We will take a look.")
+    },
+  })
 
   function file(reasonId: string, note?: string) {
-    if (!target) return
-    send.mutate(
-      { target, reasonId, detail: note },
-      {
-        onSuccess: () => {
-          setOpen(false)
-          toast.success("Thanks. We will take a look.")
-        },
-        onError: (error) => toast.error(getErrorMessage(error)),
-      }
-    )
+    if (!target || send.isPending) return
+    send.mutate({ target, reasonId, detail: note })
   }
 
   function onOpenChange(next: boolean) {
@@ -54,15 +45,19 @@ export function useReportSheet() {
     }
   }
 
+  const openFor = useCallback((next: ReportTarget) => {
+    setTarget(next)
+    setAsking(null)
+    setDetail("")
+    setOpen(true)
+  }, [])
+
   return {
-    open(next: ReportTarget) {
-      setTarget(next)
-      setOpen(true)
-    },
+    open: openFor,
     sheet: {
       open,
       onOpenChange,
-      title: titleFor(target),
+      title: reportTitle(target),
       reasons: reasons.data ?? [],
       loading: reasons.isLoading,
       failed: reasons.isError,
@@ -71,7 +66,7 @@ export function useReportSheet() {
       detailMaxLength,
       asking,
       detail,
-      canSend: detail.trim().length > 0,
+      canSend: detail.trim().length > 0 && !send.isPending,
       onDetailChange: setDetail,
       onPick(reason: ReportReason) {
         if (!reason.requires_detail) return file(reason.id)

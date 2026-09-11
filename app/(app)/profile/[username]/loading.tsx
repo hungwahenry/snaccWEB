@@ -1,4 +1,4 @@
-import { ProfileHeaderSkeleton } from "@/features/users/components/profile-header"
+import { ProfileHeaderSkeleton } from "@/features/users/components/profile-header-skeleton"
 import { SnaccCardSkeleton } from "@/features/snaccs/components/card/snacc-card-skeleton"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
 

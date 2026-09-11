@@ -1,13 +1,11 @@
 "use client"
 
 import { useCallback, useMemo, useState } from "react"
-import { barCount } from "../components/voice-bars"
 import type { VoiceNote } from "../types"
 import { levelsFor } from "../utils/levels"
+import { barCount, WAVE_WIDTH } from "../utils/wave"
 
-export const WAVE_WIDTH = 132
-export const WAVE_HEIGHT = 26
-
+/** The idle/engaged switch for one player row, and bars sized to the room it has. */
 export function useVoiceNote(note: VoiceNote) {
   const [engagedId, setEngagedId] = useState<string | null>(null)
   const [width, setWidth] = useState(WAVE_WIDTH)

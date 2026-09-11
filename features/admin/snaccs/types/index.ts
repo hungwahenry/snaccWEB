@@ -5,7 +5,7 @@ import type {
   MediaImage,
   MediaSticker,
   MediaVoice,
-} from "@/features/admin/shell/ui/content-media"
+} from "@/features/admin/shell/types"
 
 export type SnaccAuthor = UserRefWithCampus
 
@@ -36,16 +36,24 @@ export interface AdminSnacc extends SnaccContent {
   reports_count: number
 }
 
-export interface ListSnaccsParams {
-  page?: number
-  perPage?: number
-  q?: string
-  authorId?: string
-  universityId?: string
-  deleted?: boolean
-  held?: boolean
-}
-
 export interface AdminSnaccDetail extends AdminSnacc {
   reports: ReportFiling[]
+}
+
+export type SnaccListQuery = {
+  page: number
+  perPage: number
+  q?: string
+  deleted?: boolean
+}
+
+export type SnaccState = "live" | "deleted"
+
+/** Everything an admin can do to one snacc. Each resolves once the page shows the result. */
+export interface SnaccActions {
+  remove: (id: string, reason?: string) => Promise<unknown>
+  hold: (id: string) => Promise<unknown>
+  release: (id: string) => Promise<unknown>
+  pin: (id: string) => Promise<unknown>
+  unpin: (id: string) => Promise<unknown>
 }

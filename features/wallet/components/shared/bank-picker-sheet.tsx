@@ -6,6 +6,7 @@ import { ActionSheet } from "@/components/ui/action-sheet"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Input } from "@/components/ui/input"
 import type { Bank } from "../../types"
+import { filterBanks } from "../../utils/banks"
 
 export function BankPickerSheet({
   open,
@@ -19,11 +20,7 @@ export function BankPickerSheet({
   onSelect: (bank: Bank) => void
 }) {
   const [query, setQuery] = useState("")
-  const filtered = query
-    ? banks.filter((bank) =>
-        bank.name.toLowerCase().includes(query.toLowerCase())
-      )
-    : banks
+  const filtered = filterBanks(banks, query)
 
   return (
     <ActionSheet

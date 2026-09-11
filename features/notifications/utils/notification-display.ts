@@ -25,8 +25,13 @@ import {
   WalletIcon,
   type LucideIcon,
 } from "lucide-react"
+import { chatRoomPath } from "@/features/chats/routes"
+import { conversationPath } from "@/features/messages/routes"
+import { momentsPath } from "@/features/moments/routes"
+import { SCORE_PATH } from "@/features/score/routes"
 import { snaccPath } from "@/features/snaccs/routes"
 import { profilePath } from "@/features/users/routes"
+import { EARNINGS_PATH, WALLET_PATH } from "@/features/wallet/routes"
 import type {
   Notification,
   NotificationTarget,
@@ -71,15 +76,18 @@ function routeFromTarget(target: NotificationTarget | null): string | null {
     case "profile":
       return target.ref ? profilePath(target.ref) : null
     case "conversation":
-      return target.ref ? `/messages/${target.ref}` : null
+      return target.ref ? conversationPath(target.ref) : null
+    case "chat":
+      return target.ref ? chatRoomPath(target.ref) : null
     case "wallet":
-      return "/wallet"
+      return WALLET_PATH
     case "earnings":
-      return "/earnings"
+      return EARNINGS_PATH
     case "score":
-      return "/score"
+      return SCORE_PATH
     case "moment":
-      return target.ref ? `/moment/${target.ref}` : null
+      // The ref is whose moments they are, as the app reads it.
+      return target.ref ? momentsPath(target.ref) : null
     default:
       return null
   }

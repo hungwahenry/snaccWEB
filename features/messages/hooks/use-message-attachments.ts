@@ -1,47 +1,37 @@
 "use client"
 
 import { useState } from "react"
-import { toast } from "sonner"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { usePremiumNudge } from "@/features/premium/hooks/use-premium-limit"
-import { pickImages, type PickedImage } from "@/lib/media"
+import { useDraftImages } from "@/hooks/use-draft-images"
 
+/** The photos waiting in the composer, and whether the one photo goes as view once. */
 export function useMessageAttachments() {
-  const [draft, setDraft] = useState<PickedImage[]>([])
+  const images = useDraftImages()
   const [viewOnce, setViewOnce] = useState(false)
   const imagesEnabled = useFlag("message_images")
   const viewOnceEnabled = useFlag("message_view_once")
   const imageLimit = usePremiumNudge(
     "content.message.max_images",
-    (max) => draft.length >= max,
+    (max) => images.draft.length >= max,
     (upgrade) => `${upgrade} photos with Premium`
   )
   const maxImages = imagesEnabled ? imageLimit.value : 0
 
-  async function onAddImages() {
-    try {
-      const picked = await pickImages(maxImages - draft.length)
-      if (picked.length > 0)
-        setDraft((current) => [...current, ...picked].slice(0, maxImages))
-    } catch {
-      toast.error("Could not read those images.")
-    }
-  }
-
   return {
-    draft,
-    viewOnce,
+    draft: images.draft,
+    viewOnce: viewOnceEnabled && viewOnce && images.draft.length === 1,
     viewOnceEnabled,
     maxImages,
     imageUpgrade: imageLimit,
-    onAddImages: () => void onAddImages(),
+    onAddImages: () => images.add(maxImages),
     onToggleViewOnce: () => setViewOnce((current) => !current),
     onRemoveImage: (uri: string) => {
       setViewOnce(false)
-      setDraft((current) => current.filter((image) => image.uri !== uri))
+      images.remove(uri)
     },
     reset: () => {
-      setDraft([])
+      images.reset()
       setViewOnce(false)
     },
   }

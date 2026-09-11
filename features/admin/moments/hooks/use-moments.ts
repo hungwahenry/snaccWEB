@@ -1,41 +1,33 @@
 "use client"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { useMemo } from "react"
+import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
 import { listMoments, releaseMoment, removeMoment } from "../api"
+import type { MomentListQuery } from "../types"
+import { adminMomentKeys } from "../utils/keys"
 
-const KEY = ["admin", "moments"]
-
-export function useMoments(params: Record<string, string | number | boolean>) {
+export function useMoments(query: MomentListQuery) {
   return useQuery({
-    queryKey: [...KEY, params],
-    queryFn: () => listMoments(params),
+    queryKey: adminMomentKeys.list(query),
+    queryFn: () => listMoments(query),
+    placeholderData: keepPreviousData,
   })
 }
 
-export function useMomentMutations() {
-  const qc = useQueryClient()
-  const onError = (error: unknown) => toast.error(getErrorMessage(error))
-  const invalidate = () => qc.invalidateQueries({ queryKey: KEY })
+export function useMomentActions() {
+  const invalidates = [adminMomentKeys.all()]
 
-  return {
-    release: useMutation({
-      mutationFn: (id: string) => releaseMoment(id),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Moment released.")
-      },
-      onError,
-    }),
-    remove: useMutation({
-      mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
-        removeMoment(id, reason),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Moment removed.")
-      },
-      onError,
-    }),
-  }
+  const { run: release } = useAdminMutation({
+    mutationFn: (id: string) => releaseMoment(id),
+    success: "Moment released.",
+    invalidates,
+  })
+  const { run: remove } = useAdminMutation({
+    mutationFn: (id: string) => removeMoment(id),
+    success: "Moment removed.",
+    invalidates,
+  })
+
+  return useMemo(() => ({ release, remove }), [release, remove])
 }

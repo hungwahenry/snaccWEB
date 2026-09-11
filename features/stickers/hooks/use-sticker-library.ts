@@ -1,19 +1,14 @@
 "use client"
 
 import { useInfiniteList } from "@/hooks/use-infinite-list"
-import { getQueryClient } from "@/lib/query-client"
 import { listStickers } from "../api"
-import { STICKERS_KEY } from "../utils/keys"
+import { stickerKeys } from "../utils/keys"
 
-export function useStickerLibrary(options: { enabled?: boolean } = {}) {
+export function useStickerLibrary(enabled = true) {
   const { items, ...list } = useInfiniteList(
-    STICKERS_KEY,
+    stickerKeys.library(),
     listStickers,
-    options
+    { enabled }
   )
   return { stickers: items, ...list }
-}
-
-export function invalidateStickers(): void {
-  void getQueryClient().invalidateQueries({ queryKey: STICKERS_KEY })
 }

@@ -1,13 +1,17 @@
 "use client"
 
-import { useEarningsScreen } from "@/features/admin/earnings/hooks/use-earnings-screen"
+import { Button } from "@/components/ui/button"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
+import { OptionSelect } from "@/features/admin/shell/components/option-select"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
-import { Spinner } from "@/components/ui/spinner"
-import { EarningsLedger } from "@/features/admin/earnings/components/earnings-ledger"
-import { FundsPanel } from "@/features/admin/earnings/components/funds-panel"
+import { TableToolbar } from "@/features/admin/shell/components/table-toolbar"
+import { EarningsTable } from "../components/earnings-table"
+import { FundDialog } from "../components/fund-dialog"
+import { FundsTable } from "../components/funds-table"
+import { useEarningsScreen } from "../hooks/use-earnings-screen"
 
 export function EarningsScreen() {
-  const { params, patch, earnings, funds, universities, fundMutations } =
+  const { list, earnings, types, funds, provision, actions } =
     useEarningsScreen()
 
   return (
@@ -17,37 +21,36 @@ export function EarningsScreen() {
         description="Campus funds and the creator earnings ledger."
       />
       <div className="flex flex-col gap-6">
-        {funds.isPending || universities.isPending ? (
-          <div className="flex justify-center py-16">
-            <Spinner />
-          </div>
-        ) : funds.data && universities.data ? (
-          <FundsPanel
-            funds={funds.data}
-            universities={universities.data}
-            mutations={fundMutations}
-          />
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            Couldn&apos;t load campus funds.
-          </p>
-        )}
-
-        {earnings.isPending ? (
-          <div className="flex justify-center py-16">
-            <Spinner />
-          </div>
-        ) : earnings.isError || !earnings.data ? (
-          <p className="text-sm text-muted-foreground">
-            Couldn&apos;t load earnings.
-          </p>
-        ) : (
-          <EarningsLedger
-            data={earnings.data}
-            params={params}
-            onParams={patch}
-          />
-        )}
+        <FundsTable
+          query={funds}
+          onAdjust={actions.adjust}
+          actions={
+            <CanAct permission="earnings.manage_funds">
+              <FundDialog
+                campuses={provision.options}
+                disabled={provision.loading}
+                trigger={<Button size="sm">Provision fund</Button>}
+                onSubmit={actions.provision}
+              />
+            </CanAct>
+          }
+        />
+        <EarningsTable
+          query={earnings}
+          onPageChange={list.setPage}
+          toolbar={
+            <TableToolbar onReset={list.filtered ? list.reset : undefined}>
+              <OptionSelect
+                label="Type"
+                allLabel="All types"
+                value={list.values.type}
+                onChange={(type) => list.setFilter({ type })}
+                options={types.options}
+                disabled={types.loading}
+              />
+            </TableToolbar>
+          }
+        />
       </div>
     </>
   )

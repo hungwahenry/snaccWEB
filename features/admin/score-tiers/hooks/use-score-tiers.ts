@@ -1,44 +1,41 @@
 "use client"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
+import { useQuery } from "@tanstack/react-query"
+import { useMemo } from "react"
+import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
 import { createTier, deleteTier, listTiers, updateTier } from "../api"
-import type { UpdateTierInput } from "../types"
+import type { TierDraft } from "../types"
+import { adminTierKeys } from "../utils/keys"
+import { sortTiers, toInput } from "../utils/tier"
 
 export function useTiers() {
-  return useQuery({ queryKey: ["admin", "score-tiers"], queryFn: listTiers })
+  return useQuery({
+    queryKey: adminTierKeys.list(),
+    queryFn: listTiers,
+    select: sortTiers,
+  })
 }
 
-export function useTierMutations() {
-  const queryClient = useQueryClient()
+export function useTierActions() {
+  const invalidates = [adminTierKeys.all()]
 
-  function onSuccess(message: string) {
-    return () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "score-tiers"] })
-      toast.success(message)
-    }
-  }
-  function onError(error: unknown) {
-    toast.error(getErrorMessage(error))
-  }
+  const { run: save } = useAdminMutation({
+    mutationFn: ({ draft, id }: { draft: TierDraft; id?: string }) =>
+      id ? updateTier(id, toInput(draft)) : createTier(toInput(draft)),
+    success: (_tier, { id }) => (id ? "Tier saved." : "Tier added."),
+    invalidates,
+  })
+  const { run: remove } = useAdminMutation({
+    mutationFn: (id: string) => deleteTier(id),
+    success: "Tier deleted.",
+    invalidates,
+  })
 
-  return {
-    create: useMutation({
-      mutationFn: createTier,
-      onSuccess: onSuccess("Tier created."),
-      onError,
+  return useMemo(
+    () => ({
+      save: (draft: TierDraft, id?: string) => save({ draft, id }),
+      remove,
     }),
-    update: useMutation({
-      mutationFn: ({ id, input }: { id: string; input: UpdateTierInput }) =>
-        updateTier(id, input),
-      onSuccess: onSuccess("Tier updated."),
-      onError,
-    }),
-    remove: useMutation({
-      mutationFn: (id: string) => deleteTier(id),
-      onSuccess: onSuccess("Tier deleted."),
-      onError,
-    }),
-  }
+    [save, remove]
+  )
 }

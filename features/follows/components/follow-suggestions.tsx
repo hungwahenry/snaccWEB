@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { profilePath } from "@/features/users/routes"
 import type { FollowUser } from "../types"
+import { nameOf } from "@/features/users/utils/names"
 
 export function FollowSuggestions({
   users,
@@ -26,7 +27,7 @@ export function FollowSuggestions({
           >
             <Link href={profilePath(user.username)} className="shrink-0">
               <UserAvatar
-                alt={user.display_name ?? "User"}
+                alt={nameOf(user)}
                 avatarUrl={user.avatar_url}
                 name={user.username}
                 className="size-10"
@@ -34,7 +35,7 @@ export function FollowSuggestions({
             </Link>
             <Link href={profilePath(user.username)} className="min-w-0 flex-1">
               <span className="block truncate text-sm font-bold text-foreground">
-                {user.display_name ?? user.username}
+                {nameOf(user)}
               </span>
               <span className="block truncate text-xs text-muted-foreground">
                 @{user.username}

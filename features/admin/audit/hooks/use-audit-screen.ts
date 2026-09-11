@@ -1,13 +1,26 @@
 "use client"
 
-import { useListState } from "@/features/admin/shell/hooks/use-list-state"
-import type { ListAuditParams } from "../types"
-import { useAuditLogs } from "./use-audit"
+import { parseAsString } from "nuqs"
+import { useListParams } from "@/features/admin/shell/hooks/use-list-params"
+import { PAGE_SIZE } from "@/features/admin/shell/utils/list-params"
+import { auditQuery } from "../utils/audit"
+import { useAuditActions, useAuditLogs } from "./use-audit"
+
+const FILTERS = {
+  q: parseAsString.withDefault(""),
+  action: parseAsString,
+}
 
 export function useAuditScreen() {
-  const { params, patch } = useListState<ListAuditParams>({
-    page: 1,
-    perPage: 30,
-  })
-  return { params, patch, query: useAuditLogs(params) }
+  const list = useListParams(FILTERS)
+  const query = useAuditLogs(
+    auditQuery({
+      page: list.query.page,
+      perPage: PAGE_SIZE,
+      q: list.query.q,
+      action: list.query.action,
+    })
+  )
+
+  return { list, query, actions: useAuditActions() }
 }

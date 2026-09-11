@@ -1,3 +1,5 @@
+import type { PayMode } from "./types"
+
 export const WALLET_PATH = "/wallet"
 export const PAY_LINK_PATH = "/wallet/pay-link"
 export const RECEIVE_PATH = "/wallet/receive"
@@ -6,8 +8,6 @@ export const WALLET_LIMITS_PATH = "/wallet/limits"
 export const WALLET_MUTED_PATH = "/wallet/muted"
 export const MONEY_SETTINGS_PATH = "/wallet/settings"
 export const EARNINGS_PATH = "/earnings"
-
-export type PayMode = "send" | "request" | "topup"
 
 export function payPath(
   params: {

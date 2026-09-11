@@ -2,19 +2,19 @@ import { GhostAvatar } from "@/components/ui/ghost-avatar"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { TierName } from "@/features/users/components/flair"
 import { ProfileLink } from "@/features/users/components/profile-link"
-import type { EmbeddedSnacc } from "../../types"
-import { snaccPreview } from "../../utils/preview"
+import type { GlimpsedSnacc } from "../../types"
 import { AuthorMeta } from "../card/author-meta"
+import { SnaccGlimpse } from "./snacc-glimpse"
 import { ThreadConnector } from "./thread-connector"
+import { nameOf } from "@/features/users/utils/names"
 
 type ReplyContextProps = {
-  snacc: EmbeddedSnacc
+  snacc: GlimpsedSnacc
   onPress?: () => void
 }
 
 export function ReplyContext({ snacc, onPress }: ReplyContextProps) {
   const { author } = snacc
-  const preview = snaccPreview(snacc)
 
   return (
     <div
@@ -33,7 +33,7 @@ export function ReplyContext({ snacc, onPress }: ReplyContextProps) {
         ) : (
           <ProfileLink username={author.username}>
             <UserAvatar
-              alt={author.display_name ?? "Author"}
+              alt={nameOf(author)}
               avatarUrl={author.avatar_url}
               name={author.username}
             />
@@ -69,11 +69,7 @@ export function ReplyContext({ snacc, onPress }: ReplyContextProps) {
           />
         </div>
 
-        {preview ? (
-          <p className="line-clamp-4 text-sm leading-5 whitespace-pre-wrap text-foreground">
-            {preview}
-          </p>
-        ) : null}
+        <SnaccGlimpse snacc={snacc} />
       </div>
     </div>
   )

@@ -1,23 +1,16 @@
-"use client"
-
-import { ContentMedia } from "@/features/admin/shell/ui/content-media"
-import { UserInline } from "@/features/admin/shell/ui/user-inline"
 import { Badge } from "@/components/ui/badge"
+import { ContentMedia } from "@/features/admin/shell/components/content-media"
+import { StatusBadge } from "@/features/admin/shell/components/status-badge"
+import { UserCell } from "@/features/admin/shell/components/user-cell"
 import { formatDate, formatNumber } from "@/lib/format"
 import type { AdminSnacc, SnaccContent } from "../types"
+import { isBlank, snaccBadges } from "../utils/snaccs"
 
-export function SnaccBody({ snacc }: { snacc: SnaccContent }) {
-  const empty =
-    !snacc.body &&
-    snacc.images.length === 0 &&
-    !snacc.gif &&
-    !snacc.sticker &&
-    !snacc.voice
-
+function SnaccBody({ snacc }: { snacc: SnaccContent }) {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <UserInline user={snacc.author} note={formatDate(snacc.created_at)} />
+        <UserCell user={snacc.author} note={formatDate(snacc.created_at)} />
         <div className="flex flex-wrap gap-2">
           {snacc.anonymous ? <Badge variant="outline">Anonymous</Badge> : null}
           {snacc.spoiler ? <Badge variant="outline">Spoiler</Badge> : null}
@@ -34,7 +27,7 @@ export function SnaccBody({ snacc }: { snacc: SnaccContent }) {
         sticker={snacc.sticker}
         voice={snacc.voice}
       />
-      {empty ? (
+      {isBlank(snacc) ? (
         <p className="text-sm text-muted-foreground">Nothing left to show.</p>
       ) : null}
     </div>
@@ -45,9 +38,9 @@ export function SnaccView({ snacc }: { snacc: AdminSnacc }) {
   return (
     <div className="flex flex-col gap-3 rounded-lg border p-4">
       <div className="flex flex-wrap items-center justify-end gap-2 empty:hidden">
-        {snacc.pinned ? <Badge variant="outline">Pinned</Badge> : null}
-        {snacc.held_at ? <Badge variant="secondary">Held</Badge> : null}
-        {snacc.deleted_at ? <Badge variant="destructive">Removed</Badge> : null}
+        {snaccBadges(snacc).map((badge) => (
+          <StatusBadge key={badge.label} status={badge} />
+        ))}
       </div>
 
       <SnaccBody snacc={snacc} />

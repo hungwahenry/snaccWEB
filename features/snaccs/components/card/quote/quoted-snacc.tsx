@@ -7,6 +7,7 @@ import type { EmbeddedSnacc } from "../../../types"
 import { AuthorMeta } from "../author-meta"
 import { SnaccMedia } from "../media/snacc-media"
 import { SnaccBody } from "../snacc-body"
+import { nameOf } from "@/features/users/utils/names"
 
 type QuotedSnaccProps = {
   snacc: EmbeddedSnacc
@@ -62,7 +63,7 @@ export function QuotedSnacc({
             className="flex min-w-0 shrink items-center gap-1.5 hover:underline"
           >
             <UserAvatar
-              alt={author.display_name ?? "Author"}
+              alt={nameOf(author)}
               avatarUrl={author.avatar_url}
               name={author.username}
               className="size-5"

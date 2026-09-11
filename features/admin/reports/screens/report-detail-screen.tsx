@@ -1,24 +1,26 @@
 "use client"
 
-import { DetailScreen } from "@/features/admin/shell/ui/detail-screen"
-import { ReportDetail } from "@/features/admin/reports/components/report-detail"
-import {
-  useReport,
-  useResolveReport,
-} from "@/features/admin/reports/hooks/use-reports"
+import { BackLink } from "@/features/admin/shell/components/back-link"
+import { QueryView } from "@/features/admin/shell/components/query-view"
+import { REPORTS_PATH } from "@/features/admin/shell/routes"
+import { ReportDetail } from "../components/report-detail"
+import { useReportDetailScreen } from "../hooks/use-report-detail-screen"
 
 export function ReportDetailScreen({ id }: { id: string }) {
-  const query = useReport(id)
-  const resolve = useResolveReport()
+  const { query, actions, suspension } = useReportDetailScreen(id)
 
   return (
-    <DetailScreen
-      backHref="/admin/reports"
-      backLabel="Back to reports"
-      missing="Couldn't load this report."
-      query={query}
-    >
-      {(report) => <ReportDetail report={report} resolve={resolve} />}
-    </DetailScreen>
+    <>
+      <BackLink href={REPORTS_PATH} label="Back to reports" />
+      <QueryView query={query} what="this report">
+        {(report) => (
+          <ReportDetail
+            report={report}
+            suspension={suspension}
+            onResolve={actions.resolve}
+          />
+        )}
+      </QueryView>
+    </>
   )
 }

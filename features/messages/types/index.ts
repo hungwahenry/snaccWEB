@@ -1,13 +1,13 @@
+import type { LucideIcon } from "lucide-react"
+import type { Gif } from "@/features/giphy/types"
 import type { SnaccAuthor } from "@/features/snaccs/types"
-import type { StickerAttachment } from "@/features/stickers/types"
+import type { DraftSticker, StickerAttachment } from "@/features/stickers/types"
+import type { VoiceDraft, VoiceNote } from "@/features/voice/types"
+import type { PickedImage } from "@/lib/media"
+
+export type { VoiceNote }
 
 export type MessageParty = SnaccAuthor
-
-export interface VoiceNote {
-  id: string
-  url: string
-  duration_ms: number
-}
 
 export interface MessageImage {
   id: string
@@ -28,6 +28,8 @@ export interface OpenedPhoto {
   expires_at: string
 }
 
+export type MoneyKind = "sent" | "request"
+
 export interface ReplyPreview {
   id: string
   body: string | null
@@ -37,7 +39,7 @@ export interface ReplyPreview {
   has_sticker: boolean
   has_gif: boolean
   has_voice: boolean
-  money: { kind: "sent" | "request"; amount: number } | null
+  money: { kind: MoneyKind; amount: number } | null
 }
 
 export interface QuotedMoment {
@@ -64,7 +66,7 @@ export interface MessageGif {
 }
 
 export interface MessageMoney {
-  kind: "sent" | "request"
+  kind: MoneyKind
   amount: number
   transaction_id: string | null
   request: { id: string; status: string } | null
@@ -111,4 +113,101 @@ export interface MessageHit {
 
 export interface MessageSettings {
   accept?: boolean
+}
+
+/** What you have put together in the composer, before it is sent. */
+export interface MessageDraft {
+  body: string | null
+  images: PickedImage[]
+  replyingTo: Message | null
+  viewOnce?: boolean
+  gif?: Gif | null
+  sticker?: DraftSticker | null
+  voice?: VoiceDraft | null
+}
+
+export type DeliveryState = "sent" | "seen"
+
+/** What a thread needs from a message, in a DM or a room. */
+export interface ThreadMessage {
+  id: string
+  mine: boolean
+  created_at: string
+  status?: MessageStatus
+}
+
+export interface ThreadItem<T extends ThreadMessage = Message> {
+  message: T
+  dayBreak: string | null
+  time: string | null
+  firstInBurst: boolean
+  lastInBurst: boolean
+  delivery: DeliveryState | null
+}
+
+/** Something a quoted or answered message carries, named in a small chip. */
+export type AttachmentKind =
+  | "voice"
+  | "photo"
+  | "view_once"
+  | "gif"
+  | "sticker"
+  | "money_sent"
+  | "money_request"
+  | "link"
+  | "moment"
+
+export interface AttachmentChip {
+  kind: AttachmentKind
+  label: string
+}
+
+/** The media of a message worth showing beside its words when it is answered or edited. */
+export type GlimpseMedia =
+  | { kind: "voice"; note: VoiceNote }
+  | { kind: "photos"; urls: string[]; extra: number }
+  | { kind: "gif"; url: string }
+  | { kind: "sticker"; sticker: StickerAttachment }
+
+/** A whole message, shown small: what the composer says you are answering or editing. */
+export interface MessageGlimpse {
+  text: string | null
+  removed: boolean
+  media: GlimpseMedia | null
+  chips: AttachmentChip[]
+  moment: QuotedMoment | null
+}
+
+/** A quoted message inside a bubble. The server only says what it carried, not the thing itself. */
+export interface ReplyGlimpse {
+  text: string | null
+  removed: boolean
+  chips: AttachmentChip[]
+}
+
+export interface ComposerContext {
+  kind: "edit" | "reply"
+  label: string
+  glimpse: MessageGlimpse
+  /** The name of the button that drops it. */
+  hint: string
+}
+
+/** One of the things the composer's plus button offers. */
+export interface ComposerAction {
+  key: string
+  icon: LucideIcon
+  label: string
+  hint: string
+  onPress: () => void
+}
+
+export interface VoiceControls {
+  recording: boolean
+  durationMs: number
+  levels: number[]
+  slide: number
+  onStart: () => void
+  onSlide: (translationX: number) => void
+  onFinish: (cancelled: boolean) => void
 }

@@ -2,17 +2,16 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
-import { toast } from "sonner"
 import { updateProfile } from "@/features/account/api"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { useLocalFlag } from "@/hooks/use-local-flag"
-import { getErrorMessage } from "@/lib/api/errors"
-import { ME_KEY } from "@/lib/query-keys"
+import { authKeys } from "@/features/auth/utils/keys"
 import {
   EMPTY_BIRTHDAY,
   isComplete,
   type BirthdayDraft,
 } from "../components/birthday-fields"
+import { showSuccess } from "@/lib/feedback"
 
 const ASKED_KEY = "snacc_birthday_prompt_asked"
 
@@ -38,11 +37,10 @@ export function useBirthdayNudge({
   const update = useMutation({
     mutationFn: updateProfile,
     onSuccess: (user) => {
-      queryClient.setQueryData(ME_KEY, user)
-      toast.success("Birthday saved.")
+      queryClient.setQueryData(authKeys.me(), user)
+      showSuccess("Birthday saved.")
       setOpen(false)
     },
-    onError: (error) => toast.error(getErrorMessage(error)),
   })
 
   function save() {

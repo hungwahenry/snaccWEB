@@ -3,49 +3,42 @@
 import { GraduationCapIcon, ShareIcon } from "lucide-react"
 import { IconButton } from "@/components/ui/icon-button"
 import { ShareSheet } from "@/features/share/components/share-sheet"
-import { useShare } from "@/features/share/hooks/use-share"
 import { SnaccListScreen } from "@/features/snaccs/screens/snacc-list-screen"
 import { CampusHeader, CampusHeaderSkeleton } from "../components/campus-header"
-import { useCampusSnaccs } from "../hooks/use-campus-snaccs"
-import { useUniversity } from "../hooks/use-university"
+import { useCampusScreen } from "../hooks/use-campus-screen"
 
 export function CampusScreen({ slug }: { slug: string }) {
-  const list = useCampusSnaccs(slug)
-  const university = useUniversity(slug)
-  const share = useShare()
-  const title = university.data?.acronym ?? "Campus"
+  const screen = useCampusScreen(slug)
 
   return (
     <>
       <SnaccListScreen
-        title={title}
+        title={screen.title}
         right={
-          university.data ? (
+          screen.shareCampus ? (
             <IconButton
               icon={ShareIcon}
               label="Share campus"
-              onClick={() =>
-                share.open({ kind: "campus", university: university.data! })
-              }
+              onClick={screen.shareCampus}
             />
           ) : undefined
         }
         header={
-          university.data ? (
-            <CampusHeader campus={university.data} />
-          ) : university.isPending ? (
+          screen.campus ? (
+            <CampusHeader campus={screen.campus} />
+          ) : screen.headerLoading ? (
             <CampusHeaderSkeleton />
           ) : null
         }
-        list={list}
+        list={screen.list}
         failedTitle="Could not load this campus"
         empty={{
           icon: GraduationCapIcon,
           title: "No snaccs yet",
-          description: `Nothing from ${title} yet.`,
+          description: screen.emptyDescription,
         }}
       />
-      <ShareSheet {...share.sheet} />
+      <ShareSheet {...screen.shareSheet} />
     </>
   )
 }

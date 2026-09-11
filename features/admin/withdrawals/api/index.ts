@@ -1,16 +1,13 @@
-import { api, type QueryParams } from "@/lib/api/client"
+import { api } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
 import type {
   AdminWithdrawal,
-  ListWithdrawalsParams,
+  WithdrawalListQuery,
   WithdrawalSummary,
 } from "../types"
 
-export function listWithdrawals(params: ListWithdrawalsParams) {
-  return api.get<Paginated<AdminWithdrawal>>(
-    "/admin/withdrawals",
-    params as QueryParams
-  )
+export function listWithdrawals(query: WithdrawalListQuery) {
+  return api.get<Paginated<AdminWithdrawal>>("/admin/withdrawals", query)
 }
 
 export function getWithdrawalSummary() {

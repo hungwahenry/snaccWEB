@@ -18,19 +18,9 @@ export function MomentReplyComposer({
 
   return (
     <MessageComposer
+      {...composer.field}
       onDark
       placeholder="Reply privately…"
-      body={composer.body}
-      onChange={composer.change}
-      onSend={composer.send}
-      canSend={composer.canSend}
-      sending={composer.sending}
-      editing={false}
-      context={null}
-      maxLength={composer.maxLength}
-      remaining={composer.remaining}
-      showCounter={composer.showCounter}
-      upgrade={composer.upgrade}
       onFocus={onFocus}
       onBlur={onBlur}
     />

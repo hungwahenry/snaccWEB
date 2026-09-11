@@ -2,12 +2,10 @@
 
 import { useRouter } from "next/navigation"
 import { createElement, useEffect, useMemo, useRef } from "react"
-import { toast } from "sonner"
 import { signal } from "@/features/signals/utils/queue"
 import { useKeepSnaccSticker } from "@/features/stickers/hooks/use-keep-sticker"
 import { useStickerStudio } from "@/providers/sticker-studio-provider"
 import { useLightbox } from "@/providers/lightbox-provider"
-import { getErrorMessage } from "@/lib/api/errors"
 import { discardSnacc, retrySnacc } from "../cache/pending-snaccs"
 import { LightboxActions } from "../components/card/lightbox-actions"
 import type { SnaccActionHandlers } from "../components/card/snacc-card"
@@ -72,13 +70,10 @@ export function useSnaccActions(overrides: Overrides = {}) {
 
     return {
       onReact: (snacc, emoji) =>
-        latest.current.react.mutate(
-          {
-            snaccId: snacc.id,
-            emoji: snacc.my_reaction === emoji ? null : emoji,
-          },
-          { onError: (error) => toast.error(getErrorMessage(error)) }
-        ),
+        latest.current.react.mutate({
+          snaccId: snacc.id,
+          emoji: snacc.my_reaction === emoji ? null : emoji,
+        }),
       onOpenBreakdown: (snacc) => latest.current.breakdown.onOpen(snacc),
       onOpenResnaccs: (snacc) =>
         latest.current.router.push(resnaccsPath(snacc.id)),

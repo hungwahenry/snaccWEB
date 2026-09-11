@@ -6,6 +6,7 @@ import { useNow } from "@/hooks/use-now"
 import { MINUTE_MS } from "@/lib/duration"
 import type { Suspension } from "../types"
 import { backOn, timeLeft } from "../utils/countdown"
+import { GUIDELINES_PATH } from "@/lib/routes"
 
 export function SuspensionNotice({ suspension }: { suspension: Suspension }) {
   const now = useNow(MINUTE_MS)
@@ -45,7 +46,7 @@ export function SuspensionNotice({ suspension }: { suspension: Suspension }) {
         Making another account to get around this makes the suspension
         permanent. Read our{" "}
         <Link
-          href="/community-guidelines"
+          href={GUIDELINES_PATH}
           className="text-xs font-medium text-foreground"
         >
           Community Guidelines

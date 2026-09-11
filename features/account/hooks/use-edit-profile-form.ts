@@ -2,14 +2,14 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
-import { toast } from "sonner"
 import { useUsernameField } from "@/features/onboarding/hooks/use-username-field"
 import type { Gender, Profile } from "@/features/users/types"
 import { useBack } from "@/hooks/use-back"
-import { getErrorMessage } from "@/lib/api/errors"
 import { pickImage, type PickedImage } from "@/lib/media"
-import { ME_KEY } from "@/lib/query-keys"
+import { authKeys } from "@/features/auth/utils/keys"
+import { userKeys } from "@/features/users/utils/keys"
 import { updateProfile } from "@/features/account/api"
+import { showErrorMessage, showSuccess } from "@/lib/feedback"
 
 export function useEditProfileForm(profile: Profile) {
   const queryClient = useQueryClient()
@@ -17,8 +17,8 @@ export function useEditProfileForm(profile: Profile) {
   const update = useMutation({
     mutationFn: updateProfile,
     onSuccess: (user) => {
-      queryClient.setQueryData(ME_KEY, user)
-      void queryClient.invalidateQueries({ queryKey: ["users", "profile"] })
+      queryClient.setQueryData(authKeys.me(), user)
+      void queryClient.invalidateQueries({ queryKey: userKeys.profiles() })
     },
   })
 
@@ -41,7 +41,7 @@ export function useEditProfileForm(profile: Profile) {
       const picked = await pickImage()
       if (picked) setter(picked)
     } catch {
-      toast.error("Could not read that image.")
+      showErrorMessage("Could not read that image.")
     }
   }
 
@@ -69,10 +69,9 @@ export function useEditProfileForm(profile: Profile) {
       },
       {
         onSuccess: () => {
-          toast.success("Profile updated.")
+          showSuccess("Profile updated.")
           back()
         },
-        onError: (error) => toast.error(getErrorMessage(error)),
       }
     )
   }

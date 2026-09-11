@@ -2,6 +2,7 @@ import { Eyebrow } from "@/components/ui/eyebrow"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import type { FollowUser } from "@/features/follows/types"
 import { ProfileLink } from "@/features/users/components/profile-link"
+import { nameOf } from "@/features/users/utils/names"
 
 export function BirthdaysToday({ celebrants }: { celebrants: FollowUser[] }) {
   if (celebrants.length === 0) return null
@@ -18,7 +19,7 @@ export function BirthdaysToday({ celebrants }: { celebrants: FollowUser[] }) {
           >
             <span className="relative">
               <UserAvatar
-                alt={user.display_name ?? "User"}
+                alt={nameOf(user)}
                 className="size-16"
                 avatarUrl={user.avatar_url}
                 name={user.username}
@@ -26,7 +27,7 @@ export function BirthdaysToday({ celebrants }: { celebrants: FollowUser[] }) {
               <span className="absolute -right-1 -bottom-1 text-base">🎂</span>
             </span>
             <span className="w-full truncate text-center text-xs font-bold text-foreground">
-              {user.display_name ?? user.username}
+              {nameOf(user)}
             </span>
           </ProfileLink>
         ))}

@@ -1,13 +1,17 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
-import { listChatRooms } from "../api"
-import { CHAT_ROOMS_KEY } from "../keys"
+import { getChatRooms } from "../api"
+import { chatKeys } from "../utils/keys"
+import { useRoomsEnabled } from "./use-rooms-enabled"
 
 export function useChatRooms() {
+  const enabled = useRoomsEnabled()
+
   return useQuery({
-    queryKey: CHAT_ROOMS_KEY,
-    queryFn: listChatRooms,
+    queryKey: chatKeys.rooms(),
+    queryFn: getChatRooms,
     staleTime: 30_000,
+    enabled,
   })
 }

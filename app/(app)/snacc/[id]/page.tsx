@@ -5,6 +5,7 @@ import { getPublicSnacc } from "@/features/snaccs/api/public"
 import { PublicSnaccCard } from "@/features/snaccs/components/public/public-snacc-card"
 import { SnaccDetailScreen } from "@/features/snaccs/screens/snacc-detail-screen"
 import { hasSession } from "@/lib/auth-server"
+import { authorNameOf } from "@/features/users/utils/names"
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -13,9 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const snacc = await getPublicSnacc(id)
   if (!snacc) return { title: "Snacc not found" }
 
-  const who = snacc.anonymous
-    ? "Ghost"
-    : (snacc.author.display_name ?? `@${snacc.author.username}`)
+  const who = authorNameOf(snacc.author, snacc.anonymous)
   const title = `${who} on Snacc`
   const description = snacc.body?.trim() || `${who} posted on Snacc.`
   const hasMedia = snacc.images.length > 0 || snacc.gif !== null

@@ -1,13 +1,25 @@
 "use client"
 
-import { useListState } from "@/features/admin/shell/hooks/use-list-state"
-import type { ListAnnouncementsParams } from "../types"
-import { useAnnouncements } from "./use-announcements"
+import { parseAsString } from "nuqs"
+import { useListParams } from "@/features/admin/shell/hooks/use-list-params"
+import { PAGE_SIZE } from "@/features/admin/shell/utils/list-params"
+import { useCampuses } from "@/features/admin/universities/hooks/use-universities"
+import { useAnnouncementActions, useAnnouncements } from "./use-announcements"
+
+const FILTERS = { q: parseAsString.withDefault("") }
 
 export function useAnnouncementsScreen() {
-  const { params, patch } = useListState<ListAnnouncementsParams>({
-    page: 1,
-    perPage: 20,
+  const list = useListParams(FILTERS)
+  const query = useAnnouncements({
+    page: list.query.page,
+    perPage: PAGE_SIZE,
+    q: list.query.q || undefined,
   })
-  return { params, patch, query: useAnnouncements(params) }
+
+  return {
+    list,
+    query,
+    campuses: useCampuses(),
+    actions: useAnnouncementActions(),
+  }
 }

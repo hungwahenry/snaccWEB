@@ -1,10 +1,9 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
 import { startStepUp, verifyStepUp } from "../api"
 import type { StepUpChallenge, StepUpRequest } from "../types"
+import { showError } from "@/lib/feedback"
 
 export const CODE_LENGTH = 6
 
@@ -44,7 +43,7 @@ export function useStepUpSheet({
       })
       .catch((error) => {
         if (cancelled) return
-        toast.error(getErrorMessage(error))
+        showError(error)
         setOpen(false)
         onCancel()
       })
@@ -79,7 +78,7 @@ export function useStepUpSheet({
         onVerified(challenge.id)
       }
     } catch (error) {
-      toast.error(getErrorMessage(error))
+      showError(error)
     } finally {
       setBusy(false)
     }

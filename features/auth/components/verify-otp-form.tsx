@@ -1,20 +1,18 @@
 import { Button } from "@/components/ui/button"
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp"
+import { FieldError } from "@/components/ui/field"
 import { Spinner } from "@/components/ui/spinner"
+import { CodeInput } from "./code-input"
 
 type VerifyOtpFormProps = {
   email: string
   code: string
   codeLength: number
   onChangeCode: (next: string) => void
+  error: string | null
   canSubmit: boolean
   submitting: boolean
   onSubmit: () => void
-  cooldown: number
+  resendLabel: string
   canResend: boolean
   resending: boolean
   onResend: () => void
@@ -25,10 +23,11 @@ export function VerifyOtpForm({
   code,
   codeLength,
   onChangeCode,
+  error,
   canSubmit,
   submitting,
   onSubmit,
-  cooldown,
+  resendLabel,
   canResend,
   resending,
   onResend,
@@ -49,25 +48,16 @@ export function VerifyOtpForm({
         <span className="font-semibold text-foreground">{email}</span>
       </p>
 
-      <div className="mt-2">
-        <InputOTP
-          maxLength={codeLength}
+      <div className="mt-2 flex flex-col gap-2">
+        <CodeInput
           value={code}
+          length={codeLength}
           onChange={onChangeCode}
+          label="Login code"
+          invalid={!!error}
           autoFocus
-          disabled={submitting}
-          inputMode="numeric"
-        >
-          <InputOTPGroup className="w-full gap-2">
-            {Array.from({ length: codeLength }, (_, index) => (
-              <InputOTPSlot
-                key={index}
-                index={index}
-                className="h-14 flex-1 rounded-2xl border-0 bg-input text-xl font-bold first:rounded-2xl last:rounded-2xl data-[active=true]:bg-accent"
-              />
-            ))}
-          </InputOTPGroup>
-        </InputOTP>
+        />
+        <FieldError className="px-1">{error}</FieldError>
       </div>
 
       <Button
@@ -86,13 +76,7 @@ export function VerifyOtpForm({
         onClick={onResend}
         className="text-sm text-muted-foreground"
       >
-        {resending ? (
-          <Spinner />
-        ) : cooldown > 0 ? (
-          `Resend code in ${cooldown}s`
-        ) : (
-          "Resend code"
-        )}
+        {resending ? <Spinner /> : resendLabel}
       </Button>
     </form>
   )

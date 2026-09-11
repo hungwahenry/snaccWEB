@@ -1,15 +1,13 @@
+import { showError } from "@/lib/feedback"
 import { newId } from "@/lib/ids"
 import { sendMessage, type SendMessageInput } from "../api"
+import type { MessageDraft } from "../types"
 import { patchMessage, prependMessage, removeMessage, settleMessage } from "."
-import { toastError } from "@/features/premium/utils/limit-toast"
-import {
-  buildOptimisticMessage,
-  draftToInput,
-  type MessageDraft,
-} from "./optimistic-message"
+import { buildOptimisticMessage, draftToInput } from "./optimistic-message"
 
 const inputs = new Map<string, SendMessageInput>()
 
+/** Shows the message at once, then sends it; a failure leaves it in place to retry or drop. */
 export function submitMessage(
   conversationId: string,
   draft: MessageDraft
@@ -51,6 +49,10 @@ async function send(
       ...message,
       status: "failed",
     }))
-    toastError(error)
+    showError(error)
   }
+}
+
+export function clearPendingMessages(): void {
+  inputs.clear()
 }

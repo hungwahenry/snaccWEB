@@ -1,5 +1,5 @@
 import { findShareLinks, mend } from "@/lib/share-links"
-import type { SnaccEntity } from "../types"
+import type { ActiveToken, SnaccEntity } from "../types"
 
 const HASHTAG_PATTERN = /(?<=^|\s)#([\p{L}\p{N}_]+)/gu
 const MENTION_PATTERN =
@@ -7,8 +7,6 @@ const MENTION_PATTERN =
 const HASHTAG_HAS_LETTER = /\p{L}/u
 const TOKEN_CHARACTER = /[\p{L}\p{N}_]/u
 const HASHTAG_MAX_LENGTH = 100
-
-type EntityKind = "hashtag" | "mention"
 
 interface Span {
   start: number
@@ -18,13 +16,6 @@ interface Span {
 interface BodySegment {
   text: string
   entity: boolean
-}
-
-export interface ActiveToken {
-  kind: EntityKind
-  term: string
-  start: number
-  end: number
 }
 
 export interface RenderedSegment {

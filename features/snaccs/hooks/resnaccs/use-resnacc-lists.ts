@@ -7,6 +7,7 @@ import type { PillTab } from "@/components/ui/pill-tabs"
 import { useInfiniteList } from "@/hooks/use-infinite-list"
 import { compactCount } from "@/lib/format"
 import { getResnaccSummary, listResnaccQuotes, listResnaccers } from "../../api"
+import { snaccKeys } from "../../utils/keys"
 
 export type ResnaccTab = "quotes" | "people"
 
@@ -18,18 +19,18 @@ export function useResnaccLists(snaccId: string) {
   const [tab, setTab] = useState<ResnaccTab>("quotes")
 
   const summary = useQuery({
-    queryKey: ["snaccs", snaccId, "resnaccs", "summary"],
+    queryKey: snaccKeys.resnaccSummary(snaccId),
     queryFn: () => getResnaccSummary(snaccId),
   })
   const quotes = useInfiniteList(
-    ["snaccs", snaccId, "resnaccs", "quotes"],
+    snaccKeys.quotes(snaccId),
     (page) => listResnaccQuotes(snaccId, page),
     {
       enabled: tab === "quotes",
     }
   )
   const people = useInfiniteList(
-    ["snaccs", snaccId, "resnaccs", "people"],
+    snaccKeys.resnaccers(snaccId),
     (page) => listResnaccers(snaccId, page),
     {
       enabled: tab === "people",

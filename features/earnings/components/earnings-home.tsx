@@ -1,46 +1,56 @@
-"use client"
-
-import { WalletIcon } from "lucide-react"
-import { Eyebrow } from "@/components/ui/eyebrow"
+import { SparklesIcon } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
+import { ListFooter } from "@/components/ui/list-footer"
 import { LoadFailed } from "@/components/ui/load-failed"
-import { formatNaira } from "@/lib/format"
-import { useCampusFund, useEarningsWallet } from "../hooks/use-earnings"
+import { LoadMore } from "@/components/ui/load-more"
+import { Spinner } from "@/components/ui/spinner"
+import type { EarningsHomeProps } from "../hooks/use-earnings-home"
+import { EarningEventRow } from "./earning-event-row"
 import { EarningsSkeleton } from "./earnings-skeleton"
-import { FundBar } from "./fund-bar"
-import { MilestoneList } from "./milestone-list"
+import { EarningsSummary } from "./earnings-summary"
 
-export function EarningsHome() {
-  const wallet = useEarningsWallet()
-  const fund = useCampusFund()
-
-  if (wallet.isLoading || fund.isLoading) return <EarningsSkeleton />
-  if (wallet.isError || !wallet.data) {
+export function EarningsHome({
+  loading,
+  retry,
+  summary,
+  fund,
+  topSnaccs,
+  events,
+}: EarningsHomeProps) {
+  if (loading) return <EarningsSkeleton />
+  if (!summary) {
     return (
       <div className="py-24">
-        <LoadFailed
-          title="Could not load your earnings"
-          onRetry={() => void wallet.refetch()}
-        />
+        <LoadFailed title="Could not load your earnings" onRetry={retry} />
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col gap-7 px-6 py-6">
-      <div className="flex flex-col gap-1.5">
-        <div className="flex items-center gap-1.5">
-          <WalletIcon className="size-4 text-muted-foreground" />
-          <Eyebrow>Available balance</Eyebrow>
+    <div className="pb-8">
+      <EarningsSummary {...summary} fund={fund} topSnaccs={topSnaccs} />
+
+      {events.loading ? (
+        <div className="flex justify-center py-10">
+          <Spinner className="text-muted-foreground" />
         </div>
-        <p className="truncate text-center text-6xl font-extrabold text-foreground tabular-nums">
-          {formatNaira(wallet.data.balance)}
-        </p>
-        <p className="text-sm text-muted-foreground">
-          Earned from reactions and resnaccs on your snaccs.
-        </p>
-      </div>
-      <MilestoneList milestones={wallet.data.milestones} />
-      {fund.data ? <FundBar fund={fund.data} /> : null}
+      ) : events.items.length === 0 ? (
+        <EmptyState
+          icon={SparklesIcon}
+          title="No earnings yet"
+          description="Post snaccs people love — every reaction pays."
+          className="py-10"
+        />
+      ) : (
+        events.items.map((event) => (
+          <EarningEventRow key={event.id} event={event} />
+        ))
+      )}
+      <LoadMore
+        onReach={events.loadMore}
+        disabled={events.loading || events.loadingMore}
+      />
+      <ListFooter loading={events.loadingMore} />
     </div>
   )
 }

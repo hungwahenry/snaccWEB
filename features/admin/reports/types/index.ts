@@ -3,10 +3,19 @@ import type {
   MediaGif,
   MediaImage,
   MediaSticker,
-} from "@/features/admin/shell/ui/content-media"
+  Option,
+} from "@/features/admin/shell/types"
 import type { AdminSnacc } from "@/features/admin/snaccs/types"
+import type {
+  SuspendInput,
+  SuspensionDraft,
+  SuspensionReason,
+} from "@/features/admin/suspension-reasons/types"
 
 export type ReportStatus = "open" | "actioned" | "dismissed"
+
+/** The list's status filter: one status, or every status at once. */
+export type ReportStatusFilter = ReportStatus | "all"
 
 export type ReportAuthor = UserRefWithCampus
 
@@ -79,6 +88,8 @@ export type ReportTarget =
     }
   | null
 
+export type ReportTargetType = NonNullable<ReportTarget>["type"]
+
 export interface ReportScan {
   id: string
   model: string
@@ -108,12 +119,29 @@ export interface AdminReport extends ReportFiling {
   resolution_note: string | null
 }
 
-export interface ListReportsParams {
-  page?: number
-  perPage?: number
-  status?: ReportStatus
-  targetType?: "snacc" | "user" | "message" | "moment" | "chat_message"
+export interface AdminReportDetail extends AdminReport {
+  snacc: AdminSnacc | null
+  siblings: AdminReport[]
 }
+
+export type ReportListQuery = {
+  page: number
+  perPage: number
+  status?: ReportStatus
+  targetType?: ReportTargetType
+}
+
+export type ReportOutcome = "actioned" | "dismissed"
+
+export type ReportAct =
+  | "delete_snacc"
+  | "suspend_author"
+  | "suspend_user"
+  | "delete_message"
+  | "delete_chat_message"
+  | "suspend_sender"
+  | "delete_moment"
+  | "suspend_moment_author"
 
 export interface ResolveReportInput {
   snaccId?: string
@@ -121,22 +149,21 @@ export interface ResolveReportInput {
   messageId?: string
   momentId?: string
   chatMessageId?: string
-  status: "actioned" | "dismissed"
+  status: ReportOutcome
   note?: string
-  acts?: (
-    | "delete_snacc"
-    | "suspend_author"
-    | "suspend_user"
-    | "delete_message"
-    | "delete_chat_message"
-    | "suspend_sender"
-    | "delete_moment"
-    | "suspend_moment_author"
-  )[]
-  suspension?: { reasonId?: string; note?: string; until?: string }
+  acts?: ReportAct[]
+  suspension?: SuspendInput
 }
 
-export interface AdminReportDetail extends AdminReport {
-  snacc: AdminSnacc | null
-  siblings: AdminReport[]
+/** What a moderator fills in to resolve every open report on one target. */
+export interface ResolveDraft {
+  status: ReportOutcome
+  note: string
+  acts: ReportAct[]
+  suspension: SuspensionDraft
+}
+
+export interface SuspensionChoices {
+  reasons: SuspensionReason[]
+  durations: Option[]
 }

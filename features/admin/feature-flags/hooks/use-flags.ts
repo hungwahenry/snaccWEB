@@ -1,42 +1,42 @@
 "use client"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
-import type { AdminFeatureFlag, FlagChanges } from "../types"
+import { useQuery } from "@tanstack/react-query"
+import { useMemo } from "react"
+import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
 import { listFlags, updateFlag } from "../api"
+import type { FlagDraft } from "../types"
+import { described, groupByCategory, toFlagChanges } from "../utils/flags"
+import { adminFlagKeys } from "../utils/keys"
 
-const KEY = ["admin", "flags"]
-
-export function useFlags() {
-  return useQuery({ queryKey: KEY, queryFn: listFlags })
-}
-
-function described(flag: AdminFeatureFlag) {
-  if (!flag.enabled) return `${flag.key} disabled.`
-  if (flag.overrides.length > 0) {
-    const rules = flag.overrides.length === 1 ? "rule" : "rules"
-    return `${flag.key} saved, with ${flag.overrides.length} platform ${rules}.`
-  }
-  if (flag.min_version && flag.max_version) {
-    return `${flag.key} on for ${flag.min_version} to ${flag.max_version}.`
-  }
-  if (flag.min_version) return `${flag.key} on from ${flag.min_version} up.`
-  if (flag.max_version) return `${flag.key} on up to ${flag.max_version}.`
-  return `${flag.key} on for every build.`
-}
-
-export function useUpdateFlag() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: (input: { key: string } & FlagChanges) => {
-      const { key, ...changes } = input
-      return updateFlag(key, changes)
-    },
-    onSuccess: (flag) => {
-      queryClient.invalidateQueries({ queryKey: KEY })
-      toast.success(described(flag))
-    },
-    onError: (error) => toast.error(getErrorMessage(error)),
+export function useFlagGroups() {
+  return useQuery({
+    queryKey: adminFlagKeys.list(),
+    queryFn: listFlags,
+    select: groupByCategory,
   })
+}
+
+export function useFlagActions() {
+  const invalidates = [adminFlagKeys.all()]
+
+  const { run: toggle } = useAdminMutation({
+    mutationFn: ({ key, enabled }: { key: string; enabled: boolean }) =>
+      updateFlag(key, { enabled }),
+    success: described,
+    invalidates,
+  })
+  const { run: save } = useAdminMutation({
+    mutationFn: ({ key, draft }: { key: string; draft: FlagDraft }) =>
+      updateFlag(key, toFlagChanges(draft)),
+    success: described,
+    invalidates,
+  })
+
+  return useMemo(
+    () => ({
+      setEnabled: (key: string, enabled: boolean) => toggle({ key, enabled }),
+      saveAvailability: (key: string, draft: FlagDraft) => save({ key, draft }),
+    }),
+    [toggle, save]
+  )
 }

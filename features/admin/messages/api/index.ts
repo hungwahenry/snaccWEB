@@ -1,16 +1,16 @@
-import { api, type QueryParams } from "@/lib/api/client"
+import { api } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
 import type {
   AdminConversationDetail,
   AdminConversationRow,
   AdminThreadMessage,
-  ListConversationsParams,
+  ConversationListQuery,
 } from "../types"
 
-export function listConversations(params: ListConversationsParams) {
+export function listConversations(query: ConversationListQuery) {
   return api.get<Paginated<AdminConversationRow>>(
     "/admin/messages/conversations",
-    params as QueryParams
+    query
   )
 }
 

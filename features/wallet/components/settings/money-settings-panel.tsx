@@ -1,5 +1,3 @@
-"use client"
-
 import {
   BellOffIcon,
   GaugeIcon,
@@ -7,8 +5,7 @@ import {
   KeyRoundIcon,
 } from "lucide-react"
 import { Row, Section, SelectRow } from "@/features/settings/components/rows"
-import type { MoneyRequestPrivacy } from "@/features/users/types"
-import { useMoneySettings } from "../../hooks/account/use-money-settings"
+import type { MoneySettingsProps } from "../../hooks/account/use-money-settings"
 import {
   WALLET_LIMITS_PATH,
   WALLET_MUTED_PATH,
@@ -16,15 +13,10 @@ import {
 } from "../../routes"
 import { RequestPrivacySheet } from "./request-privacy-sheet"
 
-const PRIVACY_LABELS: Record<MoneyRequestPrivacy, string> = {
-  everyone: "Everyone",
-  following: "People you follow",
-  nobody: "No one",
-}
-
-export function MoneySettingsPanel() {
-  const settings = useMoneySettings()
-
+export function MoneySettingsPanel({
+  privacy,
+  mutedLabel,
+}: MoneySettingsProps) {
   return (
     <>
       <div className="flex flex-col gap-5 px-6 py-6">
@@ -40,25 +32,23 @@ export function MoneySettingsPanel() {
           <SelectRow
             icon={HandCoinsIcon}
             label="Who can ask for money"
-            value={PRIVACY_LABELS[settings.privacy]}
-            onPress={() => settings.setPrivacyOpen(true)}
+            value={privacy.label}
+            onPress={() => privacy.onOpenChange(true)}
           />
           <SelectRow
             icon={BellOffIcon}
             label="Muted requesters"
-            value={
-              settings.mutedCount === 0 ? "None" : String(settings.mutedCount)
-            }
+            value={mutedLabel}
             href={WALLET_MUTED_PATH}
           />
         </Section>
       </div>
 
       <RequestPrivacySheet
-        open={settings.privacyOpen}
-        onOpenChange={settings.setPrivacyOpen}
-        value={settings.privacy}
-        onSelect={settings.selectPrivacy}
+        open={privacy.open}
+        onOpenChange={privacy.onOpenChange}
+        value={privacy.value}
+        onSelect={privacy.onSelect}
       />
     </>
   )

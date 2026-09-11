@@ -1,44 +1,33 @@
 "use client"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
+import { useQuery } from "@tanstack/react-query"
+import { useMemo } from "react"
+import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
 import { grantRole, listUserRoles, revokeRole } from "../api"
+import { adminAdminKeys } from "@/features/admin/admins/utils/keys"
+import { adminRoleKeys } from "../utils/keys"
 
-export function useUserRoles(userId: string) {
+export function useUserRoles(userId: string | undefined) {
   return useQuery({
-    queryKey: ["admin", "user-roles", userId],
-    queryFn: () => listUserRoles(userId),
-    enabled: !!userId,
+    queryKey: adminRoleKeys.grants(userId ?? ""),
+    queryFn: () => listUserRoles(userId ?? ""),
+    enabled: Boolean(userId),
   })
 }
 
-export function useGrantMutations(userId: string) {
-  const queryClient = useQueryClient()
+export function useRoleGrantActions(userId: string) {
+  const invalidates = [adminRoleKeys.grants(userId), adminAdminKeys.all()]
 
-  function invalidate() {
-    queryClient.invalidateQueries({ queryKey: ["admin", "user-roles", userId] })
-  }
-  function onError(error: unknown) {
-    toast.error(getErrorMessage(error))
-  }
+  const { run: grant } = useAdminMutation({
+    mutationFn: (roleId: string) => grantRole(userId, roleId),
+    success: "Role granted.",
+    invalidates,
+  })
+  const { run: revoke } = useAdminMutation({
+    mutationFn: (roleId: string) => revokeRole(userId, roleId),
+    success: "Role taken away.",
+    invalidates,
+  })
 
-  return {
-    grant: useMutation({
-      mutationFn: (roleId: string) => grantRole(userId, roleId),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Role granted.")
-      },
-      onError,
-    }),
-    revoke: useMutation({
-      mutationFn: (roleId: string) => revokeRole(userId, roleId),
-      onSuccess: () => {
-        invalidate()
-        toast.success("Role revoked.")
-      },
-      onError,
-    }),
-  }
+  return useMemo(() => ({ grant, revoke }), [grant, revoke])
 }

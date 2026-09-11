@@ -2,6 +2,7 @@ import { EyeIcon, EyeOffIcon, FlameIcon } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
 import { cn } from "@/lib/utils"
 import type { MessageImage } from "../../types"
+import { viewOnceText } from "../../utils/images"
 
 export function ViewOnceCard({
   photo,
@@ -14,13 +15,7 @@ export function ViewOnceCard({
   opening: boolean
   onPress: () => void
 }) {
-  const gone = photo.opened || !photo.available
-  const label = gone ? "Photo opened" : mine ? "Photo sent" : "Tap to view once"
-  const hint = gone
-    ? mine
-      ? "They have seen it"
-      : "It is gone now"
-    : "Seen once, then deleted"
+  const { gone, label, hint } = viewOnceText(photo, mine)
   const strong = mine ? "text-primary-foreground" : "text-foreground"
   const soft = mine ? "text-primary-foreground/60" : "text-muted-foreground"
   const Icon = gone ? EyeOffIcon : mine ? FlameIcon : EyeIcon

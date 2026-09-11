@@ -1,13 +1,13 @@
 "use client"
 
 import { useTheme } from "next-themes"
-import { toast } from "sonner"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { useBack } from "@/hooks/use-back"
 import { AccentGrid } from "../components/accent-grid"
 import { useAccent } from "../hooks/use-accent"
 import { ACCENTS, INK, type Accent } from "../utils/accents"
+import { showNotice } from "@/lib/feedback"
 
 export function AppearanceScreen() {
   const back = useBack("/settings")
@@ -22,7 +22,7 @@ export function AppearanceScreen() {
 
   function choose(next: Accent) {
     if (lockedKeys.has(next.key)) {
-      toast("Accent colours are a Premium thing ✨")
+      showNotice("Accent colours are a Premium thing ✨")
       return
     }
     pick(next)

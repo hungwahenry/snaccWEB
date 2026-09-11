@@ -1,9 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/api/errors"
 import { exportAccount } from "../api"
+import { showError, showSuccess } from "@/lib/feedback"
 
 export function useExportAccount() {
   const [exporting, setExporting] = useState(false)
@@ -24,9 +23,9 @@ export function useExportAccount() {
       link.click()
       link.remove()
       URL.revokeObjectURL(url)
-      toast.success("Your data was exported.")
+      showSuccess("Your data was exported.")
     } catch (error) {
-      toast.error(getErrorMessage(error))
+      showError(error)
     } finally {
       setExporting(false)
     }

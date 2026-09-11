@@ -11,6 +11,18 @@ export function levelFromMetering(metering: number | undefined): number {
   return MIN_LEVEL + (1 - MIN_LEVEL) * Math.pow(linear, 0.45)
 }
 
+/** Loudness in decibels of one window of samples (-Infinity for silence). */
+export function decibelsOf(samples: ArrayLike<number>): number {
+  if (samples.length === 0) return -Infinity
+
+  let sum = 0
+  for (let i = 0; i < samples.length; i += 1) sum += samples[i] * samples[i]
+  const rms = Math.sqrt(sum / samples.length)
+
+  return rms > 0 ? 20 * Math.log10(rms) : -Infinity
+}
+
+/** A stable, made-up waveform for a note, so the same note always draws the same bars. */
 export function levelsFor(id: string, count: number): number[] {
   let seed = 0
   for (let i = 0; i < id.length; i += 1)

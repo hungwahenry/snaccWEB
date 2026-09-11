@@ -1,34 +1,30 @@
 "use client"
 
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
-import { Spinner } from "@/components/ui/spinner"
-import { PagesTable } from "@/features/admin/pages/components/pages-table"
-import {
-  usePageMutations,
-  usePages,
-} from "@/features/admin/pages/hooks/use-pages"
+import { NEW_PAGE_PATH } from "@/features/admin/shell/routes"
+import { PagesTable } from "../components/pages-table"
+import { usePagesScreen } from "../hooks/use-pages-screen"
 
 export function PagesScreen() {
-  const query = usePages()
-  const mutations = usePageMutations()
+  const { query, actions } = usePagesScreen()
 
   return (
     <>
       <PageHeader
         title="Pages"
         description="Custom pages like Terms and Privacy."
+        action={
+          <CanAct permission="pages.write">
+            <Button size="sm" render={<Link href={NEW_PAGE_PATH} />}>
+              New page
+            </Button>
+          </CanAct>
+        }
       />
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load pages.
-        </p>
-      ) : (
-        <PagesTable pages={query.data} mutations={mutations} />
-      )}
+      <PagesTable query={query} onDelete={actions.remove} />
     </>
   )
 }

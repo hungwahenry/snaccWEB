@@ -15,6 +15,8 @@ export interface AdminEgg {
   discoveries_count: number
 }
 
+export type EggTrigger = Record<string, unknown>
+
 export interface CreateEggInput {
   slug: string
   name: string
@@ -22,7 +24,7 @@ export interface CreateEggInput {
   hint?: string
   rarity: EggRarity
   color: string
-  trigger?: Record<string, unknown>
+  trigger?: EggTrigger
 }
 
 export interface UpdateEggInput {
@@ -31,5 +33,16 @@ export interface UpdateEggInput {
   hint?: string
   color?: string
   enabled?: boolean
-  trigger?: Record<string, unknown> | null
+  trigger?: EggTrigger | null
+}
+
+export interface EggDraft {
+  slug: string
+  name: string
+  description: string
+  hint: string
+  rarity: EggRarity
+  color: string
+  enabled: boolean
+  trigger: string
 }

@@ -1,73 +1,41 @@
 "use client"
 
+import { FileTextIcon, GhostIcon } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { ComposerBar } from "@/components/ui/composer-bar"
 import { ComposerScreen } from "@/components/ui/composer-screen"
-import { FileTextIcon, GhostIcon } from "lucide-react"
-import { useEffect } from "react"
-import { Button } from "@/components/ui/button"
+import { liveMatchCard } from "@/features/football/utils/card"
 import { ImageEditorSheet } from "@/features/image-editor/components/image-editor-sheet"
 import { StickerCreator } from "@/features/stickers/components/sticker-creator"
-import { StickerTraySheet } from "@/features/stickers/components/sticker-tray-sheet"
+import { StickerTraySheet } from "@/features/stickers/containers/sticker-tray-sheet"
 import { cn } from "@/lib/utils"
-import { hydrateDrafts, useDrafts } from "../drafts/store"
 import { QuoteCurve } from "../components/card/quote/quote-connector"
 import { QuotedSnacc } from "../components/card/quote/quoted-snacc"
 import { ComposerAttachments } from "../components/composer/composer-attachments"
 import { ComposerFrame } from "../components/composer/composer-frame"
 import { ComposerHeader } from "../components/composer/composer-header"
 import { ComposerInput } from "../components/composer/composer-input"
-import { ComposerSuggestions } from "../components/composer/composer-suggestions"
-import { liveMatchCard } from "@/features/football/utils/card"
 import { ComposerNudges } from "../components/composer/composer-nudges"
+import { ComposerSuggestions } from "../components/composer/composer-suggestions"
 import { ComposerToolbar } from "../components/composer/composer-toolbar"
 import { DraftsSheet } from "../components/composer/drafts-sheet"
 import { PollEditor } from "../components/composer/poll-editor"
 import { ReplyTo } from "../components/composer/reply-to"
-import { useComposer, type ComposerMode } from "../hooks/composer/use-composer"
-import { useSnacc } from "../hooks/use-snacc"
+import { useComposeScreen } from "../hooks/composer/use-compose-screen"
+import { useDrafts } from "../hooks/composer/use-drafts"
+import type { ComposeParams } from "../types"
 
-const COPY: Record<ComposerMode, { title: string; placeholder: string }> = {
-  reply: { title: "Reply", placeholder: "Say something about this snacc" },
-  quote: { title: "Quote", placeholder: "Add something to this" },
-  new: { title: "New snacc", placeholder: "What's happening on campus?" },
-}
-
-type ComposeScreenProps = {
-  parentId?: string
-  resnaccOfId?: string
-  initialBody?: string
-  matchId?: string
-  draftId?: string
-}
-
-export function ComposeScreen(props: ComposeScreenProps) {
+export function ComposeScreen(props: ComposeParams) {
   const { hydrated } = useDrafts()
 
-  useEffect(() => {
-    void hydrateDrafts()
-  }, [])
-
+  // A draft seeds the composer once, so it has to be read before the composer starts.
   if (props.draftId && !hydrated) return null
   return <ComposeBody {...props} />
 }
 
-function ComposeBody({
-  parentId,
-  resnaccOfId,
-  initialBody,
-  matchId,
-  draftId,
-}: ComposeScreenProps) {
-  const composer = useComposer({
-    parentId,
-    resnaccOfId,
-    initialBody,
-    matchId,
-    draftId,
-  })
-  const parent = useSnacc(parentId ?? "")
-  const quoting = useSnacc(resnaccOfId ?? "")
-  const copy = COPY[composer.mode]
+function ComposeBody(params: ComposeParams) {
+  const screen = useComposeScreen(params)
+  const { composer, copy } = screen
 
   return (
     <ComposerScreen className="overflow-y-auto">
@@ -75,14 +43,14 @@ function ComposeBody({
         title={copy.title}
         onClose={composer.close}
         right={
-          composer.drafts.length > 0 ? (
+          screen.draftCount > 0 ? (
             <Button
               variant="ghost"
               size="sm"
               className="font-bold"
-              onClick={composer.openDrafts}
+              onClick={screen.openDrafts}
             >
-              <FileTextIcon /> Drafts · {composer.drafts.length}
+              <FileTextIcon /> Drafts · {screen.draftCount}
             </Button>
           ) : undefined
         }
@@ -102,19 +70,20 @@ function ComposeBody({
               "rounded-2xl border-2 border-dashed border-muted-foreground/40 p-3"
           )}
         >
-          {parent.data ? <ReplyTo snacc={parent.data} /> : null}
+          {screen.parent ? <ReplyTo snacc={screen.parent} /> : null}
 
           <ComposerFrame
             avatarUrl={composer.avatarUrl}
             username={composer.username}
             ghost={composer.ghost}
             ghostTimeLeft={composer.ghostTimeLeft}
-            connectDown={!!quoting.data}
+            connectDown={screen.quoting !== null}
           >
             <ComposerInput
               value={composer.body}
               onChange={composer.setBody}
               onCursorChange={composer.setCursor}
+              onKeyDown={screen.onKeyDown}
               placeholder={copy.placeholder}
             />
           </ComposerFrame>
@@ -123,15 +92,13 @@ function ComposeBody({
             <div className="mt-3">
               <PollEditor
                 poll={composer.poll}
-                duplicate={composer.pollDuplicate}
+                problem={composer.pollProblem}
                 optionMax={composer.pollOptionMax}
                 maxOptions={composer.maxPollOptions}
                 onSetOption={composer.setPollOption}
                 onAddOption={composer.addPollOption}
                 onRemoveOption={composer.removePollOption}
-                onPickImage={(index) =>
-                  void composer.pickPollOptionImage(index)
-                }
+                onPickImage={composer.pickPollOptionImage}
                 onRemoveImage={composer.removePollOptionImage}
                 onSetDuration={composer.setPollDuration}
                 onRemove={composer.togglePoll}
@@ -139,13 +106,13 @@ function ComposeBody({
             </div>
           ) : null}
 
-          {quoting.data ? (
+          {screen.quoting ? (
             <div className="flex gap-3">
               <div className="w-12 shrink-0">
                 <QuoteCurve />
               </div>
               <div className="min-w-0 flex-1 pt-4">
-                <QuotedSnacc snacc={quoting.data} />
+                <QuotedSnacc snacc={screen.quoting} />
               </div>
             </div>
           ) : null}
@@ -153,12 +120,8 @@ function ComposeBody({
       </div>
 
       <ComposerBar>
-        {composer.typeahead.open ? (
-          <ComposerSuggestions
-            suggestions={composer.typeahead.suggestions}
-            loading={composer.typeahead.loading}
-            onPick={composer.pickSuggestion}
-          />
+        {screen.suggestions ? (
+          <ComposerSuggestions {...screen.suggestions} />
         ) : (
           <ComposerAttachments
             match={composer.match ? liveMatchCard(composer.match) : null}
@@ -187,7 +150,7 @@ function ComposeBody({
           onAddImages={composer.addImages}
           showTray={composer.showTray}
           canOpenTray={composer.canAddGif || composer.canAddSticker}
-          onOpenTray={composer.openStickerTray}
+          onOpenTray={screen.openStickerTray}
           showVoice={composer.showVoice}
           canRecordVoice={composer.canRecordVoice}
           onRecordVoice={composer.startVoice}
@@ -214,10 +177,10 @@ function ComposeBody({
         />
       </ComposerBar>
 
-      <StickerTraySheet {...composer.stickerTray} />
-      <StickerCreator {...composer.stickerCreator} />
+      <StickerTraySheet {...screen.stickerTray} />
+      <StickerCreator {...screen.stickerCreator} />
       <ImageEditorSheet {...composer.imageEditor} />
-      <DraftsSheet {...composer.draftsSheet} />
+      <DraftsSheet {...screen.draftsSheet} />
     </ComposerScreen>
   )
 }

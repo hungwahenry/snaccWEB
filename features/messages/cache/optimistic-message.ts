@@ -1,20 +1,6 @@
-import type { Gif } from "@/features/giphy/types"
-import type { DraftSticker } from "@/features/stickers/types"
-import type { VoiceDraft } from "@/features/voice/hooks/use-voice-recorder"
-import type { PickedImage } from "@/lib/media"
 import type { SendMessageInput } from "../api"
-import type { Message } from "../types"
+import type { Message, MessageDraft } from "../types"
 import { toReplyPreview } from "../utils/preview"
-
-export interface MessageDraft {
-  body: string | null
-  images: PickedImage[]
-  replyingTo: Message | null
-  viewOnce?: boolean
-  gif?: Gif | null
-  sticker?: DraftSticker | null
-  voice?: VoiceDraft | null
-}
 
 export function draftToInput(
   id: string,

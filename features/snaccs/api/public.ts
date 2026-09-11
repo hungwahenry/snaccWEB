@@ -1,85 +1,22 @@
 import { serverGet } from "@/lib/api/server"
+import type { Paginated } from "@/lib/api/types"
+import type { Snacc, SnaccWithParent } from "../types"
 
-export interface PublicSnaccAuthor {
-  id: string
-  username: string | null
-  display_name: string | null
-  avatar_url: string
-  university: { name: string; acronym: string; slug: string } | null
-  official: boolean
-  premium: boolean
+const PREVIEW_COUNT = 5
+
+export function getPublicSnacc(id: string): Promise<Snacc | null> {
+  return serverGet<Snacc>(`/snaccs/${encodeURIComponent(id)}`)
 }
 
-export interface PublicSticker {
-  url: string
-  width: number
-  height: number
-}
-
-export interface PublicQuotedSnacc {
-  id: string
-  body: string | null
-  created_at: string
-  anonymous: boolean
-  author: PublicSnaccAuthor
-  images: { url: string; width: number; height: number }[]
-  gif: { url: string; width: number; height: number } | null
-  sticker: PublicSticker | null
-}
-
-export interface PublicSnacc {
-  id: string
-  body: string | null
-  created_at: string
-  anonymous: boolean
-  author: PublicSnaccAuthor
-  images: { url: string; width: number; height: number }[]
-  gif: { url: string; width: number; height: number } | null
-  sticker: PublicSticker | null
-  voice: { url: string; duration_ms: number } | null
-  poll: {
-    id: string
-    closes_at: string
-    closed: boolean
-    total_votes: number | null
-    options: {
-      id: string
-      label: string
-      votes_count: number | null
-      image: {
-        url: string
-        thumb_url: string
-        width: number
-        height: number
-      } | null
-    }[]
-  } | null
-  reactions: { emoji: string; count: number }[]
-  reactions_count: number
-  comments_count: number
-  resnaccs_count: number
-  views_count: number
-  resnacc_of: PublicQuotedSnacc | null
-  quoted_gone: "deleted" | "unavailable" | null
-}
-
-export function getPublicSnacc(id: string) {
-  return serverGet<PublicSnacc>(`/snaccs/${encodeURIComponent(id)}`)
-}
-
-async function listSnaccs(path: string): Promise<PublicSnacc[]> {
-  const page = await serverGet<{ items: PublicSnacc[] }>(path)
+async function firstPage<T>(path: string): Promise<T[]> {
+  const page = await serverGet<Paginated<T>>(`${path}?perPage=${PREVIEW_COUNT}`)
   return page?.items ?? []
 }
 
-export function getUserSnaccs(username: string, perPage = 5) {
-  return listSnaccs(
-    `/users/${encodeURIComponent(username)}/snaccs?perPage=${perPage}`
-  )
+export function getUserSnaccs(username: string): Promise<SnaccWithParent[]> {
+  return firstPage(`/users/${encodeURIComponent(username)}/snaccs`)
 }
 
-export function getCampusSnaccs(slug: string, perPage = 5) {
-  return listSnaccs(
-    `/universities/${encodeURIComponent(slug)}/snaccs?perPage=${perPage}`
-  )
+export function getCampusSnaccs(slug: string): Promise<Snacc[]> {
+  return firstPage(`/universities/${encodeURIComponent(slug)}/snaccs`)
 }

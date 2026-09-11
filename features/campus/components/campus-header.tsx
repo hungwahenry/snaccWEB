@@ -1,21 +1,12 @@
 import { Skeleton } from "@/components/ui/skeleton"
-import { compactCount } from "@/lib/format"
-import type { UniversityDetail } from "@/features/campus/types"
+import type { UniversityDetail } from "../types"
+import { campusStats } from "../utils/labels"
+import { CampusBadge } from "./campus-badge"
 
 export function CampusHeader({ campus }: { campus: UniversityDetail }) {
   return (
     <div className="flex items-center gap-4 border-b border-border px-4 py-4">
-      {campus.logo_url ? (
-        <img
-          src={campus.logo_url}
-          alt=""
-          className="size-14 shrink-0 rounded-full object-cover"
-        />
-      ) : (
-        <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-muted text-lg font-extrabold text-muted-foreground">
-          {campus.acronym.slice(0, 2).toUpperCase()}
-        </span>
-      )}
+      <CampusBadge campus={campus} className="size-14 text-lg" />
       <div className="min-w-0 flex-1">
         <h2 className="truncate text-xl font-extrabold tracking-tight text-foreground">
           {campus.name}
@@ -26,8 +17,7 @@ export function CampusHeader({ campus }: { campus: UniversityDetail }) {
           </p>
         ) : null}
         <p className="mt-1 text-sm font-semibold text-muted-foreground">
-          {compactCount(campus.members_count)} students ·{" "}
-          {compactCount(campus.snaccs_count)} snaccs
+          {campusStats(campus)}
         </p>
       </div>
     </div>

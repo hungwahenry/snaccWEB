@@ -1,23 +1,25 @@
 "use client"
 
-import { STATUS_VARIANT } from "../utils/status"
-import { DetailHeader, Section } from "@/features/admin/shell/ui/detail"
-import { UserInline } from "@/features/admin/shell/ui/user-inline"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { CanAct } from "@/features/admin/auth/containers/can-act"
+import { DetailHeader, Section } from "@/features/admin/shell/components/detail"
+import { StatusBadge } from "@/features/admin/shell/components/status-badge"
+import { UserCell } from "@/features/admin/shell/components/user-cell"
+import { plural } from "@/features/admin/shell/utils/format"
 import { formatDate } from "@/lib/format"
+import type {
+  AdminReport,
+  AdminReportDetail,
+  ReportTarget,
+  ResolveDraft,
+  SuspensionChoices,
+} from "../types"
+import { resolvedLine, targetSummary } from "../utils/reports"
+import { countOpen, REPORT_STATUS } from "../utils/status"
 import { ReportedContent } from "./reported-content"
-import { ScanPanel } from "./scan-panel"
 import { ResolveDialog } from "./resolve-dialog"
-import type { useResolveReport } from "../hooks/use-reports"
-import type { AdminReport, AdminReportDetail } from "../types"
-
-const TARGET_LABEL = {
-  snacc: "a snacc",
-  user: "an account",
-  message: "a ghost message",
-  moment: "a moment",
-  chat_message: "a room message",
-} as const
+import { ScanPanel } from "./scan-panel"
 
 function Filing({ report }: { report: AdminReport }) {
   return (
@@ -25,14 +27,14 @@ function Filing({ report }: { report: AdminReport }) {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-medium">{report.reason.label}</span>
-          <Badge variant={STATUS_VARIANT[report.status]}>{report.status}</Badge>
+          <StatusBadge status={REPORT_STATUS[report.status]} />
         </div>
         <span className="text-xs text-muted-foreground">
           {formatDate(report.created_at)}
         </span>
       </div>
       {report.reporter ? (
-        <UserInline user={report.reporter} size="sm" />
+        <UserCell user={report.reporter} size="sm" />
       ) : (
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="outline">Automatic check</Badge>
@@ -59,44 +61,47 @@ function Filing({ report }: { report: AdminReport }) {
 
 export function ReportDetail({
   report,
-  resolve,
+  suspension,
+  onResolve,
 }: {
   report: AdminReportDetail
-  resolve: ReturnType<typeof useResolveReport>
+  suspension: SuspensionChoices
+  onResolve: (target: ReportTarget, draft: ResolveDraft) => Promise<unknown>
 }) {
   const filings = [report, ...report.siblings]
-  const open = filings.filter((each) => each.status === "open").length
+  const open = countOpen(filings)
+  const resolved = resolvedLine(report)
 
   return (
     <div className="flex flex-col gap-6">
       <DetailHeader
         title={report.reason.label}
-        badges={
-          <Badge variant={STATUS_VARIANT[report.status]}>{report.status}</Badge>
-        }
-        subtitle={
-          report.target
-            ? `Filed against ${TARGET_LABEL[report.target.type]}.`
-            : "The reported thing no longer exists."
-        }
+        badges={<StatusBadge status={REPORT_STATUS[report.status]} />}
+        subtitle={targetSummary(report.target)}
         meta={
           <>
             <span>Reported {formatDate(report.created_at)}</span>
             {filings.length > 1 ? (
               <span>{filings.length} filings on this target</span>
             ) : null}
-            {report.reviewed_by ? (
-              <span>
-                Resolved by {report.reviewed_by.username ?? "an admin"}
-                {report.reviewed_at
-                  ? ` on ${formatDate(report.reviewed_at)}`
-                  : ""}
-              </span>
-            ) : null}
+            {resolved ? <span>{resolved}</span> : null}
           </>
         }
         actions={
-          open > 0 ? <ResolveDialog report={report} resolve={resolve} /> : null
+          open > 0 ? (
+            <CanAct permission="reports.resolve">
+              <ResolveDialog
+                report={report}
+                suspension={suspension}
+                trigger={
+                  <Button variant="outline" size="sm">
+                    Resolve
+                  </Button>
+                }
+                onSubmit={(draft) => onResolve(report.target, draft)}
+              />
+            </CanAct>
+          ) : null
         }
       />
 
@@ -110,7 +115,7 @@ export function ReportDetail({
         }
         description={
           open > 0
-            ? `Resolving acts on the target and closes all ${open} open ${open === 1 ? "report" : "reports"} at once.`
+            ? `Resolving acts on the target and closes all ${plural(open, "open report")} at once.`
             : undefined
         }
       >

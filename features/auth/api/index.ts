@@ -1,23 +1,14 @@
 import { api } from "@/lib/api/client"
 import { ApiError } from "@/lib/api/errors"
 import type { User } from "@/features/users/types"
+import type { SignInInput, SignInResult } from "../types"
 
 export async function sendOtp(email: string): Promise<void> {
   await api.post<null>("/auth/send-otp", { email })
 }
 
-export function fetchMe(): Promise<User> {
+export function getMe(): Promise<User> {
   return api.get<User>("/auth/me")
-}
-
-export interface SignInInput {
-  email: string
-  code: string
-}
-
-export interface SignInResult {
-  user: User
-  is_new_user: boolean
 }
 
 // Sign in and out go through the site, not the API: the token lives in an httpOnly cookie

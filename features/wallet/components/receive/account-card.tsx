@@ -1,5 +1,3 @@
-"use client"
-
 import {
   BanknoteArrowDownIcon,
   CheckIcon,
@@ -9,24 +7,21 @@ import {
   UserRoundCheckIcon,
   ZapIcon,
 } from "lucide-react"
-import { useState } from "react"
-import { shareOrCopy } from "@/lib/share-links"
 import type { VirtualAccount } from "../../types"
 import { groupAccountNumber } from "../../utils/format"
 import { PerkRow } from "../shared/perk-row"
 
-export function AccountCard({ account }: { account: VirtualAccount }) {
-  const [copied, setCopied] = useState(false)
-  const accountNumber = account.account_number ?? ""
-
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(accountNumber)
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 1600)
-    } catch {}
-  }
-
+export function AccountCard({
+  account,
+  copied,
+  onCopy,
+  onShare,
+}: {
+  account: VirtualAccount
+  copied: boolean
+  onCopy: () => void
+  onShare: () => void
+}) {
   return (
     <div className="flex flex-col gap-7 px-6 py-6">
       <div className="flex flex-col gap-6 rounded-3xl bg-primary p-6">
@@ -39,12 +34,12 @@ export function AccountCard({ account }: { account: VirtualAccount }) {
 
         <button
           type="button"
-          onClick={() => void copy()}
+          onClick={onCopy}
           aria-label="Copy account number"
           className="text-left transition-opacity active:opacity-80"
         >
           <p className="text-4xl font-extrabold text-primary-foreground tabular-nums">
-            {groupAccountNumber(accountNumber)}
+            {groupAccountNumber(account.account_number ?? "")}
           </p>
           <p className="mt-1.5 text-sm font-bold text-primary-foreground/70">
             {account.account_name}
@@ -54,12 +49,12 @@ export function AccountCard({ account }: { account: VirtualAccount }) {
         <div className="flex gap-3">
           <button
             type="button"
-            onClick={() => void copy()}
+            onClick={onCopy}
             aria-label="Copy account number"
             className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-primary-foreground text-sm font-extrabold text-primary transition-opacity active:opacity-80"
           >
             {copied ? (
-              <CheckIcon className="size-[18px] text-emerald-500" />
+              <CheckIcon className="size-[18px] text-success" />
             ) : (
               <CopyIcon className="size-[18px]" />
             )}
@@ -67,13 +62,7 @@ export function AccountCard({ account }: { account: VirtualAccount }) {
           </button>
           <button
             type="button"
-            onClick={() =>
-              void shareOrCopy(
-                accountNumber,
-                `${account.bank_name}\n${accountNumber}\n${account.account_name}`,
-                "Account details"
-              )
-            }
+            onClick={onShare}
             aria-label="Share account details"
             className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full border border-primary-foreground/30 text-sm font-extrabold text-primary-foreground transition-opacity active:opacity-70"
           >

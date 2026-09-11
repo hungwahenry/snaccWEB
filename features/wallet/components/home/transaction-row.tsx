@@ -1,7 +1,10 @@
-import { clockTime, formatNaira } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import type { WalletTransaction } from "../../types"
-import { transactionLook } from "../../utils/transaction-look"
+import {
+  signedAmount,
+  transactionLook,
+  transactionSubtitle,
+} from "../../utils/transaction-look"
 
 export function TransactionRow({
   transaction,
@@ -11,7 +14,6 @@ export function TransactionRow({
   onPress: (transaction: WalletTransaction) => void
 }) {
   const look = transactionLook(transaction)
-  const out = transaction.direction === "out"
 
   return (
     <button
@@ -32,15 +34,13 @@ export function TransactionRow({
           {transaction.label}
         </span>
         <span className="truncate text-sm text-muted-foreground">
-          {transaction.note ? `${transaction.note} · ` : ""}
-          {clockTime(transaction.created_at)}
+          {transactionSubtitle(transaction)}
         </span>
       </span>
       <span
         className={cn("text-base font-extrabold tabular-nums", look.amount)}
       >
-        {out ? "−" : "+"}
-        {formatNaira(transaction.amount)}
+        {signedAmount(transaction.direction, transaction.amount)}
       </span>
     </button>
   )

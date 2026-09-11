@@ -40,3 +40,14 @@ export interface UpdateRoleInput {
   name?: string
   description?: string
 }
+
+export interface RoleDraft {
+  slug: string
+  name: string
+  description: string
+}
+
+export interface PermissionGroup {
+  resource: string
+  permissions: AdminPermission[]
+}

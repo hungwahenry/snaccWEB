@@ -1,20 +1,18 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { toast } from "sonner"
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
-import { getErrorMessage, isApiError } from "@/lib/api/errors"
+import { isApiError } from "@/lib/api/errors"
+import { showError } from "@/lib/feedback"
 import { usePinPrompt } from "@/providers/pin-prompt-provider"
 import { useStepUp } from "@/providers/step-up-provider"
 import { WALLET_LIMITS_PATH, WALLET_PIN_PATH } from "../../routes"
+import type { MoneyCredential, MoneyMove } from "../../types"
 
-export interface MoneyMove {
-  amountKobo: number
-  kind: "user" | "bank"
-}
-
-export type Credential = { pin?: string; stepUpId?: string }
-
+/**
+ * Confirms a money move with the wallet PIN, or an emailed code above the amount that needs one,
+ * then runs it. Resolves null when it was called off or already explained with a way out.
+ */
 export function useMoneyConfirm() {
   const router = useRouter()
   const stepUp = useStepUp()
@@ -32,7 +30,7 @@ export function useMoneyConfirm() {
     )
   }
 
-  async function viaStepUp(): Promise<Credential | null> {
+  async function viaStepUp(): Promise<MoneyCredential | null> {
     try {
       return { stepUpId: await stepUp("payout") }
     } catch {
@@ -40,14 +38,14 @@ export function useMoneyConfirm() {
     }
   }
 
-  async function viaPin(): Promise<Credential | null> {
+  async function viaPin(): Promise<MoneyCredential | null> {
     const typed = await promptPin()
     return typed ? { pin: typed } : null
   }
 
   async function run<T>(
     move: MoneyMove,
-    action: (credential: Credential) => Promise<T>
+    action: (credential: MoneyCredential) => Promise<T>
   ): Promise<T | null> {
     const credential = needsStepUp(move) ? await viaStepUp() : await viaPin()
     if (!credential) return null
@@ -55,28 +53,22 @@ export function useMoneyConfirm() {
     try {
       return await action(credential)
     } catch (error) {
-      if (isApiError(error) && error.code === "step_up_required") {
+      if (!isApiError(error)) throw error
+      if (error.code === "step_up_required") {
         const escalated = await viaStepUp()
         return escalated ? action(escalated) : null
       }
-      if (
-        isApiError(error) &&
-        (error.code === "pin_locked" || error.code === "pin_incorrect")
-      ) {
-        toast.error(getErrorMessage(error), {
-          action: {
-            label: "Reset PIN",
-            onClick: () => router.push(WALLET_PIN_PATH),
-          },
+      if (error.code === "pin_locked" || error.code === "pin_incorrect") {
+        showError(error, {
+          label: "Reset PIN",
+          onClick: () => router.push(WALLET_PIN_PATH),
         })
         return null
       }
-      if (isApiError(error) && error.code === "limit_reached") {
-        toast.error(getErrorMessage(error), {
-          action: {
-            label: "Your limits",
-            onClick: () => router.push(WALLET_LIMITS_PATH),
-          },
+      if (error.code === "limit_reached") {
+        showError(error, {
+          label: "Your limits",
+          onClick: () => router.push(WALLET_LIMITS_PATH),
         })
         return null
       }

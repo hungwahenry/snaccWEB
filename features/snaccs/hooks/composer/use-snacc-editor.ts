@@ -1,7 +1,6 @@
 "use client"
 
 import { useMutation } from "@tanstack/react-query"
-import { toast } from "sonner"
 import { useBack } from "@/hooks/use-back"
 import { editSnacc } from "../../api"
 import { patchSnacc } from "../../cache"
@@ -12,7 +11,7 @@ import {
   toDraftImages,
 } from "../../utils/draft-images"
 import { useSnaccDraft } from "./use-snacc-draft"
-import { toastError } from "@/features/premium/utils/limit-toast"
+import { showError, showSuccess } from "@/lib/feedback"
 
 export function useSnaccEditor(snacc: Snacc) {
   const back = useBack()
@@ -62,10 +61,10 @@ export function useSnaccEditor(snacc: Snacc) {
       },
       {
         onSuccess: () => {
-          toast.success("Snacc updated.")
+          showSuccess("Snacc updated.")
           back()
         },
-        onError: (error) => toastError(error),
+        onError: (error) => showError(error),
       }
     )
   }

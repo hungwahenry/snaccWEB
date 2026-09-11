@@ -1,38 +1,22 @@
 "use client"
 
 import { PageHeader } from "@/features/admin/shell/components/page-header"
-import { Spinner } from "@/components/ui/spinner"
-import { ConfigTable } from "@/features/admin/config/components/config-table"
-import {
-  useConfig,
-  useUpdateConfig,
-} from "@/features/admin/config/hooks/use-config"
+import { QueryView } from "@/features/admin/shell/components/query-view"
+import { ConfigTables } from "../components/config-tables"
+import { useConfigScreen } from "../hooks/use-config-screen"
 
 export function ConfigScreen() {
-  const query = useConfig()
-  const update = useUpdateConfig()
+  const { query, actions } = useConfigScreen()
 
   return (
     <>
       <PageHeader
         title="Config"
-        description="Runtime configuration values. Changes apply within ~30s."
+        description="The numbers and switches the app runs on. A change reaches the apps within about 30 seconds."
       />
-      {query.isPending ? (
-        <div className="flex justify-center py-24">
-          <Spinner />
-        </div>
-      ) : query.isError || !query.data ? (
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load config.
-        </p>
-      ) : (
-        <ConfigTable
-          settings={query.data}
-          onUpdate={update.mutate}
-          pending={update.isPending}
-        />
-      )}
+      <QueryView query={query} what="config">
+        {(groups) => <ConfigTables groups={groups} onSave={actions.save} />}
+      </QueryView>
     </>
   )
 }

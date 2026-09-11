@@ -1,5 +1,6 @@
 import type { UserScore } from "@/features/score/types"
-import type { University } from "@/features/universities/types"
+import type { University, UniversityBadge } from "@/features/universities/types"
+import type { AdminPermissions } from "@/lib/permissions"
 
 export type MoneyRequestPrivacy = "everyone" | "following" | "nobody"
 
@@ -24,6 +25,9 @@ export interface Profile {
   celebrate_birthday: boolean
   is_birthday: boolean
   snaccs_count: number
+  followers_count: number
+  following_count: number
+  balance: number
   allow_anonymous_messages: boolean
   money_requests_from: MoneyRequestPrivacy
   avatar_options: Record<string, string | number> | null
@@ -34,12 +38,7 @@ export interface Profile {
   university_locked: boolean
 }
 
-export interface AdminPermissions {
-  all: boolean
-  keys: string[]
-  campuses: string[]
-}
-
+/** The signed-in account, as GET /auth/me and every profile edit return it. */
 export interface User {
   id: string
   email: string
@@ -50,11 +49,24 @@ export interface User {
   profile: Profile | null
 }
 
-export interface UserSuggestion {
+/** Someone as they appear next to what they posted. */
+export interface Author {
   id: string
   username: string | null
   display_name: string | null
   avatar_url: string
+  university: UniversityBadge | null
+  score: UserScore
+  official: boolean
+  premium: boolean
+  is_birthday: boolean
+}
+
+export type UserSuggestion = Author
+
+export interface UsernameAvailability {
+  username: string
+  available: boolean
 }
 
 export type ProfileTab = "snaccs" | "replies" | "media" | "resnaccs"
@@ -85,6 +97,7 @@ export interface PublicProfile {
   accepts_anonymous_messages: boolean
   score: UserScore & { points: number }
   official: boolean
+  premium: boolean
   birthday: Birthday | null
   is_birthday: boolean
   moments: MomentRing | null
