@@ -16,6 +16,7 @@ const TARGET_LABEL = {
   user: "an account",
   message: "a ghost message",
   moment: "a moment",
+  chat_message: "a room message",
 } as const
 
 function Filing({ report }: { report: AdminReport }) {

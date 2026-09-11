@@ -13,7 +13,7 @@ export function TopSnacc({
 }) {
   return (
     <Link
-      href={snaccPath(snacc.snaccId)}
+      href={snaccPath(snacc.snacc_id)}
       className="flex items-center gap-3 rounded-2xl bg-card p-4 transition-opacity hover:opacity-80"
     >
       <span className="w-5 text-base font-extrabold text-muted-foreground tabular-nums">
@@ -26,13 +26,13 @@ export function TopSnacc({
         </p>
         <div className="flex flex-wrap gap-x-4 gap-y-1">
           <Figure label="views" value={compactCount(snacc.views)} />
-          <Figure label="engaged" value={percent(snacc.engagementRate)} />
-          <Figure label="read" value={formatDuration(snacc.dwellSeconds)} />
+          <Figure label="engaged" value={percent(snacc.engagement_rate)} />
+          <Figure label="read" value={formatDuration(snacc.dwell_seconds)} />
           <Figure label="reactions" value={compactCount(snacc.reactions)} />
           <Figure label="comments" value={compactCount(snacc.comments)} />
           <Figure label="resnaccs" value={compactCount(snacc.resnaccs)} />
           <Figure label="saves" value={compactCount(snacc.bookmarks)} />
-          <Figure label="taps" value={compactCount(snacc.authorTaps)} />
+          <Figure label="taps" value={compactCount(snacc.author_taps)} />
         </div>
       </div>
 

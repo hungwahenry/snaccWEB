@@ -81,7 +81,7 @@ export function TuneSheet({
             </div>
 
             <Facts>
-              {data.wouldCatch
+              {data.would_catch
                 .filter((row) => row.count > 0)
                 .map((row) => (
                   <Fact

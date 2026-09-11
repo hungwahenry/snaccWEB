@@ -27,27 +27,27 @@ export function InsightsReport({ summary }: { summary: InsightsSummary }) {
         <Stat
           icon={BookOpenIcon}
           label="Opened"
-          value={percent(summary.openRate)}
+          value={percent(summary.open_rate)}
         />
         <Stat
           icon={TimerIcon}
           label="Average read"
-          value={formatDuration(summary.dwellSeconds)}
+          value={formatDuration(summary.dwell_seconds)}
         />
         <Stat
           icon={ZapIcon}
           label="Engaged"
-          value={percent(summary.engagementRate)}
+          value={percent(summary.engagement_rate)}
         />
         <Stat
           icon={UserRoundPlusIcon}
           label="New followers"
-          value={compactCount(summary.followersGained)}
+          value={compactCount(summary.followers_gained)}
         />
         <Stat
           icon={FootprintsIcon}
           label="Profile visits"
-          value={compactCount(summary.profileVisits)}
+          value={compactCount(summary.profile_visits)}
         />
       </div>
 
@@ -60,7 +60,7 @@ export function InsightsReport({ summary }: { summary: InsightsSummary }) {
 
       <Panel
         label="Followers a day"
-        caption={`${compactCount(summary.followersGained)} gained in this stretch`}
+        caption={`${compactCount(summary.followers_gained)} gained in this stretch`}
       >
         <BarChart
           bars={dailyBars(summary.series, (day) => day.followers)}
@@ -82,7 +82,7 @@ export function InsightsReport({ summary }: { summary: InsightsSummary }) {
 
           <div className="flex flex-col gap-2">
             {summary.top.map((snacc, place) => (
-              <TopSnacc key={snacc.snaccId} snacc={snacc} place={place + 1} />
+              <TopSnacc key={snacc.snacc_id} snacc={snacc} place={place + 1} />
             ))}
           </div>
         </div>

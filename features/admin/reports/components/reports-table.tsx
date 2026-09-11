@@ -77,6 +77,7 @@ export function ReportsTable({
             <SelectItem value="user">Users</SelectItem>
             <SelectItem value="message">Messages</SelectItem>
             <SelectItem value="moment">Moments</SelectItem>
+            <SelectItem value="chat_message">Room messages</SelectItem>
           </SelectContent>
         </Select>
       </div>

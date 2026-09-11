@@ -55,7 +55,12 @@ export const FLAG_KEYS = [
 ] as const;
 
 export const PUBLIC_CONFIG_DEFAULTS: {
-  readonly 'eggs.burst_counts': object;
+  readonly 'eggs.burst_counts': Readonly<Record<string, number>>;
+  readonly 'client.min_version': string;
+  readonly 'client.min_version_ios': string;
+  readonly 'client.min_version_android': string;
+  readonly 'client.store_url_android': string;
+  readonly 'client.store_url_ios': string;
   readonly 'content.snacc.body_max_length': number;
   readonly 'content.snacc.max_images': number;
   readonly 'content.snacc.voice_max_seconds': number;
@@ -73,16 +78,20 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly 'messages.streak_milestones': readonly string[];
   readonly 'moderation.suspension.durations_days': readonly string[];
   readonly 'content.report.detail_max_length': number;
-  readonly 'profile.username.max_length': number;
   readonly 'content.poll.max_options': number;
   readonly 'content.poll.option_max_length': number;
   readonly 'content.poll.min_minutes': number;
   readonly 'content.poll.max_minutes': number;
+  readonly 'moments.reactions': readonly string[];
+  readonly 'profile.username.max_length': number;
   readonly 'profile.display_name.max_length': number;
   readonly 'profile.bio.max_length': number;
   readonly 'discovery.popular_hashtags.limit': number;
   readonly 'views.record.max_batch': number;
   readonly 'earn.withdrawal.balance': number;
+  readonly 'earn.withdrawal.views': number;
+  readonly 'earn.withdrawal.followers': number;
+  readonly 'earn.withdrawal.account_age_days': number;
   readonly 'wallet.send.min_kobo': number;
   readonly 'wallet.send.bank_fee_kobo': number;
   readonly 'wallet.confirm.user_stepup_threshold_kobo': number;
@@ -97,16 +106,12 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly 'wallet.limits.verified.daily_bank_send_kobo': number;
   readonly 'wallet.limits.verified.daily_deposit_kobo': number;
   readonly 'wallet.dva.requires_identity': boolean;
-  readonly 'earn.withdrawal.views': number;
-  readonly 'earn.withdrawal.followers': number;
-  readonly 'earn.withdrawal.account_age_days': number;
-  readonly 'client.min_version': string;
   readonly 'premium.wallet.monthly_kobo': number;
   readonly 'premium.wallet.yearly_kobo': number;
-  readonly 'client.min_version_ios': string;
-  readonly 'client.min_version_android': string;
-  readonly 'client.store_url_android': string;
-  readonly 'client.store_url_ios': string;
+  readonly 'premium.rc_ios_key': string;
+  readonly 'premium.rc_android_key': string;
+  readonly 'premium.offering_id': string;
+  readonly 'premium.trial_days': number;
   readonly 'ghost.window.minutes': number;
   readonly 'avatar.base': string;
   readonly 'avatar.style': string;
@@ -114,17 +119,17 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly 'moments.ttl_hours': number;
   readonly 'moments.max_per_day': number;
   readonly 'moments.caption_max_length': number;
-  readonly 'moments.reactions': readonly string[];
   readonly 'score.floor.unique_engagers': number;
   readonly 'score.daily.full_posts': number;
   readonly 'score.daily.half_posts': number;
   readonly 'score.actor.daily_cap': number;
-  readonly 'premium.rc_ios_key': string;
-  readonly 'premium.rc_android_key': string;
-  readonly 'premium.offering_id': string;
-  readonly 'premium.trial_days': number;
 } = {
   'eggs.burst_counts': {"common":10,"uncommon":14,"rare":20,"epic":28,"legendary":36},
+  'client.min_version': "0.0.0",
+  'client.min_version_ios': "",
+  'client.min_version_android': "",
+  'client.store_url_android': "https://play.google.com/store/apps/details?id=com.snacc.fyi",
+  'client.store_url_ios': "",
   'content.snacc.body_max_length': 500,
   'content.snacc.max_images': 10,
   'content.snacc.voice_max_seconds': 300,
@@ -142,16 +147,20 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   'messages.streak_milestones': ["3","7","14","30","50","100"],
   'moderation.suspension.durations_days': ["1","3","7","30"],
   'content.report.detail_max_length': 500,
-  'profile.username.max_length': 30,
   'content.poll.max_options': 4,
   'content.poll.option_max_length': 50,
   'content.poll.min_minutes': 5,
   'content.poll.max_minutes': 10080,
+  'moments.reactions': ["❤️","😂","🔥","😮","😢","👏"],
+  'profile.username.max_length': 30,
   'profile.display_name.max_length': 50,
   'profile.bio.max_length': 160,
   'discovery.popular_hashtags.limit': 15,
   'views.record.max_batch': 50,
   'earn.withdrawal.balance': 100000,
+  'earn.withdrawal.views': 5000,
+  'earn.withdrawal.followers': 50,
+  'earn.withdrawal.account_age_days': 14,
   'wallet.send.min_kobo': 10000,
   'wallet.send.bank_fee_kobo': 2500,
   'wallet.confirm.user_stepup_threshold_kobo': 500000,
@@ -166,16 +175,12 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   'wallet.limits.verified.daily_bank_send_kobo': 20000000,
   'wallet.limits.verified.daily_deposit_kobo': 100000000,
   'wallet.dva.requires_identity': true,
-  'earn.withdrawal.views': 5000,
-  'earn.withdrawal.followers': 50,
-  'earn.withdrawal.account_age_days': 14,
-  'client.min_version': "0.0.0",
   'premium.wallet.monthly_kobo': 350000,
   'premium.wallet.yearly_kobo': 3200000,
-  'client.min_version_ios': "",
-  'client.min_version_android': "",
-  'client.store_url_android': "https://play.google.com/store/apps/details?id=com.snacc.fyi",
-  'client.store_url_ios': "",
+  'premium.rc_ios_key': "",
+  'premium.rc_android_key': "",
+  'premium.offering_id': "",
+  'premium.trial_days': 0,
   'ghost.window.minutes': 10,
   'avatar.base': "https://api.dicebear.com/9.x",
   'avatar.style': "adventurer",
@@ -183,13 +188,8 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   'moments.ttl_hours': 24,
   'moments.max_per_day': 20,
   'moments.caption_max_length': 200,
-  'moments.reactions': ["❤️","😂","🔥","😮","😢","👏"],
   'score.floor.unique_engagers': 3,
   'score.daily.full_posts': 20,
   'score.daily.half_posts': 20,
   'score.actor.daily_cap': 25,
-  'premium.rc_ios_key': "",
-  'premium.rc_android_key': "",
-  'premium.offering_id': "",
-  'premium.trial_days': 0,
 };

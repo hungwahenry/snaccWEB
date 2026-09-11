@@ -36,6 +36,7 @@ const TARGET_NOUN = {
   user: "user",
   message: "message",
   moment: "moment",
+  chat_message: "room message",
 } as const
 
 function actChoicesFor(target: AdminReport["target"]) {
@@ -49,6 +50,11 @@ function actChoicesFor(target: AdminReport["target"]) {
   if (target?.type === "message")
     return [
       { value: "delete_message", label: "Remove the message" },
+      { value: "suspend_sender", label: "Suspend the sender" },
+    ]
+  if (target?.type === "chat_message")
+    return [
+      { value: "delete_chat_message", label: "Remove the message" },
       { value: "suspend_sender", label: "Suspend the sender" },
     ]
   if (target?.type === "moment")
@@ -100,6 +106,8 @@ export function ResolveDialog({
     else if (target?.type === "user") input.reportedUserId = target.user.id
     else if (target?.type === "message") input.messageId = target.message.id
     else if (target?.type === "moment") input.momentId = target.moment.id
+    else if (target?.type === "chat_message")
+      input.chatMessageId = target.chat_message.id
     if (note.trim()) input.note = note.trim()
     if (acts.length > 0) input.acts = acts as ResolveReportInput["acts"]
     if (suspending) input.suspension = toSuspensionInput(draft)

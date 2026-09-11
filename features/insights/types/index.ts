@@ -1,18 +1,18 @@
 export interface SnaccInsight {
-  snaccId: string
+  snacc_id: string
   excerpt: string | null
   views: number
   opens: number
-  openRate: number
-  dwellSeconds: number
+  open_rate: number
+  dwell_seconds: number
   reactions: number
   comments: number
   resnaccs: number
   quotes: number
   bookmarks: number
   shares: number
-  authorTaps: number
-  engagementRate: number
+  author_taps: number
+  engagement_rate: number
 }
 
 /** One day of the window. Every day is present, including the quiet ones. */
@@ -32,12 +32,12 @@ export interface InsightsSummary {
   snaccs: number
   views: number
   opens: number
-  openRate: number
-  dwellSeconds: number
+  open_rate: number
+  dwell_seconds: number
   engagements: number
-  engagementRate: number
-  followersGained: number
-  profileVisits: number
+  engagement_rate: number
+  followers_gained: number
+  profile_visits: number
   series: InsightsDay[]
   hours: InsightsHour[]
   top: SnaccInsight[]

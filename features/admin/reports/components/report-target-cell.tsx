@@ -13,7 +13,9 @@ function thumbOf(target: NonNullable<ReportTarget>): string | null {
       ? target.snacc
       : target.type === "moment"
         ? target.moment
-        : target.message
+        : target.type === "chat_message"
+          ? target.chat_message
+          : target.message
 
   return (
     content.images[0]?.url ?? content.gif?.url ?? content.sticker?.url ?? null
@@ -24,6 +26,7 @@ const FALLBACK_ICON: Record<string, ReactNode> = {
   snacc: <Sparkles className="size-4" />,
   moment: <Sparkles className="size-4" />,
   message: <MessageSquare className="size-4" />,
+  chat_message: <MessageSquare className="size-4" />,
   user: <UserRound className="size-4" />,
 }
 
@@ -42,6 +45,13 @@ function describe(target: ReportTarget): { title: string; who: string } {
     return {
       title: target.moment.body?.slice(0, 60) || "Photo moment",
       who: handleOf(target.moment.author),
+    }
+  }
+
+  if (target.type === "chat_message") {
+    return {
+      title: target.chat_message.body?.slice(0, 60) || "Room message",
+      who: handleOf(target.chat_message.sender),
     }
   }
 

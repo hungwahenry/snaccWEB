@@ -59,6 +59,24 @@ export type ReportTarget =
         }
       }
     }
+  | {
+      type: "chat_message"
+      chat_message: {
+        id: string
+        body: string | null
+        deleted_at: string | null
+        created_at: string
+        images: MediaImage[]
+        sticker: MediaSticker | null
+        gif: MediaGif | null
+        sender: ReportAuthor
+        room: {
+          id: string
+          name: string
+          campus: { id: string; name: string; acronym: string } | null
+        }
+      }
+    }
   | null
 
 export interface ReportScan {
@@ -94,7 +112,7 @@ export interface ListReportsParams {
   page?: number
   perPage?: number
   status?: ReportStatus
-  targetType?: "snacc" | "user" | "message" | "moment"
+  targetType?: "snacc" | "user" | "message" | "moment" | "chat_message"
 }
 
 export interface ResolveReportInput {
@@ -102,6 +120,7 @@ export interface ResolveReportInput {
   reportedUserId?: string
   messageId?: string
   momentId?: string
+  chatMessageId?: string
   status: "actioned" | "dismissed"
   note?: string
   acts?: (
@@ -109,6 +128,7 @@ export interface ResolveReportInput {
     | "suspend_author"
     | "suspend_user"
     | "delete_message"
+    | "delete_chat_message"
     | "suspend_sender"
     | "delete_moment"
     | "suspend_moment_author"

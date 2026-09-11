@@ -94,6 +94,39 @@ function ReportedMessage({
   )
 }
 
+function ReportedChatMessage({
+  message,
+}: {
+  message: Extract<
+    NonNullable<ReportTarget>,
+    { type: "chat_message" }
+  >["chat_message"]
+}) {
+  return (
+    <Framed
+      author={message.sender}
+      note={`In ${message.room.name} · ${formatDate(message.created_at)}`}
+      badges={
+        message.deleted_at ? <Badge variant="destructive">Removed</Badge> : null
+      }
+    >
+      {message.body ? (
+        <p className="text-sm whitespace-pre-wrap">{message.body}</p>
+      ) : null}
+      <ContentMedia
+        images={message.images}
+        gif={message.gif}
+        sticker={message.sticker}
+      />
+      <p className="text-xs text-muted-foreground">
+        {message.room.campus
+          ? `Posted in the ${message.room.campus.name} room.`
+          : "Posted in the room everyone shares."}
+      </p>
+    </Framed>
+  )
+}
+
 function ReportedMoment({
   moment,
 }: {
@@ -158,6 +191,8 @@ export function ReportedContent({ report }: { report: AdminReportDetail }) {
         <ReportedMessage message={target.message} />
       ) : target.type === "moment" ? (
         <ReportedMoment moment={target.moment} />
+      ) : target.type === "chat_message" ? (
+        <ReportedChatMessage message={target.chat_message} />
       ) : (
         <Framed
           author={target.user}

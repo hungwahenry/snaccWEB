@@ -44,7 +44,7 @@ export interface CategoryInsight {
   surface: ModerationSurface
   scans: number
   buckets: { from: number; count: number }[]
-  wouldCatch: { threshold: number; count: number }[]
+  would_catch: { threshold: number; count: number }[]
 }
 
 export interface ModerationSummary {
