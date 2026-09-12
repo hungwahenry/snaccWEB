@@ -1,5 +1,6 @@
 import {
   BookOpenIcon,
+  CalendarClockIcon,
   ChartNoAxesColumnIcon,
   EyeIcon,
   FlameIcon,
@@ -17,6 +18,7 @@ import {
 // The icon name is a database value, so it is matched against this rather than trusted.
 const ICON_BY_NAME: Record<string, LucideIcon> = {
   book: BookOpenIcon,
+  calendar: CalendarClockIcon,
   chart: ChartNoAxesColumnIcon,
   eye: EyeIcon,
   flame: FlameIcon,
