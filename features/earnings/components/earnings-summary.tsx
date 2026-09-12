@@ -5,6 +5,7 @@ import { Eyebrow } from "@/components/ui/eyebrow"
 import { Spinner } from "@/components/ui/spinner"
 import { formatNaira } from "@/lib/format"
 import type { CampusFund, EarningsMilestone, TopSnacc } from "../types"
+import { EARNINGS_COPY } from "../utils/earnings-copy"
 import { snaccPreviewText } from "../utils/fund"
 import { FundBar } from "./fund-bar"
 import { MilestoneList } from "./milestone-list"
@@ -25,12 +26,12 @@ export function EarningsSummary({
   return (
     <div className="flex flex-col gap-6 px-6 pt-8">
       <div className="flex flex-col items-center gap-1.5">
-        <Eyebrow>Earnings</Eyebrow>
+        <Eyebrow>{EARNINGS_COPY.eyebrow}</Eyebrow>
         <p className="truncate text-center text-6xl font-extrabold text-foreground tabular-nums">
           {balance}
         </p>
         <p className="text-center text-sm text-muted-foreground">
-          From reactions and resnaccs on your snaccs.
+          {EARNINGS_COPY.caption}
         </p>
       </div>
 
@@ -57,7 +58,7 @@ export function EarningsSummary({
 
       {topSnaccs.length > 0 ? (
         <div className="flex flex-col gap-3">
-          <Eyebrow>Top earning snaccs</Eyebrow>
+          <Eyebrow>{EARNINGS_COPY.top}</Eyebrow>
           {topSnaccs.map((row, index) => (
             <div key={row.snacc.id} className="flex items-center gap-3">
               <span className="w-5 text-lg font-extrabold text-muted-foreground">

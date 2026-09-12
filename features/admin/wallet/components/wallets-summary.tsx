@@ -1,9 +1,11 @@
-import { Skeleton } from "@/components/ui/skeleton"
 import { Stat, StatGrid } from "@/features/admin/shell/components/detail"
+import { StatSkeleton } from "@/features/admin/shell/components/stat-skeleton"
 import { humanize } from "@/features/admin/shell/utils/format"
 import { formatNaira } from "@/lib/format"
 import type { WalletSummary } from "../types"
 import { holdersNote, poolNote } from "../utils/wallet"
+
+const PLACEHOLDERS = [0, 1, 2]
 
 export function WalletsSummary({
   summary,
@@ -12,7 +14,15 @@ export function WalletsSummary({
   summary: WalletSummary | undefined
   pending: boolean
 }) {
-  if (pending) return <Skeleton className="h-28 w-full" />
+  if (pending) {
+    return (
+      <StatGrid columns={3}>
+        {PLACEHOLDERS.map((card) => (
+          <StatSkeleton key={card} />
+        ))}
+      </StatGrid>
+    )
+  }
   if (!summary) return null
 
   return (

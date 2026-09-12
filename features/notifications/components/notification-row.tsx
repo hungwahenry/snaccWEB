@@ -1,6 +1,5 @@
 import { createElement } from "react"
 import { GhostAvatar } from "@/components/ui/ghost-avatar"
-import { Skeleton } from "@/components/ui/skeleton"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { timeAgo } from "@/lib/format"
 import { cn } from "@/lib/utils"
@@ -71,17 +70,5 @@ function Face({ notification }: { notification: Notification }) {
         className: "size-5 text-foreground",
       })}
     </span>
-  )
-}
-
-export function NotificationRowSkeleton() {
-  return (
-    <div className="flex items-start gap-3 px-4 py-3.5">
-      <Skeleton className="size-11 rounded-full" />
-      <div className="flex flex-1 flex-col gap-2 pt-1">
-        <Skeleton className="h-3.5 w-full" />
-        <Skeleton className="h-3 w-24" />
-      </div>
-    </div>
   )
 }

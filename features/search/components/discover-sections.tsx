@@ -1,14 +1,10 @@
 import { BirthdaysToday } from "@/features/birthdays/components/birthdays-today"
-import {
-  FollowSuggestions,
-  FollowSuggestionsSkeleton,
-} from "@/features/follows/components/follow-suggestions"
+import { FollowSuggestions } from "@/features/follows/components/follow-suggestions"
+import { FollowSuggestionsSkeleton } from "@/features/follows/components/follow-suggestions-skeleton"
 import type { FollowUser } from "@/features/follows/types"
 import { GhostHourCard } from "@/features/ghost/components/ghost-hour-card"
-import {
-  TrendingTags,
-  TrendingTagsSkeleton,
-} from "@/features/hashtags/components/trending-tags"
+import { TrendingTags } from "@/features/hashtags/components/trending-tags"
+import { TrendingTagsSkeleton } from "@/features/hashtags/components/trending-tags-skeleton"
 import type { Hashtag } from "@/features/hashtags/types"
 
 export type DiscoverSectionsProps = {

@@ -22,7 +22,6 @@ import { MessageActionsSheet } from "../components/sheets/message-actions-sheet"
 import { ThreadMenuSheet } from "../components/sheets/thread-menu-sheet"
 import { GhostBanner } from "../components/thread/ghost-banner"
 import { MessageRow } from "../components/thread/message-row"
-import { MessageThreadSkeleton } from "../components/thread/message-thread-skeleton"
 import { ThreadView } from "../components/thread/thread-view"
 import { ViewOnceViewer } from "../components/thread/view-once-viewer"
 import { useConversationScreen } from "../hooks/use-conversation-screen"
@@ -81,11 +80,9 @@ export function ConversationScreen({ id }: { id: string }) {
             onRetry={screen.retry}
           />
         </div>
-      ) : !conversation ? (
-        <MessageThreadSkeleton />
       ) : (
         <>
-          {conversation.you_are_ghost && !conversation.revealed ? (
+          {conversation?.you_are_ghost && !conversation.revealed ? (
             <GhostBanner onReveal={screen.menu.confirmReveal} />
           ) : null}
 

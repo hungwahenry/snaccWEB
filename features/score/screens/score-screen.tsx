@@ -1,10 +1,10 @@
 "use client"
 
 import { LoadFailed } from "@/components/ui/load-failed"
-import { Spinner } from "@/components/ui/spinner"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { useBack } from "@/hooks/use-back"
 import { ScoreLadder } from "../components/score-ladder"
+import { ScoreLadderSkeleton } from "../components/score-ladder-skeleton"
 import { useScoreLadder } from "../hooks/use-score-ladder"
 
 export function ScoreScreen() {
@@ -23,9 +23,7 @@ export function ScoreScreen() {
           />
         </div>
       ) : page.loading || !page.standing ? (
-        <div className="flex justify-center py-24">
-          <Spinner className="text-muted-foreground" />
-        </div>
+        <ScoreLadderSkeleton />
       ) : (
         <ScoreLadder standing={page.standing} ladder={page.ladder} />
       )}

@@ -1,5 +1,5 @@
-import { WalletHomeSkeleton } from "@/features/wallet/components/home/wallet-home-skeleton"
+import { WalletScreenSkeleton } from "@/features/wallet/containers/wallet-screen-skeleton"
 
 export default function Loading() {
-  return <WalletHomeSkeleton accountNumber earnings />
+  return <WalletScreenSkeleton />
 }

@@ -2,7 +2,6 @@ import type { UseQueryResult } from "@tanstack/react-query"
 import { CloudOff } from "lucide-react"
 import type { ReactNode } from "react"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
 import { getErrorMessage } from "@/lib/api/errors"
 import { cn } from "@/lib/utils"
@@ -11,16 +10,6 @@ export function LoadingBlock({ className }: { className?: string }) {
   return (
     <div className={cn("flex justify-center py-16", className)}>
       <Spinner className="size-5 text-muted-foreground" />
-    </div>
-  )
-}
-
-export function TableSkeleton({ rows = 6 }: { rows?: number }) {
-  return (
-    <div className="flex flex-col gap-3 p-4" aria-busy aria-label="Loading">
-      {Array.from({ length: rows }, (_, index) => (
-        <Skeleton key={index} className="h-8 w-full rounded-lg" />
-      ))}
     </div>
   )
 }

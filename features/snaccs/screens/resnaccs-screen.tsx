@@ -10,10 +10,8 @@ import { SkeletonRows } from "@/components/ui/skeleton-rows"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { useSnaccTracker } from "@/features/snaccs/hooks/use-snacc-tracker"
 import { useBack } from "@/hooks/use-back"
-import {
-  ResnaccerRow,
-  ResnaccerRowSkeleton,
-} from "../components/resnaccs/resnaccer-row"
+import { ResnaccerRow } from "../components/resnaccs/resnaccer-row"
+import { ResnaccerRowSkeleton } from "../components/resnaccs/resnaccer-row-skeleton"
 import { SnaccSheets } from "../components/sheets/snacc-sheets"
 import { SnaccList } from "../components/snacc-list"
 import { useResnaccLists } from "../hooks/resnaccs/use-resnacc-lists"

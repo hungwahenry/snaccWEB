@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { TierName } from "@/features/users/components/flair"
 import { profilePath } from "@/features/users/routes"
@@ -74,19 +73,6 @@ export function FollowUserRow({
           {followButtonLabel(user.follow_state, user.follows_you)}
         </Button>
       )}
-    </div>
-  )
-}
-
-export function FollowUserRowSkeleton() {
-  return (
-    <div className="flex items-center gap-3 px-4 py-3">
-      <Skeleton className="size-11 rounded-full" />
-      <div className="flex flex-1 flex-col gap-2">
-        <Skeleton className="h-3.5 w-32" />
-        <Skeleton className="h-3 w-24" />
-      </div>
-      <Skeleton className="h-8 w-24 rounded-full" />
     </div>
   )
 }

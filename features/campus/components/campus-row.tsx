@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { memo } from "react"
-import { Skeleton } from "@/components/ui/skeleton"
 import type { University } from "@/features/universities/types"
 import { campusPath } from "../routes"
 import { CampusBadge } from "./campus-badge"
@@ -27,15 +26,3 @@ export const CampusRow = memo(function CampusRow({
     </Link>
   )
 })
-
-export function CampusRowSkeleton() {
-  return (
-    <div className="flex items-center gap-3 px-4 py-3">
-      <Skeleton className="size-11 rounded-full" />
-      <div className="flex flex-1 flex-col gap-2">
-        <Skeleton className="h-3.5 w-20" />
-        <Skeleton className="h-3 w-44" />
-      </div>
-    </div>
-  )
-}

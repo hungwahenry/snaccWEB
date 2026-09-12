@@ -1,16 +1,17 @@
+import { Eyebrow } from "@/components/ui/eyebrow"
 import { Skeleton } from "@/components/ui/skeleton"
+
+const CARDS = [0, 1, 2]
 
 export function MatchdaySkeleton() {
   return (
     <div className="flex flex-col gap-2.5">
-      <div className="px-1">
-        <Skeleton className="h-3 w-20" />
-      </div>
-      <div className="flex gap-2.5 overflow-hidden px-1">
-        {[0, 1, 2].map((i) => (
+      <Eyebrow className="px-1">Matchday</Eyebrow>
+      <div className="-mx-(--gutter) flex gap-2.5 overflow-hidden px-[calc(var(--gutter)+4px)]">
+        {CARDS.map((i) => (
           <Skeleton
             key={i}
-            className="h-[122px] w-[220px] shrink-0 rounded-2xl"
+            className="h-[120.5px] w-[220px] shrink-0 rounded-2xl"
           />
         ))}
       </div>

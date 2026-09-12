@@ -1,5 +1,4 @@
 import Link from "next/link"
-import { Skeleton } from "@/components/ui/skeleton"
 import { PersonAvatar } from "@/features/users/components/person-avatar"
 import { timeAgo } from "@/lib/format"
 import type { MyReport, ReportSubject } from "../types"
@@ -34,18 +33,5 @@ export function ReportRow({
         </span>
       </span>
     </Link>
-  )
-}
-
-export function ReportRowSkeleton() {
-  return (
-    <div className="flex items-start gap-3 px-4 py-3.5">
-      <Skeleton className="size-11 rounded-full" />
-      <div className="flex flex-1 flex-col gap-2 pt-1">
-        <Skeleton className="h-3.5 w-32" />
-        <Skeleton className="h-3 w-full" />
-        <Skeleton className="h-3 w-16" />
-      </div>
-    </div>
   )
 }

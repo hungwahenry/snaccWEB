@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Eyebrow } from "@/components/ui/eyebrow"
 import type { AccountFooterView } from "../../hooks/home/use-wallet-home"
+import { WALLET_HOME_COPY } from "../../utils/home-copy"
 import { AccountFooter } from "./account-footer"
 
 export function BalanceCard({
@@ -56,7 +57,7 @@ export function BalanceCard({
           aria-label={hidden ? "Show balance" : "Hide balance"}
           className="flex items-center gap-1.5 transition-opacity active:opacity-60"
         >
-          <Eyebrow>Wallet balance</Eyebrow>
+          <Eyebrow>{WALLET_HOME_COPY.balance}</Eyebrow>
           {hidden ? (
             <EyeOffIcon className="size-4 text-muted-foreground" />
           ) : (

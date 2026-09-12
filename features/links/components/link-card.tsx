@@ -1,6 +1,5 @@
 import { BuildingIcon, HandCoinsIcon } from "lucide-react"
 import Link from "next/link"
-import { Skeleton } from "@/components/ui/skeleton"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { campusPath } from "@/features/campus/routes"
 import { QuotedSnacc } from "@/features/snaccs/components/card/quote/quoted-snacc"
@@ -8,28 +7,18 @@ import { snaccPath } from "@/features/snaccs/routes"
 import type { EmbeddedSnacc } from "@/features/snaccs/types"
 import { TierName } from "@/features/users/components/flair"
 import { profilePath } from "@/features/users/routes"
-import { bareLink, shareLink, type ShareRef } from "@/lib/share-links"
+import type { ShareRef } from "@/lib/share-links"
 import { cn } from "@/lib/utils"
 import type { LinkPerson, LinkTarget } from "@/features/links/types"
 import { nameOf } from "@/features/users/utils/names"
-
-const CARD = "overflow-hidden rounded-2xl border border-border bg-background"
+import { LINK_CARD, LinkFooter } from "./link-card-parts"
+import { LinkCardSkeleton } from "./link-card-skeleton"
 
 function hrefOf(target: LinkTarget): string | null {
   if (target.kind === "snacc") return snaccPath(target.snacc.id)
   if (target.kind === "campus") return campusPath(target.slug)
   if (target.kind === "pay") return `/pay/${target.person.username ?? ""}`
   return target.person.username ? profilePath(target.person.username) : null
-}
-
-function LinkFooter({ link }: { link: ShareRef }) {
-  return (
-    <div className="border-t border-border px-3 py-2">
-      <p className="truncate text-[11px] text-muted-foreground">
-        {bareLink(shareLink[link.kind](link.ref))}
-      </p>
-    </div>
-  )
 }
 
 function PersonRow({ person, pay }: { person: LinkPerson; pay: boolean }) {
@@ -106,20 +95,12 @@ export function LinkCard({
   loading,
   onOpenSnacc,
 }: LinkCardProps) {
-  if (loading)
-    return (
-      <Skeleton
-        className={cn(
-          "w-full rounded-2xl",
-          link.kind === "snacc" ? "h-32" : "h-24"
-        )}
-      />
-    )
+  if (loading) return <LinkCardSkeleton link={link} />
   if (!target) return null
 
   if (target.kind === "snacc") {
     return (
-      <div className={CARD}>
+      <div className={LINK_CARD}>
         <QuotedSnacc frameless snacc={target.snacc} onPress={onOpenSnacc} />
         <LinkFooter link={link} />
       </div>
@@ -143,13 +124,13 @@ export function LinkCard({
     </>
   )
 
-  if (!href) return <div className={CARD}>{body}</div>
+  if (!href) return <div className={LINK_CARD}>{body}</div>
 
   return (
     <Link
       href={href}
       onClick={(event) => event.stopPropagation()}
-      className={cn(CARD, "block transition-colors hover:bg-accent/40")}
+      className={cn(LINK_CARD, "block transition-colors hover:bg-accent/40")}
     >
       {body}
     </Link>

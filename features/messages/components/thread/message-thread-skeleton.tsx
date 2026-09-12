@@ -12,9 +12,10 @@ const BUBBLES: { mine: boolean; width: string; lines: number }[] = [
   { mine: false, width: "w-56", lines: 2 },
 ]
 
+/** Stands in for the rows of a thread; the header and composer around it stay real. */
 export function MessageThreadSkeleton() {
   return (
-    <div className="flex flex-1 flex-col justify-end p-4">
+    <div className="flex flex-1 flex-col justify-end">
       {BUBBLES.map((bubble, index) => {
         const startsBurst =
           index === 0 || BUBBLES[index - 1].mine !== bubble.mine

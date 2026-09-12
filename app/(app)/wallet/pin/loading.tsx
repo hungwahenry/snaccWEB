@@ -1,5 +1,5 @@
-import { FormSkeleton } from "@/components/ui/form-skeleton"
+import { PinScreen } from "@/features/wallet/screens/pin-screen"
 
 export default function Loading() {
-  return <FormSkeleton />
+  return <PinScreen />
 }

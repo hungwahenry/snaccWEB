@@ -1,5 +1,4 @@
 import { memo, type ReactNode } from "react"
-import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import type { Author } from "../types"
 import { nameOf } from "../utils/names"
@@ -56,15 +55,3 @@ export const UserRow = memo(function UserRow({
     </div>
   )
 })
-
-export function UserRowSkeleton() {
-  return (
-    <div className="flex items-center gap-3 py-2.5">
-      <Skeleton className="size-10 rounded-full" />
-      <div className="flex flex-1 flex-col gap-2">
-        <Skeleton className="h-3.5 w-32" />
-        <Skeleton className="h-3 w-24" />
-      </div>
-    </div>
-  )
-}

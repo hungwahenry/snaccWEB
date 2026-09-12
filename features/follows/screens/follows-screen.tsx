@@ -1,24 +1,18 @@
 "use client"
 
-import { LockIcon, UserRoundCheckIcon, UsersRoundIcon } from "lucide-react"
+import { LockIcon, UsersRoundIcon } from "lucide-react"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ListFooter } from "@/components/ui/list-footer"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { LoadMore } from "@/components/ui/load-more"
-import { PillTabs, type PillTab } from "@/components/ui/pill-tabs"
+import { PillTabs } from "@/components/ui/pill-tabs"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
 import { BackHeader } from "@/features/navigation/components/back-header"
-import {
-  FollowUserRow,
-  FollowUserRowSkeleton,
-} from "../components/follow-user-row"
+import { FollowUserRow } from "../components/follow-user-row"
+import { FollowUserRowSkeleton } from "../components/follow-user-row-skeleton"
 import { useFollowsScreen } from "../hooks/use-follows-screen"
 import type { FollowTab } from "../types"
-
-const TABS: PillTab<FollowTab>[] = [
-  { value: "followers", label: "Followers", icon: UsersRoundIcon },
-  { value: "following", label: "Following", icon: UserRoundCheckIcon },
-]
+import { FOLLOW_TABS } from "../utils/tabs"
 
 const EMPTY: Record<FollowTab, string> = {
   followers: "No followers yet",
@@ -38,7 +32,7 @@ export function FollowsScreen({
   return (
     <>
       <BackHeader title={`@${username}`} onBack={onBack} />
-      <PillTabs tabs={TABS} value={tab} onChange={setTab} />
+      <PillTabs tabs={FOLLOW_TABS} value={tab} onChange={setTab} />
 
       {list.failed && list.users.length === 0 ? (
         <LoadFailed title="Could not load this list" onRetry={list.retry} />

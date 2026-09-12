@@ -4,9 +4,11 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { ListFooter } from "@/components/ui/list-footer"
 import { LoadMore } from "@/components/ui/load-more"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
-import { UserRow, UserRowSkeleton } from "@/features/users/components/user-row"
+import { UserRow } from "@/features/users/components/user-row"
+import { UserRowSkeleton } from "@/features/users/components/user-row-skeleton"
 import type { SnaccReaction, SnaccReactor } from "../../../types"
 import { ReactionPill } from "./reaction-pill"
+import { ReactorRowSkeleton } from "./reactor-row-skeleton"
 
 export type ReactionBreakdownSheetProps = {
   open: boolean
@@ -56,7 +58,10 @@ export function ReactionBreakdownSheet({
 
       <div className="px-5">
         {loading ? (
-          <SkeletonRows count={8} item={UserRowSkeleton} />
+          <SkeletonRows
+            count={8}
+            item={filter === null ? ReactorRowSkeleton : UserRowSkeleton}
+          />
         ) : reactors.length === 0 ? (
           <EmptyState
             icon={SmilePlusIcon}

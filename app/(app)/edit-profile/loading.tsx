@@ -1,5 +1,5 @@
-import { FormSkeleton } from "@/components/ui/form-skeleton"
+import { EditProfileScreen } from "@/features/account/screens/edit-profile-screen"
 
 export default function Loading() {
-  return <FormSkeleton />
+  return <EditProfileScreen />
 }

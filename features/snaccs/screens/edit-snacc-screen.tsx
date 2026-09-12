@@ -7,13 +7,14 @@ import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Spinner } from "@/components/ui/spinner"
 import { useBack } from "@/hooks/use-back"
-import { SnaccCardSkeleton } from "../components/card/snacc-card-skeleton"
 import { ComposerAttachments } from "../components/composer/composer-attachments"
 import { ComposerFrame } from "../components/composer/composer-frame"
+import { ComposerFrameSkeleton } from "../components/composer/composer-frame-skeleton"
 import { ComposerHeader } from "../components/composer/composer-header"
 import { ComposerInput } from "../components/composer/composer-input"
 import { ComposerNudges } from "../components/composer/composer-nudges"
 import { ComposerToolbar } from "../components/composer/composer-toolbar"
+import { ComposerToolbarSkeleton } from "../components/composer/composer-toolbar-skeleton"
 import { ImageEditorSheet } from "@/features/image-editor/components/image-editor-sheet"
 import { useSnaccEditor } from "../hooks/composer/use-snacc-editor"
 import { useSnacc } from "../hooks/use-snacc"
@@ -26,7 +27,7 @@ export function EditSnaccScreen({ id }: { id: string }) {
   if (snacc.data) return <Editor snacc={snacc.data} />
 
   return (
-    <>
+    <ComposerScreen>
       <ComposerHeader title="Edit snacc" onClose={back} />
       {snacc.isError ? (
         <EmptyState
@@ -36,9 +37,16 @@ export function EditSnaccScreen({ id }: { id: string }) {
           className="py-24"
         />
       ) : (
-        <SnaccCardSkeleton />
+        <>
+          <div className="flex-1 px-4 pt-4 pb-6">
+            <ComposerFrameSkeleton />
+          </div>
+          <ComposerBar>
+            <ComposerToolbarSkeleton />
+          </ComposerBar>
+        </>
       )}
-    </>
+    </ComposerScreen>
   )
 }
 

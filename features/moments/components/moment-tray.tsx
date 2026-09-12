@@ -7,10 +7,8 @@ import { useTier } from "@/features/score/hooks/use-tier"
 import { cn } from "@/lib/utils"
 import type { TrayEntry } from "../types"
 import { ringColors, ringGradient } from "../utils/ring"
-import { AVATAR_SIZE, squircleRadius } from "../utils/shape"
+import { AVATAR_SIZE, TRAY_RING as RING, squircleRadius } from "../utils/shape"
 import { nameOf } from "@/features/users/utils/names"
-
-const RING = AVATAR_SIZE + 9
 
 interface MomentTrayProps {
   mine: TrayEntry | null

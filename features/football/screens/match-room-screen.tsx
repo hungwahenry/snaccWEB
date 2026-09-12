@@ -14,6 +14,7 @@ import { useRealtimeRoom } from "@/hooks/use-realtime-room"
 import { realtimeRooms } from "@/providers/realtime-rooms"
 import { useBack } from "@/hooks/use-back"
 import { MatchAttachment } from "../components/match-attachment"
+import { MatchAttachmentSkeleton } from "../components/match-attachment-skeleton"
 import { useMatchDetail } from "../hooks/use-match-detail"
 import { useMatchRoom } from "../hooks/use-match-room"
 import { liveMatchCard } from "../utils/card"
@@ -59,12 +60,16 @@ export function MatchRoomScreen({ matchId }: { matchId: string }) {
         votingPollFor={votingPollFor}
         failedTitle="Could not load the room"
         header={
-          match ? (
+          match || detail.isPending ? (
             <div className="flex flex-col gap-3 p-4">
-              <MatchAttachment
-                match={liveMatchCard(match)}
-                interactive={false}
-              />
+              {match ? (
+                <MatchAttachment
+                  match={liveMatchCard(match)}
+                  interactive={false}
+                />
+              ) : (
+                <MatchAttachmentSkeleton />
+              )}
               <Button
                 className="w-full"
                 render={<Link href={composePath({ matchId })} />}

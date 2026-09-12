@@ -9,10 +9,8 @@ import { LoadMore } from "@/components/ui/load-more"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
 import { FollowRequestsRow } from "@/features/follows/components/follow-requests-row"
 import { TabHeader } from "@/features/navigation/components/tab-header"
-import {
-  NotificationRow,
-  NotificationRowSkeleton,
-} from "../components/notification-row"
+import { NotificationRow } from "../components/notification-row"
+import { NotificationRowSkeleton } from "../components/notification-row-skeleton"
 import { useNotificationsScreen } from "../hooks/use-notifications-screen"
 import { notificationRoute } from "../utils/notification-display"
 

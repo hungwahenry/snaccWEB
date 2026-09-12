@@ -8,6 +8,7 @@ import { useBack } from "@/hooks/use-back"
 import { FoundRow, MysteryRow } from "../components/collection-rows"
 import { EggsSkeleton } from "../components/eggs-skeleton"
 import { useEggCollection } from "../hooks/use-egg-collection"
+import { EGGS_APP_NOTE } from "../utils/eggs-copy"
 import { RARITY_LABELS } from "../utils/rarity"
 
 export function EggsScreen() {
@@ -35,8 +36,7 @@ export function EggsScreen() {
 
           {/* Eggs are found in the app, so say so rather than leaving a web-only reader puzzled. */}
           <p className="px-6 pb-3 text-xs text-muted-foreground">
-            Eggs are found in the Snacc app. This is where they turn up once you
-            have them.
+            {EGGS_APP_NOTE}
           </p>
 
           {data.discovered.length === 0 ? (

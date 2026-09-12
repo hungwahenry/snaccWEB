@@ -2,10 +2,14 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Eyebrow } from "@/components/ui/eyebrow"
 import { LoadFailed } from "@/components/ui/load-failed"
-import { Spinner } from "@/components/ui/spinner"
 import type { LimitsScreenProps } from "../../hooks/account/use-limits-screen"
 import { RECEIVE_PATH } from "../../routes"
-import type { RailLine } from "../../utils/limits"
+import {
+  LIMITS_HEADING,
+  LIMITS_ROLLOVER,
+  type RailLine,
+} from "../../utils/limits"
+import { LimitsSkeleton } from "./limits-skeleton"
 
 export function LimitsPanel({ failed, retry, tier, rails }: LimitsScreenProps) {
   if (failed) {
@@ -15,18 +19,12 @@ export function LimitsPanel({ failed, retry, tier, rails }: LimitsScreenProps) {
       </div>
     )
   }
-  if (!tier) {
-    return (
-      <div className="flex justify-center py-24">
-        <Spinner className="text-muted-foreground" />
-      </div>
-    )
-  }
+  if (!tier) return <LimitsSkeleton />
 
   return (
     <div className="flex flex-col gap-7 px-6 py-6">
       <div className="flex flex-col gap-1">
-        <Eyebrow>Your tier</Eyebrow>
+        <Eyebrow>{LIMITS_HEADING}</Eyebrow>
         <p className="text-2xl font-extrabold text-foreground">{tier.title}</p>
         <p className="text-sm leading-6 text-muted-foreground">
           {tier.description}
@@ -40,7 +38,7 @@ export function LimitsPanel({ failed, retry, tier, rails }: LimitsScreenProps) {
       </div>
 
       <p className="text-xs leading-5 text-muted-foreground">
-        Limits roll over 24 hours after each move, not at midnight.
+        {LIMITS_ROLLOVER}
       </p>
 
       {tier.canVerify ? (

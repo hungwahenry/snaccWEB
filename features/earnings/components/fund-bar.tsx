@@ -1,4 +1,5 @@
 import type { CampusFund } from "../types"
+import { EARNINGS_COPY } from "../utils/earnings-copy"
 import { fundLook } from "../utils/fund"
 
 export function FundBar({ fund }: { fund: CampusFund }) {
@@ -7,7 +8,9 @@ export function FundBar({ fund }: { fund: CampusFund }) {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-baseline justify-between">
-        <span className="font-bold text-foreground">Campus fund</span>
+        <span className="font-bold text-foreground">
+          {EARNINGS_COPY.fund}
+        </span>
         <span className="text-sm text-muted-foreground">{look.standing}</span>
       </div>
       <div className="h-2.5 overflow-hidden rounded-full bg-muted">

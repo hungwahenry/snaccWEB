@@ -2,9 +2,9 @@ import { MessagesSquareIcon } from "lucide-react"
 import { EmptyState } from "@/components/ui/empty-state"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
-import { ConversationRowSkeleton } from "@/features/messages/components/conversations/conversation-row"
 import type { ChatRoom } from "../types"
 import { ChatRoomRow } from "./chat-room-row"
+import { ChatRoomRowSkeleton } from "./chat-room-row-skeleton"
 
 export function ChatRoomsList({
   rooms,
@@ -19,7 +19,7 @@ export function ChatRoomsList({
   onRetry: () => void
   hrefOf: (room: ChatRoom) => string
 }) {
-  if (loading) return <SkeletonRows count={3} item={ConversationRowSkeleton} />
+  if (loading) return <SkeletonRows count={2} item={ChatRoomRowSkeleton} />
 
   if (failed && rooms.length === 0) {
     return (

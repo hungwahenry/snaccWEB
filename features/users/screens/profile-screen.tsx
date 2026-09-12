@@ -63,7 +63,10 @@ export function ProfileScreen({ username }: { username: string }) {
         </div>
       ) : !header ? (
         <div className="-mt-14">
-          <ProfileHeaderSkeleton />
+          <ProfileHeaderSkeleton
+            tab={screen.tabs.value}
+            onTabChange={screen.tabs.onChange}
+          />
           <SkeletonRows count={5} item={SnaccCardSkeleton} />
         </div>
       ) : (

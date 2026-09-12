@@ -1,9 +1,9 @@
 import { CheckIcon } from "lucide-react"
-import { Skeleton } from "@/components/ui/skeleton"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import type { Conversation } from "@/features/messages/types"
 import { cn } from "@/lib/utils"
 import { nameOf } from "@/features/users/utils/names"
+import { RecipientGridSkeleton } from "./recipient-grid-skeleton"
 
 export function RecipientGrid({
   conversations,
@@ -16,21 +16,7 @@ export function RecipientGrid({
   picked: string[]
   onToggle: (conversationId: string) => void
 }) {
-  if (loading) {
-    return (
-      <div className="grid grid-cols-4 gap-y-2">
-        {Array.from({ length: 8 }, (_, cell) => (
-          <div
-            key={cell}
-            className="flex flex-col items-center gap-1.5 px-1 py-2"
-          >
-            <Skeleton className="size-16 rounded-full" />
-            <Skeleton className="h-2.5 w-12 rounded-full" />
-          </div>
-        ))}
-      </div>
-    )
-  }
+  if (loading) return <RecipientGridSkeleton />
 
   if (conversations.length === 0) {
     return (

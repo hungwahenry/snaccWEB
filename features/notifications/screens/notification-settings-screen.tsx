@@ -1,11 +1,12 @@
 "use client"
 
 import { LoadFailed } from "@/components/ui/load-failed"
-import { Spinner } from "@/components/ui/spinner"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { useBack } from "@/hooks/use-back"
+import { NotificationSettingsSkeleton } from "../components/notification-settings-skeleton"
 import { PreferenceHeader, PreferenceRow } from "../components/preference-row"
 import { useNotificationPreferences } from "../hooks/use-notification-preferences"
+import { SECURITY_ALERTS_NOTE } from "../utils/preferences-copy"
 
 export function NotificationSettingsScreen() {
   const back = useBack("/settings")
@@ -17,9 +18,7 @@ export function NotificationSettingsScreen() {
       <BackHeader title="Notifications" onBack={back} />
 
       {loading ? (
-        <div className="flex justify-center py-24">
-          <Spinner className="text-muted-foreground" />
-        </div>
+        <NotificationSettingsSkeleton />
       ) : failed ? (
         <div className="py-24">
           <LoadFailed
@@ -38,8 +37,7 @@ export function NotificationSettingsScreen() {
             />
           ))}
           <p className="pt-4 text-sm text-muted-foreground">
-            Security alerts are always sent, so you never miss activity on your
-            account.
+            {SECURITY_ALERTS_NOTE}
           </p>
         </div>
       )}

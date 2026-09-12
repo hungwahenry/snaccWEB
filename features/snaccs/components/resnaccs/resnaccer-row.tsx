@@ -1,4 +1,3 @@
-import { Skeleton } from "@/components/ui/skeleton"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { TierName } from "@/features/users/components/flair"
 import { ProfileLink } from "@/features/users/components/profile-link"
@@ -33,17 +32,5 @@ export function ResnaccerRow({ resnaccer }: { resnaccer: SnaccResnaccer }) {
         </span>
       </span>
     </ProfileLink>
-  )
-}
-
-export function ResnaccerRowSkeleton() {
-  return (
-    <div className="flex items-center gap-3 px-4 py-3">
-      <Skeleton className="size-11 rounded-full" />
-      <div className="flex flex-1 flex-col gap-2">
-        <Skeleton className="h-3.5 w-32" />
-        <Skeleton className="h-3 w-24" />
-      </div>
-    </div>
   )
 }

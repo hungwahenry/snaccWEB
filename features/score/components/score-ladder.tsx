@@ -3,6 +3,7 @@ import { Eyebrow } from "@/components/ui/eyebrow"
 import { NamedIcon } from "@/lib/icons/named-icon"
 import { cn } from "@/lib/utils"
 import type { ScoreStanding, ScoreTier } from "../types"
+import { LADDER_HEADING } from "../utils/ladder-copy"
 import { ProgressGradient } from "./progress-gradient"
 
 export type LadderRung = ScoreTier & { reached: boolean; current: boolean }
@@ -53,7 +54,7 @@ export function ScoreLadder({
       </div>
 
       <div className="flex flex-col gap-3">
-        <Eyebrow>The ladder</Eyebrow>
+        <Eyebrow>{LADDER_HEADING}</Eyebrow>
         <div className="flex flex-col gap-1">
           {ladder.map((rung) => (
             <div

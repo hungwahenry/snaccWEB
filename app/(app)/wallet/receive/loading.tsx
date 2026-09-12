@@ -1,5 +1,12 @@
-import { FormSkeleton } from "@/components/ui/form-skeleton"
+import { RouteBackHeader } from "@/features/navigation/containers/route-back-header"
+import { ReceiveSkeleton } from "@/features/wallet/components/receive/receive-skeleton"
+import { WALLET_PATH } from "@/features/wallet/routes"
 
 export default function Loading() {
-  return <FormSkeleton />
+  return (
+    <>
+      <RouteBackHeader title="Account number" fallback={WALLET_PATH} />
+      <ReceiveSkeleton />
+    </>
+  )
 }

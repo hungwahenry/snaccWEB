@@ -8,6 +8,7 @@ import { shortDate } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import type { MutedScreenProps } from "../../hooks/requests/use-muted-screen"
 import type { RequestMute } from "../../types"
+import { MutedSkeleton } from "./muted-skeleton"
 
 export function MutedPanel({
   loading,
@@ -17,13 +18,7 @@ export function MutedPanel({
   isBusy,
   unmute,
 }: MutedScreenProps) {
-  if (loading) {
-    return (
-      <div className="flex justify-center py-24">
-        <Spinner className="text-muted-foreground" />
-      </div>
-    )
-  }
+  if (loading) return <MutedSkeleton />
 
   if (failed) {
     return (

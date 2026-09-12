@@ -1,8 +1,7 @@
 "use client"
 
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useState } from "react"
 import { useMe } from "@/features/auth/hooks/use-me"
-import { useFlag } from "@/features/config/hooks/use-flag"
 import { signal } from "@/features/signals/utils/queue"
 import { useRealtimeEvent } from "@/hooks/use-realtime-event"
 import { useRealtimeRoom } from "@/hooks/use-realtime-room"
@@ -12,12 +11,12 @@ import {
   DEFAULT_FEED_SCOPE,
   FEED_EMPTY,
   FEED_FAILED,
-  feedTabs,
   liveFeedRoom,
   scopeAllowed,
 } from "../utils/scopes"
 import { useFeed } from "./use-feed"
 import { useFeedSort } from "./use-feed-sort"
+import { useFeedTabs } from "./use-feed-tabs"
 
 type SortMenu = { open: boolean; anchor: HTMLElement | null }
 const CLOSED: SortMenu = { open: false, anchor: null }
@@ -28,11 +27,7 @@ export function useFeedScreen() {
   const [newPosters, setNewPosters] = useState<NewPoster[] | null>(null)
   const [sortMenu, setSortMenu] = useState<SortMenu>(CLOSED)
 
-  const following = useFlag("feed_following")
-  const global = useFlag("feed_global")
-  const sortable = useFlag("feed_ranking")
-  const enabled = useMemo(() => ({ following, global }), [following, global])
-  const tabs = useMemo(() => feedTabs(enabled), [enabled])
+  const { enabled, tabs, sortable, show } = useFeedTabs()
 
   const scope = scopeAllowed(picked, enabled) ? picked : DEFAULT_FEED_SCOPE
   const sort: FeedSort = sortable ? remembered : "latest"
@@ -84,7 +79,7 @@ export function useFeedScreen() {
 
   return {
     tabs: {
-      show: tabs.length > 1 || sortable,
+      show,
       tabs,
       value: scope,
       onChange: pickScope,

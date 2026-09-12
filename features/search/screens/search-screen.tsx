@@ -1,18 +1,12 @@
 "use client"
 
 import { PillTabs } from "@/components/ui/pill-tabs"
-import {
-  CampusRow,
-  CampusRowSkeleton,
-} from "@/features/campus/components/campus-row"
-import {
-  FollowUserRow,
-  FollowUserRowSkeleton,
-} from "@/features/follows/components/follow-user-row"
-import {
-  HashtagRow,
-  HashtagRowSkeleton,
-} from "@/features/hashtags/components/hashtag-row"
+import { CampusRow } from "@/features/campus/components/campus-row"
+import { CampusRowSkeleton } from "@/features/campus/components/campus-row-skeleton"
+import { FollowUserRow } from "@/features/follows/components/follow-user-row"
+import { FollowUserRowSkeleton } from "@/features/follows/components/follow-user-row-skeleton"
+import { HashtagRow } from "@/features/hashtags/components/hashtag-row"
+import { HashtagRowSkeleton } from "@/features/hashtags/components/hashtag-row-skeleton"
 import { SnaccSheets } from "@/features/snaccs/components/sheets/snacc-sheets"
 import { SnaccList } from "@/features/snaccs/components/snacc-list"
 import { useSnaccActions } from "@/features/snaccs/hooks/use-snacc-actions"

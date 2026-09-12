@@ -24,7 +24,7 @@ export function HiddenHeader({ children }: { children: ReactNode }) {
   return <span className="sr-only">{children}</span>
 }
 
-function alignClass(align: Column<unknown>["align"]) {
+export function alignClass(align: Column<unknown>["align"]) {
   return align === "end" ? "text-right" : undefined
 }
 

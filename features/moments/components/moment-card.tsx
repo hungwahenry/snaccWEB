@@ -36,7 +36,7 @@ export function MomentCard({
         }}
       >
         {ready ? null : (
-          <Skeleton className="absolute inset-0 rounded-none" />
+          <Skeleton className="absolute inset-0 rounded-none bg-white/10" />
         )}
         <img
           src={moment.image.url}

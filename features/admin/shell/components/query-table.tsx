@@ -2,8 +2,9 @@ import type { UseQueryResult } from "@tanstack/react-query"
 import type { ReactNode } from "react"
 import type { Paginated } from "@/lib/api/types"
 import { DataTable, type Column } from "./data-table"
-import { QueryView, TableSkeleton } from "./query-view"
+import { QueryView } from "./query-view"
 import { TableFrame } from "./table-frame"
+import { TableSkeleton } from "./table-skeleton"
 import { TablePagination } from "./table-pagination"
 
 /**
@@ -55,7 +56,7 @@ export function QueryTable<T>({
         ) : null
       }
     >
-      <QueryView query={query} what={what} loading={<TableSkeleton />}>
+      <QueryView query={query} what={what} loading={<TableSkeleton columns={columns} />}>
         {(result) => (
           <DataTable
             columns={columns}

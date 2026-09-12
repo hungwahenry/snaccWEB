@@ -1,4 +1,3 @@
-import { Skeleton } from "@/components/ui/skeleton"
 import type { UniversityDetail } from "../types"
 import { campusStats } from "../utils/labels"
 import { CampusBadge } from "./campus-badge"
@@ -19,18 +18,6 @@ export function CampusHeader({ campus }: { campus: UniversityDetail }) {
         <p className="mt-1 text-sm font-semibold text-muted-foreground">
           {campusStats(campus)}
         </p>
-      </div>
-    </div>
-  )
-}
-
-export function CampusHeaderSkeleton() {
-  return (
-    <div className="flex items-center gap-4 border-b border-border px-4 py-4">
-      <Skeleton className="size-14 rounded-full" />
-      <div className="flex flex-1 flex-col gap-2">
-        <Skeleton className="h-5 w-48" />
-        <Skeleton className="h-3.5 w-32" />
       </div>
     </div>
   )

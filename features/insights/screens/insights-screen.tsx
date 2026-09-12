@@ -11,6 +11,7 @@ import { InsightsSkeleton } from "../components/insights-skeleton"
 import { RangePicker } from "../components/range-picker"
 import { useInsights } from "../hooks/use-insights"
 import { DEFAULT_RANGE } from "../routes"
+import { INSIGHTS_PITCH } from "../utils/sections"
 
 export function InsightsScreen() {
   const back = useBack()
@@ -25,10 +26,7 @@ export function InsightsScreen() {
         right={<RangePicker days={days} onChange={setDays} />}
       />
 
-      <PremiumGate
-        title="See how your snaccs do"
-        body="Reach, how far people read, and who tapped through to you."
-      >
+      <PremiumGate title={INSIGHTS_PITCH.title} body={INSIGHTS_PITCH.body}>
         <div className="flex flex-col gap-7 p-5 pb-10">
           {insights.isPending ? (
             <InsightsSkeleton />

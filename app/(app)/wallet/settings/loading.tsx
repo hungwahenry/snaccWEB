@@ -1,5 +1,5 @@
-import { FormSkeleton } from "@/components/ui/form-skeleton"
+import { MoneySettingsScreen } from "@/features/wallet/screens/money-settings-screen"
 
 export default function Loading() {
-  return <FormSkeleton />
+  return <MoneySettingsScreen />
 }

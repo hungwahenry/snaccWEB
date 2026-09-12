@@ -2,9 +2,10 @@ import { EyeIcon } from "lucide-react"
 import { ActionSheet } from "@/components/ui/action-sheet"
 import { EmptyState } from "@/components/ui/empty-state"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
-import { UserRow, UserRowSkeleton } from "@/features/users/components/user-row"
+import { UserRow } from "@/features/users/components/user-row"
 import { timeAgo } from "@/lib/format"
 import type { MomentViewer } from "../types"
+import { ViewerRowSkeleton } from "./viewer-row-skeleton"
 
 export function MomentViewersSheet({
   open,
@@ -26,7 +27,7 @@ export function MomentViewersSheet({
       className="px-4"
     >
       {loading && viewers.length === 0 ? (
-        <SkeletonRows count={8} item={UserRowSkeleton} />
+        <SkeletonRows count={8} item={ViewerRowSkeleton} />
       ) : viewers.length === 0 ? (
         <EmptyState
           icon={EyeIcon}

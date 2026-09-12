@@ -4,7 +4,8 @@ import { GraduationCapIcon, ShareIcon } from "lucide-react"
 import { IconButton } from "@/components/ui/icon-button"
 import { ShareSheet } from "@/features/share/components/share-sheet"
 import { SnaccListScreen } from "@/features/snaccs/screens/snacc-list-screen"
-import { CampusHeader, CampusHeaderSkeleton } from "../components/campus-header"
+import { CampusHeader } from "../components/campus-header"
+import { CampusHeaderSkeleton } from "../components/campus-header-skeleton"
 import { useCampusScreen } from "../hooks/use-campus-screen"
 
 export function CampusScreen({ slug }: { slug: string }) {

@@ -6,18 +6,16 @@ import { ListFooter } from "@/components/ui/list-footer"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { LoadMore } from "@/components/ui/load-more"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
-import { Spinner } from "@/components/ui/spinner"
 import { Switch } from "@/components/ui/switch"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { useIsPremium } from "@/features/premium/hooks/use-premium-limit"
-import {
-  FollowUserRow,
-  FollowUserRowSkeleton,
-} from "@/features/follows/components/follow-user-row"
+import { FollowUserRow } from "@/features/follows/components/follow-user-row"
+import { FollowUserRowSkeleton } from "@/features/follows/components/follow-user-row-skeleton"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { useBack } from "@/hooks/use-back"
 import { VisitorsLocked } from "../components/visitors-locked"
+import { VisitorsSkeleton } from "../components/visitors-skeleton"
 import { VisitorsUpsell } from "../components/visitors-upsell"
 import { useProfileVisitors } from "../hooks/use-profile-visitors"
 import { useVisitorSummary } from "../hooks/use-visitor-summary"
@@ -62,9 +60,7 @@ export function VisitorsScreen() {
       />
 
       {loading ? (
-        <div className="flex justify-center py-24">
-          <Spinner className="text-muted-foreground" />
-        </div>
+        <VisitorsSkeleton />
       ) : failed ? (
         <div className="py-24">
           <LoadFailed title="Could not load your visitors" onRetry={retry} />

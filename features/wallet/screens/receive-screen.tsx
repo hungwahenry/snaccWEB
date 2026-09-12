@@ -1,11 +1,11 @@
 "use client"
 
 import { LoadFailed } from "@/components/ui/load-failed"
-import { Spinner } from "@/components/ui/spinner"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { useBack } from "@/hooks/use-back"
 import { AccountCard } from "../components/receive/account-card"
 import { AccountPending } from "../components/receive/account-pending"
+import { ReceiveSkeleton } from "../components/receive/receive-skeleton"
 import { AccountActivation } from "../containers/account-activation"
 import { WalletGate } from "../containers/wallet-gate"
 import { useReceiveScreen } from "../hooks/receive/use-receive-screen"
@@ -26,13 +26,7 @@ export function ReceiveScreen() {
 function Receive() {
   const screen = useReceiveScreen()
 
-  if (screen.view === "loading") {
-    return (
-      <div className="flex justify-center py-16">
-        <Spinner className="text-muted-foreground" />
-      </div>
-    )
-  }
+  if (screen.view === "loading") return <ReceiveSkeleton />
   if (screen.view === "failed") {
     return (
       <div className="py-24">

@@ -4,18 +4,14 @@ import { memo } from "react"
 import { EmptyState } from "@/components/ui/empty-state"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { LoadMore } from "@/components/ui/load-more"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
 import { useHoldAction } from "@/hooks/use-hold-action"
 import { aspectRatio } from "@/lib/aspect"
 import type { TrayGridState, TrayTile } from "../types"
 import { columnsOf } from "../utils/tray"
+import { TrayGridSkeleton } from "./tray-grid-skeleton"
 
 const COLUMNS = 2
-const PLACEHOLDER_HEIGHTS = [
-  ["h-32", "h-24", "h-40"],
-  ["h-24", "h-40", "h-28"],
-]
 
 export function TrayGrid({ grid }: { grid: TrayGridState }) {
   if (grid.items.length === 0) {
@@ -56,20 +52,6 @@ export function TrayGrid({ grid }: { grid: TrayGridState }) {
         </div>
       ) : null}
     </>
-  )
-}
-
-function TrayGridSkeleton() {
-  return (
-    <div aria-hidden className="grid grid-cols-2 gap-1.5 px-4">
-      {PLACEHOLDER_HEIGHTS.map((column, index) => (
-        <div key={index} className="flex flex-col gap-1.5">
-          {column.map((height, row) => (
-            <Skeleton key={row} className={height} />
-          ))}
-        </div>
-      ))}
-    </div>
   )
 }
 

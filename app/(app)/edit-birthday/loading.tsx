@@ -1,5 +1,5 @@
-import { FormSkeleton } from "@/components/ui/form-skeleton"
+import { EditBirthdayScreen } from "@/features/account/screens/edit-birthday-screen"
 
 export default function Loading() {
-  return <FormSkeleton />
+  return <EditBirthdayScreen />
 }

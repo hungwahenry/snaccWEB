@@ -1,6 +1,7 @@
 import { CircleCheckIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { EarningsMilestone } from "../types"
+import { EARNINGS_COPY } from "../utils/earnings-copy"
 import { clearedLabel, milestoneLook } from "../utils/milestones"
 
 export function MilestoneList({
@@ -12,7 +13,7 @@ export function MilestoneList({
     <div className="flex flex-col gap-4">
       <div className="flex items-end justify-between">
         <span className="text-lg font-extrabold text-foreground">
-          Milestones
+          {EARNINGS_COPY.milestones}
         </span>
         <span className="text-sm font-bold text-muted-foreground">
           {clearedLabel(milestones)}

@@ -3,6 +3,7 @@ import { clockTime } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { matchRoomPath } from "../routes"
 import type { SnaccMatch } from "../types"
+import { MATCH_ATTACHMENT_SHELL } from "./match-attachment-shell"
 
 function Crest({ url }: { url: string | null }) {
   if (!url) return <span className="size-6 shrink-0 rounded-full bg-border" />
@@ -102,14 +103,15 @@ export function MatchAttachment({
     </>
   )
 
-  const shell = "flex flex-col gap-2.5 rounded-2xl border border-border p-3.5"
-
-  if (!interactive) return <div className={shell}>{body}</div>
+  if (!interactive) return <div className={MATCH_ATTACHMENT_SHELL}>{body}</div>
 
   return (
     <Link
       href={matchRoomPath(match.match_id)}
-      className={cn(shell, "transition-colors hover:bg-muted/50")}
+      className={cn(
+        MATCH_ATTACHMENT_SHELL,
+        "transition-colors hover:bg-muted/50"
+      )}
     >
       {body}
     </Link>

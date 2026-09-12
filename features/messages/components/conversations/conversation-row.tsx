@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { memo } from "react"
-import { Skeleton } from "@/components/ui/skeleton"
 import { PersonAvatar } from "@/features/users/components/person-avatar"
 import { timeAgo } from "@/lib/format"
 import { cn } from "@/lib/utils"
@@ -63,18 +62,3 @@ function ConversationRowComponent({
 }
 
 export const ConversationRow = memo(ConversationRowComponent)
-
-export function ConversationRowSkeleton() {
-  return (
-    <div className="flex items-center gap-3 px-4 py-3 sm:px-6">
-      <Skeleton className="size-12 rounded-full" />
-      <div className="flex flex-1 flex-col gap-1.5">
-        <div className="flex items-center justify-between gap-2">
-          <Skeleton className="h-4 w-32 rounded-full" />
-          <Skeleton className="h-3 w-8 rounded-full" />
-        </div>
-        <Skeleton className="h-3.5 w-52 rounded-full" />
-      </div>
-    </div>
-  )
-}

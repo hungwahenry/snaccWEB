@@ -7,8 +7,9 @@ import { LoadFailed } from "@/components/ui/load-failed"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
 import { Spinner } from "@/components/ui/spinner"
 import { BackHeader } from "@/features/navigation/components/back-header"
-import { UserRow, UserRowSkeleton } from "@/features/users/components/user-row"
+import { UserRow } from "@/features/users/components/user-row"
 import { useBack } from "@/hooks/use-back"
+import { BlockedRowSkeleton } from "../components/blocked-row-skeleton"
 import { useBlockedAccounts } from "../hooks/use-blocked-accounts"
 
 export function BlockedAccountsScreen() {
@@ -25,7 +26,7 @@ export function BlockedAccountsScreen() {
             onRetry={blocked.retry}
           />
         ) : blocked.loading ? (
-          <SkeletonRows count={6} item={UserRowSkeleton} />
+          <SkeletonRows count={6} item={BlockedRowSkeleton} />
         ) : blocked.users.length === 0 ? (
           <EmptyState
             icon={BanIcon}

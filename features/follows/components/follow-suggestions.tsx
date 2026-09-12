@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Eyebrow } from "@/components/ui/eyebrow"
-import { Skeleton } from "@/components/ui/skeleton"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { profilePath } from "@/features/users/routes"
 import type { FollowUser } from "../types"
@@ -53,23 +52,5 @@ export function FollowSuggestions({
         ))}
       </div>
     </section>
-  )
-}
-
-export function FollowSuggestionsSkeleton() {
-  return (
-    <div className="flex flex-col gap-2.5">
-      <Skeleton className="h-3 w-28" />
-      {[0, 1, 2].map((i) => (
-        <div key={i} className="flex items-center gap-3 px-1 py-2">
-          <Skeleton className="size-10 rounded-full" />
-          <div className="flex flex-1 flex-col gap-2">
-            <Skeleton className="h-3 w-28" />
-            <Skeleton className="h-2.5 w-20" />
-          </div>
-          <Skeleton className="h-8 w-20 rounded-full" />
-        </div>
-      ))}
-    </div>
   )
 }

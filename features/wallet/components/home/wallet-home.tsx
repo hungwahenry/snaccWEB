@@ -4,6 +4,7 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { Spinner } from "@/components/ui/spinner"
 import type { WalletHomeProps } from "../../hooks/home/use-wallet-home"
+import { WALLET_HOME_COPY } from "../../utils/home-copy"
 import { RequestDetailSheet } from "../requests/request-detail-sheet"
 import { BalanceCard } from "./balance-card"
 import { EarningsLinkCard } from "./earnings-link-card"
@@ -66,7 +67,7 @@ export function WalletHome({
 
         {activity.firstRun ? null : (
           <p className="px-6 pt-1 text-xs font-bold tracking-wide text-muted-foreground uppercase">
-            Recent activity
+            {WALLET_HOME_COPY.recent}
           </p>
         )}
       </div>

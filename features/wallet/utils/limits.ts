@@ -1,11 +1,16 @@
 import { formatNaira } from "@/lib/format"
 import type { LimitRail, LimitTier, RailUsage, WalletLimits } from "../types"
 
-const RAIL_LABELS: Record<LimitRail, string> = {
+export const RAIL_LABELS: Record<LimitRail, string> = {
   send: "Send to people",
   bank_send: "Send to banks",
   deposit: "Add money",
 }
+
+export const LIMITS_HEADING = "Your tier"
+
+export const LIMITS_ROLLOVER =
+  "Limits roll over 24 hours after each move, not at midnight."
 
 export interface RailLine {
   rail: LimitRail

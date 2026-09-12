@@ -17,10 +17,8 @@ import { SkeletonRows } from "@/components/ui/skeleton-rows"
 import { ChatRoomsList } from "@/features/chats/components/chat-rooms-list"
 import { TabHeader } from "@/features/navigation/components/tab-header"
 import { cn } from "@/lib/utils"
-import {
-  ConversationRow,
-  ConversationRowSkeleton,
-} from "../components/conversations/conversation-row"
+import { ConversationRow } from "../components/conversations/conversation-row"
+import { ConversationRowSkeleton } from "../components/conversations/conversation-row-skeleton"
 import { ConversationSearch } from "../components/conversations/conversation-search"
 import { MessageHitRow } from "../components/conversations/message-hit-row"
 import { ShareAnonLinkSheet } from "../components/conversations/share-anon-link-sheet"
@@ -66,7 +64,10 @@ export function MessagesScreen() {
       {screen.showRooms ? (
         <ChatRoomsList {...screen.rooms} />
       ) : screen.dmsEnabled === null ? (
-        <SkeletonRows count={8} item={ConversationRowSkeleton} />
+        <>
+          <ConversationSearch value={screen.query} onChange={screen.setQuery} />
+          <SkeletonRows count={8} item={ConversationRowSkeleton} />
+        </>
       ) : !screen.dmsEnabled ? (
         <EmptyState
           icon={GhostIcon}

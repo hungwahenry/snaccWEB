@@ -1,5 +1,5 @@
-import { SettingsSkeleton } from "@/features/settings/components/settings-skeleton"
+import { SettingsScreen } from "@/features/settings/screens/settings-screen"
 
 export default function Loading() {
-  return <SettingsSkeleton />
+  return <SettingsScreen />
 }

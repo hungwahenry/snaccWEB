@@ -8,6 +8,7 @@ import { liveMatchCard } from "@/features/football/utils/card"
 import { ImageEditorSheet } from "@/features/image-editor/components/image-editor-sheet"
 import { StickerCreator } from "@/features/stickers/components/sticker-creator"
 import { StickerTraySheet } from "@/features/stickers/containers/sticker-tray-sheet"
+import { useBack } from "@/hooks/use-back"
 import { cn } from "@/lib/utils"
 import { QuoteCurve } from "../components/card/quote/quote-connector"
 import { QuotedSnacc } from "../components/card/quote/quoted-snacc"
@@ -15,6 +16,7 @@ import { ComposerAttachments } from "../components/composer/composer-attachments
 import { ComposerFrame } from "../components/composer/composer-frame"
 import { ComposerHeader } from "../components/composer/composer-header"
 import { ComposerInput } from "../components/composer/composer-input"
+import { ComposeScreenSkeleton } from "../components/composer/compose-screen-skeleton"
 import { ComposerNudges } from "../components/composer/composer-nudges"
 import { ComposerSuggestions } from "../components/composer/composer-suggestions"
 import { ComposerToolbar } from "../components/composer/composer-toolbar"
@@ -24,12 +26,21 @@ import { ReplyTo } from "../components/composer/reply-to"
 import { useComposeScreen } from "../hooks/composer/use-compose-screen"
 import { useDrafts } from "../hooks/composer/use-drafts"
 import type { ComposeParams } from "../types"
+import { COMPOSER_COPY, composerMode } from "../utils/composer"
 
 export function ComposeScreen(props: ComposeParams) {
   const { hydrated } = useDrafts()
+  const back = useBack()
 
   // A draft seeds the composer once, so it has to be read before the composer starts.
-  if (props.draftId && !hydrated) return null
+  if (props.draftId && !hydrated) {
+    return (
+      <ComposeScreenSkeleton
+        title={COMPOSER_COPY[composerMode(props)].title}
+        onClose={back}
+      />
+    )
+  }
   return <ComposeBody {...props} />
 }
 

@@ -88,7 +88,7 @@ export function MomentPlayer({
     return () => observer.disconnect()
   }, [])
 
-  if (loading) return <MomentPlayerSkeleton />
+  if (loading) return <MomentPlayerSkeleton onClose={onClose} />
 
   if (failed || !current) {
     return (

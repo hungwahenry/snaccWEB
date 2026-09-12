@@ -8,7 +8,7 @@ import { LoadMore } from "@/components/ui/load-more"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { FollowRequestRow } from "../components/follow-request-row"
-import { FollowUserRowSkeleton } from "../components/follow-user-row"
+import { FollowRequestRowSkeleton } from "../components/follow-request-row-skeleton"
 import { useFollowRequestsScreen } from "../hooks/use-follow-requests-screen"
 
 export function FollowRequestsScreen() {
@@ -26,7 +26,7 @@ export function FollowRequestsScreen() {
           />
         </div>
       ) : list.loading ? (
-        <SkeletonRows count={6} item={FollowUserRowSkeleton} />
+        <SkeletonRows count={6} item={FollowRequestRowSkeleton} />
       ) : list.users.length === 0 ? (
         <EmptyState
           icon={UserRoundPlusIcon}
