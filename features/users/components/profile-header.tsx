@@ -1,3 +1,4 @@
+import { LockIcon } from "lucide-react"
 import type { ReactNode } from "react"
 import { StoryRing } from "@/features/moments/components/moment-ring"
 import { ScorePill } from "@/features/score/components/score-pill"
@@ -79,6 +80,13 @@ export function ProfileHeader({
                   iconSize={22}
                 />
               </h1>
+              {profile.is_private ? (
+                <LockIcon
+                  className="size-5 shrink-0 text-muted-foreground"
+                  role="img"
+                  aria-label="Private account"
+                />
+              ) : null}
               {profile.follows_you ? (
                 <span className="shrink-0 rounded-md bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
                   Follows you
