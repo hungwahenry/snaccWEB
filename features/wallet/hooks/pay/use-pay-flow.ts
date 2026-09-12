@@ -146,6 +146,7 @@ export function usePayFlow(prefill: PayPrefill) {
     amount: {
       raw: amount,
       target: pinned && target ? { target, label: targetLabel(target) } : null,
+      resolvingTarget: pinned && target === null,
       hint,
       // Passing through a too-small amount on the way to typing a bigger one is not an error.
       warning: check.problem !== null && check.problem !== "below_min",

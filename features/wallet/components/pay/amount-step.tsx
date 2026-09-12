@@ -6,10 +6,12 @@ import type { PayFlow } from "../../hooks/pay/use-pay-flow"
 import { AmountDisplay } from "./amount-display"
 import { FixPill } from "./fix-pill"
 import { TargetLine } from "./target-line"
+import { TargetLineSkeleton } from "./target-line-skeleton"
 
 export function AmountStep({
   raw,
   target,
+  resolvingTarget,
   hint,
   warning,
   fix,
@@ -25,6 +27,8 @@ export function AmountStep({
         <AmountDisplay raw={raw} />
         {target ? (
           <TargetLine target={target.target} label={target.label} />
+        ) : resolvingTarget ? (
+          <TargetLineSkeleton />
         ) : null}
         {fix ? <FixPill label={fix.label} onPress={fix.onPress} /> : null}
         <p

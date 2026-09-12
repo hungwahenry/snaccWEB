@@ -19,6 +19,7 @@ export default function Loading() {
       <AmountStep
         raw={prefill.amount ?? ""}
         target={null}
+        resolvingTarget={Boolean(prefill.recipientId || prefill.to)}
         hint={" "}
         warning={false}
         fix={null}
