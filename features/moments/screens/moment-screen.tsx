@@ -28,10 +28,12 @@ export function MomentScreen({ authorId }: { authorId: string }) {
           pageRef={screen.pageRef}
           loading={player.loading}
           failed={player.failed}
+          ready={player.ready}
           removing={player.removing}
           replying={player.replying}
           reactions={reactions}
           onRetry={player.retry}
+          onMediaReady={player.markReady}
           onPause={player.pause}
           onResume={player.resume}
           onHold={player.hold}

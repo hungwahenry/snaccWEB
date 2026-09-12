@@ -1,48 +1,25 @@
 "use client"
 
 import { CheckCheckIcon, HeartIcon } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
 import { EmptyState } from "@/components/ui/empty-state"
 import { IconButton } from "@/components/ui/icon-button"
 import { ListFooter } from "@/components/ui/list-footer"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { LoadMore } from "@/components/ui/load-more"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
+import { FollowRequestsRow } from "@/features/follows/components/follow-requests-row"
 import { TabHeader } from "@/features/navigation/components/tab-header"
 import {
   NotificationRow,
   NotificationRowSkeleton,
 } from "../components/notification-row"
-import {
-  useMarkAllNotificationsRead,
-  useMarkNotificationRead,
-  useMarkNotificationsSeen,
-} from "../hooks/use-mark-read"
-import { useNotifications } from "../hooks/use-notifications"
-import { useUnreadCount } from "../hooks/use-unread-count"
-import { notificationRoute } from "@/features/notifications/utils/notification-display"
-import type { Notification } from "../types"
+import { useNotificationsScreen } from "../hooks/use-notifications-screen"
+import { notificationRoute } from "../utils/notification-display"
 
 export function NotificationsScreen() {
-  const router = useRouter()
-  const { notifications, loading, failed, retry, loadMore, loadingMore } =
-    useNotifications()
-  const { mutate: markSeen } = useMarkNotificationsSeen()
-  const markRead = useMarkNotificationRead()
-  const markAllRead = useMarkAllNotificationsRead()
-  const unread = useUnreadCount().data ?? 0
-  const anyUnread = notifications.some((notification) => !notification.read_at)
-
-  useEffect(() => {
-    if (unread > 0) markSeen()
-  }, [unread, markSeen])
-
-  function onPress(notification: Notification) {
-    if (!notification.read_at) markRead.mutate(notification.id)
-    const route = notificationRoute(notification)
-    if (route) router.push(route)
-  }
+  const { list, anyUnread, markAllRead, onPress, requests } =
+    useNotificationsScreen()
+  const { notifications, loading, failed, retry, loadMore, loadingMore } = list
 
   return (
     <>
@@ -53,11 +30,15 @@ export function NotificationsScreen() {
             <IconButton
               icon={CheckCheckIcon}
               label="Mark all read"
-              onClick={() => markAllRead.mutate()}
+              onClick={markAllRead}
             />
           ) : null
         }
       />
+
+      {requests.count > 0 ? (
+        <FollowRequestsRow count={requests.count} href={requests.href} />
+      ) : null}
 
       {loading ? (
         <SkeletonRows count={8} item={NotificationRowSkeleton} />

@@ -8,7 +8,7 @@ import { LoadMore } from "@/components/ui/load-more"
 import { PillTabs } from "@/components/ui/pill-tabs"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
 import { BackHeader } from "@/features/navigation/components/back-header"
-import { useViewTracker } from "@/features/views/hooks/use-view-tracker"
+import { useSnaccTracker } from "@/features/snaccs/hooks/use-snacc-tracker"
 import { useBack } from "@/hooks/use-back"
 import {
   ResnaccerRow,
@@ -23,7 +23,7 @@ export function ResnaccsScreen({ id }: { id: string }) {
   const back = useBack()
   const screen = useResnaccLists(id)
   const { handlers, votingPollFor, sheets } = useSnaccActions()
-  const tracker = useViewTracker()
+  const tracker = useSnaccTracker()
 
   return (
     <>

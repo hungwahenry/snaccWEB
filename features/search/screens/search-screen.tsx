@@ -16,7 +16,7 @@ import {
 import { SnaccSheets } from "@/features/snaccs/components/sheets/snacc-sheets"
 import { SnaccList } from "@/features/snaccs/components/snacc-list"
 import { useSnaccActions } from "@/features/snaccs/hooks/use-snacc-actions"
-import { useViewTracker } from "@/features/views/hooks/use-view-tracker"
+import { useSnaccTracker } from "@/features/snaccs/hooks/use-snacc-tracker"
 import { useBack } from "@/hooks/use-back"
 import { SearchHeader } from "../components/search-header"
 import { SearchResults } from "../components/search-results"
@@ -28,7 +28,7 @@ export function SearchScreen() {
   const back = useBack()
   const search = useSearchScreen()
   const { handlers, votingPollFor, sheets } = useSnaccActions()
-  const tracker = useViewTracker()
+  const tracker = useSnaccTracker()
   const { people, snaccs, tags, campuses, settling } = search
 
   return (

@@ -1,21 +1,18 @@
 "use client"
 
-import { UserRoundCheckIcon, UsersRoundIcon } from "lucide-react"
-import { useState } from "react"
+import { LockIcon, UserRoundCheckIcon, UsersRoundIcon } from "lucide-react"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ListFooter } from "@/components/ui/list-footer"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { LoadMore } from "@/components/ui/load-more"
 import { PillTabs, type PillTab } from "@/components/ui/pill-tabs"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
-import { useMe } from "@/features/auth/hooks/use-me"
 import { BackHeader } from "@/features/navigation/components/back-header"
-import { useBack } from "@/hooks/use-back"
 import {
   FollowUserRow,
   FollowUserRowSkeleton,
 } from "../components/follow-user-row"
-import { useFollowList } from "../hooks/use-follow-list"
+import { useFollowsScreen } from "../hooks/use-follows-screen"
 import type { FollowTab } from "../types"
 
 const TABS: PillTab<FollowTab>[] = [
@@ -35,16 +32,12 @@ export function FollowsScreen({
   username: string
   initialTab?: string
 }) {
-  const back = useBack()
-  const [tab, setTab] = useState<FollowTab>(
-    initialTab === "following" ? "following" : "followers"
-  )
-  const me = useMe()
-  const list = useFollowList(username, tab)
+  const { onBack, tab, setTab, list, meId, locked, onRemove } =
+    useFollowsScreen(username, initialTab)
 
   return (
     <>
-      <BackHeader title={`@${username}`} onBack={back} />
+      <BackHeader title={`@${username}`} onBack={onBack} />
       <PillTabs tabs={TABS} value={tab} onChange={setTab} />
 
       {list.failed && list.users.length === 0 ? (
@@ -52,20 +45,30 @@ export function FollowsScreen({
       ) : list.loading ? (
         <SkeletonRows count={8} item={FollowUserRowSkeleton} />
       ) : list.users.length === 0 ? (
-        <EmptyState
-          icon={UsersRoundIcon}
-          title={EMPTY[tab]}
-          description="Nothing here yet."
-          className="py-24"
-        />
+        locked ? (
+          <EmptyState
+            icon={LockIcon}
+            title="This account is private"
+            description="Only their followers can see who they follow."
+            className="py-24"
+          />
+        ) : (
+          <EmptyState
+            icon={UsersRoundIcon}
+            title={EMPTY[tab]}
+            description="Nothing here yet."
+            className="py-24"
+          />
+        )
       ) : (
         <>
           {list.users.map((user) => (
             <FollowUserRow
               key={user.id}
               user={user}
-              isMe={me.data?.id === user.id}
+              isMe={meId === user.id}
               onToggleFollow={() => list.onToggleFollow(user)}
+              onRemove={onRemove ? () => onRemove(user) : undefined}
             />
           ))}
           <LoadMore onReach={list.loadMore} disabled={list.loadingMore} />

@@ -19,13 +19,6 @@ export function profileMeta(
   return present.length > 0 ? present.join(" · ") : null
 }
 
-export function followLabel(
-  person: Pick<PublicProfile, "is_following" | "follows_you">
-): string {
-  if (person.is_following) return "Following"
-  return person.follows_you ? "Follow back" : "Follow"
-}
-
 export function notifyLabel(notifying: boolean): string {
   return notifying
     ? "Stop notifying me of their posts"

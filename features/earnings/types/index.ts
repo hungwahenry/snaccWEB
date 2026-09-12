@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react"
-import type { MoneyPerson, WalletOverview } from "@/features/wallet/types"
+import type { WalletOverview } from "@/features/wallet/types"
 
 export interface EarningsMilestone {
   key: string
@@ -35,22 +35,6 @@ export interface TopSnacc {
   snacc: SnaccPreview
   total: number
   events: number
-}
-
-export interface EarningEvent {
-  id: string
-  /** An engagement kind ("reaction", "resnacc", "quote", …) or "bonus". */
-  type: string | null
-  amount: number
-  /** Gone when their account was deleted; the credit stays. */
-  actor: MoneyPerson | null
-  snacc: SnaccPreview | null
-  created_at: string
-}
-
-export interface EarningLine {
-  who: string | null
-  what: string
 }
 
 export interface MilestoneLook {

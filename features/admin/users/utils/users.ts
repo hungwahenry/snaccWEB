@@ -48,6 +48,7 @@ export function userBadges(user: AdminUserRow): StatusMeta[] {
       label: "Posts everywhere",
       variant: "outline" as const,
     },
+    user.is_private && { label: "Private", variant: "outline" as const },
     user.earnings_paused_at && {
       label: "Earnings paused",
       variant: "secondary" as const,

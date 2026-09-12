@@ -4,6 +4,7 @@ import type { SnaccWithParent } from "@/features/snaccs/types"
 import type {
   ProfileTab,
   PublicProfile,
+  User,
   UsernameAvailability,
   UserSuggestion,
 } from "../types"
@@ -25,6 +26,10 @@ export function listUserSnaccs(
 
 export function suggestUsers(query: string): Promise<UserSuggestion[]> {
   return api.get<UserSuggestion[]>("/users/suggest", { query })
+}
+
+export function setPrivacy(isPrivate: boolean): Promise<User> {
+  return api.put<User>("/profile/privacy", { isPrivate })
 }
 
 export function checkUsername(username: string): Promise<UsernameAvailability> {

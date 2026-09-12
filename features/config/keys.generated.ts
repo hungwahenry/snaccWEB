@@ -14,6 +14,7 @@ export const FLAG_KEYS = [
   'post_editing',
   'anon_messages',
   'first_post_prompt',
+  'private_accounts',
   'profile_visitors',
   'profile_photo_upload',
   'avatar_customization',

@@ -1,5 +1,4 @@
 export const MESSAGES_PATH = "/messages"
-export const MESSAGE_PRIVACY_PATH = "/settings/privacy"
 
 export const conversationPath = (id: string) =>
   `${MESSAGES_PATH}/${encodeURIComponent(id)}`

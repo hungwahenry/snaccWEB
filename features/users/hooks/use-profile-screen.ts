@@ -8,6 +8,7 @@ import { useFlag } from "@/features/config/hooks/use-flag"
 import { useFollowToggle } from "@/features/follows/hooks/use-follow-toggle"
 import { usePostNotifications } from "@/features/follows/hooks/use-post-notifications"
 import { followsPath } from "@/features/follows/routes"
+import { followButtonLabel } from "@/features/follows/utils/follow-state"
 import { useMessageUser } from "@/features/messages/hooks/use-message-user"
 import { momentsPath } from "@/features/moments/routes"
 import { useVisitorSummary } from "@/features/profile-views/hooks/use-visitor-summary"
@@ -15,18 +16,19 @@ import { useMyScore } from "@/features/score/hooks/use-my-score"
 import { useTier } from "@/features/score/hooks/use-tier"
 import { SCORE_PATH } from "@/features/score/routes"
 import { useSnaccActions } from "@/features/snaccs/hooks/use-snacc-actions"
+import { useSnaccTracker } from "@/features/snaccs/hooks/use-snacc-tracker"
 import { snaccPath } from "@/features/snaccs/routes"
-import { useViewTracker } from "@/features/views/hooks/use-view-tracker"
 import { payPath } from "@/features/wallet/routes"
 import { useBack } from "@/hooks/use-back"
+import { useRealtimeRoom } from "@/hooks/use-realtime-room"
 import { useScrolledPast } from "@/hooks/use-scrolled-past"
 import { isNotFound } from "@/lib/api/errors"
 import { useLightbox } from "@/providers/lightbox-provider"
+import { realtimeRooms } from "@/providers/realtime-rooms"
 import type { ProfileTab } from "../types"
 import { handleOf, nameOf } from "../utils/names"
 import {
   avatarLabel,
-  followLabel,
   notifyLabel,
   profileMeta,
   profileStats,
@@ -51,16 +53,20 @@ export function useProfileScreen(username: string) {
   const toggleFollow = useFollowToggle()
   const notify = usePostNotifications(username)
   const [tab, setTab] = useState<ProfileTab>(DEFAULT_PROFILE_TAB)
-  const timeline = useUserSnaccs(username, tab)
   const snaccs = useSnaccActions()
   const menu = useProfileMenu(query.data)
-  const tracker = useViewTracker()
+  const tracker = useSnaccTracker()
   const lightbox = useLightbox()
   const messageUser = useMessageUser()
   const scrolled = useScrolledPast(COVER_DROP)
 
   const profile = query.data ?? null
+  useRealtimeRoom(
+    profile?.username ? realtimeRooms.profile(profile.username) : null
+  )
   const isMe = profile !== null && me.data?.id === profile.id
+  const locked = profile !== null && !isMe && !profile.can_view
+  const timeline = useUserSnaccs(username, tab, !locked)
   const tier = useTier(profile?.score.tier)
   const myScore = useMyScore()
   const scoreEnabled = useFlag("score")
@@ -82,6 +88,7 @@ export function useProfileScreen(username: string) {
     retry: () => void query.refetch(),
     profile,
     isMe,
+    locked,
     header: profile
       ? {
           profile,
@@ -100,7 +107,7 @@ export function useProfileScreen(username: string) {
               : { tier },
           stats: profileStats(
             profile,
-            profile.username
+            profile.username && !locked
               ? {
                   following: followsPath(profile.username, "following"),
                   followers: followsPath(profile.username, "followers"),
@@ -129,10 +136,13 @@ export function useProfileScreen(username: string) {
             messagesEnabled && profile.accepts_anonymous_messages
               ? "Send anonymous message"
               : null,
-          following: profile.is_following,
+          followState: profile.follow_state,
           notifying: profile.notifying,
           notifyLabel: notifyLabel(profile.notifying),
-          followLabel: followLabel(profile),
+          followLabel: followButtonLabel(
+            profile.follow_state,
+            profile.follows_you
+          ),
           onPay: () =>
             router.push(
               payPath({ mode: "send", to: profile.username ?? undefined })

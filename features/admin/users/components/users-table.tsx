@@ -38,6 +38,7 @@ const COLUMNS: Column<AdminUserRow>[] = [
       <span className="flex gap-1.5">
         <StatusBadge status={accountStatus(user)} />
         {user.role === "admin" ? <Badge>Owner</Badge> : null}
+        {user.is_private ? <Badge variant="outline">Private</Badge> : null}
       </span>
     ),
   },

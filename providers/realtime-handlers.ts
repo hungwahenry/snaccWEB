@@ -7,13 +7,27 @@ import {
 import { onEarningsWallet } from "@/features/earnings/realtime"
 import { onMatchSnacc } from "@/features/football/realtime"
 import { onGhostWindow } from "@/features/ghost/realtime"
+import { onMomentsChanged } from "@/features/moments/realtime"
+import { onSessionRevoked } from "@/features/auth/realtime"
+import { onBlocked } from "@/features/blocks/realtime"
+import { onConfigChanged } from "@/features/config/realtime"
+import {
+  onFollowState,
+  type FollowStatePayload,
+} from "@/features/follows/realtime"
+import { onProfileCounts } from "@/features/users/realtime"
 import {
   onConversationRead,
   onConversationRevealed,
+  onConversationSeen,
   onMessageNew,
   onMessageUpdated,
+  onPhotoOpened,
 } from "@/features/messages/realtime"
-import { onNotification } from "@/features/notifications/realtime"
+import {
+  onNotification,
+  onNotificationsChanged,
+} from "@/features/notifications/realtime"
 import { onScoreChanged } from "@/features/score/realtime"
 import {
   onMoneyRequest,
@@ -33,7 +47,17 @@ import {
 export const REALTIME_HANDLERS = {
   notification: onNotification,
   "notification.removed": onNotification,
+  "notifications.changed": onNotificationsChanged,
   "ghost.window": onGhostWindow,
+  "moments.changed": onMomentsChanged,
+  "follow.state": (payload: FollowStatePayload) => {
+    onFollowState(payload)
+    onMomentsChanged({ author_id: payload.user_id })
+  },
+  "profile.counts": onProfileCounts,
+  blocked: onBlocked,
+  "session.revoked": onSessionRevoked,
+  "config.changed": onConfigChanged,
   "match.snacc": onMatchSnacc,
   "score.changed": onScoreChanged,
   "snacc.reaction": onSnaccReaction,
@@ -50,8 +74,10 @@ export const REALTIME_HANDLERS = {
   "message.updated": onMessageUpdated,
   "conversation.revealed": onConversationRevealed,
   "conversation.read": onConversationRead,
+  "conversation.seen": onConversationSeen,
+  "message.photo.opened": onPhotoOpened,
   wallet: (payload: { balance: number }) => {
-    onEarningsWallet(payload)
+    onEarningsWallet()
     onWalletBalance(payload)
   },
   withdrawal: onWithdrawal,

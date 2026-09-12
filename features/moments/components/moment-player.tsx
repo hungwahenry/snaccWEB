@@ -24,10 +24,12 @@ interface MomentPlayerProps {
   pageRef: RefObject<HTMLDivElement | null>
   loading: boolean
   failed: boolean
+  ready: boolean
   removing: boolean
   replying: boolean
   reactions: { quick: string[]; overflow: string | null }
   onRetry: () => void
+  onMediaReady: (id: string) => void
   onPause: () => void
   onResume: () => void
   onHold: () => void
@@ -54,10 +56,12 @@ export function MomentPlayer({
   pageRef,
   loading,
   failed,
+  ready,
   removing,
   replying,
   reactions,
   onRetry,
+  onMediaReady,
   onPause,
   onResume,
   onHold,
@@ -105,8 +109,11 @@ export function MomentPlayer({
       className="relative flex h-full w-full flex-col bg-black select-none"
     >
       <MomentCard
+        key={current.id}
         moment={current}
+        ready={ready}
         bottomClearance={current.mine ? 0 : replyBarHeight}
+        onReady={onMediaReady}
       />
 
       <MomentGestures

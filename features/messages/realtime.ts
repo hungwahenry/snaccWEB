@@ -1,5 +1,7 @@
 import {
   conversationChanged,
+  markConversationSeen,
+  markPhotoOpened,
   prependMessage,
   replaceMessage,
   setPeerRead,
@@ -33,4 +35,20 @@ export function onConversationRead(payload: {
   read_at: string
 }): void {
   setPeerRead(payload.conversation_id, payload.read_at)
+}
+
+export function onConversationSeen(payload: {
+  conversation_id: string
+  read_at: string
+}): void {
+  markConversationSeen(payload.conversation_id)
+  unreadChanged()
+}
+
+export function onPhotoOpened(payload: {
+  conversation_id: string
+  message_id: string
+  media_id: string
+}): void {
+  markPhotoOpened(payload.conversation_id, payload.media_id)
 }

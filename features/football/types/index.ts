@@ -22,6 +22,11 @@ export interface Scoreboard {
   updated_at: string | null
 }
 
+/** Pushed to a match's room when its score, status or kickoff moves. */
+export interface MatchUpdate {
+  match: LiveMatch
+}
+
 export interface FormRow {
   result: "W" | "D" | "L"
   opponent: string

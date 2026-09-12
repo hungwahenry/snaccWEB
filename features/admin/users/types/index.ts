@@ -13,6 +13,7 @@ export interface AdminUserRow extends UserRefWithCampus {
   suspended_note: string | null
   suspended_reason: { id: string; slug: string; label: string } | null
   posts_globally: boolean
+  is_private: boolean
   earnings_paused_at: string | null
   earnings_paused_reason: string | null
   payouts_blocked_at: string | null

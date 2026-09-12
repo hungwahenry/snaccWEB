@@ -6,6 +6,7 @@ import { UserAvatar } from "@/components/ui/user-avatar"
 import { profilePath } from "@/features/users/routes"
 import type { FollowUser } from "../types"
 import { nameOf } from "@/features/users/utils/names"
+import { followButtonLabel } from "../utils/follow-state"
 
 export function FollowSuggestions({
   users,
@@ -43,10 +44,10 @@ export function FollowSuggestions({
             </Link>
             <Button
               size="sm"
-              variant={user.is_following ? "secondary" : "default"}
+              variant={user.follow_state === "none" ? "default" : "secondary"}
               onClick={() => onToggleFollow(user)}
             >
-              {user.is_following ? "Following" : "Follow"}
+              {followButtonLabel(user.follow_state, user.follows_you)}
             </Button>
           </div>
         ))}

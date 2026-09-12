@@ -1,6 +1,6 @@
 "use client"
 
-import { EllipsisIcon, UserRoundXIcon } from "lucide-react"
+import { EllipsisIcon, LockIcon, UserRoundXIcon } from "lucide-react"
 import { EmptyState } from "@/components/ui/empty-state"
 import { IconButton } from "@/components/ui/icon-button"
 import { ListFooter } from "@/components/ui/list-footer"
@@ -79,46 +79,57 @@ export function ProfileScreen({ username }: { username: string }) {
             }
           />
 
-          <div className="sticky top-14 z-20 bg-background/90 backdrop-blur">
-            <PillTabs
-              tabs={PROFILE_TABS}
-              value={screen.tabs.value}
-              onChange={screen.tabs.onChange}
-            />
-          </div>
-
-          {timeline.failed && timeline.snaccs.length === 0 ? (
-            <LoadFailed
-              title="Could not load snaccs"
-              onRetry={timeline.retry}
-            />
-          ) : timeline.loading ? (
-            <SkeletonRows count={5} item={SnaccCardSkeleton} />
-          ) : timeline.snaccs.length === 0 ? (
+          {screen.locked ? (
             <EmptyState
-              icon={screen.empty.icon ?? UserRoundXIcon}
-              title={screen.empty.title}
-              description={screen.empty.description}
-              className="py-24"
+              icon={LockIcon}
+              title="This account is private"
+              description="Follow them to see their snaccs."
+              className="border-t border-border py-16"
             />
           ) : (
-            timeline.snaccs.map((item) => (
-              <ReplyThread
-                key={item.id}
-                snacc={item}
-                header={item.pinned ? <PinnedHeader /> : undefined}
-                votingPollFor={snaccs.votingPollFor}
-                itemRef={screen.trackRef(item.id)}
-                onOpenParent={screen.onOpenParent}
-                {...snaccs.handlers}
+            <>
+              <div className="sticky top-14 z-20 bg-background/90 backdrop-blur">
+                <PillTabs
+                  tabs={PROFILE_TABS}
+                  value={screen.tabs.value}
+                  onChange={screen.tabs.onChange}
+                />
+              </div>
+
+              {timeline.failed && timeline.snaccs.length === 0 ? (
+                <LoadFailed
+                  title="Could not load snaccs"
+                  onRetry={timeline.retry}
+                />
+              ) : timeline.loading ? (
+                <SkeletonRows count={5} item={SnaccCardSkeleton} />
+              ) : timeline.snaccs.length === 0 ? (
+                <EmptyState
+                  icon={screen.empty.icon ?? UserRoundXIcon}
+                  title={screen.empty.title}
+                  description={screen.empty.description}
+                  className="py-24"
+                />
+              ) : (
+                timeline.snaccs.map((item) => (
+                  <ReplyThread
+                    key={item.id}
+                    snacc={item}
+                    header={item.pinned ? <PinnedHeader /> : undefined}
+                    votingPollFor={snaccs.votingPollFor}
+                    itemRef={screen.trackRef(item.id)}
+                    onOpenParent={screen.onOpenParent}
+                    {...snaccs.handlers}
+                  />
+                ))
+              )}
+              <LoadMore
+                onReach={timeline.loadMore}
+                disabled={timeline.loading || timeline.loadingMore}
               />
-            ))
+              <ListFooter loading={timeline.loadingMore} />
+            </>
           )}
-          <LoadMore
-            onReach={timeline.loadMore}
-            disabled={timeline.loading || timeline.loadingMore}
-          />
-          <ListFooter loading={timeline.loadingMore} />
         </div>
       )}
 

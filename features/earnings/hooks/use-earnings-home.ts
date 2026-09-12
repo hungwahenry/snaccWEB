@@ -3,12 +3,7 @@
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { formatNaira } from "@/lib/format"
 import { useClaimEarnings } from "./use-claim-earnings"
-import {
-  useCampusFund,
-  useEarningEvents,
-  useEarningsBalance,
-  useTopSnaccs,
-} from "./use-earnings"
+import { useCampusFund, useEarningsBalance, useTopSnaccs } from "./use-earnings"
 
 const TOP_SHOWN = 3
 
@@ -17,7 +12,6 @@ export function useEarningsHome() {
   const balance = useEarningsBalance()
   const fund = useCampusFund()
   const topSnaccs = useTopSnaccs()
-  const events = useEarningEvents()
   const claim = useClaimEarnings()
 
   const data = balance.data
@@ -44,7 +38,6 @@ export function useEarningsHome() {
       : null,
     fund: fund.data ?? null,
     topSnaccs: (topSnaccs.data ?? []).slice(0, TOP_SHOWN),
-    events,
   }
 }
 

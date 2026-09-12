@@ -1,5 +1,6 @@
 import { SparklesIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { EmptyState } from "@/components/ui/empty-state"
 import { Eyebrow } from "@/components/ui/eyebrow"
 import { Spinner } from "@/components/ui/spinner"
 import { formatNaira } from "@/lib/format"
@@ -22,7 +23,7 @@ export function EarningsSummary({
   topSnaccs: TopSnacc[]
 }) {
   return (
-    <div className="flex flex-col gap-6 px-6 pt-8 pb-3">
+    <div className="flex flex-col gap-6 px-6 pt-8">
       <div className="flex flex-col items-center gap-1.5">
         <Eyebrow>Earnings</Eyebrow>
         <p className="truncate text-center text-6xl font-extrabold text-foreground tabular-nums">
@@ -71,9 +72,14 @@ export function EarningsSummary({
             </div>
           ))}
         </div>
-      ) : null}
-
-      <Eyebrow>Recent</Eyebrow>
+      ) : (
+        <EmptyState
+          icon={SparklesIcon}
+          title="No earning snaccs yet"
+          description="Post snaccs people love — every reaction pays."
+          className="py-10"
+        />
+      )}
     </div>
   )
 }

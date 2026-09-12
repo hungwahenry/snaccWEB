@@ -9,13 +9,29 @@ const MIN_DWELL_MS = 1000
 const MAX_DWELL_MS = 300_000
 const VISIBLE_SHARE = 0.6
 
-export function useViewTracker() {
+/**
+ * Counts how long each snacc is actually on screen and reports it in batches, and tells
+ * `onVisible` which ones are on screen as that changes.
+ */
+export function useViewTracker({
+  onVisible,
+}: { onVisible?: (ids: string[]) => void } = {}) {
   const observer = useRef<IntersectionObserver | null>(null)
   const ids = useRef<Map<Element, string>>(new Map())
   const visible = useRef<Set<string>>(new Set())
   const since = useRef<Map<string, number>>(new Map())
   const pending = useRef<Map<string, number>>(new Map())
   const sent = useRef<Map<string, number>>(new Map())
+  const visibleChanged = useRef(onVisible)
+
+  useEffect(() => {
+    visibleChanged.current = onVisible
+  })
+
+  const announce = useCallback(
+    () => visibleChanged.current?.([...visible.current]),
+    []
+  )
 
   const bank = useCallback((id: string, now: number) => {
     const start = since.current.get(id)
@@ -78,6 +94,7 @@ export function useViewTracker() {
             bank(id, now)
           }
         }
+        announce()
       },
       { threshold: VISIBLE_SHARE }
     )
@@ -100,7 +117,7 @@ export function useViewTracker() {
       observer.current = null
       flush(true)
     }
-  }, [bank, flush])
+  }, [announce, bank, flush])
 
   const ref = useCallback(
     (id: string) => (node: HTMLElement | null) => {
@@ -111,9 +128,10 @@ export function useViewTracker() {
         ids.current.delete(node)
         observer.current?.unobserve(node)
         bank(id, Date.now())
+        if (visible.current.delete(id)) announce()
       }
     },
-    [bank]
+    [announce, bank]
   )
 
   return { ref }

@@ -28,7 +28,23 @@ function withProfile(
     is_birthday: mine.is_birthday,
     official: mine.official,
     premium: mine.premium,
+    is_private: mine.is_private,
   }
+}
+
+/** Changes the cached account in place and hands back what it was, to put back if the change fails. */
+export function patchMe(
+  change: (profile: Profile) => Profile
+): User | undefined {
+  const previous = readMe()
+  client().setQueryData<User>(authKeys.me(), (user) =>
+    user?.profile ? { ...user, profile: change(user.profile) } : user
+  )
+  return previous
+}
+
+export function restoreMe(previous: User | undefined): void {
+  if (previous) client().setQueryData(authKeys.me(), previous)
 }
 
 /**

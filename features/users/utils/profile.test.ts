@@ -4,7 +4,6 @@ import { isGender } from "./gender"
 import {
   avatarLabel,
   classOf,
-  followLabel,
   handleWithCampus,
   notifyLabel,
   profileMeta,
@@ -41,18 +40,6 @@ describe("profile copy", () => {
         major: "Law",
       })
     ).toBe("UNILAG · 🎓 Class of 2020 · Law")
-  })
-
-  it("offers a follow back to someone who follows you", () => {
-    expect(followLabel({ is_following: true, follows_you: true })).toBe(
-      "Following"
-    )
-    expect(followLabel({ is_following: false, follows_you: true })).toBe(
-      "Follow back"
-    )
-    expect(followLabel({ is_following: false, follows_you: false })).toBe(
-      "Follow"
-    )
   })
 
   it("says what the bell and the picture do", () => {

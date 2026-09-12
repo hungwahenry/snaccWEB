@@ -7,6 +7,7 @@ import {
 import { Bump } from "@/components/motion/bump"
 import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
+import type { FollowState } from "@/features/follows/types"
 import { VisitorsButton } from "@/features/profile-views/components/visitors-button"
 import { cn } from "@/lib/utils"
 
@@ -34,7 +35,7 @@ export function OwnProfileActions({
 export type ProfileActionsProps = {
   payLabel: string | null
   messageLabel: string | null
-  following: boolean
+  followState: FollowState
   notifying: boolean
   notifyLabel: string
   followLabel: string
@@ -47,7 +48,7 @@ export type ProfileActionsProps = {
 export function ProfileActions({
   payLabel,
   messageLabel,
-  following,
+  followState,
   notifying,
   notifyLabel,
   followLabel,
@@ -76,7 +77,7 @@ export function ProfileActions({
           iconClassName="size-5"
         />
       ) : null}
-      {following ? (
+      {followState === "following" ? (
         <IconButton
           icon={notifying ? BellRingIcon : BellIcon}
           label={notifyLabel}
@@ -92,10 +93,10 @@ export function ProfileActions({
         />
       ) : null}
       <Button
-        variant={following ? "outline" : "default"}
+        variant={followState === "none" ? "default" : "outline"}
         onClick={onToggleFollow}
       >
-        <Bump value={following}>{followLabel}</Bump>
+        <Bump value={followState}>{followLabel}</Bump>
       </Button>
     </>
   )

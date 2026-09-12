@@ -1,3 +1,4 @@
+import type { FollowState } from "@/features/follows/types"
 import type { UserScore } from "@/features/score/types"
 import type { University, UniversityBadge } from "@/features/universities/types"
 import type { AdminPermissions } from "@/lib/permissions"
@@ -34,6 +35,7 @@ export interface Profile {
   completed_at: string | null
   official: boolean
   premium: boolean
+  is_private: boolean
   university: University | null
   university_locked: boolean
 }
@@ -94,6 +96,10 @@ export interface PublicProfile {
   is_following: boolean
   notifying: boolean
   follows_you: boolean
+  follow_state: FollowState
+  is_private: boolean
+  /** Public, yours, or you follow them: otherwise their snaccs and lists stay hidden. */
+  can_view: boolean
   accepts_anonymous_messages: boolean
   score: UserScore & { points: number }
   official: boolean

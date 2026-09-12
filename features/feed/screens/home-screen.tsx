@@ -15,7 +15,7 @@ import { SEARCH_PATH } from "@/features/search/routes"
 import { SnaccSheets } from "@/features/snaccs/components/sheets/snacc-sheets"
 import { SnaccList } from "@/features/snaccs/components/snacc-list"
 import { useSnaccActions } from "@/features/snaccs/hooks/use-snacc-actions"
-import { useViewTracker } from "@/features/views/hooks/use-view-tracker"
+import { useSnaccTracker } from "@/features/snaccs/hooks/use-snacc-tracker"
 import { MoneyFab } from "@/features/wallet/components/money-fab"
 import { FeedSortMenu } from "../components/feed-sort-menu"
 import { FeedTabs } from "../components/feed-tabs"
@@ -25,7 +25,7 @@ import { useHomeScreen } from "../hooks/use-home-screen"
 export function HomeScreen() {
   const screen = useHomeScreen()
   const { handlers, votingPollFor, sheets } = useSnaccActions()
-  const tracker = useViewTracker()
+  const tracker = useSnaccTracker()
   const { tabs, list, moments, firstPost } = screen
 
   return (

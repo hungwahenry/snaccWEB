@@ -4,7 +4,7 @@ import { userKeys } from "@/features/users/utils/keys"
 import type { PaginatedPages } from "@/lib/api/types"
 import { getQueryClient } from "@/lib/query/client"
 import { filterItems, mapItems } from "@/lib/query/pages"
-import type { FollowUser } from "../types"
+import type { FollowState, FollowUser } from "../types"
 import { followKeys } from "../utils/keys"
 
 type Snapshot = [QueryKey, unknown][]
@@ -17,16 +17,18 @@ export interface FollowTarget {
 const client = () => getQueryClient()
 
 /**
- * Applies one follow or unfollow to their profile and to every loaded list that shows them.
+ * Applies one follow, request or unfollow to their profile and to every loaded list that shows them.
  * A follow always starts with post notifications off, and an unfollow takes them away.
  */
-export function setFollowing(target: FollowTarget, following: boolean): void {
+export function setFollowState(target: FollowTarget, state: FollowState): void {
+  const following = state === "following"
+
   client().setQueriesData<PaginatedPages<FollowUser>>(
     { queryKey: followKeys.lists() },
     (data) =>
       mapItems(data, (user) =>
-        user.id === target.id && user.is_following !== following
-          ? { ...user, is_following: following }
+        user.id === target.id && user.follow_state !== state
+          ? { ...user, is_following: following, follow_state: state }
           : user
       )
   )
@@ -34,18 +36,22 @@ export function setFollowing(target: FollowTarget, following: boolean): void {
   if (!target.username) return
   client().setQueryData<PublicProfile>(
     userKeys.profile(target.username),
-    (profile) =>
-      profile && profile.id === target.id && profile.is_following !== following
-        ? {
-            ...profile,
-            is_following: following,
-            notifying: false,
-            followers_count: Math.max(
-              0,
-              profile.followers_count + (following ? 1 : -1)
-            ),
-          }
-        : profile
+    (profile) => {
+      if (!profile || profile.id !== target.id) return profile
+      if (profile.follow_state === state) return profile
+      const counted = following !== profile.is_following
+
+      return {
+        ...profile,
+        is_following: following,
+        follow_state: state,
+        can_view: !profile.is_private || following,
+        notifying: false,
+        followers_count: counted
+          ? Math.max(0, profile.followers_count + (following ? 1 : -1))
+          : profile.followers_count,
+      }
+    }
   )
 }
 
@@ -65,6 +71,30 @@ export function restoreFollows(snapshot: Snapshot): void {
 export function removePerson(userId: string): void {
   client().setQueriesData<PaginatedPages<FollowUser>>(
     { queryKey: followKeys.lists() },
+    (data) => filterItems(data, (user) => user.id !== userId)
+  )
+}
+
+/** A request answered: out of the list, and off the count above Notifications. */
+export function removeRequest(userId: string): void {
+  client().setQueryData<PaginatedPages<FollowUser>>(
+    followKeys.requests(),
+    (data) => filterItems(data, (user) => user.id !== userId)
+  )
+  client().setQueryData<number>(followKeys.requestsCount(), (count) =>
+    count === undefined ? count : Math.max(0, count - 1)
+  )
+}
+
+export function requestsChanged(): void {
+  void client().invalidateQueries({ queryKey: followKeys.requests() })
+  void client().invalidateQueries({ queryKey: followKeys.requestsCount() })
+}
+
+/** Someone you removed leaves your followers list at once. */
+export function dropFollower(ownUsername: string, userId: string): void {
+  getQueryClient().setQueryData<PaginatedPages<FollowUser>>(
+    followKeys.follows(ownUsername, "followers"),
     (data) => filterItems(data, (user) => user.id !== userId)
   )
 }

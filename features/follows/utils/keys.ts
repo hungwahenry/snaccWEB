@@ -10,4 +10,6 @@ export const followKeys = {
   search: (q: string) => [LIST, "search", q] as const,
   visitors: () => [LIST, "visitors"] as const,
   suggestions: () => [LIST, "suggestions"] as const,
+  requests: () => [LIST, "requests"] as const,
+  requestsCount: () => ["follow-requests-count"] as const,
 }

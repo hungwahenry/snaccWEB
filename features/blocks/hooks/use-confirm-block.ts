@@ -2,13 +2,10 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { confirm } from "@/components/ui/confirm"
-import { removePerson } from "@/features/follows/cache"
-import { removeAuthorSnaccs } from "@/features/snaccs/cache"
-import { snaccKeys } from "@/features/snaccs/utils/keys"
-import { userKeys } from "@/features/users/utils/keys"
 import { handleOf } from "@/features/users/utils/names"
 import { showSuccess } from "@/lib/feedback"
 import { blockUser } from "../api"
+import { separateFrom } from "../cache"
 import { blockKeys } from "../utils/keys"
 
 interface Blockable {
@@ -21,10 +18,7 @@ export function useConfirmBlock() {
   const block = useMutation({
     mutationFn: (user: Blockable) => blockUser(user.id),
     onSuccess: (_result, user) => {
-      removeAuthorSnaccs(user.id)
-      removePerson(user.id)
-      void queryClient.invalidateQueries({ queryKey: snaccKeys.lists() })
-      void queryClient.invalidateQueries({ queryKey: userKeys.profiles() })
+      separateFrom(user.id)
       void queryClient.invalidateQueries({ queryKey: blockKeys.all() })
       showSuccess(`Blocked ${handleOf(user) ?? "them"}.`)
     },

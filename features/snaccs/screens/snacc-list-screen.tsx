@@ -3,7 +3,7 @@
 import type { LucideIcon } from "lucide-react"
 import type { ReactNode } from "react"
 import { BackHeader } from "@/features/navigation/components/back-header"
-import { useViewTracker } from "@/features/views/hooks/use-view-tracker"
+import { useSnaccTracker } from "@/features/snaccs/hooks/use-snacc-tracker"
 import { useBack } from "@/hooks/use-back"
 import { SnaccSheets } from "../components/sheets/snacc-sheets"
 import { SnaccList } from "../components/snacc-list"
@@ -40,7 +40,7 @@ export function SnaccListScreen({
 }: SnaccListScreenProps) {
   const back = useBack()
   const { handlers, votingPollFor, sheets } = useSnaccActions()
-  const tracker = useViewTracker()
+  const tracker = useSnaccTracker()
 
   return (
     <>

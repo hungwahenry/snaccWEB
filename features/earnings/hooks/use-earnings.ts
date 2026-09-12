@@ -1,13 +1,7 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
-import { useInfiniteList } from "@/hooks/use-infinite-list"
-import {
-  getCampusFund,
-  getEarningsBalance,
-  getTopSnaccs,
-  listEarningEvents,
-} from "../api"
+import { getCampusFund, getEarningsBalance, getTopSnaccs } from "../api"
 import { earningsKeys } from "../utils/keys"
 
 export function useEarningsBalance() {
@@ -23,8 +17,4 @@ export function useCampusFund() {
 
 export function useTopSnaccs() {
   return useQuery({ queryKey: earningsKeys.topSnaccs(), queryFn: getTopSnaccs })
-}
-
-export function useEarningEvents() {
-  return useInfiniteList(earningsKeys.events(), listEarningEvents)
 }

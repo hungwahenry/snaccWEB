@@ -6,17 +6,20 @@ import { TierName } from "@/features/users/components/flair"
 import { profilePath } from "@/features/users/routes"
 import type { FollowUser } from "../types"
 import { nameOf } from "@/features/users/utils/names"
+import { followButtonLabel } from "../utils/follow-state"
 
 type FollowUserRowProps = {
   user: FollowUser
   isMe: boolean
   onToggleFollow: () => void
+  onRemove?: () => void
 }
 
 export function FollowUserRow({
   user,
   isMe,
   onToggleFollow,
+  onRemove,
 }: FollowUserRowProps) {
   const href = profilePath(user.username)
 
@@ -51,17 +54,24 @@ export function FollowUserRow({
         </span>
       </Link>
 
+      {onRemove ? (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onRemove}
+          className="text-muted-foreground"
+        >
+          Remove
+        </Button>
+      ) : null}
+
       {isMe ? null : (
         <Button
-          variant={user.is_following ? "outline" : "default"}
+          variant={user.follow_state === "none" ? "default" : "outline"}
           size="sm"
           onClick={onToggleFollow}
         >
-          {user.is_following
-            ? "Following"
-            : user.follows_you
-              ? "Follow back"
-              : "Follow"}
+          {followButtonLabel(user.follow_state, user.follows_you)}
         </Button>
       )}
     </div>

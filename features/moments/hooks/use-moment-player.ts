@@ -12,6 +12,7 @@ import {
 } from "../api"
 import type { Moment } from "../types"
 import { MOMENT_DURATION_MS } from "../utils/constants"
+import { isReady, upcomingImage } from "../utils/playback"
 import { authorMomentsKey, MOMENTS_TRAY_KEY } from "../utils/keys"
 import { useAuthorMoments } from "./use-author-moments"
 import { useMomentClock } from "./use-moment-clock"
@@ -121,10 +122,24 @@ export function useMomentPlayer(
     onRewound()
   }, [index, onRewound])
 
+  const [loaded, setLoaded] = useState<ReadonlySet<string>>(() => new Set())
+  const markReady = useCallback(
+    (id: string) =>
+      setLoaded((prev) => (prev.has(id) ? prev : new Set(prev).add(id))),
+    []
+  )
+  const ready = current !== null && isReady(current, loaded)
+
+  const upcoming = upcomingImage(list, index)
+  useEffect(() => {
+    if (!upcoming) return
+    const image = new Image()
+    image.src = upcoming
+  }, [upcoming])
+
   const clock = useMomentClock({
     duration: MOMENT_DURATION_MS,
-    running:
-      Boolean(current) && !paused && !held && !backgrounded && !viewersOpen,
+    running: ready && !paused && !held && !backgrounded && !viewersOpen,
     restartKey: current?.id ?? null,
     onDone: next,
   })
@@ -217,6 +232,8 @@ export function useMomentPlayer(
     paused,
     held,
     clock,
+    ready,
+    markReady,
     loading: isLoading,
     failed: isError,
     retry: () => void refetch(),

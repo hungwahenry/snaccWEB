@@ -23,6 +23,7 @@ const user = (patch: Partial<AdminUserRow> = {}): AdminUserRow => ({
   suspended_note: null,
   suspended_reason: null,
   posts_globally: false,
+  is_private: false,
   earnings_paused_at: null,
   earnings_paused_reason: null,
   payouts_blocked_at: null,
@@ -61,10 +62,11 @@ describe("userBadges", () => {
         user({
           role: "admin",
           posts_globally: true,
+          is_private: true,
           payouts_blocked_at: "2026-01-02T00:00:00Z",
         })
       ).map((badge) => badge.label)
-    ).toEqual(["Owner", "Posts everywhere", "Withdrawals blocked"])
+    ).toEqual(["Owner", "Posts everywhere", "Private", "Withdrawals blocked"])
   })
 })
 

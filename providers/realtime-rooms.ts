@@ -5,4 +5,5 @@ export const realtimeRooms = {
   profile: (username: string) => `profile:${username}`,
   campus: (slug: string) => `campus:${slug}`,
   match: (matchId: string) => `match:${matchId}`,
+  football: "football",
 } as const

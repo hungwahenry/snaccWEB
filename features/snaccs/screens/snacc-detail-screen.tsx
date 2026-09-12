@@ -16,7 +16,7 @@ import { LoadMore } from "@/components/ui/load-more"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { useRecordView } from "@/features/views/hooks/use-record-view"
-import { useViewTracker } from "@/features/views/hooks/use-view-tracker"
+import { useSnaccTracker } from "@/features/snaccs/hooks/use-snacc-tracker"
 import { useBack } from "@/hooks/use-back"
 import { useRealtimeRoom } from "@/hooks/use-realtime-room"
 import { isNotFound } from "@/lib/api/errors"
@@ -42,7 +42,7 @@ export function SnaccDetailScreen({ id }: { id: string }) {
   const back = useBack()
   useRealtimeRoom(realtimeRooms.snacc(id))
   const snacc = useSnacc(id)
-  const tracker = useViewTracker()
+  const tracker = useSnaccTracker()
 
   const loaded = snacc.data
   const isPost = loaded ? loaded.parent_id === null : undefined

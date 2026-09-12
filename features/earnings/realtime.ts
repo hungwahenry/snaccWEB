@@ -1,5 +1,6 @@
-import { earningsBalanceChanged } from "./cache"
+import { earningsChanged } from "./cache"
 
-export function onEarningsWallet({ balance }: { balance: number }): void {
-  earningsBalanceChanged(balance)
+/** A claim is the one thing that moves earnings into the wallet, so every wallet move rechecks them. */
+export function onEarningsWallet(): void {
+  earningsChanged()
 }

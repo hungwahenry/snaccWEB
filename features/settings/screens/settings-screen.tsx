@@ -10,10 +10,10 @@ import {
   FileTextIcon,
   FlagIcon,
   GemIcon,
-  GhostIcon,
   HandCoinsIcon,
   HeartIcon,
   InfoIcon,
+  LockIcon,
   MailIcon,
   PaletteIcon,
   ShieldCheckIcon,
@@ -48,18 +48,18 @@ import {
   EDIT_PROFILE_PATH,
   EXPORT_DATA_PATH,
 } from "@/features/account/routes"
-import { MESSAGE_PRIVACY_PATH } from "@/features/messages/routes"
 import { ADMIN_PATH, PRIVACY_PATH, TERMS_PATH } from "@/lib/routes"
 import { BLOCKED_PATH } from "@/features/blocks/routes"
 import { MY_REPORTS_PATH } from "@/features/reports/routes"
 import { NOTIFICATION_SETTINGS_PATH } from "@/features/notifications/routes"
-import { ABOUT_PATH } from "../routes"
+import { ABOUT_PATH, PRIVACY_SETTINGS_PATH } from "../routes"
 
 export function SettingsScreen() {
   const back = useBack()
   const logout = useLogout()
   const moderator = hasAdminAccess(useMe().data?.permissions)
   const messagesEnabled = useFlag("anon_messages")
+  const privateAccountsEnabled = useFlag("private_accounts")
   const accentsEnabled = useFlag("accent_colors")
   const earningsEnabled = useFlag("earnings")
   const walletEnabled = useFlag("wallet")
@@ -133,13 +133,9 @@ export function SettingsScreen() {
           />
         </Section>
 
-        {messagesEnabled ? (
+        {messagesEnabled || privateAccountsEnabled ? (
           <Section title="Privacy">
-            <Row
-              icon={GhostIcon}
-              label="Anonymous messages"
-              href={MESSAGE_PRIVACY_PATH}
-            />
+            <Row icon={LockIcon} label="Privacy" href={PRIVACY_SETTINGS_PATH} />
           </Section>
         ) : null}
 

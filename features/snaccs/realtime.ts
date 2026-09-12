@@ -21,7 +21,17 @@ export function onSnaccReaction(payload: {
   reactionsChanged(payload.snacc_id)
 }
 
-export function onSnaccComment(payload: { snacc_id: string }): void {
+export function onSnaccComment(payload: {
+  snacc_id: string
+  comments_count?: number
+}): void {
+  const count = payload.comments_count
+  if (count !== undefined) {
+    patchSnacc(payload.snacc_id, (snacc) => ({
+      ...snacc,
+      comments_count: count,
+    }))
+  }
   commentsChanged(payload.snacc_id)
 }
 

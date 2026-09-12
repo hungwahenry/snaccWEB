@@ -35,4 +35,5 @@ export interface TrayEntry {
   total: number
   unseen: number
   latest_at: string
+  next_expiry_at: string
 }

@@ -9,6 +9,7 @@ import {
   useRef,
 } from "react"
 import { io, type Socket } from "socket.io-client"
+import { getQueryClient } from "@/lib/query/client"
 import { REALTIME_HANDLERS } from "./realtime-handlers"
 
 type Listener = { event: string; handler: (payload: unknown) => void }
@@ -60,7 +61,13 @@ export function RealtimeProvider({
     void fetchSocketToken().then((token) => {
       if (!token || cancelled) return
 
-      const socket = io(API_URL, { auth: { token }, transports: ["websocket"] })
+      const socket = io(API_URL, {
+        auth: (send) =>
+          void fetchSocketToken()
+            .catch(() => null)
+            .then((fresh) => send({ token: fresh ?? token })),
+        transports: ["websocket"],
+      })
       socketRef.current = socket
 
       for (const [event, handler] of Object.entries(REALTIME_HANDLERS)) {
@@ -73,6 +80,8 @@ export function RealtimeProvider({
         for (const room of roomsRef.current.keys())
           socket.emit("subscribe", room)
       })
+
+      socket.io.on("reconnect", () => void getQueryClient().invalidateQueries())
     })
 
     return () => {
