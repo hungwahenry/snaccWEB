@@ -9,7 +9,10 @@ import type {
   PollPayload,
   ReactToSnaccInput,
   ResnaccSummary,
+  ScheduledSnacc,
+  ScheduleSnaccInput,
   Snacc,
+  SnaccContentInput,
   SnaccPoll,
   SnaccReaction,
   SnaccReactor,
@@ -17,6 +20,11 @@ import type {
 } from "../types"
 
 const snaccUrl = (id: string) => `/snaccs/${encodeURIComponent(id)}`
+
+const SCHEDULED_URL = "/snaccs/scheduled"
+const SCHEDULED_PAGE_SIZE = 50
+const scheduledUrl = (id: string) =>
+  `${SCHEDULED_URL}/${encodeURIComponent(id)}`
 
 function pollField(poll: PollPayload | undefined): string | undefined {
   return poll
@@ -27,23 +35,25 @@ function pollField(poll: PollPayload | undefined): string | undefined {
     : undefined
 }
 
-export function createSnacc(input: CreateSnaccInput): Promise<Snacc> {
+function sendContent<T>(
+  path: string,
+  input: SnaccContentInput,
+  extra: Record<string, string | undefined>
+): Promise<T> {
   const multipart =
     (input.images?.length ?? 0) > 0 ||
     (input.poll?.images?.length ?? 0) > 0 ||
     input.voice !== undefined
 
   if (!multipart) {
-    return api.post<Snacc>("/snaccs", {
+    return api.post<T>(path, {
       id: input.id,
       body: input.body,
       giphyId: input.giphyId,
       stickerId: input.stickerId,
-      matchId: input.matchId,
-      parentId: input.parentId,
-      resnaccOfId: input.resnaccOfId,
       spoiler: input.spoiler,
       poll: pollField(input.poll),
+      ...extra,
     })
   }
 
@@ -51,17 +61,15 @@ export function createSnacc(input: CreateSnaccInput): Promise<Snacc> {
   const fields: [string, string | undefined][] = [
     ["id", input.id],
     ["body", input.body],
-    ["parentId", input.parentId],
-    ["resnaccOfId", input.resnaccOfId],
     ["giphyId", input.giphyId],
     ["stickerId", input.stickerId],
-    ["matchId", input.matchId],
     ["spoiler", input.spoiler ? "true" : undefined],
     ["poll", pollField(input.poll)],
     [
       "voiceDurationMs",
       input.voice ? String(input.voice.durationMs) : undefined,
     ],
+    ...Object.entries(extra),
   ]
   fields.forEach(([name, value]) => {
     if (value) form.append(name, value)
@@ -75,7 +83,48 @@ export function createSnacc(input: CreateSnaccInput): Promise<Snacc> {
     appendImage(form, "images", image, `snacc-${index}`)
   )
 
-  return api.upload<Snacc>("/snaccs", form)
+  return api.upload<T>(path, form)
+}
+
+export function createSnacc(input: CreateSnaccInput): Promise<Snacc> {
+  return sendContent<Snacc>("/snaccs", input, {
+    parentId: input.parentId,
+    resnaccOfId: input.resnaccOfId,
+    matchId: input.matchId,
+  })
+}
+
+export function scheduleSnacc({
+  publishAt,
+  ...input
+}: ScheduleSnaccInput): Promise<ScheduledSnacc> {
+  return sendContent<ScheduledSnacc>(SCHEDULED_URL, input, { publishAt })
+}
+
+export function listScheduled(
+  page: number
+): Promise<Paginated<ScheduledSnacc>> {
+  return api.get<Paginated<ScheduledSnacc>>(SCHEDULED_URL, {
+    page,
+    perPage: SCHEDULED_PAGE_SIZE,
+  })
+}
+
+export function rescheduleSnacc(input: {
+  id: string
+  publishAt: string
+}): Promise<ScheduledSnacc> {
+  return api.put<ScheduledSnacc>(scheduledUrl(input.id), {
+    publishAt: input.publishAt,
+  })
+}
+
+export function publishScheduled(id: string): Promise<Snacc> {
+  return api.post<Snacc>(`${scheduledUrl(id)}/publish`)
+}
+
+export async function deleteScheduled(id: string): Promise<void> {
+  await api.del(scheduledUrl(id))
 }
 
 export function editSnacc(input: EditSnaccInput): Promise<Snacc> {

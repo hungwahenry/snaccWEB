@@ -12,6 +12,7 @@ export const FLAG_KEYS = [
   'resnacc',
   'post_pinning',
   'post_editing',
+  'scheduled_posts',
   'anon_messages',
   'first_post_prompt',
   'private_accounts',
@@ -68,6 +69,9 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly 'chat.message_max_length': number;
   readonly 'chat.max_images': number;
   readonly 'content.snacc.edit_window_minutes': number;
+  readonly 'content.scheduled.max_pending': number;
+  readonly 'content.scheduled.min_lead_minutes': number;
+  readonly 'content.scheduled.max_lead_days': number;
   readonly 'content.message.edit_window_minutes': number;
   readonly 'content.message.body_max_length': number;
   readonly 'content.message.max_images': number;
@@ -137,6 +141,9 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   'chat.message_max_length': 2000,
   'chat.max_images': 4,
   'content.snacc.edit_window_minutes': 15,
+  'content.scheduled.max_pending': 10,
+  'content.scheduled.min_lead_minutes': 5,
+  'content.scheduled.max_lead_days': 30,
   'content.message.edit_window_minutes': 5,
   'content.message.body_max_length': 500,
   'content.message.max_images': 4,

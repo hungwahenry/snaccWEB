@@ -25,6 +25,11 @@ describe("snaccKeys", () => {
     expect(isSnaccDetail(snaccKeys.detail("s1"))).toBe(true)
   })
 
+  it("keeps scheduled snaccs out of the snacc lists", () => {
+    expect(isSnaccList(snaccKeys.scheduled())).toBe(false)
+    expect(isSnaccDetail(snaccKeys.scheduled())).toBe(false)
+  })
+
   it("keeps a snacc apart from its comments and summaries", () => {
     const detail = snaccKeys.detail("s1")
     const others = [

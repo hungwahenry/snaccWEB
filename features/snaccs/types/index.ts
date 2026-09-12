@@ -298,3 +298,39 @@ export interface StoredDraft {
 export type DraftContent = Omit<StoredDraft, "id" | "saved_at">
 
 export type DraftThumb = { url: string } | { blob: Blob } | null
+
+export type SnaccContentInput = Omit<
+  CreateSnaccInput,
+  "parentId" | "resnaccOfId" | "matchId"
+>
+
+export interface ScheduleSnaccInput extends SnaccContentInput {
+  publishAt: string
+}
+
+export type ScheduledSnaccStatus = "pending" | "publishing" | "failed"
+
+export interface ScheduledSnacc {
+  id: string
+  body: string | null
+  spoiler: boolean
+  images: SnaccImage[]
+  voice: SnaccVoiceNote | null
+  gif: SnaccGif | null
+  sticker: StickerAttachment | null
+  poll: {
+    options: { label: string; image: SnaccPollOptionImage | null }[]
+    duration_minutes: number
+  } | null
+  publish_at: string
+  status: ScheduledSnaccStatus
+  failure: string | null
+  created_at: string
+}
+
+export type ScheduledSheetView = "list" | "detail" | "time"
+
+export interface NumberOption {
+  value: number
+  label: string
+}

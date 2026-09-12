@@ -6,11 +6,30 @@ import {
   dayLabel,
   formatDuration,
   koboToInput,
+  monthYear,
   nairaToKobo,
   shortDate,
   timeAgo,
   utcHourToLocal,
+  weekdayDate,
+  weekdayDay,
 } from "./format"
+
+describe("weekdayDate", () => {
+  it("names the weekday, then the date", () => {
+    const at = new Date(2026, 9, 14, 21, 5).toISOString()
+    expect(weekdayDay(at)).toBe("Wed 14")
+    expect(weekdayDate(at)).toBe("Wed 14 Oct")
+  })
+})
+
+describe("monthYear", () => {
+  it("names the month in full with its year", () => {
+    expect(monthYear(new Date(2026, 8, 12).toISOString())).toBe(
+      "September 2026"
+    )
+  })
+})
 
 describe("compactCount", () => {
   it("shortens big numbers without rounding up", () => {

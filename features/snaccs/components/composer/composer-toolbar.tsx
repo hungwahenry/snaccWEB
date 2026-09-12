@@ -1,4 +1,5 @@
 import {
+  CalendarClockIcon,
   ChartBarBigIcon,
   EyeOffIcon,
   ImageIcon,
@@ -25,6 +26,9 @@ type ComposerToolbarProps = {
   showSpoiler: boolean
   spoiler: boolean
   onToggleSpoiler: () => void
+  showSchedule?: boolean
+  scheduleActive?: boolean
+  onSchedule?: () => void
   remaining: number
   showCounter: boolean
   upgrade: { show: boolean; label: string }
@@ -47,6 +51,9 @@ export function ComposerToolbar({
   showSpoiler,
   spoiler,
   onToggleSpoiler,
+  showSchedule = false,
+  scheduleActive = false,
+  onSchedule,
   remaining,
   showCounter,
   upgrade,
@@ -92,6 +99,16 @@ export function ComposerToolbar({
             label={spoiler ? "Unmark as sensitive" : "Mark as sensitive"}
             onClick={onToggleSpoiler}
             iconClassName={cn(spoiler && "text-success")}
+          />
+        ) : null}
+        {showSchedule ? (
+          <IconButton
+            icon={CalendarClockIcon}
+            label={
+              scheduleActive ? "Change when it goes out" : "Schedule for later"
+            }
+            onClick={onSchedule}
+            iconClassName={cn(scheduleActive && "text-success")}
           />
         ) : null}
       </div>

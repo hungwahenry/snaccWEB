@@ -22,6 +22,7 @@ import {
 import { pickedAssets } from "../../utils/draft-images"
 import { toDraftSeed } from "../../utils/drafts"
 import { toPollPayload } from "../../utils/polls"
+import { useComposerSchedule } from "./use-composer-schedule"
 import { useDrafts } from "./use-drafts"
 import { useSnaccDraft } from "./use-snacc-draft"
 
@@ -34,6 +35,9 @@ export function useComposer(params: ComposeParams) {
   const drafts = useDrafts()
   const done = useRef(false)
   const mode = composerMode(params)
+  const schedule = useComposerSchedule({
+    allowed: mode === "new" && !params.matchId && !ghost.active,
+  })
 
   const [seed] = useState(() => {
     const stored = drafts.drafts.find((draft) => draft.id === params.draftId)
@@ -82,8 +86,19 @@ export function useComposer(params: ComposeParams) {
     back()
   }
 
+  function settle() {
+    done.current = true
+    if (params.draftId) void drafts.remove(params.draftId)
+    if (params.parentId) back()
+    else router.replace(HOME_PATH)
+  }
+
   function post() {
     if (!draft.withinLimits || done.current) return
+    if (schedule.active) {
+      schedule.submit(toSnaccDraft(), settle)
+      return
+    }
     if (!me.data) {
       showErrorMessage(
         "Could not post. Your session is still loading, try again in a moment."
@@ -92,9 +107,7 @@ export function useComposer(params: ComposeParams) {
     }
     done.current = true
     submitSnacc(toSnaccDraft(), authorFromUser(me.data))
-    if (params.draftId) void drafts.remove(params.draftId)
-    if (params.parentId) back()
-    else router.replace(HOME_PATH)
+    settle()
   }
 
   async function saveDraft(): Promise<boolean> {
@@ -144,7 +157,8 @@ export function useComposer(params: ComposeParams) {
     avatarUrl: me.data?.profile?.avatar_url ?? null,
     username: me.data?.profile?.username ?? null,
     showPoll: draft.showPoll && mode !== "quote",
-    canPost: draft.withinLimits,
+    schedule,
+    canPost: draft.withinLimits && schedule.ready,
     post,
     close: () =>
       settleFirst(leave, {

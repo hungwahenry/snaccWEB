@@ -6,7 +6,12 @@ import {
   removeSnacc,
   resnaccsChanged,
 } from "./cache"
+import { scheduledChanged } from "./cache/scheduled"
 import type { SnaccReaction } from "./types"
+
+export function onScheduledChanged(): void {
+  scheduledChanged()
+}
 
 export function onSnaccReaction(payload: {
   snacc_id: string

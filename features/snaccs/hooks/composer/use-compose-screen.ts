@@ -11,6 +11,7 @@ import type {
   TypeaheadSuggestion,
 } from "../../types"
 import { COMPOSER_COPY, isSubmitShortcut } from "../../utils/composer"
+import { useScheduledSheet } from "../scheduled/use-scheduled-sheet"
 import { useSnacc } from "../use-snacc"
 import { useComposer } from "./use-composer"
 import { useComposerTypeahead } from "./use-composer-typeahead"
@@ -21,12 +22,16 @@ export function useComposeScreen(params: ComposeParams) {
   const router = useRouter()
   const composer = useComposer(params)
   const drafts = useDrafts()
+  const scheduled = useScheduledSheet({
+    enabled: composer.schedule.available,
+  })
   const typeahead = useComposerTypeahead(composer.body, composer.cursor)
   const stickerCreator = useStickerCreator(composer.selectSticker)
   const parent = useSnacc(params.parentId ?? "")
   const quoting = useSnacc(params.resnaccOfId ?? "")
   const [trayOpen, setTrayOpen] = useState(false)
   const [draftsOpen, setDraftsOpen] = useState(false)
+  const [scheduledOpen, setScheduledOpen] = useState(false)
 
   function pick(suggestion: TypeaheadSuggestion) {
     if (!typeahead.token) return
@@ -97,6 +102,16 @@ export function useComposeScreen(params: ComposeParams) {
         : undefined,
     },
     stickerCreator,
+    scheduledCount: composer.schedule.available ? scheduled.count : 0,
+    openScheduled: () => {
+      scheduled.reset()
+      setScheduledOpen(true)
+    },
+    scheduledSheet: {
+      open: scheduledOpen,
+      onOpenChange: setScheduledOpen,
+      ...scheduled.sheet,
+    },
     draftCount: drafts.drafts.length,
     openDrafts: () => setDraftsOpen(true),
     draftsSheet: {

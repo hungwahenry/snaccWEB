@@ -1,41 +1,14 @@
 import { ImagePlusIcon, PlusIcon, XIcon } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import type { PollDraft } from "../../types"
+import type { NumberOption, PollDraft } from "../../types"
+import { NumberSelect } from "./number-select"
 
-const DAYS = [0, 1, 2, 3, 4, 5, 6, 7]
-const HOURS = Array.from({ length: 24 }, (_, hour) => hour)
-const MINUTES = Array.from({ length: 12 }, (_, step) => step * 5)
+const numbered = (values: number[]): NumberOption[] =>
+  values.map((value) => ({ value, label: String(value) }))
 
-function DurationSelect({
-  label,
-  value,
-  options,
-  onChange,
-}: {
-  label: string
-  value: number
-  options: number[]
-  onChange: (value: number) => void
-}) {
-  return (
-    <label className="flex flex-1 flex-col gap-1">
-      <span className="text-xs font-semibold text-muted-foreground">
-        {label}
-      </span>
-      <select
-        value={value}
-        onChange={(event) => onChange(Number(event.target.value))}
-        className="h-11 w-full appearance-none rounded-full bg-input px-4 text-sm text-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/30"
-      >
-        {options.map((option) => (
-          <option key={option} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
-    </label>
-  )
-}
+const DAYS = numbered([0, 1, 2, 3, 4, 5, 6, 7])
+const HOURS = numbered(Array.from({ length: 24 }, (_, hour) => hour))
+const MINUTES = numbered(Array.from({ length: 12 }, (_, step) => step * 5))
 
 export function PollEditor({
   poll,
@@ -137,19 +110,19 @@ export function PollEditor({
           Poll length
         </span>
         <div className="flex gap-2">
-          <DurationSelect
+          <NumberSelect
             label="Days"
             value={poll.days}
             options={DAYS}
             onChange={(value) => onSetDuration("days", value)}
           />
-          <DurationSelect
+          <NumberSelect
             label="Hours"
             value={poll.hours}
             options={HOURS}
             onChange={(value) => onSetDuration("hours", value)}
           />
-          <DurationSelect
+          <NumberSelect
             label="Minutes"
             value={poll.minutes}
             options={MINUTES}

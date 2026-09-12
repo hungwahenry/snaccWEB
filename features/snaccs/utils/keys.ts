@@ -3,10 +3,6 @@ import type { FeedScope, FeedSort } from "@/features/feed/types"
 import type { ProfileTab } from "@/features/users/types"
 import type { CommentSort } from "../types"
 
-/**
- * Every list of snaccs lives under `snacc-list`, whichever screen shows it, so the cache can find
- * all of them with one test when a snacc changes, arrives or goes.
- */
 const LIST = "snacc-list"
 
 export const snaccKeys = {
@@ -18,6 +14,7 @@ export const snaccKeys = {
   resnaccSummary: (id: string) => ["snaccs", "resnacc-summary", id] as const,
   resnaccers: (id: string) => ["snaccs", "resnaccers", id] as const,
   drafts: () => ["snaccs", "drafts"] as const,
+  scheduled: () => ["snaccs", "scheduled"] as const,
 
   lists: () => [LIST] as const,
   feeds: () => [LIST, "feed"] as const,
@@ -36,6 +33,11 @@ export const snaccKeys = {
   comments: (snaccId: string, sort: CommentSort) =>
     [LIST, "comments", snaccId, sort] as const,
   quotes: (snaccId: string) => [LIST, "quotes", snaccId] as const,
+}
+
+export const scheduledMutationKeys = {
+  publish: () => ["snaccs", "publish-scheduled"] as const,
+  remove: () => ["snaccs", "delete-scheduled"] as const,
 }
 
 export const isSnaccList = (key: QueryKey) => key[0] === LIST

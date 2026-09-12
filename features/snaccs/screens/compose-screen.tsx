@@ -1,9 +1,10 @@
 "use client"
 
-import { FileTextIcon, GhostIcon } from "lucide-react"
+import { CalendarClockIcon, FileTextIcon, GhostIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ComposerBar } from "@/components/ui/composer-bar"
 import { ComposerScreen } from "@/components/ui/composer-screen"
+import { Spinner } from "@/components/ui/spinner"
 import { liveMatchCard } from "@/features/football/utils/card"
 import { ImageEditorSheet } from "@/features/image-editor/components/image-editor-sheet"
 import { StickerCreator } from "@/features/stickers/components/sticker-creator"
@@ -23,6 +24,9 @@ import { ComposerToolbar } from "../components/composer/composer-toolbar"
 import { DraftsSheet } from "../components/composer/drafts-sheet"
 import { PollEditor } from "../components/composer/poll-editor"
 import { ReplyTo } from "../components/composer/reply-to"
+import { ScheduleRow } from "../components/composer/schedule-row"
+import { ScheduleSheet } from "../components/composer/schedule-sheet"
+import { ScheduledSheet } from "../components/scheduled/scheduled-sheet"
 import { useComposeScreen } from "../hooks/composer/use-compose-screen"
 import { useDrafts } from "../hooks/composer/use-drafts"
 import type { ComposeParams } from "../types"
@@ -32,7 +36,6 @@ export function ComposeScreen(props: ComposeParams) {
   const { hydrated } = useDrafts()
   const back = useBack()
 
-  // A draft seeds the composer once, so it has to be read before the composer starts.
   if (props.draftId && !hydrated) {
     return (
       <ComposeScreenSkeleton
@@ -47,6 +50,7 @@ export function ComposeScreen(props: ComposeParams) {
 function ComposeBody(params: ComposeParams) {
   const screen = useComposeScreen(params)
   const { composer, copy } = screen
+  const { schedule } = composer
 
   return (
     <ComposerScreen className="overflow-y-auto">
@@ -54,15 +58,29 @@ function ComposeBody(params: ComposeParams) {
         title={copy.title}
         onClose={composer.close}
         right={
-          screen.draftCount > 0 ? (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="font-bold"
-              onClick={screen.openDrafts}
-            >
-              <FileTextIcon /> Drafts · {screen.draftCount}
-            </Button>
+          screen.draftCount > 0 || screen.scheduledCount > 0 ? (
+            <div className="flex shrink-0 items-center">
+              {screen.draftCount > 0 ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="font-bold"
+                  onClick={screen.openDrafts}
+                >
+                  <FileTextIcon /> Drafts · {screen.draftCount}
+                </Button>
+              ) : null}
+              {screen.scheduledCount > 0 ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="font-bold"
+                  onClick={screen.openScheduled}
+                >
+                  <CalendarClockIcon /> Scheduled · {screen.scheduledCount}
+                </Button>
+              ) : null}
+            </div>
           ) : undefined
         }
       />
@@ -155,6 +173,16 @@ function ComposeBody(params: ComposeParams) {
             onRemoveSticker={composer.removeSticker}
           />
         )}
+        {schedule.active ? (
+          <div className="px-4 pt-3 pb-2">
+            <ScheduleRow
+              label={schedule.summary}
+              problem={schedule.problem}
+              onEdit={schedule.open}
+              onClear={schedule.clear}
+            />
+          </div>
+        ) : null}
         <ComposerNudges body={composer.upgrade} image={composer.imageUpgrade} />
         <ComposerToolbar
           canAddImages={composer.canAddImages}
@@ -172,6 +200,9 @@ function ComposeBody(params: ComposeParams) {
           showSpoiler={composer.hasMedia}
           spoiler={composer.spoiler}
           onToggleSpoiler={composer.toggleSpoiler}
+          showSchedule={schedule.available}
+          scheduleActive={schedule.active}
+          onSchedule={schedule.open}
           remaining={composer.remaining}
           showCounter={composer.showCounter}
           upgrade={composer.upgrade}
@@ -182,7 +213,13 @@ function ComposeBody(params: ComposeParams) {
               disabled={!composer.canPost}
               onClick={composer.post}
             >
-              Snacc
+              {schedule.busy ? (
+                <Spinner />
+              ) : schedule.active ? (
+                "Schedule"
+              ) : (
+                "Snacc"
+              )}
             </Button>
           }
         />
@@ -192,6 +229,8 @@ function ComposeBody(params: ComposeParams) {
       <StickerCreator {...screen.stickerCreator} />
       <ImageEditorSheet {...composer.imageEditor} />
       <DraftsSheet {...screen.draftsSheet} />
+      <ScheduledSheet {...screen.scheduledSheet} />
+      <ScheduleSheet {...schedule.sheet} />
     </ComposerScreen>
   )
 }

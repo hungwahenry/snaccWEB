@@ -137,6 +137,23 @@ export function dayLabel(iso: string): string {
   return shortDate(iso)
 }
 
+export function weekdayDay(iso: string): string {
+  const date = new Date(iso)
+  return `${date.toLocaleDateString(LOCALE, { weekday: "short" })} ${date.getDate()}`
+}
+
+export function weekdayDate(iso: string): string {
+  const month = new Date(iso).toLocaleDateString(LOCALE, { month: "short" })
+  return `${weekdayDay(iso)} ${month}`
+}
+
+export function monthYear(iso: string): string {
+  return new Date(iso).toLocaleDateString(LOCALE, {
+    month: "long",
+    year: "numeric",
+  })
+}
+
 export function percent(rate: number): string {
   return `${Math.round(rate * 100)}%`
 }
