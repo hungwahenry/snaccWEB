@@ -1,19 +1,34 @@
 import { GhostAvatar } from "@/components/ui/ghost-avatar"
 import { UserAvatar } from "@/components/ui/user-avatar"
+import { LinkPreviews } from "@/features/links/containers/link-previews"
 import { TierName } from "@/features/users/components/flair"
 import { ProfileLink } from "@/features/users/components/profile-link"
+import { nameOf } from "@/features/users/utils/names"
 import type { GlimpsedSnacc } from "../../types"
 import { AuthorMeta } from "../card/author-meta"
-import { SnaccGlimpse } from "./snacc-glimpse"
+import { SnaccMedia } from "../card/media/snacc-media"
+import type { PollViewProps } from "../card/poll-view"
+import { QuotedSnacc } from "../card/quote/quoted-snacc"
+import { SnaccBody } from "../card/snacc-body"
 import { ThreadConnector } from "./thread-connector"
-import { nameOf } from "@/features/users/utils/names"
 
 type ReplyContextProps = {
   snacc: GlimpsedSnacc
   onPress?: () => void
+  onPressImage?: (index: number) => void
+  poll?: Omit<PollViewProps, "poll" | "disabled">
 }
 
-export function ReplyContext({ snacc, onPress }: ReplyContextProps) {
+/**
+ * The snacc being answered, sat above the answer with a thread line running down to it. Shown at
+ * full size, as a post reads, so the two read as one conversation.
+ */
+export function ReplyContext({
+  snacc,
+  onPress,
+  onPressImage,
+  poll,
+}: ReplyContextProps) {
   const { author } = snacc
 
   return (
@@ -42,7 +57,7 @@ export function ReplyContext({ snacc, onPress }: ReplyContextProps) {
         <ThreadConnector className="min-h-6" />
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col gap-1 pb-4">
+      <div className="flex min-w-0 flex-1 flex-col gap-2 pb-4">
         <div className="flex min-w-0 items-center gap-1.5">
           {snacc.anonymous ? (
             <span className="truncate font-extrabold text-foreground">
@@ -69,7 +84,10 @@ export function ReplyContext({ snacc, onPress }: ReplyContextProps) {
           />
         </div>
 
-        <SnaccGlimpse snacc={snacc} />
+        <SnaccBody body={snacc.body} entities={snacc.entities} stripLinks />
+        <LinkPreviews body={snacc.body} />
+        <SnaccMedia snacc={snacc} onPressImage={onPressImage} poll={poll} />
+        {snacc.resnacc_of ? <QuotedSnacc snacc={snacc.resnacc_of} /> : null}
       </div>
     </div>
   )

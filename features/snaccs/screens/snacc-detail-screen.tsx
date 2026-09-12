@@ -104,6 +104,15 @@ export function SnaccDetailScreen({ id }: { id: string }) {
             <ReplyContext
               snacc={parent.data}
               onPress={() => router.push(snaccPath(parent.data!.id))}
+              onPressImage={(index) =>
+                handlers.onOpenImages(parent.data!, index)
+              }
+              poll={{
+                voting: votingPollFor === parent.data.id,
+                onVote: (optionId) => handlers.onVote(parent.data!, optionId),
+                onOpenImage: (option) =>
+                  handlers.onOpenPollImage(parent.data!, option),
+              }}
             />
           ) : null}
 
