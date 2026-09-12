@@ -12,6 +12,7 @@ import { allItems, firstPageOnly, uniqueById } from "@/lib/query/pages"
 
 interface InfiniteListOptions {
   enabled?: boolean
+  keepPrevious?: boolean
 }
 
 export function useInfiniteList<T>(
@@ -26,7 +27,8 @@ export function useInfiniteList<T>(
     queryFn: ({ pageParam }) => fetchPage(pageParam),
     initialPageParam: 1,
     enabled: options.enabled,
-    placeholderData: keepPreviousData,
+    placeholderData:
+      options.keepPrevious === false ? undefined : keepPreviousData,
     getNextPageParam: (last) =>
       last.page < last.last_page ? last.page + 1 : undefined,
   })

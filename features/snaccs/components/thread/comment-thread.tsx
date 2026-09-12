@@ -48,7 +48,7 @@ export function CommentThread({
         />
       ))}
 
-      {repliesOpen || remaining > 0 ? (
+      {replies.length > 0 || remaining > 0 ? (
         <RepliesButton
           count={remaining}
           done={done}

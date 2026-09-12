@@ -6,7 +6,7 @@ import { listComments } from "../../api"
 import type { Snacc } from "../../types"
 import { snaccKeys } from "../../utils/keys"
 import { REPLY_SORT } from "../../utils/sorts"
-import { addresseeOf } from "../../utils/threads"
+import { addresseeOf, repliesLeft } from "../../utils/threads"
 
 export function useReplies(comment: Snacc) {
   const [open, setOpen] = useState(false)
@@ -14,7 +14,7 @@ export function useReplies(comment: Snacc) {
   const { items, total, ...list } = useInfiniteList(
     snaccKeys.comments(comment.id, REPLY_SORT),
     (page) => listComments(comment.id, page, REPLY_SORT),
-    { enabled: open }
+    { enabled: open, keepPrevious: false }
   )
 
   const replies = open ? items : []
@@ -25,10 +25,15 @@ export function useReplies(comment: Snacc) {
     loading: list.loading,
     failed: list.failed,
     loadingMore: list.loadingMore,
-    remaining: Math.max(0, (total ?? comment.comments_count) - replies.length),
+    remaining: repliesLeft({
+      open,
+      shown: replies.length,
+      count: comment.comments_count,
+      total,
+    }),
     show: () => setOpen(true),
     hide: () => setOpen(false),
-    more: list.loadMore,
+    more: list.failed && replies.length === 0 ? list.retry : list.loadMore,
     addressee: (reply: Snacc) => addresseeOf(reply, comment.author.id),
   }
 }
