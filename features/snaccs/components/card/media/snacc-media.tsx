@@ -4,6 +4,7 @@ import type { Snacc } from "../../../types"
 import { snaccVoiceSource } from "../../../utils/voice"
 import { PollView, type PollViewProps } from "../poll-view"
 import { MatchAttachment } from "@/features/football/components/match-attachment"
+import { ClipPlayer } from "@/features/clips/components/clip-player"
 import { SnaccGifView } from "./snacc-gif"
 import { SnaccImages } from "./snacc-images"
 
@@ -15,6 +16,7 @@ type SnaccMediaProps = {
     | "id"
     | "images"
     | "voice"
+    | "clip"
     | "gif"
     | "sticker"
     | "match"
@@ -41,6 +43,7 @@ export function SnaccMedia({
   const hasAny =
     snacc.poll ||
     snacc.voice ||
+    snacc.clip ||
     snacc.images.length > 0 ||
     snacc.gif ||
     snacc.sticker ||
@@ -65,6 +68,14 @@ export function SnaccMedia({
             fill
           />
         </div>
+      ) : null}
+
+      {snacc.clip ? (
+        <ClipPlayer
+          clip={snacc.clip}
+          spoiler={snacc.spoiler}
+          snaccId={snacc.id}
+        />
       ) : null}
 
       <SnaccImages

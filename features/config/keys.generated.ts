@@ -5,6 +5,7 @@ export const FLAG_KEYS = [
   'giphy',
   'snacc_gifs',
   'snacc_matches',
+  'snacc_clips',
   'message_gifs',
   'search',
   'earnings',
@@ -68,6 +69,7 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly 'content.snacc.max_mentions': number;
   readonly 'content.snacc.max_hashtags': number;
   readonly 'content.snacc.voice_max_seconds': number;
+  readonly 'content.snacc.clip_max_seconds': number;
   readonly 'chat.message_max_length': number;
   readonly 'chat.max_images': number;
   readonly 'content.snacc.edit_window_minutes': number;
@@ -142,6 +144,7 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   'content.snacc.max_mentions': 3,
   'content.snacc.max_hashtags': 5,
   'content.snacc.voice_max_seconds': 300,
+  'content.snacc.clip_max_seconds': 15,
   'chat.message_max_length': 2000,
   'chat.max_images': 4,
   'content.snacc.edit_window_minutes': 15,

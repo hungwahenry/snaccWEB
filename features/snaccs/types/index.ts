@@ -44,6 +44,15 @@ export interface SnaccPoll {
   options: SnaccPollOption[]
 }
 
+export interface SnaccClip {
+  id: string
+  url: string
+  poster_url: string
+  width: number
+  height: number
+  duration_ms: number
+}
+
 export interface SnaccVoiceNote {
   id: string
   url: string
@@ -118,6 +127,7 @@ export interface Snacc {
   entities: SnaccEntity[]
   images: SnaccImage[]
   voice: SnaccVoiceNote | null
+  clip: SnaccClip | null
   poll: SnaccPoll | null
   gif: SnaccGif | null
   match: SnaccMatch | null
