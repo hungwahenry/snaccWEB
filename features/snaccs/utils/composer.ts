@@ -91,6 +91,7 @@ export interface DraftState {
   pollProblem: string | null
   voiceAllowed: boolean
   stickersAllowed: boolean
+  tagProblem: string | null
 }
 
 export interface DraftRules {
@@ -103,14 +104,10 @@ export interface DraftRules {
   canAddSticker: boolean
   canRecordVoice: boolean
   canStartPoll: boolean
-  /** Why posting is held back, when the form alone doesn't show it. */
   hint: string | null
+  tagProblem: string | null
 }
 
-/**
- * What a snacc can hold at once. A poll is the whole attachment; photos exclude a GIF, a sticker
- * and a voice note; a voice note is its own thing.
- */
 export function draftRules(state: DraftState): DraftRules {
   const remaining = state.bodyMax - state.bodyLength
   const hasMedia = state.images > 0 || state.gif
@@ -128,6 +125,7 @@ export function draftRules(state: DraftState): DraftRules {
     withinLimits:
       remaining >= 0 &&
       !state.recording &&
+      state.tagProblem === null &&
       (state.poll
         ? hasBody && state.pollValid
         : hasMedia ||
@@ -152,10 +150,10 @@ export function draftRules(state: DraftState): DraftRules {
       !voiceBusy,
     canStartPoll: !hasMedia && !state.sticker && !voiceBusy,
     hint: pollHint,
+    tagProblem: state.tagProblem,
   }
 }
 
-/** Cmd+Enter on a Mac, Ctrl+Enter elsewhere. */
 export function isSubmitShortcut(event: {
   key: string
   metaKey: boolean

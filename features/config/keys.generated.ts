@@ -65,6 +65,8 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly 'client.store_url_ios': string;
   readonly 'content.snacc.body_max_length': number;
   readonly 'content.snacc.max_images': number;
+  readonly 'content.snacc.max_mentions': number;
+  readonly 'content.snacc.max_hashtags': number;
   readonly 'content.snacc.voice_max_seconds': number;
   readonly 'chat.message_max_length': number;
   readonly 'chat.max_images': number;
@@ -137,6 +139,8 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   'client.store_url_ios': "",
   'content.snacc.body_max_length': 500,
   'content.snacc.max_images': 10,
+  'content.snacc.max_mentions': 3,
+  'content.snacc.max_hashtags': 5,
   'content.snacc.voice_max_seconds': 300,
   'chat.message_max_length': 2000,
   'chat.max_images': 4,

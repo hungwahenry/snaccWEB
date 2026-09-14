@@ -1,20 +1,18 @@
 "use client"
 
 import { useState } from "react"
+import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import type { Gif } from "@/features/giphy/types"
 import { usePremiumNudge } from "@/features/premium/hooks/use-premium-limit"
 import type { DraftSticker } from "@/features/stickers/types"
 import type { DraftSeed } from "../../types"
 import { draftRules, type ComposerContent } from "../../utils/composer"
+import { tagLimitProblem } from "../../utils/entities"
 import { useDraftImages } from "./use-draft-images"
 import { useDraftVoice } from "./use-draft-voice"
 import { usePollDraft } from "./use-poll-draft"
 
-/**
- * The content of a snacc being written or edited, and what it can still take. Every rule about
- * which attachments go together lives in `draftRules`; this only holds the state.
- */
 export function useSnaccDraft(
   seed: DraftSeed,
   options: { allowVoice?: boolean } = {}
@@ -22,6 +20,8 @@ export function useSnaccDraft(
   const gifsEnabled = useFlag("snacc_gifs")
   const stickersEnabled = useFlag("snacc_stickers")
   const voiceEnabled = useFlag("voice_snaccs")
+  const maxMentions = useConfigValue("content.snacc.max_mentions")
+  const maxHashtags = useConfigValue("content.snacc.max_hashtags")
 
   const [body, setBody] = useState(seed.body)
   const [cursor, setCursor] = useState(seed.body.length)
@@ -58,6 +58,7 @@ export function useSnaccDraft(
     pollProblem: poll.pollProblem,
     voiceAllowed,
     stickersAllowed: stickersEnabled,
+    tagProblem: tagLimitProblem(trimmed, { maxMentions, maxHashtags }),
   })
 
   const content: ComposerContent = {

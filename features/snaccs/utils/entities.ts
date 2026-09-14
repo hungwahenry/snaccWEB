@@ -42,8 +42,6 @@ function segmentsOf<S extends Span>(
   return segments
 }
 
-// Links are dropped here, not from the string beforehand: entity offsets are measured against
-// the original body, so cutting characters first would slide every later entity onto wrong text.
 export function toRenderedSegments(
   body: string,
   entities: SnaccEntity[],
@@ -106,15 +104,50 @@ function displayText(body: string, entity: SnaccEntity): string {
     : body.slice(entity.start, entity.start + entity.length)
 }
 
-function entityRanges(body: string): Span[] {
-  const ranges: Span[] = []
+function hashtagMatches(body: string): (Span & { tag: string })[] {
+  const found: (Span & { tag: string })[] = []
 
   for (const match of body.matchAll(HASHTAG_PATTERN)) {
     const tag = match[1]
     if (tag.length > HASHTAG_MAX_LENGTH || !HASHTAG_HAS_LETTER.test(tag))
       continue
-    ranges.push({ start: match.index, end: match.index + match[0].length })
+    found.push({ tag, start: match.index, end: match.index + match[0].length })
   }
+
+  return found
+}
+
+export interface TagLimits {
+  maxMentions: number
+  maxHashtags: number
+}
+
+export function tagLimitProblem(
+  body: string,
+  limits: TagLimits
+): string | null {
+  const people = new Set(
+    [...body.matchAll(MENTION_PATTERN)].map((match) => match[1].toLowerCase())
+  )
+  const hashtags = new Set(
+    hashtagMatches(body).map(({ tag }) => tag.toLowerCase())
+  )
+
+  if (people.size > limits.maxMentions) {
+    return `You can tag up to ${limits.maxMentions} people in one snacc.`
+  }
+  if (hashtags.size > limits.maxHashtags) {
+    return `You can use up to ${limits.maxHashtags} hashtags in one snacc.`
+  }
+  return null
+}
+
+function entityRanges(body: string): Span[] {
+  const ranges: Span[] = hashtagMatches(body).map(({ start, end }) => ({
+    start,
+    end,
+  }))
+
   for (const match of body.matchAll(MENTION_PATTERN)) {
     ranges.push({ start: match.index, end: match.index + match[0].length })
   }

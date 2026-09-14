@@ -13,6 +13,7 @@ import { ComposerFrameSkeleton } from "../components/composer/composer-frame-ske
 import { ComposerHeader } from "../components/composer/composer-header"
 import { ComposerInput } from "../components/composer/composer-input"
 import { ComposerNudges } from "../components/composer/composer-nudges"
+import { ComposerProblem } from "../components/composer/composer-problem"
 import { ComposerToolbar } from "../components/composer/composer-toolbar"
 import { ComposerToolbarSkeleton } from "../components/composer/composer-toolbar-skeleton"
 import { ImageEditorSheet } from "@/features/image-editor/components/image-editor-sheet"
@@ -81,6 +82,7 @@ function Editor({ snacc }: { snacc: Snacc }) {
           onEditImage={editor.editImage}
           onRemoveGif={editor.removeGif}
         />
+        <ComposerProblem problem={editor.tagProblem} />
         <ComposerNudges body={editor.upgrade} image={editor.imageUpgrade} />
         <ComposerToolbar
           canAddImages={editor.canAddImages}

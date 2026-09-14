@@ -19,6 +19,7 @@ import { ComposerHeader } from "../components/composer/composer-header"
 import { ComposerInput } from "../components/composer/composer-input"
 import { ComposeScreenSkeleton } from "../components/composer/compose-screen-skeleton"
 import { ComposerNudges } from "../components/composer/composer-nudges"
+import { ComposerProblem } from "../components/composer/composer-problem"
 import { ComposerSuggestions } from "../components/composer/composer-suggestions"
 import { ComposerToolbar } from "../components/composer/composer-toolbar"
 import { DraftsSheet } from "../components/composer/drafts-sheet"
@@ -183,6 +184,7 @@ function ComposeBody(params: ComposeParams) {
             />
           </div>
         ) : null}
+        <ComposerProblem problem={composer.tagProblem} />
         <ComposerNudges body={composer.upgrade} image={composer.imageUpgrade} />
         <ComposerToolbar
           canAddImages={composer.canAddImages}
