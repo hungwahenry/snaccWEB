@@ -12,6 +12,7 @@ import {
   Medal,
   Megaphone,
   MessageSquare,
+  Palette,
   Scale,
   ScanEye,
   School,
@@ -27,6 +28,7 @@ import {
   UserX,
   VenetianMask,
   Wallet,
+  Webhook,
   Wrench,
 } from "lucide-react"
 import { can, type AdminPermissions } from "@/lib/permissions"
@@ -34,6 +36,7 @@ import {
   ADMIN_PATH,
   ADMINS_PATH,
   ANNOUNCEMENTS_PATH,
+  APP_ICONS_PATH,
   AUDIT_PATH,
   CONFIG_PATH,
   EARNINGS_PATH,
@@ -47,6 +50,7 @@ import {
   NOTIFICATION_TYPES_PATH,
   OPS_PATH,
   PAGES_PATH,
+  PREMIUM_PATH,
   PROMPTS_PATH,
   REPORT_REASONS_PATH,
   REPORTS_PATH,
@@ -59,6 +63,7 @@ import {
   UNIVERSITIES_PATH,
   USERS_PATH,
   WALLETS_PATH,
+  WEBHOOKS_PATH,
   WITHDRAWALS_PATH,
 } from "../routes"
 
@@ -189,6 +194,12 @@ export const NAV: NavSection[] = [
         icon: Coins,
         permission: "earnings.read",
       },
+      {
+        href: PREMIUM_PATH,
+        label: "Premium",
+        icon: Sparkles,
+        permission: "premium.read",
+      },
     ],
   },
   {
@@ -207,6 +218,12 @@ export const NAV: NavSection[] = [
         permission: "flags.read",
       },
       {
+        href: WEBHOOKS_PATH,
+        label: "Webhooks",
+        icon: Webhook,
+        permission: "webhooks.read",
+      },
+      {
         href: ENGAGEMENT_PATH,
         label: "Engagement weights",
         icon: Scale,
@@ -223,6 +240,12 @@ export const NAV: NavSection[] = [
         label: "Easter eggs",
         icon: Egg,
         permission: "easter_eggs.read",
+      },
+      {
+        href: APP_ICONS_PATH,
+        label: "App icons",
+        icon: Palette,
+        permission: "app_icons.read",
       },
       {
         href: UNIVERSITIES_PATH,
