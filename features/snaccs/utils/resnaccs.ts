@@ -5,7 +5,9 @@ export function isPlainResnacc(snacc: Snacc): boolean {
     snacc.resnacc_of !== null &&
     !snacc.body &&
     snacc.images.length === 0 &&
-    !snacc.gif
+    !snacc.gif &&
+    !snacc.sticker &&
+    !snacc.voice
   )
 }
 
