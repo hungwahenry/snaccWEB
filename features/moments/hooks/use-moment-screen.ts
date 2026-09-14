@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useReportSheet } from "@/features/reports/hooks/use-report-sheet"
 import { profilePath } from "@/features/users/routes"
+import { voicePlayer } from "@/features/voice/hooks/use-voice-player"
 import { useBack } from "@/hooks/use-back"
 import type { TrayEntry } from "../types"
 import { nextUnseen, playQueue } from "../utils/queue"
@@ -72,6 +73,11 @@ export function useMomentScreen(startAuthorId: string) {
     enterAtEnd: backwards,
   })
   const current = player.current
+
+  const currentId = current?.id
+  useEffect(() => {
+    voicePlayer.pause()
+  }, [currentId])
 
   const viewers = useMomentViewers(current?.mine ? current.id : null)
   const report = useReportSheet()

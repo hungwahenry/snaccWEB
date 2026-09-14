@@ -5,11 +5,13 @@ export function AppFrame({
   sidebar,
   rail,
   tabBar,
+  nowPlaying,
   children,
 }: {
   sidebar: ReactNode
   rail: ReactNode
   tabBar: ReactNode
+  nowPlaying: ReactNode
   children: ReactNode
 }) {
   return (
@@ -21,10 +23,11 @@ export function AppFrame({
 
         <main
           className={cn(
-            "min-h-dvh w-full max-w-[600px] min-w-0 md:max-w-[680px] md:border-x md:border-border md:pb-0 lg:max-w-[600px]",
+            "now-playing-frame min-h-dvh w-full max-w-[600px] min-w-0 md:max-w-[680px] md:border-x md:border-border md:pb-0 lg:max-w-[600px]",
             tabBar ? "pb-(--tab-bar-height)" : "pb-0"
           )}
         >
+          {nowPlaying}
           {children}
         </main>
 

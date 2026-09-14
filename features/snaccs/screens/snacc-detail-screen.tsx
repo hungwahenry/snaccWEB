@@ -65,7 +65,7 @@ export function SnaccDetailScreen({ id }: { id: string }) {
   })
 
   return (
-    <div className="flex min-h-[calc(100dvh-var(--tab-bar-height))] flex-col md:min-h-dvh">
+    <div className="flex min-h-[calc(100dvh-var(--tab-bar-height)-var(--now-playing-height))] flex-col md:min-h-[calc(100dvh-var(--now-playing-height))]">
       <BackHeader
         title={isPost === undefined ? "" : isPost ? "Snacc" : "Comment"}
         onBack={back}

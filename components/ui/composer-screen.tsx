@@ -15,7 +15,9 @@ export function ComposerScreen({
 
   return (
     <div
-      style={{ height: `calc(100dvh - ${keyboard}px)` }}
+      style={{
+        height: `calc(100dvh - ${keyboard}px - var(--now-playing-height))`,
+      }}
       className={cn("flex flex-col", className)}
     >
       {children}

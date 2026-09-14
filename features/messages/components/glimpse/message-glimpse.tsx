@@ -2,6 +2,7 @@ import { ThumbStrip } from "@/components/ui/thumb-strip"
 import { MomentThumb } from "@/features/moments/components/moment-thumb"
 import { StickerAttachmentView } from "@/features/stickers/components/sticker-attachment-view"
 import { VoiceNotePlayer } from "@/features/voice/components/voice-note-player"
+import type { VoiceSource } from "@/features/voice/types"
 import { cn } from "@/lib/utils"
 import type { GlimpseMedia, MessageGlimpse } from "../../types"
 import { AttachmentChips } from "./attachment-chips"
@@ -9,7 +10,13 @@ import { AttachmentChips } from "./attachment-chips"
 const THUMB = 48
 
 /** A whole message in small: its words, what it carried, and the moment it answered. */
-export function MessageGlimpseView({ glimpse }: { glimpse: MessageGlimpse }) {
+export function MessageGlimpseView({
+  glimpse,
+  voiceSource,
+}: {
+  glimpse: MessageGlimpse
+  voiceSource: VoiceSource | null
+}) {
   return (
     <span className="flex min-w-0 items-start gap-2">
       <span className="flex min-w-0 flex-1 flex-col gap-1.5">
@@ -25,7 +32,9 @@ export function MessageGlimpseView({ glimpse }: { glimpse: MessageGlimpse }) {
             {glimpse.text}
           </span>
         ) : null}
-        {glimpse.media ? <GlimpseMediaView media={glimpse.media} /> : null}
+        {glimpse.media ? (
+          <GlimpseMediaView media={glimpse.media} voiceSource={voiceSource} />
+        ) : null}
         <AttachmentChips chips={glimpse.chips} />
       </span>
 
@@ -41,12 +50,18 @@ export function MessageGlimpseView({ glimpse }: { glimpse: MessageGlimpse }) {
   )
 }
 
-function GlimpseMediaView({ media }: { media: GlimpseMedia }) {
+function GlimpseMediaView({
+  media,
+  voiceSource,
+}: {
+  media: GlimpseMedia
+  voiceSource: VoiceSource | null
+}) {
   switch (media.kind) {
     case "voice":
       return (
         <span className="block rounded-2xl border border-border bg-background px-3 py-2">
-          <VoiceNotePlayer note={media.note} fill />
+          <VoiceNotePlayer note={media.note} source={voiceSource} fill />
         </span>
       )
     case "photos":

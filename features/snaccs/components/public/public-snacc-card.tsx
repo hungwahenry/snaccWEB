@@ -13,6 +13,7 @@ import { richText } from "@/lib/rich-text"
 import { AuthorBadges } from "@/features/users/components/public/author-badges"
 import { nameOf } from "@/features/users/utils/names"
 import type { EmbeddedSnacc, Snacc } from "../../types"
+import { snaccVoiceSource } from "../../utils/voice"
 import { VoiceNotePlayer } from "@/features/voice/components/voice-note-player"
 
 export function PublicSnaccCard({
@@ -116,6 +117,7 @@ export function PublicSnaccCard({
               url: snacc.voice.url,
               duration_ms: snacc.voice.duration_ms,
             }}
+            source={snaccVoiceSource(snacc)}
             fill
           />
         </div>

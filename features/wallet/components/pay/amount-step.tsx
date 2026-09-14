@@ -22,7 +22,7 @@ export function AmountStep({
   onNext,
 }: PayFlow["amount"]) {
   return (
-    <div className="flex min-h-[calc(100dvh-3.5rem)] flex-col md:min-h-0">
+    <div className="flex min-h-[calc(100dvh-3.5rem-var(--now-playing-height))] flex-col md:min-h-0">
       <div className="flex flex-1 flex-col justify-center gap-2 py-10">
         <AmountDisplay raw={raw} />
         {target ? (

@@ -1,4 +1,5 @@
 import { StickerAttachmentView } from "@/features/stickers/components/sticker-attachment-view"
+import type { VoiceSource } from "@/features/voice/types"
 import { cn } from "@/lib/utils"
 import type { Message, MessageImage } from "../../types"
 import { bubbleParts } from "../../utils/bubble"
@@ -18,6 +19,7 @@ export type MessageBubbleProps = {
   message: Message
   firstInBurst: boolean
   lastInBurst: boolean
+  voiceSource: VoiceSource
   onPressImage: (index: number) => void
   onOpenViewOnce: (photo: MessageImage) => void
   openingViewOnce: boolean
@@ -35,6 +37,7 @@ export function MessageBubble({
   message,
   firstInBurst,
   lastInBurst,
+  voiceSource,
   onPressImage,
   onOpenViewOnce,
   openingViewOnce,
@@ -107,6 +110,7 @@ export function MessageBubble({
         {parts.voice ? (
           <BubbleVoice
             note={parts.voice}
+            source={voiceSource}
             mine={mine}
             afterQuote={parts.reply !== null}
             beforeText={parts.hasText}

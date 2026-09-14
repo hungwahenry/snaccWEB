@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { clearPendingChatMessages } from "@/features/chats/cache/pending-chat-messages"
 import { clearPendingMessages } from "@/features/messages/cache/pending-messages"
+import { voicePlayer } from "@/features/voice/hooks/use-voice-player"
 import { LANDING_PATH } from "@/lib/routes"
 import { signOut } from "../api"
 
@@ -17,6 +18,7 @@ export function useLogout() {
       // Nothing half-sent may go out later under whoever signs in next.
       clearPendingMessages()
       clearPendingChatMessages()
+      voicePlayer.stop()
       queryClient.clear()
       router.replace(LANDING_PATH)
     },

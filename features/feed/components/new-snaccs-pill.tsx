@@ -13,7 +13,7 @@ export function NewSnaccsPill({
 }) {
   return (
     // Zero height so it never displaces the tray or the feed; sticky so it rides the scroll.
-    <div className="pointer-events-none sticky top-[7.5rem] z-20 h-0 md:top-16">
+    <div className="pointer-events-none sticky top-[calc(var(--now-playing-height)+7.5rem)] z-20 h-0 md:top-[calc(var(--now-playing-height)+4rem)]">
       <div className="flex justify-center">
         <button
           type="button"

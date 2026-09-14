@@ -47,7 +47,7 @@ export function VoiceComposerPanel({
           </>
         ) : stored ? (
           <div className="min-w-0 flex-1">
-            <VoiceNotePlayer note={stored} fill />
+            <VoiceNotePlayer note={stored} source={null} fill />
           </div>
         ) : voice ? (
           <>
@@ -58,6 +58,7 @@ export function VoiceComposerPanel({
                   url: voice.uri,
                   duration_ms: voice.durationMs,
                 }}
+                source={null}
                 fill
               />
             </div>

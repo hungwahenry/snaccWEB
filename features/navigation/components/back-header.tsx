@@ -26,7 +26,7 @@ export function BackHeader({
   return (
     <header
       className={cn(
-        "sticky top-0 z-30 flex h-14 items-center gap-3 px-3 transition-colors",
+        "sticky top-(--now-playing-height) z-30 flex h-14 items-center gap-3 px-3 transition-colors",
         floating
           ? "bg-transparent [&_button]:bg-black/40 [&_button]:text-white [&_button:hover]:bg-black/60"
           : "bg-background/90 backdrop-blur",

@@ -7,6 +7,7 @@ import { ConsoleEgg } from "@/components/console-egg"
 import { NavigationProgress } from "@/components/navigation-progress"
 import { ThemeProvider } from "./theme-provider"
 import { Toaster } from "@/components/ui/sonner"
+import { VoiceNoteHost } from "@/features/voice/containers/voice-note-host"
 import { getQueryClient } from "@/lib/query/client"
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -18,6 +19,7 @@ export function Providers({ children }: { children: ReactNode }) {
         <QueryClientProvider client={queryClient}>
           {children}
           <Toaster position="top-center" />
+          <VoiceNoteHost />
           <ConsoleEgg />
           <Suspense>
             <NavigationProgress />

@@ -1,19 +1,5 @@
 import type { PlaybackSpeed } from "../types"
 
-type PlaybackHandle = { pause: () => void }
-
-let playing: PlaybackHandle | null = null
-
-/** One voice note at a time: starting one pauses whichever was playing. */
-export function claimPlayback(handle: PlaybackHandle): void {
-  if (playing && playing !== handle) playing.pause()
-  playing = handle
-}
-
-export function releasePlayback(handle: PlaybackHandle): void {
-  if (playing === handle) playing = null
-}
-
 export const PLAYBACK_SPEEDS: readonly PlaybackSpeed[] = [1, 1.5, 2]
 
 export function nextSpeed(speed: PlaybackSpeed): PlaybackSpeed {

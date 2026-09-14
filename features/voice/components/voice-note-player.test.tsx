@@ -1,5 +1,8 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { VoiceNoteHost } from "../containers/voice-note-host"
+import { currentVoicePlayback, voicePlayer } from "../hooks/use-voice-player"
+import type { VoiceSource } from "../types"
 import { VoiceNotePlayer } from "./voice-note-player"
 
 vi.mock("@/lib/feedback", () => ({ showErrorMessage: vi.fn() }))
@@ -38,27 +41,57 @@ const note = (id: string) => ({
   duration_ms: 12_000,
 })
 
+const source = (id: string): VoiceSource => ({
+  kind: "snacc",
+  id,
+  label: "@ada",
+  avatarUrl: null,
+  authorId: "u1",
+})
+
+function renderPlayers(...ids: string[]) {
+  return render(
+    <>
+      <VoiceNoteHost />
+      {ids.map((id) => (
+        <VoiceNotePlayer key={id} note={note(id)} source={source(id)} />
+      ))}
+    </>
+  )
+}
+
+const audio = () => created[0]
+
+function playFirst() {
+  fireEvent.click(screen.getAllByRole("button", { name: "Play voice note" })[0])
+  act(() => {
+    audio().dispatchEvent(new Event("playing"))
+  })
+}
+
 describe("VoiceNotePlayer", () => {
   it("shows the length and a play button before it is played", () => {
-    render(<VoiceNotePlayer note={note("a")} />)
+    renderPlayers("a")
 
     expect(screen.getByRole("group", { name: "Voice note, 0:12" })).toBeTruthy()
     expect(screen.getByRole("button", { name: "Play voice note" })).toBeTruthy()
     expect(screen.getByText("0:12")).toBeTruthy()
-    expect(created).toHaveLength(0)
+    expect(created).toHaveLength(1)
+    expect(audio().getAttribute("src")).toBeNull()
   })
 
   it("loads on tap, then offers pause, speed and seeking once playing", () => {
-    render(<VoiceNotePlayer note={note("a")} />)
+    renderPlayers("a")
 
     fireEvent.click(screen.getByRole("button", { name: "Play voice note" }))
     expect(
       screen.getByRole("button", { name: "Loading voice note" })
     ).toBeTruthy()
-    expect(created).toHaveLength(1)
+    expect(audio().getAttribute("src")).toBe(note("a").url)
+    expect(HTMLMediaElement.prototype.play).toHaveBeenCalledOnce()
 
     act(() => {
-      created[0].dispatchEvent(new Event("playing"))
+      audio().dispatchEvent(new Event("playing"))
     })
 
     expect(
@@ -71,35 +104,26 @@ describe("VoiceNotePlayer", () => {
   })
 
   it("goes back to its idle look when the note ends", () => {
-    render(<VoiceNotePlayer note={note("a")} />)
+    renderPlayers("a")
 
-    fireEvent.click(screen.getByRole("button", { name: "Play voice note" }))
+    playFirst()
     act(() => {
-      created[0].dispatchEvent(new Event("playing"))
-      created[0].dispatchEvent(new Event("ended"))
+      audio().dispatchEvent(new Event("ended"))
     })
 
     expect(screen.getByRole("button", { name: "Play voice note" })).toBeTruthy()
+    expect(currentVoicePlayback()).toBeNull()
   })
 
-  it("pauses the first note when a second one starts", () => {
-    render(
-      <>
-        <VoiceNotePlayer note={note("a")} />
-        <VoiceNotePlayer note={note("b")} />
-      </>
-    )
+  it("plays one note at a time through the same element", () => {
+    renderPlayers("a", "b")
 
-    const [first, second] = screen.getAllByRole("button", {
-      name: "Play voice note",
-    })
-    fireEvent.click(first)
+    playFirst()
+    fireEvent.click(
+      screen.getAllByRole("button", { name: "Play voice note" })[0]
+    )
     act(() => {
-      created[0].dispatchEvent(new Event("playing"))
-    })
-    fireEvent.click(second)
-    act(() => {
-      created[1].dispatchEvent(new Event("playing"))
+      audio().dispatchEvent(new Event("playing"))
     })
 
     const buttons = screen.getAllByRole("button", { name: /voice note/ })
@@ -107,20 +131,52 @@ describe("VoiceNotePlayer", () => {
       "Play voice note",
       "Pause voice note",
     ])
+    expect(created).toHaveLength(1)
+    expect(audio().getAttribute("src")).toBe(note("b").url)
   })
 
   it("seeks from the keyboard", () => {
-    render(<VoiceNotePlayer note={note("a")} />)
+    renderPlayers("a")
 
-    fireEvent.click(screen.getByRole("button", { name: "Play voice note" }))
-    act(() => {
-      created[0].dispatchEvent(new Event("playing"))
-    })
-
+    playFirst()
     const slider = screen.getByRole("slider", { name: "Seek" })
     fireEvent.keyDown(slider, { key: "End" })
 
-    expect(created[0].currentTime).toBe(12)
+    expect(audio().currentTime).toBe(12)
     expect(slider.getAttribute("aria-valuenow")).toBe("100")
+  })
+
+  it("keeps playing when its row goes away", () => {
+    const view = renderPlayers("a")
+
+    playFirst()
+    view.rerender(<VoiceNoteHost />)
+
+    expect(HTMLMediaElement.prototype.pause).not.toHaveBeenCalled()
+    expect(currentVoicePlayback()?.status).toBe("playing")
+  })
+
+  it("stops when its snacc goes", () => {
+    renderPlayers("a")
+
+    playFirst()
+    act(() => voicePlayer.stopIfFrom({ snaccId: "a" }))
+
+    expect(screen.getByRole("button", { name: "Play voice note" })).toBeTruthy()
+    expect(audio().getAttribute("src")).toBeNull()
+  })
+
+  it("stops a take that isn't posted yet when its row goes away", () => {
+    const view = render(
+      <>
+        <VoiceNoteHost />
+        <VoiceNotePlayer note={note("draft")} source={null} />
+      </>
+    )
+
+    playFirst()
+    view.rerender(<VoiceNoteHost />)
+
+    expect(currentVoicePlayback()).toBeNull()
   })
 })

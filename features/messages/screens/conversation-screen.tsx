@@ -105,6 +105,7 @@ export function ConversationScreen({ id }: { id: string }) {
                 key={item.message.id}
                 {...item}
                 handlers={screen.handlers}
+                voiceSources={screen.voiceSources}
                 openingPhotoId={screen.openingPhotoId}
                 payingRequestIds={screen.payingRequestIds}
                 requestExpiryDays={screen.requestExpiryDays}

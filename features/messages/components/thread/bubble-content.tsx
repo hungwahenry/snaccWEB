@@ -1,6 +1,6 @@
 import { LinkPreviews } from "@/features/links/containers/link-previews"
 import { VoiceNotePlayer } from "@/features/voice/components/voice-note-player"
-import type { VoiceNote } from "@/features/voice/types"
+import type { VoiceNote, VoiceSource } from "@/features/voice/types"
 import { cn } from "@/lib/utils"
 import type { ReplyGlimpse } from "../../types"
 import { QuotedReply } from "../glimpse/quoted-reply"
@@ -23,11 +23,13 @@ export function BubbleQuote({
 
 export function BubbleVoice({
   note,
+  source,
   mine,
   afterQuote,
   beforeText,
 }: {
   note: VoiceNote
+  source: VoiceSource
   mine: boolean
   afterQuote: boolean
   beforeText: boolean
@@ -40,7 +42,7 @@ export function BubbleVoice({
         beforeText ? "pb-1" : "pb-3"
       )}
     >
-      <VoiceNotePlayer note={note} onDark={mine} />
+      <VoiceNotePlayer note={note} source={source} onDark={mine} />
     </div>
   )
 }

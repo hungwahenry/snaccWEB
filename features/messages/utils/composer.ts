@@ -1,6 +1,12 @@
-import type { ComposerContext, Message, MessageGlimpse } from "../types"
+import type {
+  ComposerContext,
+  Message,
+  MessageGlimpse,
+  VoiceSources,
+} from "../types"
 import { messageGlimpse } from "./glimpse"
 import { removedLabel } from "./preview"
+import { voiceSourceOf } from "./voice"
 
 /** How close to the limit the character counter appears. */
 export const COUNTER_WITHIN = 100
@@ -12,12 +18,14 @@ export function glimpseOfMessage(message: Message): MessageGlimpse {
 export function composerContext(input: {
   editing: Message | null
   replyingTo: Message | null
+  voiceSources: VoiceSources
 }): ComposerContext | null {
   if (input.editing) {
     return {
       kind: "edit",
       label: "Editing your message",
       glimpse: glimpseOfMessage(input.editing),
+      voiceSource: voiceSourceOf(input.editing, input.voiceSources),
       hint: "Cancel edit",
     }
   }
@@ -29,6 +37,7 @@ export function composerContext(input: {
     kind: "reply",
     label: `Replying to ${reply.mine ? "yourself" : "them"}`,
     glimpse: glimpseOfMessage(reply),
+    voiceSource: voiceSourceOf(reply, input.voiceSources),
     hint: "Cancel reply",
   }
 }

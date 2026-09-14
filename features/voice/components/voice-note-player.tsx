@@ -1,10 +1,9 @@
 "use client"
 
-import { memo, type ReactNode, type Ref } from "react"
+import { memo, type ReactNode } from "react"
 import { cn } from "@/lib/utils"
 import { useVoiceNote } from "../hooks/use-voice-note"
-import { useVoiceNotePlayback } from "../hooks/use-voice-note-playback"
-import type { VoiceNote } from "../types"
+import type { VoiceNote, VoiceSource } from "../types"
 import { clock } from "../utils/clock"
 import { positionLabel, voiceNoteLabel } from "../utils/labels"
 import { WAVE_HEIGHT, WAVE_WIDTH } from "../utils/wave"
@@ -15,114 +14,83 @@ import { VoiceBars } from "./voice-bars"
 
 type VoiceNotePlayerProps = {
   note: VoiceNote
+  source: VoiceSource | null
   onDark?: boolean
   /** Stretch the waveform across the row instead of a fixed width, e.g. inside a reply box. */
   fill?: boolean
 }
 
-/**
- * A self-contained player: playback is local to the row (like a <video>), so it runs its own
- * audio hooks. Only one note plays at a time across the app.
- */
 export const VoiceNotePlayer = memo(function VoiceNotePlayer({
   note,
+  source,
   onDark = false,
   fill = false,
 }: VoiceNotePlayerProps) {
-  const row = useVoiceNote(note)
+  const row = useVoiceNote(note, source)
 
-  if (row.engaged) {
+  if (!row.engaged) {
     return (
-      <EngagedPlayer
-        note={note}
-        onDark={onDark}
+      <PlayerRow
+        label={voiceNoteLabel(note.duration_ms)}
         fill={fill}
-        levels={row.levels}
-        measure={row.measure}
-        onRelease={row.release}
+        button={
+          <PlayerButton playing={false} onDark={onDark} onPress={row.play} />
+        }
+        wave={
+          <div
+            ref={fill ? row.measure : undefined}
+            className={waveClass(fill)}
+            style={fill ? undefined : { width: WAVE_WIDTH }}
+          >
+            <Wave levels={row.levels} onDark={onDark} />
+          </div>
+        }
+        trailing={<Clock time={clock(note.duration_ms)} onDark={onDark} />}
       />
     )
   }
 
   return (
     <PlayerRow
-      label={voiceNoteLabel(note.duration_ms)}
-      fill={fill}
-      button={
-        <PlayerButton playing={false} onDark={onDark} onPress={row.engage} />
-      }
-      wave={
-        <div
-          ref={fill ? row.measure : undefined}
-          className={waveClass(fill)}
-          style={fill ? undefined : { width: WAVE_WIDTH }}
-        >
-          <Wave levels={row.levels} onDark={onDark} />
-        </div>
-      }
-      trailing={<Clock time={clock(note.duration_ms)} onDark={onDark} />}
-    />
-  )
-})
-
-function EngagedPlayer({
-  note,
-  onDark,
-  fill,
-  levels,
-  measure,
-  onRelease,
-}: {
-  note: VoiceNote
-  onDark: boolean
-  fill: boolean
-  levels: number[]
-  measure: Ref<HTMLDivElement>
-  onRelease: () => void
-}) {
-  const playback = useVoiceNotePlayback(note, onRelease)
-
-  return (
-    <PlayerRow
-      label={voiceNoteLabel(playback.totalMs)}
+      label={voiceNoteLabel(row.totalMs)}
       fill={fill}
       button={
         <PlayerButton
-          playing={playback.playing}
-          loading={playback.loading}
+          playing={row.playing}
+          loading={row.loading}
           onDark={onDark}
-          onPress={playback.toggle}
+          onPress={row.toggle}
         />
       }
       wave={
         <ScrubZone
-          measure={fill ? measure : undefined}
+          measure={fill ? row.measure : undefined}
           className={waveClass(fill)}
           style={fill ? undefined : { width: WAVE_WIDTH }}
-          progress={playback.progress}
-          valueText={positionLabel(playback.elapsedMs, playback.totalMs)}
-          onBegin={playback.beginScrub}
-          onMove={playback.moveScrub}
-          onEnd={playback.endScrub}
-          onCancel={playback.cancelScrub}
+          progress={row.progress}
+          valueText={positionLabel(row.elapsedMs, row.totalMs)}
+          onBegin={row.beginScrub}
+          onMove={row.moveScrub}
+          onEnd={row.endScrub}
+          onCancel={row.cancelScrub}
         >
-          <Wave levels={levels} onDark={onDark} progress={playback.progress} />
+          <Wave levels={row.levels} onDark={onDark} progress={row.progress} />
         </ScrubZone>
       }
       trailing={
-        playback.playing ? (
+        row.playing ? (
           <SpeedPill
-            speed={playback.speed}
+            speed={row.speed}
             onDark={onDark}
-            onPress={playback.cycleSpeed}
+            onPress={row.cycleSpeed}
           />
         ) : (
-          <Clock time={clock(playback.elapsedMs)} onDark={onDark} />
+          <Clock time={clock(row.elapsedMs)} onDark={onDark} />
         )
       }
     />
   )
-}
+})
 
 function waveClass(fill: boolean): string {
   return cn(

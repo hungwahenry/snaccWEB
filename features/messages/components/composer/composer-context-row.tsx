@@ -17,7 +17,10 @@ export function ComposerContextRow({
         <span className="text-xs font-medium text-muted-foreground">
           {context.label}
         </span>
-        <MessageGlimpseView glimpse={context.glimpse} />
+        <MessageGlimpseView
+          glimpse={context.glimpse}
+          voiceSource={context.voiceSource}
+        />
       </span>
       {onCancel ? (
         <IconButton

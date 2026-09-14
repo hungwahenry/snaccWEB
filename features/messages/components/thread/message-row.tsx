@@ -11,10 +11,16 @@ import { IconButton } from "@/components/ui/icon-button"
 import { ReactionPicker } from "@/features/reactions/components/reaction-picker"
 import { useLongPress } from "@/hooks/use-long-press"
 import { cn } from "@/lib/utils"
-import type { DeliveryState, Message, MessageImage } from "../../types"
+import type {
+  DeliveryState,
+  Message,
+  MessageImage,
+  VoiceSources,
+} from "../../types"
 import { canActOnMessage } from "../../utils/editing"
 import { viewOnceOf } from "../../utils/images"
 import { myReaction } from "../../utils/reactions"
+import { voiceSourceOf } from "../../utils/voice"
 import { DayBreak } from "./day-break"
 import { MessageBubble } from "./message-bubble"
 
@@ -47,6 +53,7 @@ export type MessageRowProps = {
   firstInBurst: boolean
   lastInBurst: boolean
   handlers: MessageRowHandlers
+  voiceSources: VoiceSources
   /** The view-once photo being fetched right now, if it is this row's. */
   openingPhotoId: string | null
   /** Requests being paid right now; two can be at once. */
@@ -62,6 +69,7 @@ function MessageRowComponent({
   firstInBurst,
   lastInBurst,
   handlers,
+  voiceSources,
   openingPhotoId,
   payingRequestIds,
   requestExpiryDays,
@@ -128,6 +136,7 @@ function MessageRowComponent({
               message={message}
               firstInBurst={firstInBurst}
               lastInBurst={lastInBurst}
+              voiceSource={voiceSourceOf(message, voiceSources)}
               onPressImage={(index) => handlers.onOpenImages(message, index)}
               onOpenViewOnce={(photo) =>
                 handlers.onOpenViewOnce(message, photo)

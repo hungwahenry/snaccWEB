@@ -61,6 +61,7 @@
   --tab-bar-height: calc(57px + var(--bar-inset));
   --money-bar-height: calc(65px + var(--bar-inset));
   --fab-bottom: calc(var(--tab-bar-height) + 16px);
+  --now-playing-bar: 3.25rem;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0 0 0);
@@ -246,5 +247,23 @@
   }
   100% {
     transform: translateX(350%);
+  }
+}
+
+/* Registered so the bar's height animates, and the sticky headers under it slide with it. */
+@property --now-playing-height {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+.now-playing-frame {
+  transition: --now-playing-height 200ms ease-out;
+}
+.now-playing-frame:has(> [data-now-playing="open"]) {
+  --now-playing-height: var(--now-playing-bar);
+}
+@media (prefers-reduced-motion: reduce) {
+  .now-playing-frame {
+    transition: none;
   }
 }

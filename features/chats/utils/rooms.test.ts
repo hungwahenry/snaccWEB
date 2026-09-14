@@ -4,6 +4,7 @@ import { chatBubbleParts } from "./bubble"
 import {
   canEditChatMessage,
   chatComposerContext,
+  chatVoiceSource,
   removedLabel,
   roomTitle,
   typingLabel,
@@ -93,6 +94,25 @@ describe("rooms", () => {
   })
 })
 
+describe("chatVoiceSource", () => {
+  it("names who sent it and opens their room", () => {
+    const sender = {
+      id: "u1",
+      username: "ada",
+      display_name: null,
+      avatar_url: "https://media.test/ada.png",
+    } as ChatMessage["sender"]
+
+    expect(chatVoiceSource(message({ sender }))).toEqual({
+      kind: "chat",
+      id: "r1",
+      label: "@ada",
+      avatarUrl: "https://media.test/ada.png",
+      authorId: "u1",
+    })
+  })
+})
+
 describe("chatComposerContext", () => {
   it("is nothing when neither editing nor replying", () => {
     expect(chatComposerContext({ editing: null, replyingTo: null })).toBeNull()
@@ -109,6 +129,11 @@ describe("chatComposerContext", () => {
     })
     expect(context?.label).toBe("Replying to @ada")
     expect(context?.glimpse.media).toMatchObject({ kind: "voice" })
+    expect(context?.voiceSource).toMatchObject({
+      kind: "chat",
+      id: "r1",
+      label: "@ada",
+    })
   })
 
   it("prefers the edit over the reply", () => {

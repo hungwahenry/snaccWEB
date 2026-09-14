@@ -91,7 +91,7 @@ export function ProfileScreen({ username }: { username: string }) {
             />
           ) : (
             <>
-              <div className="sticky top-14 z-20 bg-background/90 backdrop-blur">
+              <div className="sticky top-[calc(var(--now-playing-height)+3.5rem)] z-20 bg-background/90 backdrop-blur">
                 <PillTabs
                   tabs={PROFILE_TABS}
                   value={screen.tabs.value}

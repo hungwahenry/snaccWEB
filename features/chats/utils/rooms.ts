@@ -5,6 +5,8 @@ import type {
   ReplyGlimpse,
 } from "@/features/messages/types"
 import { handleOf } from "@/features/users/utils/names"
+import type { VoiceSource } from "@/features/voice/types"
+import { voiceSource } from "@/features/voice/utils/source"
 import { editWindowClosesAt } from "@/lib/format"
 import type { ChatMessage, ChatReplyPreview, ChatRoom } from "../types"
 
@@ -160,6 +162,12 @@ export function replyAuthor(reply: ChatReplyPreview): string {
   return reply.sender_username ? `@${reply.sender_username}` : "Someone"
 }
 
+export function chatVoiceSource(
+  message: Pick<ChatMessage, "room_id" | "sender">
+): VoiceSource {
+  return voiceSource("chat", message.room_id, message.sender)
+}
+
 export function chatComposerContext(input: {
   editing: ChatMessage | null
   replyingTo: ChatMessage | null
@@ -169,6 +177,7 @@ export function chatComposerContext(input: {
       kind: "edit",
       label: "Editing your message",
       glimpse: chatGlimpse(input.editing),
+      voiceSource: chatVoiceSource(input.editing),
       hint: "Cancel edit",
     }
   }
@@ -182,6 +191,7 @@ export function chatComposerContext(input: {
       ? "Replying to yourself"
       : `Replying to ${handleOf(reply.sender) ?? "them"}`,
     glimpse: chatGlimpse(reply),
+    voiceSource: chatVoiceSource(reply),
     hint: "Cancel reply",
   }
 }

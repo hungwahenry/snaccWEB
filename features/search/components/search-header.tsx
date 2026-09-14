@@ -20,7 +20,7 @@ export function SearchHeader({
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-border bg-background/90 px-3 backdrop-blur">
+    <header className="sticky top-(--now-playing-height) z-30 flex h-14 items-center gap-2 border-b border-border bg-background/90 px-3 backdrop-blur">
       <IconButton
         icon={ArrowLeftIcon}
         label="Back"

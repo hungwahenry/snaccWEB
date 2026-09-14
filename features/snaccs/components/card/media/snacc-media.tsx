@@ -1,6 +1,7 @@
 import { StickerAttachmentView } from "@/features/stickers/components/sticker-attachment-view"
 import { VoiceNotePlayer } from "@/features/voice/components/voice-note-player"
 import type { Snacc } from "../../../types"
+import { snaccVoiceSource } from "../../../utils/voice"
 import { PollView, type PollViewProps } from "../poll-view"
 import { MatchAttachment } from "@/features/football/components/match-attachment"
 import { SnaccGifView } from "./snacc-gif"
@@ -21,6 +22,8 @@ type SnaccMediaProps = {
     | "poll"
     | "status"
     | "mine"
+    | "anonymous"
+    | "author"
   >
   onPressImage?: (index: number) => void
   onHoldImage?: (index: number) => void
@@ -56,7 +59,11 @@ export function SnaccMedia({
 
       {snacc.voice ? (
         <div className="rounded-2xl border border-border px-3 py-2">
-          <VoiceNotePlayer note={snacc.voice} fill />
+          <VoiceNotePlayer
+            note={snacc.voice}
+            source={snaccVoiceSource(snacc)}
+            fill
+          />
         </div>
       ) : null}
 

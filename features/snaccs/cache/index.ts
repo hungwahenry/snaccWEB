@@ -1,6 +1,7 @@
 import type { QueryKey } from "@tanstack/react-query"
 import { userKeys } from "@/features/users/utils/keys"
 import type { PublicProfile } from "@/features/users/types"
+import { voicePlayer } from "@/features/voice/hooks/use-voice-player"
 import type { PaginatedPages } from "@/lib/api/types"
 import { getQueryClient } from "@/lib/query/client"
 import {
@@ -78,6 +79,7 @@ export function removeSnacc(id: string): void {
 
   client().removeQueries({ queryKey: snaccKeys.detail(id), exact: true })
   dropFromLists(id, "deleted")
+  voicePlayer.stopIfFrom({ snaccId: id })
 }
 
 /** Hidden, not gone: nothing is counted down and the snacc itself stays open where it is. */

@@ -13,7 +13,7 @@ export function TabHeader({
   return (
     <header
       className={cn(
-        "sticky top-0 z-30 flex h-14 items-center border-b border-border bg-background/90 px-4 backdrop-blur",
+        "sticky top-(--now-playing-height) z-30 flex h-14 items-center border-b border-border bg-background/90 px-4 backdrop-blur",
         className
       )}
     >

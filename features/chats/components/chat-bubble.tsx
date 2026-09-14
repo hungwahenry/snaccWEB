@@ -18,6 +18,7 @@ import { nameOf } from "@/features/users/utils/names"
 import { cn } from "@/lib/utils"
 import type { ChatMessage } from "../types"
 import { chatBubbleParts } from "../utils/bubble"
+import { chatVoiceSource } from "../utils/rooms"
 
 const STICKER_SIZE = 140
 
@@ -84,6 +85,7 @@ export function ChatBubble({
         {parts.voice ? (
           <BubbleVoice
             note={parts.voice}
+            source={chatVoiceSource(message)}
             mine={mine}
             afterQuote={parts.reply !== null}
             beforeText={parts.hasText}

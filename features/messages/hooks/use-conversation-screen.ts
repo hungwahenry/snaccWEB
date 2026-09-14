@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useRef, type RefObject } from "react"
+import { useMe } from "@/features/auth/hooks/use-me"
 import { useReportSheet } from "@/features/reports/hooks/use-report-sheet"
 import { isNotFound } from "@/lib/api/errors"
 import { useLightbox } from "@/providers/lightbox-provider"
@@ -9,6 +10,7 @@ import { discardMessage, retryMessage } from "../cache/pending-messages"
 import { shownImagesOf } from "../utils/images"
 import { partyName } from "../utils/preview"
 import { decorateThread } from "../utils/thread"
+import { conversationVoiceSources } from "../utils/voice"
 import { useConversation } from "./use-conversation"
 import { useConversationComposer } from "./use-conversation-composer"
 import { useConversationMenu } from "./use-conversation-menu"
@@ -36,9 +38,14 @@ export function useConversationScreen(
   const lightbox = useLightbox()
   const photo = useViewOncePhoto(id)
   const react = useReactToMessage(id)
+  const me = useMe().data ?? null
 
   const data = conversation.data ?? null
   const other = data?.other ?? null
+  const voiceSources = useMemo(
+    () => conversationVoiceSources(id, me, other),
+    [id, me, other]
+  )
   const menu = useConversationMenu(id, other, report)
   const money = useConversationMoney(id, other?.username ?? null)
 
@@ -62,6 +69,7 @@ export function useConversationScreen(
 
   const composer = useConversationComposer(id, {
     conversation: data,
+    voiceSources,
     inputRef,
     extraActions: money.actions,
     onType: notifyTyping,
@@ -110,6 +118,7 @@ export function useConversationScreen(
     typing,
     onScroll: scroll.onScroll,
     handlers,
+    voiceSources,
     openingPhotoId: photo.openingId,
     payingRequestIds: money.payingRequestIds,
     requestExpiryDays: money.requestExpiryDays,

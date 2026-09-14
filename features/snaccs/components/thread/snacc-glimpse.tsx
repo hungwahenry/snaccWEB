@@ -10,6 +10,7 @@ import { VoiceNotePlayer } from "@/features/voice/components/voice-note-player"
 import { aspectRatio } from "@/lib/aspect"
 import type { GlimpsedSnacc } from "../../types"
 import { glimpseOf, type GlimpseChipKind } from "../../utils/preview"
+import { snaccVoiceSource } from "../../utils/voice"
 
 const THUMB = 56
 
@@ -48,7 +49,11 @@ export function SnaccGlimpse({
 
       {glimpse.voice ? (
         <div className="max-w-80 rounded-2xl border border-border px-3 py-2">
-          <VoiceNotePlayer note={glimpse.voice} fill />
+          <VoiceNotePlayer
+            note={glimpse.voice}
+            source={snaccVoiceSource(snacc)}
+            fill
+          />
         </div>
       ) : null}
 

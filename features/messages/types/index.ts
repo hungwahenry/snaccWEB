@@ -2,7 +2,7 @@ import type { LucideIcon } from "lucide-react"
 import type { Gif } from "@/features/giphy/types"
 import type { SnaccAuthor } from "@/features/snaccs/types"
 import type { DraftSticker, StickerAttachment } from "@/features/stickers/types"
-import type { VoiceDraft, VoiceNote } from "@/features/voice/types"
+import type { VoiceDraft, VoiceNote, VoiceSource } from "@/features/voice/types"
 import type { PickedImage } from "@/lib/media"
 
 export type { VoiceNote }
@@ -189,8 +189,14 @@ export interface ComposerContext {
   kind: "edit" | "reply"
   label: string
   glimpse: MessageGlimpse
+  voiceSource: VoiceSource | null
   /** The name of the button that drops it. */
   hint: string
+}
+
+export interface VoiceSources {
+  mine: VoiceSource
+  theirs: VoiceSource
 }
 
 /** One of the things the composer's plus button offers. */

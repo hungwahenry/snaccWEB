@@ -5,6 +5,7 @@ import { showErrorMessage } from "@/lib/feedback"
 import type { VoiceDraft } from "../types"
 import { decibelsOf, levelFromMetering } from "../utils/levels"
 import { micErrorMessage, MIN_TAKE_MS, pickMimeType } from "../utils/recording"
+import { voicePlayer } from "./use-voice-player"
 
 const TRAIL = 72
 const TICK_MS = 90
@@ -57,6 +58,7 @@ export function useVoiceRecorder() {
       return false
     }
 
+    voicePlayer.pause()
     setPreparing(true)
     releaseRequested.current = false
     try {

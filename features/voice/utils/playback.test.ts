@@ -1,64 +1,12 @@
-import { describe, expect, it, vi } from "vitest"
+import { describe, expect, it } from "vitest"
 import {
-  claimPlayback,
   fractionAt,
   mediaDurationMs,
   nextSpeed,
   playedFraction,
-  releasePlayback,
   seekByKey,
   shownElapsed,
 } from "./playback"
-
-describe("claimPlayback", () => {
-  it("pauses the note that was playing when another starts", () => {
-    const first = { pause: vi.fn() }
-    const second = { pause: vi.fn() }
-
-    claimPlayback(first)
-    claimPlayback(second)
-
-    expect(first.pause).toHaveBeenCalledOnce()
-    expect(second.pause).not.toHaveBeenCalled()
-    releasePlayback(second)
-  })
-
-  it("doesn't pause a note that claims again", () => {
-    const note = { pause: vi.fn() }
-
-    claimPlayback(note)
-    claimPlayback(note)
-
-    expect(note.pause).not.toHaveBeenCalled()
-    releasePlayback(note)
-  })
-
-  it("forgets a released note", () => {
-    const first = { pause: vi.fn() }
-    const second = { pause: vi.fn() }
-
-    claimPlayback(first)
-    releasePlayback(first)
-    claimPlayback(second)
-
-    expect(first.pause).not.toHaveBeenCalled()
-    releasePlayback(second)
-  })
-
-  it("ignores a release from a note that no longer holds playback", () => {
-    const first = { pause: vi.fn() }
-    const second = { pause: vi.fn() }
-    const third = { pause: vi.fn() }
-
-    claimPlayback(first)
-    claimPlayback(second)
-    releasePlayback(first)
-    claimPlayback(third)
-
-    expect(second.pause).toHaveBeenCalledOnce()
-    releasePlayback(third)
-  })
-})
 
 describe("nextSpeed", () => {
   it("cycles 1x → 1.5x → 2x → 1x", () => {

@@ -13,6 +13,7 @@ import type {
   Conversation,
   Message,
   MessageDraft,
+  VoiceSources,
 } from "../types"
 import { composerContext } from "../utils/composer"
 import { useEditMessage } from "./use-message-actions"
@@ -21,6 +22,7 @@ import { useMessageComposer } from "./use-message-composer"
 
 interface ConversationComposerInput {
   conversation: Conversation | null
+  voiceSources: VoiceSources
   inputRef: RefObject<HTMLTextAreaElement | null>
   /** Money and other screen-level extras for the plus menu, shown while not editing. */
   extraActions: ComposerAction[]
@@ -33,6 +35,7 @@ export function useConversationComposer(
   conversationId: string,
   {
     conversation,
+    voiceSources,
     inputRef,
     extraActions,
     onType,
@@ -99,8 +102,8 @@ export function useConversationComposer(
   )
 
   const context = useMemo(
-    () => composerContext({ editing, replyingTo }),
-    [editing, replyingTo]
+    () => composerContext({ editing, replyingTo, voiceSources }),
+    [editing, replyingTo, voiceSources]
   )
   const canSendVoice =
     voiceEnabled &&

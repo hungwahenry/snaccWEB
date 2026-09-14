@@ -19,6 +19,7 @@ import { SUSPENDED_PATH } from "@/features/suspensions/routes"
 import { COMPLETE_PROFILE_PATH } from "@/features/onboarding/routes"
 import { COMPOSE_PATH } from "@/features/snaccs/routes"
 import { SETTINGS_PATH } from "@/features/settings/routes"
+import { NowPlaying } from "@/features/voice/containers/now-playing"
 
 const IMMERSIVE = [
   /^\/messages\/[^/]+/,
@@ -103,6 +104,7 @@ function Shell({ children }: { children: ReactNode }) {
           />
         )
       }
+      nowPlaying={<NowPlaying />}
     >
       {children}
     </AppFrame>
