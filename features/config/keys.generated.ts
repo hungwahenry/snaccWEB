@@ -93,6 +93,9 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly 'content.poll.min_minutes': number;
   readonly 'content.poll.max_minutes': number;
   readonly 'moments.reactions': readonly string[];
+  readonly 'media.clip_short_side': number;
+  readonly 'media.clip_video_kbps': number;
+  readonly 'media.clip_audio_kbps': number;
   readonly 'profile.username.max_length': number;
   readonly 'profile.display_name.max_length': number;
   readonly 'profile.bio.max_length': number;
@@ -169,6 +172,9 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   'content.poll.min_minutes': 5,
   'content.poll.max_minutes': 10080,
   'moments.reactions': ["❤️","😂","🔥","😮","😢","👏"],
+  'media.clip_short_side': 720,
+  'media.clip_video_kbps': 2000,
+  'media.clip_audio_kbps': 96,
   'profile.username.max_length': 30,
   'profile.display_name.max_length': 50,
   'profile.bio.max_length': 160,

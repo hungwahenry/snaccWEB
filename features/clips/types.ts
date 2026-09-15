@@ -1,6 +1,6 @@
 export interface ClipDraft {
   file: File
-  url: string
+  posterUrl: string | null
   durationMs: number
   width: number
   height: number

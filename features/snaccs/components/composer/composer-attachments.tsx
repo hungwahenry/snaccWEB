@@ -95,13 +95,13 @@ export function ComposerAttachments({
               maxWidth: "100%",
             }}
           >
-            <video
-              src={clip.url}
-              muted
-              playsInline
-              preload="metadata"
-              className="size-full object-cover"
-            />
+            {clip.posterUrl ? (
+              <img
+                src={clip.posterUrl}
+                alt=""
+                className="size-full object-cover"
+              />
+            ) : null}
             <span className="absolute bottom-2 left-2 rounded-full bg-black/55 px-2 py-0.5 text-xs font-bold text-white">
               {clock(clip.durationMs)}
             </span>

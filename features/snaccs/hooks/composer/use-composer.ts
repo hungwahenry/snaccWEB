@@ -118,7 +118,9 @@ export function useComposer(params: ComposeParams) {
   async function saveDraft(): Promise<boolean> {
     try {
       await drafts.save(toDraftContent(params, draft.content), params.draftId)
-      showSuccess("Saved to drafts.")
+      showSuccess(
+        draft.clip ? "Saved to drafts, without the clip." : "Saved to drafts."
+      )
       return true
     } catch {
       showErrorMessage("Could not save the draft.")
@@ -162,6 +164,7 @@ export function useComposer(params: ComposeParams) {
     avatarUrl: me.data?.profile?.avatar_url ?? null,
     username: me.data?.profile?.username ?? null,
     showPoll: draft.showPoll && mode !== "quote",
+    showClip: draft.showClip && mode !== "quote",
     schedule,
     canPost: draft.withinLimits && schedule.ready,
     post,

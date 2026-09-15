@@ -3,7 +3,7 @@ import type { ClipDraft } from "@/features/clips/types"
 import {
   clipContentType,
   progressStep,
-  withLocalPreview,
+  withLocalPoster,
 } from "@/features/clips/utils/clips"
 import { showError, showHeld } from "@/lib/feedback"
 import { newId } from "@/lib/ids"
@@ -103,7 +103,7 @@ async function send(id: string, entry: PendingSnacc): Promise<void> {
 
     const real = {
       ...created,
-      clip: withLocalPreview(created.clip, entry.clip),
+      clip: withLocalPoster(created.clip, entry.clip),
     }
     replaceSnacc(id, real)
     getQueryClient().setQueryData(snaccKeys.detail(real.id), real)

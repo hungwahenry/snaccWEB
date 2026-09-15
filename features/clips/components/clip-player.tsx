@@ -35,15 +35,7 @@ export function ClipPlayer({
         className="relative w-full overflow-hidden rounded-2xl bg-muted"
         style={{ aspectRatio: aspectRatio(clip) }}
       >
-        {clip.url ? (
-          <video
-            src={clip.url}
-            muted
-            playsInline
-            preload="metadata"
-            className="size-full object-cover"
-          />
-        ) : clip.poster_url ? (
+        {clip.poster_url ? (
           <img src={clip.poster_url} alt="" className="size-full object-cover" />
         ) : null}
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/35">

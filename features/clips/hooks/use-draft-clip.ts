@@ -25,7 +25,7 @@ export function useDraftClip() {
         { maxSeconds, maxMb }
       )
       if (problem) {
-        URL.revokeObjectURL(video.url)
+        if (video.posterUrl) URL.revokeObjectURL(video.posterUrl)
         showErrorMessage(problem)
         return
       }
@@ -36,7 +36,7 @@ export function useDraftClip() {
   }
 
   function removeClip() {
-    if (clip) URL.revokeObjectURL(clip.url)
+    if (clip?.posterUrl) URL.revokeObjectURL(clip.posterUrl)
     setClip(null)
   }
 

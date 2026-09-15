@@ -6,7 +6,7 @@ import {
   clipProblem,
   clipStatusLabel,
   progressStep,
-  withLocalPreview,
+  withLocalPoster,
 } from "./clips"
 
 const LIMITS = { maxSeconds: 60, maxMb: 100 }
@@ -19,7 +19,7 @@ const processing: SnaccClip = {
   height: 1280,
   duration_ms: 4000,
 }
-const local = { url: "blob:clip" } as ClipDraft
+const local = { posterUrl: "blob:poster" } as ClipDraft
 
 describe("clipContentType", () => {
   it("takes MP4 and MOV and nothing else", () => {
@@ -58,18 +58,25 @@ describe("clipProblem", () => {
   })
 })
 
-describe("withLocalPreview", () => {
-  it("plays the file you picked while the server is still working", () => {
-    expect(withLocalPreview(processing, local)?.url).toBe("blob:clip")
+describe("withLocalPoster", () => {
+  it("shows the frame you picked while the server is still working", () => {
+    expect(withLocalPoster(processing, local)?.poster_url).toBe("blob:poster")
   })
 
-  it("keeps the server's copy once there is one", () => {
+  it("keeps the server's poster once there is one", () => {
     const ready = {
       ...processing,
       status: "ready" as const,
       url: "https://cdn/c.mp4",
+      poster_url: "https://cdn/c.jpg",
     }
-    expect(withLocalPreview(ready, local)).toBe(ready)
+    expect(withLocalPoster(ready, local)).toBe(ready)
+  })
+
+  it("leaves the clip alone when no frame could be read", () => {
+    expect(withLocalPoster(processing, { posterUrl: null } as ClipDraft)).toBe(
+      processing
+    )
   })
 })
 

@@ -12,6 +12,9 @@ export interface PickedImage {
 const SNACC_MAX_EDGE = 2048
 const AVATAR_MAX_EDGE = 512
 const JPEG_QUALITY = 0.8
+const POSTER_MAX_EDGE = 720
+const POSTER_AT_SECONDS = 0.1
+const POSTER_WAIT_MS = 3000
 
 function chooseFiles(multiple: boolean, accept = "image/*"): Promise<File[]> {
   return new Promise((resolve) => {
@@ -117,30 +120,54 @@ export async function pickVideo(): Promise<File | null> {
 }
 
 export interface ReadVideo {
-  url: string
   durationMs: number
   width: number
   height: number
+  posterUrl: string | null
+}
+
+async function posterFrom(video: HTMLVideoElement): Promise<string> {
+  const scale = Math.min(
+    1,
+    POSTER_MAX_EDGE / Math.max(video.videoWidth, video.videoHeight)
+  )
+  const canvas = document.createElement("canvas")
+  canvas.width = Math.round(video.videoWidth * scale)
+  canvas.height = Math.round(video.videoHeight * scale)
+  canvas.getContext("2d")?.drawImage(video, 0, 0, canvas.width, canvas.height)
+  return URL.createObjectURL(await toBlob(canvas, "image/jpeg"))
 }
 
 export function readVideo(file: File): Promise<ReadVideo> {
   const url = URL.createObjectURL(file)
-  return new Promise((resolve, reject) => {
-    const video = document.createElement("video")
-    video.preload = "metadata"
-    video.onloadedmetadata = () =>
+  const video = document.createElement("video")
+  video.muted = true
+  video.playsInline = true
+  video.preload = "auto"
+
+  return new Promise<ReadVideo>((resolve, reject) => {
+    const settle = (posterUrl: string | null) =>
       resolve({
-        url,
         durationMs: Math.round(video.duration * 1000),
         width: video.videoWidth,
         height: video.videoHeight,
+        posterUrl,
       })
-    video.onerror = () => {
-      URL.revokeObjectURL(url)
-      reject(new Error("Could not read that video."))
+
+    video.onloadedmetadata = () => {
+      const giveUp = window.setTimeout(() => {
+        video.onseeked = null
+        settle(null)
+      }, POSTER_WAIT_MS)
+      video.onseeked = () => {
+        window.clearTimeout(giveUp)
+        posterFrom(video).then(settle, () => settle(null))
+      }
+      video.currentTime = Math.min(POSTER_AT_SECONDS, video.duration / 2)
     }
+    video.onerror = () => reject(new Error("Could not read that video."))
     video.src = url
-  })
+  }).finally(() => URL.revokeObjectURL(url))
 }
 
 function loadFromUrl(uri: string): Promise<HTMLImageElement> {

@@ -24,12 +24,12 @@ export function clipProblem(
   return null
 }
 
-export function withLocalPreview(
+export function withLocalPoster(
   clip: SnaccClip | null,
   local: ClipDraft | null
 ): SnaccClip | null {
-  if (!clip || !local || clip.url) return clip
-  return { ...clip, url: local.url }
+  if (!clip || !local?.posterUrl || clip.poster_url) return clip
+  return { ...clip, poster_url: local.posterUrl }
 }
 
 export function clipStatusLabel(uploadProgress: number | undefined): string {
