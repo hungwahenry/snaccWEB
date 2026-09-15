@@ -16,6 +16,7 @@ const processing: SnaccClip = {
   status: "processing",
   url: null,
   poster_url: null,
+  poster_thumb_url: null,
   width: 720,
   height: 1280,
   duration_ms: 4000,
@@ -61,7 +62,10 @@ describe("clipProblem", () => {
 
 describe("withLocalPoster", () => {
   it("shows the frame you picked while the server is still working", () => {
-    expect(withLocalPoster(processing, local)?.poster_url).toBe("blob:poster")
+    expect(withLocalPoster(processing, local)).toMatchObject({
+      poster_url: "blob:poster",
+      poster_thumb_url: "blob:poster",
+    })
   })
 
   it("keeps the server's poster once there is one", () => {

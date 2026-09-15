@@ -52,6 +52,7 @@ export interface SnaccClip {
   status: ClipStatus
   url: string | null
   poster_url: string | null
+  poster_thumb_url: string | null
   width: number
   height: number
   duration_ms: number

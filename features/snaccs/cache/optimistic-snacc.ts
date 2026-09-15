@@ -87,6 +87,7 @@ export function buildOptimisticSnacc(
           status: "processing",
           url: null,
           poster_url: draft.clip.posterUrl,
+          poster_thumb_url: draft.clip.posterUrl,
           width: draft.clip.width,
           height: draft.clip.height,
           duration_ms: draft.clip.durationMs,

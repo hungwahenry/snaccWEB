@@ -29,7 +29,11 @@ export function withLocalPoster(
   local: ClipDraft | null
 ): SnaccClip | null {
   if (!clip || !local?.posterUrl || clip.poster_url) return clip
-  return { ...clip, poster_url: local.posterUrl }
+  return {
+    ...clip,
+    poster_url: local.posterUrl,
+    poster_thumb_url: local.posterUrl,
+  }
 }
 
 export function isUploading(

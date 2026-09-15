@@ -35,8 +35,12 @@ export function ClipPlayer({
         className="relative w-full overflow-hidden rounded-2xl bg-muted"
         style={{ aspectRatio: aspectRatio(clip) }}
       >
-        {clip.poster_url ? (
-          <img src={clip.poster_url} alt="" className="size-full object-cover" />
+        {clip.poster_thumb_url ? (
+          <img
+            src={clip.poster_thumb_url}
+            alt=""
+            className="size-full object-cover"
+          />
         ) : null}
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/35">
           <ProgressRing
@@ -74,7 +78,7 @@ export function ClipPlayer({
       <video
         ref={video}
         src={clip.url ?? undefined}
-        poster={clip.poster_url ?? undefined}
+        poster={clip.poster_thumb_url ?? undefined}
         preload="none"
         loop
         playsInline
@@ -126,7 +130,11 @@ export function ClipPlayer({
 
           <div className="pointer-events-none absolute right-2 bottom-2 left-2 flex items-center gap-2">
             <span className="rounded-full bg-black/55 px-2 py-0.5 text-xs font-bold text-white">
-              {clock(started ? Math.max(0, duration - elapsed) * 1000 : clip.duration_ms)}
+              {clock(
+                started
+                  ? Math.max(0, duration - elapsed) * 1000
+                  : clip.duration_ms
+              )}
             </span>
 
             {started ? (
