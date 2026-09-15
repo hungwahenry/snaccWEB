@@ -1,3 +1,4 @@
+import { CalendarClockIcon } from "lucide-react"
 import { ActionSheet } from "@/components/ui/action-sheet"
 import {
   DateTimePicker,
@@ -24,6 +25,7 @@ export function ScheduleSheet({
       className="px-4"
     >
       <PremiumGate
+        icon={CalendarClockIcon}
         title="Schedule your snaccs"
         body="Write it now and pick when it goes out."
       >

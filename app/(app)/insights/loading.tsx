@@ -1,5 +1,6 @@
 "use client"
 
+import { ChartColumnIcon } from "lucide-react"
 import { InsightsSkeleton } from "@/features/insights/components/insights-skeleton"
 import { RangePicker } from "@/features/insights/components/range-picker"
 import { DEFAULT_RANGE } from "@/features/insights/routes"
@@ -16,7 +17,11 @@ export default function Loading() {
         title="Insights"
         right={<RangePicker days={DEFAULT_RANGE} onChange={ignore} />}
       />
-      <PremiumGate title={INSIGHTS_PITCH.title} body={INSIGHTS_PITCH.body}>
+      <PremiumGate
+        icon={ChartColumnIcon}
+        title={INSIGHTS_PITCH.title}
+        body={INSIGHTS_PITCH.body}
+      >
         <div className="flex flex-col gap-7 p-5 pb-10">
           <InsightsSkeleton />
         </div>

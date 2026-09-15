@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { ChartColumnIcon } from "lucide-react"
 import { EmptyState } from "@/components/ui/empty-state"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { BackHeader } from "@/features/navigation/components/back-header"
@@ -26,7 +27,11 @@ export function InsightsScreen() {
         right={<RangePicker days={days} onChange={setDays} />}
       />
 
-      <PremiumGate title={INSIGHTS_PITCH.title} body={INSIGHTS_PITCH.body}>
+      <PremiumGate
+        icon={ChartColumnIcon}
+        title={INSIGHTS_PITCH.title}
+        body={INSIGHTS_PITCH.body}
+      >
         <div className="flex flex-col gap-7 p-5 pb-10">
           {insights.isPending ? (
             <InsightsSkeleton />

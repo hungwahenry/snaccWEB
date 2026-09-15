@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react"
 import Link from "next/link"
-import { BadgeCheckIcon } from "lucide-react"
+import { BadgeCheckIcon, type LucideIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { useIsPremium } from "../hooks/use-premium-limit"
@@ -17,10 +17,13 @@ import { PREMIUM_PATH } from "../routes"
  * animations are stopped, so a placeholder teaser doesn't read as a screen stuck loading.
  */
 export function PremiumGate({
+  icon: FeatureIcon,
   title,
   body,
   children,
 }: {
+  /** The feature being sold, drawn large; the premium tick sits on its corner. */
+  icon: LucideIcon
   title: string
   body: string
   children: ReactNode
@@ -43,8 +46,11 @@ export function PremiumGate({
       </div>
 
       <div className="flex flex-col items-center gap-4 px-8 pt-2 pb-10 text-center">
-        <span className="flex size-20 items-center justify-center rounded-full bg-premium/15">
-          <BadgeCheckIcon className="size-10 text-premium" />
+        <span className="relative flex size-20 items-center justify-center rounded-full bg-premium/15">
+          <FeatureIcon className="size-9 text-premium" />
+          <span className="absolute -right-1 -bottom-1 rounded-full bg-background p-0.5">
+            <BadgeCheckIcon className="size-6 fill-premium text-background" />
+          </span>
         </span>
 
         <div className="flex flex-col gap-1.5">
