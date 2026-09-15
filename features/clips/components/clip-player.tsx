@@ -2,14 +2,14 @@
 
 import { useRef, useState } from "react"
 import { PauseIcon, PlayIcon, Volume2Icon, VolumeXIcon } from "lucide-react"
-import { Spinner } from "@/components/ui/spinner"
+import { ProgressRing } from "@/components/ui/progress-ring"
 import { signal } from "@/features/signals/utils/queue"
 import { clock } from "@/features/voice/utils/clock"
 import { aspectRatio } from "@/lib/aspect"
 import { cn } from "@/lib/utils"
 import type { SnaccClip } from "../../snaccs/types"
 import { SpoilerVeil } from "../../snaccs/components/card/media/spoiler-veil"
-import { clipStatusLabel } from "../utils/clips"
+import { clipStatusLabel, isUploading } from "../utils/clips"
 
 export function ClipPlayer({
   clip,
@@ -39,7 +39,11 @@ export function ClipPlayer({
           <img src={clip.poster_url} alt="" className="size-full object-cover" />
         ) : null}
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/35">
-          <Spinner className="text-white" />
+          <ProgressRing
+            progress={isUploading(uploadProgress) ? uploadProgress : null}
+            size="lg"
+            label={clipStatusLabel(uploadProgress)}
+          />
           <span className="text-xs font-bold text-white">
             {clipStatusLabel(uploadProgress)}
           </span>

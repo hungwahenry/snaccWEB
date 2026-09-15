@@ -5,6 +5,7 @@ import {
   clipContentType,
   clipProblem,
   clipStatusLabel,
+  isUploading,
   progressStep,
   withLocalPoster,
 } from "./clips"
@@ -81,10 +82,21 @@ describe("withLocalPoster", () => {
 })
 
 describe("clipStatusLabel and progressStep", () => {
-  it("counts the upload up, then says it is processing", () => {
-    expect(clipStatusLabel(0.4)).toBe("Uploading 40%")
+  it("says uploading until the file is up, then that it is processing", () => {
+    expect(clipStatusLabel(0.4)).toBe("Uploading…")
+    expect(clipStatusLabel(1)).toBe("Processing…")
     expect(clipStatusLabel(undefined)).toBe("Processing…")
     expect(progressStep(0.33)).toBe(0.3)
     expect(progressStep(2)).toBe(1)
+  })
+})
+
+describe("isUploading", () => {
+  it("is only true for a known amount short of the whole file", () => {
+    expect(isUploading(0)).toBe(true)
+    expect(isUploading(0.99)).toBe(true)
+    expect(isUploading(1)).toBe(false)
+    expect(isUploading(null)).toBe(false)
+    expect(isUploading(undefined)).toBe(false)
   })
 })

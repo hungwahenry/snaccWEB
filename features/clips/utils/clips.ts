@@ -32,10 +32,18 @@ export function withLocalPoster(
   return { ...clip, poster_url: local.posterUrl }
 }
 
+export function isUploading(
+  uploadProgress: number | null | undefined
+): uploadProgress is number {
+  return (
+    uploadProgress !== null &&
+    uploadProgress !== undefined &&
+    uploadProgress < 1
+  )
+}
+
 export function clipStatusLabel(uploadProgress: number | undefined): string {
-  return uploadProgress !== undefined && uploadProgress < 1
-    ? `Uploading ${Math.round(uploadProgress * 100)}%`
-    : "Processing…"
+  return isUploading(uploadProgress) ? "Uploading…" : "Processing…"
 }
 
 export function progressStep(fraction: number): number {
