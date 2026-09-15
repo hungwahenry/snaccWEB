@@ -17,6 +17,7 @@ type SnaccMediaProps = {
     | "images"
     | "voice"
     | "clip"
+    | "upload_progress"
     | "gif"
     | "sticker"
     | "match"
@@ -75,6 +76,7 @@ export function SnaccMedia({
           clip={snacc.clip}
           spoiler={snacc.spoiler}
           snaccId={snacc.id}
+          uploadProgress={snacc.upload_progress}
         />
       ) : null}
 

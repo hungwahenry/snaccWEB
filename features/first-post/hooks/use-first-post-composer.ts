@@ -42,6 +42,7 @@ export function useFirstPostComposer(onPosted: () => void) {
         sticker: null,
         match: null,
         voice: null,
+        clip: null,
         spoiler: false,
         anonymous: ghost.active,
       },

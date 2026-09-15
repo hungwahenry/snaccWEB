@@ -1,3 +1,4 @@
+import type { ClipDraft } from "@/features/clips/types"
 import type { Gif } from "@/features/giphy/types"
 import type { DraftSticker } from "@/features/stickers/types"
 import type { VoiceDraft } from "@/features/voice/types"
@@ -44,6 +45,7 @@ export interface ComposerContent {
   gif: Gif | null
   sticker: DraftSticker | null
   voice: VoiceDraft | null
+  clip: ClipDraft | null
   poll: PollDraft | null
   spoiler: boolean
 }
@@ -55,6 +57,7 @@ export function hasContent(content: ComposerContent): boolean {
     content.gif !== null ||
     content.sticker !== null ||
     content.voice !== null ||
+    content.clip !== null ||
     content.poll !== null
   )
 }
@@ -91,6 +94,8 @@ export interface DraftState {
   pollProblem: string | null
   voiceAllowed: boolean
   stickersAllowed: boolean
+  clip: boolean
+  clipsAllowed: boolean
   tagProblem: string | null
 }
 
@@ -104,13 +109,14 @@ export interface DraftRules {
   canAddSticker: boolean
   canRecordVoice: boolean
   canStartPoll: boolean
+  canAddClip: boolean
   hint: string | null
   tagProblem: string | null
 }
 
 export function draftRules(state: DraftState): DraftRules {
   const remaining = state.bodyMax - state.bodyLength
-  const hasMedia = state.images > 0 || state.gif
+  const hasMedia = state.images > 0 || state.gif || state.clip
   const voiceBusy = state.recording || state.voice || state.storedVoice
   const hasBody = state.bodyLength > 0
   const pollHint = state.poll
@@ -137,18 +143,33 @@ export function draftRules(state: DraftState): DraftRules {
       !state.poll &&
       !state.gif &&
       !state.sticker &&
+      !state.clip &&
       !voiceBusy &&
       state.images < state.maxImages,
-    canAddGif: !state.poll && state.images === 0 && !state.recording,
+    canAddGif:
+      !state.poll && state.images === 0 && !state.clip && !state.recording,
     canAddSticker:
-      !state.poll && state.stickersAllowed && state.images === 0 && !voiceBusy,
+      !state.poll &&
+      state.stickersAllowed &&
+      state.images === 0 &&
+      !state.clip &&
+      !voiceBusy,
     canRecordVoice:
       !state.poll &&
       state.voiceAllowed &&
       state.images === 0 &&
       !state.sticker &&
+      !state.clip &&
       !voiceBusy,
     canStartPoll: !hasMedia && !state.sticker && !voiceBusy,
+    canAddClip:
+      state.clipsAllowed &&
+      !state.clip &&
+      !state.poll &&
+      state.images === 0 &&
+      !state.gif &&
+      !state.sticker &&
+      !voiceBusy,
     hint: pollHint,
     tagProblem: state.tagProblem,
   }

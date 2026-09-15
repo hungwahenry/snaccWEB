@@ -35,9 +35,6 @@ export function useComposer(params: ComposeParams) {
   const drafts = useDrafts()
   const done = useRef(false)
   const mode = composerMode(params)
-  const schedule = useComposerSchedule({
-    allowed: mode === "new" && !params.matchId && !ghost.active,
-  })
 
   const [seed] = useState(() => {
     const stored = drafts.drafts.find((draft) => draft.id === params.draftId)
@@ -45,7 +42,14 @@ export function useComposer(params: ComposeParams) {
       ? toDraftSeed(stored)
       : { ...EMPTY_DRAFT, body: params.initialBody ?? "" }
   })
-  const draft = useSnaccDraft(seed, { allowVoice: !ghost.active })
+  const draft = useSnaccDraft(seed, {
+    allowVoice: !ghost.active,
+    allowClip: !ghost.active,
+  })
+  const schedule = useComposerSchedule({
+    allowed:
+      mode === "new" && !params.matchId && !ghost.active && draft.clip === null,
+  })
   const dirty = hasContent(draft.content)
 
   // A match is context the composer was opened with, not something it holds and edits. It comes
@@ -72,6 +76,7 @@ export function useComposer(params: ComposeParams) {
       matchId,
       match,
       voice: draft.voice,
+      clip: draft.clip,
       parentId: params.parentId,
       resnaccOfId: params.resnaccOfId,
       poll:

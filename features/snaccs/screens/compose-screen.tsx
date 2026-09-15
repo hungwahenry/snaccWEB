@@ -172,6 +172,8 @@ function ComposeBody(params: ComposeParams) {
             onEditImage={composer.editImage}
             onRemoveGif={composer.removeGif}
             onRemoveSticker={composer.removeSticker}
+            clip={composer.clip}
+            onRemoveClip={composer.removeClip}
           />
         )}
         {schedule.active ? (
@@ -195,6 +197,9 @@ function ComposeBody(params: ComposeParams) {
           showVoice={composer.showVoice}
           canRecordVoice={composer.canRecordVoice}
           onRecordVoice={composer.startVoice}
+          showClip={composer.showClip}
+          canAddClip={composer.canAddClip}
+          onAddClip={() => void composer.addClip()}
           showPoll={composer.showPoll}
           pollActive={composer.poll !== null}
           canStartPoll={composer.canStartPoll}

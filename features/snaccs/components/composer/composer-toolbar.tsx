@@ -5,6 +5,7 @@ import {
   ImageIcon,
   MicIcon,
   StickerIcon,
+  VideoIcon,
 } from "lucide-react"
 import type { ReactNode } from "react"
 import { IconButton } from "@/components/ui/icon-button"
@@ -19,6 +20,9 @@ type ComposerToolbarProps = {
   showVoice?: boolean
   canRecordVoice?: boolean
   onRecordVoice?: () => void
+  showClip?: boolean
+  canAddClip?: boolean
+  onAddClip?: () => void
   showPoll: boolean
   pollActive: boolean
   canStartPoll: boolean
@@ -44,6 +48,9 @@ export function ComposerToolbar({
   showVoice = false,
   canRecordVoice = false,
   onRecordVoice,
+  showClip = false,
+  canAddClip = false,
+  onAddClip,
   showPoll,
   pollActive,
   canStartPoll,
@@ -74,6 +81,14 @@ export function ComposerToolbar({
             label="Record a voice note"
             disabled={!canRecordVoice}
             onClick={onRecordVoice}
+          />
+        ) : null}
+        {showClip ? (
+          <IconButton
+            icon={VideoIcon}
+            label="Add a clip"
+            disabled={!canAddClip}
+            onClick={onAddClip}
           />
         ) : null}
         {showTray ? (

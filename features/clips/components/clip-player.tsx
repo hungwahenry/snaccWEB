@@ -2,21 +2,25 @@
 
 import { useRef, useState } from "react"
 import { PauseIcon, PlayIcon, Volume2Icon, VolumeXIcon } from "lucide-react"
+import { Spinner } from "@/components/ui/spinner"
 import { signal } from "@/features/signals/utils/queue"
 import { clock } from "@/features/voice/utils/clock"
 import { aspectRatio } from "@/lib/aspect"
 import { cn } from "@/lib/utils"
 import type { SnaccClip } from "../../snaccs/types"
 import { SpoilerVeil } from "../../snaccs/components/card/media/spoiler-veil"
+import { clipStatusLabel } from "../utils/clips"
 
 export function ClipPlayer({
   clip,
   spoiler,
   snaccId,
+  uploadProgress,
 }: {
   clip: SnaccClip
   spoiler?: boolean
   snaccId?: string
+  uploadProgress?: number
 }) {
   const video = useRef<HTMLVideoElement>(null)
   const [started, setStarted] = useState(false)
@@ -24,6 +28,33 @@ export function ClipPlayer({
   const [muted, setMuted] = useState(false)
   const [elapsed, setElapsed] = useState(0)
   const [revealed, setRevealed] = useState(false)
+
+  if (clip.status !== "ready") {
+    return (
+      <div
+        className="relative w-full overflow-hidden rounded-2xl bg-muted"
+        style={{ aspectRatio: aspectRatio(clip) }}
+      >
+        {clip.url ? (
+          <video
+            src={clip.url}
+            muted
+            playsInline
+            preload="metadata"
+            className="size-full object-cover"
+          />
+        ) : clip.poster_url ? (
+          <img src={clip.poster_url} alt="" className="size-full object-cover" />
+        ) : null}
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/35">
+          <Spinner className="text-white" />
+          <span className="text-xs font-bold text-white">
+            {clipStatusLabel(uploadProgress)}
+          </span>
+        </div>
+      </div>
+    )
+  }
 
   const hidden = !!spoiler && !revealed
   const duration = clip.duration_ms / 1000
@@ -46,8 +77,8 @@ export function ClipPlayer({
           handler loses the gesture browsers require to play with sound. */}
       <video
         ref={video}
-        src={clip.url}
-        poster={clip.poster_url}
+        src={clip.url ?? undefined}
+        poster={clip.poster_url ?? undefined}
         preload="none"
         loop
         playsInline

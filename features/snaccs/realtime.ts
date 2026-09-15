@@ -7,7 +7,13 @@ import {
   resnaccsChanged,
 } from "./cache"
 import { scheduledChanged } from "./cache/scheduled"
-import type { SnaccReaction } from "./types"
+import type { ClipStatus, SnaccReaction } from "./types"
+
+function refreshSnacc(id: string): void {
+  void getSnacc(id)
+    .then((fresh) => patchSnacc(fresh.id, () => fresh))
+    .catch(() => undefined)
+}
 
 export function onScheduledChanged(): void {
   scheduledChanged()
@@ -41,9 +47,15 @@ export function onSnaccComment(payload: {
 }
 
 export function onSnaccEdited(payload: { snacc_id: string }): void {
-  void getSnacc(payload.snacc_id)
-    .then((fresh) => patchSnacc(fresh.id, () => fresh))
-    .catch(() => undefined)
+  refreshSnacc(payload.snacc_id)
+}
+
+export function onSnaccProcessed(payload: {
+  snacc_id: string
+  status: ClipStatus
+}): void {
+  if (payload.status === "failed") removeSnacc(payload.snacc_id)
+  else refreshSnacc(payload.snacc_id)
 }
 
 export function onSnaccResnacc(payload: {

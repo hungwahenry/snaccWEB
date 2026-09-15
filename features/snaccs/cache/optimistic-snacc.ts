@@ -81,8 +81,17 @@ export function buildOptimisticSnacc(
           duration_ms: draft.voice.durationMs,
         }
       : null,
-    // Clips are recorded in the app; the web composer has no path to one.
-    clip: null,
+    clip: draft.clip
+      ? {
+          id,
+          status: "processing",
+          url: draft.clip.url,
+          poster_url: null,
+          width: draft.clip.width,
+          height: draft.clip.height,
+          duration_ms: draft.clip.durationMs,
+        }
+      : null,
     poll: draft.poll ? optimisticPoll(id, draft.poll) : null,
     images: draft.images.map((image, position) => ({
       id: image.uri,

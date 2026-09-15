@@ -13,11 +13,11 @@ const SNACC_MAX_EDGE = 2048
 const AVATAR_MAX_EDGE = 512
 const JPEG_QUALITY = 0.8
 
-function chooseFiles(multiple: boolean): Promise<File[]> {
+function chooseFiles(multiple: boolean, accept = "image/*"): Promise<File[]> {
   return new Promise((resolve) => {
     const input = document.createElement("input")
     input.type = "file"
-    input.accept = "image/*"
+    input.accept = accept
     input.multiple = multiple
     input.style.display = "none"
 
@@ -109,6 +109,38 @@ export async function pickImages(limit: number): Promise<PickedImage[]> {
   return Promise.all(
     files.slice(0, limit).map((file) => downscale(file, SNACC_MAX_EDGE))
   )
+}
+
+export async function pickVideo(): Promise<File | null> {
+  const [file] = await chooseFiles(false, "video/mp4,video/quicktime")
+  return file ?? null
+}
+
+export interface ReadVideo {
+  url: string
+  durationMs: number
+  width: number
+  height: number
+}
+
+export function readVideo(file: File): Promise<ReadVideo> {
+  const url = URL.createObjectURL(file)
+  return new Promise((resolve, reject) => {
+    const video = document.createElement("video")
+    video.preload = "metadata"
+    video.onloadedmetadata = () =>
+      resolve({
+        url,
+        durationMs: Math.round(video.duration * 1000),
+        width: video.videoWidth,
+        height: video.videoHeight,
+      })
+    video.onerror = () => {
+      URL.revokeObjectURL(url)
+      reject(new Error("Could not read that video."))
+    }
+    video.src = url
+  })
 }
 
 function loadFromUrl(uri: string): Promise<HTMLImageElement> {

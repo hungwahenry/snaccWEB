@@ -91,6 +91,7 @@ export function createSnacc(input: CreateSnaccInput): Promise<Snacc> {
     parentId: input.parentId,
     resnaccOfId: input.resnaccOfId,
     matchId: input.matchId,
+    clipUploadId: input.clipUploadId,
   })
 }
 

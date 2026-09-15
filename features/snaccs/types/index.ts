@@ -1,3 +1,4 @@
+import type { ClipDraft } from "@/features/clips/types"
 import type { LiveMatch, SnaccMatch } from "@/features/football/types"
 import type { Gif } from "@/features/giphy/types"
 import type { DraftSticker, StickerAttachment } from "@/features/stickers/types"
@@ -44,10 +45,13 @@ export interface SnaccPoll {
   options: SnaccPollOption[]
 }
 
+export type ClipStatus = "processing" | "ready" | "failed"
+
 export interface SnaccClip {
   id: string
-  url: string
-  poster_url: string
+  status: ClipStatus
+  url: string | null
+  poster_url: string | null
   width: number
   height: number
   duration_ms: number
@@ -113,6 +117,7 @@ export interface Snacc {
   id: string
   parent_id: string | null
   status?: SnaccStatus
+  upload_progress?: number
   reply_to_user: SnaccReplyTo | null
   resnacc_of: EmbeddedSnacc | null
   my_resnacc: boolean
@@ -175,6 +180,7 @@ export interface CreateSnaccInput {
   poll?: PollPayload
   spoiler?: boolean
   voice?: VoiceDraft
+  clipUploadId?: string
 }
 
 export interface EditSnaccInput {
@@ -208,6 +214,7 @@ export interface SnaccDraft {
   matchId?: string
   match: LiveMatch | null
   voice: VoiceDraft | null
+  clip: ClipDraft | null
   parentId?: string
   resnaccOfId?: string
   poll?: PollPayload

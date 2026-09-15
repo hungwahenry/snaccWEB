@@ -1,4 +1,5 @@
 import { PencilIcon, XIcon } from "lucide-react"
+import type { ClipDraft } from "@/features/clips/types"
 import type { Gif } from "@/features/giphy/types"
 import { MatchAttachment } from "@/features/football/components/match-attachment"
 import type { SnaccMatch } from "@/features/football/types"
@@ -6,6 +7,7 @@ import { StickerAttachmentView } from "@/features/stickers/components/sticker-at
 import type { DraftSticker } from "@/features/stickers/types"
 import { VoiceComposerPanel } from "@/features/voice/components/voice-composer-panel"
 import type { VoiceDraft } from "@/features/voice/types"
+import { clock } from "@/features/voice/utils/clock"
 import { aspectRatio } from "@/lib/aspect"
 import type { DraftImage, SnaccVoiceNote } from "../../types"
 import { draftImageKey, draftImageUri } from "../../utils/draft-images"
@@ -54,10 +56,12 @@ export function ComposerAttachments({
   sticker = null,
   storedVoice,
   voice = null,
+  clip = null,
   onRemoveImage,
   onEditImage,
   onRemoveGif,
   onRemoveSticker,
+  onRemoveClip,
   match,
   onRemoveMatch,
 }: {
@@ -66,19 +70,52 @@ export function ComposerAttachments({
   sticker?: DraftSticker | null
   storedVoice: SnaccVoiceNote | null
   voice?: ComposerVoice | null
+  clip?: ClipDraft | null
   onRemoveImage: (key: string) => void
   onEditImage?: (key: string) => void
   onRemoveGif: () => void
   onRemoveSticker?: () => void
+  onRemoveClip?: () => void
   match?: SnaccMatch | null
   onRemoveMatch?: () => void
 }) {
   const hasVoice = !!storedVoice || !!voice?.recording || !!voice?.draft
-  if (!gif && !sticker && images.length === 0 && !hasVoice && !match)
+  if (!gif && !sticker && !clip && images.length === 0 && !hasVoice && !match)
     return null
 
   return (
     <>
+      {clip ? (
+        <div className="flex px-4 pt-3">
+          <div
+            className="relative overflow-hidden rounded-2xl bg-muted"
+            style={{
+              height: 140,
+              aspectRatio: aspectRatio(clip),
+              maxWidth: "100%",
+            }}
+          >
+            <video
+              src={clip.url}
+              muted
+              playsInline
+              preload="metadata"
+              className="size-full object-cover"
+            />
+            <span className="absolute bottom-2 left-2 rounded-full bg-black/55 px-2 py-0.5 text-xs font-bold text-white">
+              {clock(clip.durationMs)}
+            </span>
+            {onRemoveClip ? (
+              <CornerButton
+                onPress={onRemoveClip}
+                label="Remove clip"
+                icon={XIcon}
+                side="right"
+              />
+            ) : null}
+          </div>
+        </div>
+      ) : null}
       {match ? (
         <div className="relative px-4 pt-3">
           <MatchAttachment match={match} interactive={false} />

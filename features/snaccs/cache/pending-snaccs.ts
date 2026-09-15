@@ -1,3 +1,10 @@
+import { uploadClip } from "@/features/clips/api"
+import type { ClipDraft } from "@/features/clips/types"
+import {
+  clipContentType,
+  progressStep,
+  withLocalPreview,
+} from "@/features/clips/utils/clips"
 import { showError, showHeld } from "@/lib/feedback"
 import { newId } from "@/lib/ids"
 import { getQueryClient } from "@/lib/query/client"
@@ -14,7 +21,13 @@ import {
 } from "."
 import { buildOptimisticSnacc, draftToInput } from "./optimistic-snacc"
 
-const inputs = new Map<string, CreateSnaccInput>()
+interface PendingSnacc {
+  input: CreateSnaccInput
+  clip: ClipDraft | null
+  clipUploadId?: string
+}
+
+const pending = new Map<string, PendingSnacc>()
 
 const shiftComments = (by: number) => (snacc: Snacc) => ({
   ...snacc,
@@ -26,47 +39,72 @@ function shiftAncestors(parentId: string, by: number): void {
   if (parent?.parent_id) patchSnacc(parent.parent_id, shiftComments(by))
 }
 
+function showUploadProgress(id: string, fraction: number): void {
+  const step = progressStep(fraction)
+  if (findSnacc(id)?.upload_progress === step) return
+  patchSnacc(id, (snacc) => ({ ...snacc, upload_progress: step }))
+}
+
 export function submitSnacc(draft: SnaccDraft, author: SnaccAuthor): void {
   const id = newId()
-  const input = draftToInput(id, draft)
 
   const optimistic = buildOptimisticSnacc(id, draft, author)
   insertSnacc(optimistic)
   if (optimistic.parent_id) shiftAncestors(optimistic.parent_id, 1)
 
-  inputs.set(id, input)
-  void send(id, input)
+  const entry: PendingSnacc = {
+    input: draftToInput(id, draft),
+    clip: draft.clip,
+  }
+  pending.set(id, entry)
+  void send(id, entry)
 }
 
 export function retrySnacc(id: string): void {
-  const input = inputs.get(id)
-  if (!input) return
+  const entry = pending.get(id)
+  if (!entry) return
   patchSnacc(id, (snacc) => ({ ...snacc, status: "sending" }))
-  void send(id, input)
+  void send(id, entry)
 }
 
 export function discardSnacc(id: string): void {
   const parentId = findSnacc(id)?.parent_id
   if (parentId) shiftAncestors(parentId, -1)
-  inputs.delete(id)
+  pending.delete(id)
   removeSnacc(id)
 }
 
 export function clearPendingSnaccs(): void {
-  inputs.clear()
+  pending.clear()
 }
 
-async function send(id: string, input: CreateSnaccInput): Promise<void> {
+async function send(id: string, entry: PendingSnacc): Promise<void> {
   try {
-    const real = await createSnacc(input)
-    inputs.delete(id)
+    if (entry.clip && !entry.clipUploadId) {
+      const { file } = entry.clip
+      entry.clipUploadId = await uploadClip(
+        file,
+        clipContentType(file.type) ?? "video/mp4",
+        (fraction) => showUploadProgress(id, fraction)
+      )
+    }
 
-    if (real.held) {
+    const created = await createSnacc({
+      ...entry.input,
+      clipUploadId: entry.clipUploadId,
+    })
+    pending.delete(id)
+
+    if (created.held) {
       discardSnacc(id)
       showHeld()
       return
     }
 
+    const real = {
+      ...created,
+      clip: withLocalPreview(created.clip, entry.clip),
+    }
     replaceSnacc(id, real)
     getQueryClient().setQueryData(snaccKeys.detail(real.id), real)
     if (real.parent_id) commentsChanged(real.parent_id)

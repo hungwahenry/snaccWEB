@@ -41,6 +41,7 @@ import {
   onSnaccDeleted,
   onSnaccEdited,
   onSnaccPoll,
+  onSnaccProcessed,
   onSnaccReaction,
   onSnaccResnacc,
 } from "@/features/snaccs/realtime"
@@ -67,6 +68,7 @@ export const REALTIME_HANDLERS = {
   "snacc.resnacc": onSnaccResnacc,
   "snacc.deleted": onSnaccDeleted,
   "snacc.edited": onSnaccEdited,
+  "snacc.processed": onSnaccProcessed,
   "scheduled.changed": onScheduledChanged,
   "chat.message": onChatMessage,
   "chat.message.removed": onChatMessageRemoved,

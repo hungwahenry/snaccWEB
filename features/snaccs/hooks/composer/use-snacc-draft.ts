@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useDraftClip } from "@/features/clips/hooks/use-draft-clip"
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import type { Gif } from "@/features/giphy/types"
@@ -15,11 +16,12 @@ import { usePollDraft } from "./use-poll-draft"
 
 export function useSnaccDraft(
   seed: DraftSeed,
-  options: { allowVoice?: boolean } = {}
+  options: { allowVoice?: boolean; allowClip?: boolean } = {}
 ) {
   const gifsEnabled = useFlag("snacc_gifs")
   const stickersEnabled = useFlag("snacc_stickers")
   const voiceEnabled = useFlag("voice_snaccs")
+  const clipsEnabled = useFlag("snacc_clips")
   const maxMentions = useConfigValue("content.snacc.max_mentions")
   const maxHashtags = useConfigValue("content.snacc.max_hashtags")
 
@@ -33,8 +35,10 @@ export function useSnaccDraft(
   const images = useDraftImages(seed.images)
   const voice = useDraftVoice(seed.voice ?? null)
   const poll = usePollDraft(seed.poll ?? null)
+  const clipDraft = useDraftClip()
   const storedVoice = seed.storedVoice ?? null
   const voiceAllowed = voiceEnabled && options.allowVoice !== false
+  const clipsAllowed = clipsEnabled && options.allowClip !== false
 
   const trimmed = body.trim()
   const bodyLimit = usePremiumNudge(
@@ -58,6 +62,8 @@ export function useSnaccDraft(
     pollProblem: poll.pollProblem,
     voiceAllowed,
     stickersAllowed: stickersEnabled,
+    clip: clipDraft.clip !== null,
+    clipsAllowed,
     tagProblem: tagLimitProblem(trimmed, { maxMentions, maxHashtags }),
   })
 
@@ -67,6 +73,7 @@ export function useSnaccDraft(
     gif,
     sticker,
     voice: voice.voice,
+    clip: clipDraft.clip,
     poll: poll.poll,
     spoiler,
   }
@@ -82,6 +89,7 @@ export function useSnaccDraft(
     ...images,
     ...voice,
     ...poll,
+    ...clipDraft,
     ...rules,
     content,
     body,
@@ -97,6 +105,7 @@ export function useSnaccDraft(
     upgrade: bodyLimit,
     showPoll: poll.pollsEnabled,
     showVoice: voiceAllowed,
+    showClip: clipsAllowed,
     showGif: gifsEnabled,
     showSticker: stickersEnabled,
     showTray: gifsEnabled || stickersEnabled,
