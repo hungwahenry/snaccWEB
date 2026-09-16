@@ -13,6 +13,7 @@ describe("labels", () => {
   it("names each provider, and passes an unknown one through", () => {
     expect(providerLabel("revenuecat")).toBe("RevenueCat")
     expect(providerLabel("paystack")).toBe("Paystack")
+    expect(providerLabel("cloudflare_stream")).toBe("Cloudflare Stream")
     expect(providerLabel("stripe")).toBe("stripe")
   })
 
@@ -28,6 +29,7 @@ describe("options", () => {
     expect(PROVIDER_OPTIONS).toEqual([
       { value: "revenuecat", label: "RevenueCat" },
       { value: "paystack", label: "Paystack" },
+      { value: "cloudflare_stream", label: "Cloudflare Stream" },
     ])
     expect(STATUS_OPTIONS.map((option) => option.label)).toEqual([
       "Applied",

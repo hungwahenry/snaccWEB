@@ -111,6 +111,7 @@ export function useComposer(params: ComposeParams) {
       return
     }
     done.current = true
+    draft.handOffClip()
     submitSnacc(toSnaccDraft(), authorFromUser(me.data))
     settle()
   }

@@ -2,19 +2,15 @@ import type { SnaccClip } from "@/features/snaccs/types"
 import type { ClipDraft } from "../types"
 
 const PROGRESS_STEPS = 20
-const LENGTH_GRACE_MS = 500
+const LENGTH_GRACE_MS = 1000
 
-export type ClipContentType = "video/mp4" | "video/quicktime"
-
-export function clipContentType(mime: string): ClipContentType | null {
-  return mime === "video/mp4" || mime === "video/quicktime" ? mime : null
-}
+export const CLIP_TYPES = ["video/mp4", "video/quicktime", "video/webm"]
 
 export function clipProblem(
   clip: { type: string; sizeBytes: number; durationMs: number },
   limits: { maxSeconds: number; maxMb: number }
 ): string | null {
-  if (!clipContentType(clip.type)) return "Pick an MP4 or MOV video."
+  if (!CLIP_TYPES.includes(clip.type)) return "Pick an MP4, MOV or WebM video."
   if (clip.durationMs > limits.maxSeconds * 1000 + LENGTH_GRACE_MS) {
     return `Clips can be up to ${limits.maxSeconds} seconds. Trim it and try again.`
   }

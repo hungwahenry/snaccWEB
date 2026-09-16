@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useState } from "react"
 import { PauseIcon, PlayIcon, Volume2Icon, VolumeXIcon } from "lucide-react"
 import { ProgressRing } from "@/components/ui/progress-ring"
 import { signal } from "@/features/signals/utils/queue"
@@ -9,6 +9,7 @@ import { aspectRatio } from "@/lib/aspect"
 import { cn } from "@/lib/utils"
 import type { SnaccClip } from "../../snaccs/types"
 import { SpoilerVeil } from "../../snaccs/components/card/media/spoiler-veil"
+import { useStreamedVideo } from "../hooks/use-streamed-video"
 import { clipStatusLabel, isUploading } from "../utils/clips"
 
 export function ClipPlayer({
@@ -22,7 +23,7 @@ export function ClipPlayer({
   snaccId?: string
   uploadProgress?: number
 }) {
-  const video = useRef<HTMLVideoElement>(null)
+  const { ref: video, play } = useStreamedVideo(clip.hls_url)
   const [started, setStarted] = useState(false)
   const [playing, setPlaying] = useState(false)
   const [muted, setMuted] = useState(false)
@@ -62,7 +63,7 @@ export function ClipPlayer({
   function toggle() {
     const element = video.current
     if (!element) return
-    if (element.paused) void element.play()
+    if (element.paused) void play()
     else element.pause()
   }
 
@@ -77,7 +78,6 @@ export function ClipPlayer({
           handler loses the gesture browsers require to play with sound. */}
       <video
         ref={video}
-        src={clip.url ?? undefined}
         poster={clip.poster_thumb_url ?? undefined}
         preload="none"
         loop

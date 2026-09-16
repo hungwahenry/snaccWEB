@@ -50,7 +50,7 @@ export type ClipStatus = "processing" | "ready" | "failed"
 export interface SnaccClip {
   id: string
   status: ClipStatus
-  url: string | null
+  hls_url: string | null
   poster_url: string | null
   poster_thumb_url: string | null
   width: number

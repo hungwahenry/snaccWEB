@@ -52,7 +52,8 @@ export function isBlank(snacc: SnaccContent): boolean {
     snacc.images.length === 0 &&
     !snacc.gif &&
     !snacc.sticker &&
-    !snacc.voice
+    !snacc.voice &&
+    !snacc.clip
   )
 }
 

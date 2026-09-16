@@ -28,6 +28,7 @@ const content = (patch: Partial<SnaccContent> = {}): SnaccContent => ({
   gif: null,
   sticker: null,
   voice: null,
+  clip: null,
   ...patch,
 })
 

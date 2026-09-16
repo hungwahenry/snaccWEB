@@ -46,7 +46,14 @@ const roomMessage: ReportTarget = {
 
 const snacc = (body: string | null, media = nothing): ReportTarget => ({
   type: "snacc",
-  snacc: { id: "s1", body, deleted_at: null, author: person("ada"), ...media },
+  snacc: {
+    id: "s1",
+    body,
+    deleted_at: null,
+    author: person("ada"),
+    clip: null,
+    ...media,
+  },
 })
 
 const ghostMessage: ReportTarget = {
@@ -108,6 +115,17 @@ describe("targetThumb", () => {
     expect(
       targetThumb(snacc(null, { ...nothing, gif: { url: "b.gif" } } as never))
     ).toBe("b.gif")
+  })
+
+  it("uses a clip's poster when there is nothing else", () => {
+    expect(
+      targetThumb(
+        snacc(null, {
+          ...nothing,
+          clip: { poster_thumb_url: "poster.jpg" },
+        } as never)
+      )
+    ).toBe("poster.jpg")
   })
 
   it("has nothing for an account or a missing target", () => {

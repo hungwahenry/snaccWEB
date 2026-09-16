@@ -1,4 +1,4 @@
-export type WebhookProvider = "revenuecat" | "paystack"
+export type WebhookProvider = "revenuecat" | "paystack" | "cloudflare_stream"
 export type WebhookStatus = "received" | "applied" | "ignored" | "failed"
 
 export interface WebhookEvent {

@@ -1,5 +1,12 @@
+import { ClipPlayer } from "@/features/clips/components/clip-player"
 import { cn } from "@/lib/utils"
-import type { MediaGif, MediaImage, MediaSticker, MediaVoice } from "../types"
+import type {
+  MediaClip,
+  MediaGif,
+  MediaImage,
+  MediaSticker,
+  MediaVoice,
+} from "../types"
 import { clock } from "../utils/format"
 
 function Frame({
@@ -35,17 +42,25 @@ export function ContentMedia({
   gif = null,
   sticker = null,
   voice = null,
+  clip = null,
 }: {
   images?: MediaImage[]
   gif?: MediaGif | null
   sticker?: MediaSticker | null
   voice?: MediaVoice | null
+  clip?: MediaClip | null
 }) {
   const visual = images.length > 0 || gif !== null || sticker !== null
-  if (!visual && voice === null) return null
+  if (!visual && voice === null && clip === null) return null
 
   return (
     <div className="flex flex-col gap-2">
+      {clip ? (
+        <div className="w-full max-w-xs">
+          <ClipPlayer clip={clip} />
+        </div>
+      ) : null}
+
       {visual ? (
         <div className="flex flex-wrap items-start gap-2">
           {images.map((image, index) => (

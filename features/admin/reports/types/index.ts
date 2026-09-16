@@ -1,5 +1,6 @@
 import type { UserRefWithCampus } from "@/lib/api/types"
 import type {
+  MediaClip,
   MediaGif,
   MediaImage,
   MediaSticker,
@@ -30,6 +31,7 @@ export type ReportTarget =
         images: MediaImage[]
         sticker: MediaSticker | null
         gif: MediaGif | null
+        clip: MediaClip | null
       }
     }
   | { type: "user"; user: ReportAuthor }

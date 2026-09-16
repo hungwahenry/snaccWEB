@@ -10,6 +10,7 @@ import type {
 export const WEBHOOK_PROVIDERS = [
   "revenuecat",
   "paystack",
+  "cloudflare_stream",
 ] as const satisfies readonly WebhookProvider[]
 
 export const WEBHOOK_STATUSES = [
@@ -22,6 +23,7 @@ export const WEBHOOK_STATUSES = [
 const PROVIDER_LABELS: Record<WebhookProvider, string> = {
   revenuecat: "RevenueCat",
   paystack: "Paystack",
+  cloudflare_stream: "Cloudflare Stream",
 }
 
 export const WEBHOOK_STATUS: Record<WebhookStatus, StatusMeta> = {

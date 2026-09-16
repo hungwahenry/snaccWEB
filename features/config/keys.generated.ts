@@ -173,7 +173,7 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   'content.poll.max_minutes': 10080,
   'moments.reactions': ["❤️","😂","🔥","😮","😢","👏"],
   'media.clip_short_side': 720,
-  'media.clip_video_kbps': 2000,
+  'media.clip_video_kbps': 4800,
   'media.clip_audio_kbps': 96,
   'profile.username.max_length': 30,
   'profile.display_name.max_length': 50,

@@ -1,6 +1,7 @@
 import type { UserRefWithCampus } from "@/lib/api/types"
 import type { ReportFiling } from "@/features/admin/reports/types"
 import type {
+  MediaClip,
   MediaGif,
   MediaImage,
   MediaSticker,
@@ -21,6 +22,7 @@ export interface SnaccContent {
   gif: MediaGif | null
   sticker: MediaSticker | null
   voice: MediaVoice | null
+  clip: MediaClip | null
 }
 
 export interface AdminSnacc extends SnaccContent {

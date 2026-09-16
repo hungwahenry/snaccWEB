@@ -1,3 +1,5 @@
+import type { SnaccClip } from "@/features/snaccs/types"
+
 export interface MediaImage {
   id?: string
   url: string
@@ -18,6 +20,8 @@ export interface MediaVoice {
   url: string
   duration_ms: number
 }
+
+export type MediaClip = SnaccClip
 
 export type BadgeVariant = "default" | "secondary" | "destructive" | "outline"
 

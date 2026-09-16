@@ -1,48 +1,91 @@
+import { Upload } from "tus-js-client"
 import { api } from "@/lib/api/client"
-import type { ClipContentType } from "../utils/clips"
+import type { ClipUpload } from "../types"
 
 interface ClipUploadLink {
   id: string
   url: string
-  method: "PUT"
-  headers: Record<string, string>
   expires_at: string
 }
 
+const CHUNK_BYTES = 5 * 1024 * 1024
+const RETRY_DELAYS_MS = [0, 1_000, 3_000, 5_000, 10_000, 20_000]
 const UPLOAD_FAILED = "Your clip could not be uploaded. Try again."
 
-function putFile(
-  link: ClipUploadLink,
-  file: File,
-  onProgress: (fraction: number) => void
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const request = new XMLHttpRequest()
-    request.open(link.method, link.url)
-    Object.entries(link.headers).forEach(([name, value]) =>
-      request.setRequestHeader(name, value)
-    )
-    request.upload.onprogress = (event) => {
-      if (event.lengthComputable) onProgress(event.loaded / event.total)
-    }
-    request.onload = () =>
-      request.status >= 200 && request.status < 300
-        ? resolve()
-        : reject(new Error(UPLOAD_FAILED))
-    request.onerror = () => reject(new Error(UPLOAD_FAILED))
-    request.send(file)
-  })
+export function discardClipUpload(id: string): Promise<void> {
+  return api.del(`/uploads/clips/${id}`)
 }
 
-export async function uploadClip(
-  file: File,
-  contentType: ClipContentType,
-  onProgress: (fraction: number) => void
-): Promise<string> {
-  const link = await api.post<ClipUploadLink>("/uploads/clips", {
-    contentType,
-    sizeBytes: file.size,
-  })
-  await putFile(link, file, onProgress)
-  return link.id
+export function startClipUpload(file: File): ClipUpload {
+  const listeners = new Set<(fraction: number) => void>()
+  let fraction = 0
+  let link: Promise<ClipUploadLink> | null = null
+  let sending: Promise<string> | null = null
+  let transfer: Upload | null = null
+  let cancelled = false
+
+  const report = (next: number) => {
+    fraction = next
+    listeners.forEach((listener) => listener(next))
+  }
+
+  const requestLink = () => {
+    link ??= api
+      .post<ClipUploadLink>("/uploads/clips", { sizeBytes: file.size })
+      .catch((error: unknown) => {
+        link = null
+        throw error
+      })
+    return link
+  }
+
+  const send = async (): Promise<string> => {
+    const { id, url } = await requestLink()
+
+    await new Promise<void>((resolve, reject) => {
+      if (cancelled) {
+        reject(new Error(UPLOAD_FAILED))
+        return
+      }
+      transfer = new Upload(file, {
+        uploadUrl: url,
+        chunkSize: CHUNK_BYTES,
+        retryDelays: RETRY_DELAYS_MS,
+        storeFingerprintForResuming: false,
+        onProgress: (sent, total) => report(total > 0 ? sent / total : 0),
+        onSuccess: () => resolve(),
+        onError: () => reject(new Error(UPLOAD_FAILED)),
+      })
+      transfer.start()
+    })
+
+    report(1)
+    return id
+  }
+
+  const done = () => {
+    sending ??= send().catch((error: unknown) => {
+      sending = null
+      throw error
+    })
+    return sending
+  }
+
+  void done().catch(() => undefined)
+
+  return {
+    done,
+    watch: (listener) => {
+      listeners.add(listener)
+      listener(fraction)
+      return () => {
+        listeners.delete(listener)
+      }
+    },
+    cancel: () => {
+      cancelled = true
+      void transfer?.abort()
+      void link?.then(({ id }) => discardClipUpload(id)).catch(() => undefined)
+    },
+  }
 }

@@ -1,10 +1,7 @@
-import { uploadClip } from "@/features/clips/api"
+import { startClipUpload } from "@/features/clips/api"
 import type { ClipDraft } from "@/features/clips/types"
-import {
-  clipContentType,
-  progressStep,
-  withLocalPoster,
-} from "@/features/clips/utils/clips"
+import { progressStep, withLocalPoster } from "@/features/clips/utils/clips"
+import { ApiError } from "@/lib/api/errors"
 import { showError, showHeld } from "@/lib/feedback"
 import { newId } from "@/lib/ids"
 import { getQueryClient } from "@/lib/query/client"
@@ -26,6 +23,8 @@ interface PendingSnacc {
   clip: ClipDraft | null
   clipUploadId?: string
 }
+
+const UPLOAD_GONE = new Set(["upload_expired", "upload_not_found"])
 
 const pending = new Map<string, PendingSnacc>()
 
@@ -70,29 +69,56 @@ export function retrySnacc(id: string): void {
 export function discardSnacc(id: string): void {
   const parentId = findSnacc(id)?.parent_id
   if (parentId) shiftAncestors(parentId, -1)
+  pending.get(id)?.clip?.upload.cancel()
   pending.delete(id)
   removeSnacc(id)
 }
 
 export function clearPendingSnaccs(): void {
+  pending.forEach((entry) => entry.clip?.upload.cancel())
   pending.clear()
+}
+
+async function deliver(id: string, entry: PendingSnacc): Promise<Snacc> {
+  const clip = entry.clip
+  if (!clip) return createSnacc(entry.input)
+
+  try {
+    return await createWithClip(id, entry, clip)
+  } catch (error) {
+    if (!(error instanceof ApiError) || !UPLOAD_GONE.has(error.code ?? "")) {
+      throw error
+    }
+
+    const fresh = { ...clip, upload: startClipUpload(clip.file) }
+    entry.clip = fresh
+    entry.clipUploadId = undefined
+    return createWithClip(id, entry, fresh)
+  }
+}
+
+async function createWithClip(
+  id: string,
+  entry: PendingSnacc,
+  clip: ClipDraft
+): Promise<Snacc> {
+  if (!entry.clipUploadId) {
+    const stop = clip.upload.watch((fraction) =>
+      showUploadProgress(id, fraction)
+    )
+    try {
+      entry.clipUploadId = await clip.upload.done()
+    } finally {
+      stop()
+    }
+  }
+
+  return createSnacc({ ...entry.input, clipUploadId: entry.clipUploadId })
 }
 
 async function send(id: string, entry: PendingSnacc): Promise<void> {
   try {
-    if (entry.clip && !entry.clipUploadId) {
-      const { file } = entry.clip
-      entry.clipUploadId = await uploadClip(
-        file,
-        clipContentType(file.type) ?? "video/mp4",
-        (fraction) => showUploadProgress(id, fraction)
-      )
-    }
-
-    const created = await createSnacc({
-      ...entry.input,
-      clipUploadId: entry.clipUploadId,
-    })
+    const created = await deliver(id, entry)
     pending.delete(id)
 
     if (created.held) {

@@ -90,7 +90,11 @@ export function targetThumb(target: ReportTarget): string | null {
           : target.message
 
   return (
-    content.images[0]?.url ?? content.gif?.url ?? content.sticker?.url ?? null
+    content.images[0]?.url ??
+    content.gif?.url ??
+    content.sticker?.url ??
+    (target.type === "snacc" ? target.snacc.clip?.poster_thumb_url : null) ??
+    null
   )
 }
 

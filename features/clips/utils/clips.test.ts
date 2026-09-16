@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest"
 import type { SnaccClip } from "@/features/snaccs/types"
 import type { ClipDraft } from "../types"
 import {
-  clipContentType,
   clipProblem,
   clipStatusLabel,
   isUploading,
@@ -14,7 +13,7 @@ const LIMITS = { maxSeconds: 60, maxMb: 100 }
 const processing: SnaccClip = {
   id: "c1",
   status: "processing",
-  url: null,
+  hls_url: null,
   poster_url: null,
   poster_thumb_url: null,
   width: 720,
@@ -23,19 +22,17 @@ const processing: SnaccClip = {
 }
 const local = { posterUrl: "blob:poster" } as ClipDraft
 
-describe("clipContentType", () => {
-  it("takes MP4 and MOV and nothing else", () => {
-    expect(clipContentType("video/mp4")).toBe("video/mp4")
-    expect(clipContentType("video/quicktime")).toBe("video/quicktime")
-    expect(clipContentType("video/webm")).toBeNull()
-  })
-})
-
 describe("clipProblem", () => {
-  it("is fine within the limits", () => {
+  it("is fine within the limits, with a second of leeway on length", () => {
     expect(
       clipProblem(
-        { type: "video/mp4", sizeBytes: 5_000_000, durationMs: 60_200 },
+        { type: "video/mp4", sizeBytes: 5_000_000, durationMs: 60_900 },
+        LIMITS
+      )
+    ).toBeNull()
+    expect(
+      clipProblem(
+        { type: "video/webm", sizeBytes: 5_000_000, durationMs: 30_000 },
         LIMITS
       )
     ).toBeNull()
@@ -43,8 +40,11 @@ describe("clipProblem", () => {
 
   it("says what is wrong otherwise", () => {
     expect(
-      clipProblem({ type: "video/webm", sizeBytes: 1, durationMs: 1 }, LIMITS)
-    ).toBe("Pick an MP4 or MOV video.")
+      clipProblem(
+        { type: "video/x-msvideo", sizeBytes: 1, durationMs: 1 },
+        LIMITS
+      )
+    ).toBe("Pick an MP4, MOV or WebM video.")
     expect(
       clipProblem(
         { type: "video/mp4", sizeBytes: 1, durationMs: 90_000 },
@@ -72,7 +72,7 @@ describe("withLocalPoster", () => {
     const ready = {
       ...processing,
       status: "ready" as const,
-      url: "https://cdn/c.mp4",
+      hls_url: "https://stream/c/manifest/video.m3u8",
       poster_url: "https://cdn/c.jpg",
     }
     expect(withLocalPoster(ready, local)).toBe(ready)

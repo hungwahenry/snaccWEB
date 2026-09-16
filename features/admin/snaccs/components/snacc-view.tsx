@@ -26,6 +26,7 @@ function SnaccBody({ snacc }: { snacc: SnaccContent }) {
         gif={snacc.gif}
         sticker={snacc.sticker}
         voice={snacc.voice}
+        clip={snacc.clip}
       />
       {isBlank(snacc) ? (
         <p className="text-sm text-muted-foreground">Nothing left to show.</p>

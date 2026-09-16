@@ -114,8 +114,10 @@ export async function pickImages(limit: number): Promise<PickedImage[]> {
   )
 }
 
-export async function pickVideo(): Promise<File | null> {
-  const [file] = await chooseFiles(false, "video/mp4,video/quicktime")
+export async function pickVideo(
+  types: readonly string[]
+): Promise<File | null> {
+  const [file] = await chooseFiles(false, types.join(","))
   return file ?? null
 }
 
