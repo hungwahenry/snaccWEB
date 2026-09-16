@@ -30,6 +30,7 @@ import { useMe } from "@/features/auth/hooks/use-me"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { EGGS_PATH } from "@/features/eggs/routes"
 import { INSIGHTS_PATH } from "@/features/insights/routes"
+import { usePremiumFeature } from "@/features/premium/hooks/use-premium"
 import { PREMIUM_PATH } from "@/features/premium/routes"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import {
@@ -60,7 +61,7 @@ export function SettingsScreen() {
   const moderator = hasAdminAccess(useMe().data?.permissions)
   const messagesEnabled = useFlag("anon_messages")
   const privateAccountsEnabled = useFlag("private_accounts")
-  const accentsEnabled = useFlag("accent_colors")
+  const accentsEnabled = usePremiumFeature("accent_colors")
   const earningsEnabled = useFlag("earnings")
   const walletEnabled = useFlag("wallet")
   const premiumEnabled = useFlag("premium")

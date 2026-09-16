@@ -2,7 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query"
 import { useState } from "react"
-import { useFlag } from "@/features/config/hooks/use-flag"
+import { usePremiumFeature } from "@/features/premium/hooks/use-premium"
 import { showSuccess } from "@/lib/feedback"
 import { newId } from "@/lib/ids"
 import { scheduleSnacc } from "../../api"
@@ -13,7 +13,7 @@ import { goesOutLabel, goesOutSentence } from "../../utils/schedule"
 import { useSchedulePicker } from "../scheduled/use-schedule-picker"
 
 export function useComposerSchedule({ allowed }: { allowed: boolean }) {
-  const enabled = useFlag("scheduled_posts")
+  const enabled = usePremiumFeature("scheduled_posts")
   const picker = useSchedulePicker()
   const [publishAt, setPublishAt] = useState<Date | null>(null)
   const [sheetOpen, setSheetOpen] = useState(false)
