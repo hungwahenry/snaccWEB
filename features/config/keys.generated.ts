@@ -23,6 +23,7 @@ export const FLAG_KEYS = [
   'bookmarks',
   'hides',
   'feed_global',
+  'clip_autoplay',
   'feed_following',
   'feed_ranking',
   'message_images',
@@ -99,6 +100,7 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly 'profile.username.max_length': number;
   readonly 'profile.display_name.max_length': number;
   readonly 'profile.bio.max_length': number;
+  readonly 'feed.clips.preview_seconds': number;
   readonly 'discovery.popular_hashtags.limit': number;
   readonly 'views.record.max_batch': number;
   readonly 'earn.withdrawal.balance': number;
@@ -178,6 +180,7 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   'profile.username.max_length': 30,
   'profile.display_name.max_length': 50,
   'profile.bio.max_length': 160,
+  'feed.clips.preview_seconds': 6,
   'discovery.popular_hashtags.limit': 15,
   'views.record.max_batch': 50,
   'earn.withdrawal.balance': 100000,
