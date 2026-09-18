@@ -6,6 +6,7 @@ import {
   benefitDraft,
   benefitMessage,
   premiumFacts,
+  subscriberStore,
   storeLabel,
   subscriberStanding,
   toBenefitInput,
@@ -64,6 +65,7 @@ describe("premiumFacts", () => {
     lapsed: 3,
     cancelling: 4,
     lifetime: 2,
+    sandbox: 7,
     by_store: [
       { store: "play_store", count: 900 },
       { store: "promotional", count: 5 },
@@ -76,7 +78,17 @@ describe("premiumFacts", () => {
       { label: "Cancelling", value: "4" },
       { label: "Lapsed", value: "3" },
       { label: "Lifetime", value: "2" },
+      { label: "Sandbox, not revenue", value: "7" },
     ])
+  })
+
+  it("marks a sandbox purchase beside its store", () => {
+    expect(subscriberStore({ store: "app_store", sandbox: true })).toBe(
+      "App Store · sandbox"
+    )
+    expect(subscriberStore({ store: "play_store", sandbox: false })).toBe(
+      "Play Store"
+    )
   })
 
   it("lists each store by name", () => {

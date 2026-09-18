@@ -22,6 +22,13 @@ export function storeLabel(store: string): string {
   return STORES[store] ?? store
 }
 
+export function subscriberStore(row: {
+  store: string
+  sandbox: boolean
+}): string {
+  return row.sandbox ? `${storeLabel(row.store)} · sandbox` : storeLabel(row.store)
+}
+
 const STANDING = {
   lifetime: { label: "Lifetime", variant: "secondary" },
   active: { label: "Active", variant: "secondary" },
@@ -59,6 +66,7 @@ export function premiumFacts(stats: PremiumStats): {
       { label: "Cancelling", value: formatNumber(stats.cancelling) },
       { label: "Lapsed", value: formatNumber(stats.lapsed) },
       { label: "Lifetime", value: formatNumber(stats.lifetime) },
+      { label: "Sandbox, not revenue", value: formatNumber(stats.sandbox) },
     ],
     stores: stats.by_store.map((row) => ({
       label: storeLabel(row.store),

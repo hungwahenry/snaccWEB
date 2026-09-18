@@ -57,7 +57,11 @@ export interface OpsDrift {
   premium: { profiles: number }
 }
 
-export type OpsTask = "repair-counters" | "repair-scores" | "repair-wallets"
+export type OpsTask =
+  | "repair-counters"
+  | "repair-scores"
+  | "repair-wallets"
+  | "repair-premium"
 
 /** Rows each repair rewrote, keyed by what it rewrote. */
 export type OpsRepairResult = Record<string, number>

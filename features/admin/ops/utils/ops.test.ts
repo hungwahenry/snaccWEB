@@ -46,6 +46,7 @@ describe("driftRows", () => {
     const rows = driftRows({
       ...clean,
       profiles: { ...clean.profiles, followers_count: 3 },
+      earnings: { profiles: 1 },
       premium: { profiles: 2 },
     })
     expect(rows).toEqual([
@@ -56,10 +57,16 @@ describe("driftRows", () => {
         repairable: true,
       },
       {
+        key: "earnings.profiles",
+        label: "Earnings balances vs ledger",
+        off: 1,
+        repairable: false,
+      },
+      {
         key: "premium.profiles",
         label: "Premium status vs subscription",
         off: 2,
-        repairable: false,
+        repairable: true,
       },
     ])
   })

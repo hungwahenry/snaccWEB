@@ -10,6 +10,7 @@ export interface AdminSubscriber {
   lifetime: boolean
   expires_at: string | null
   will_renew: boolean
+  sandbox: boolean
   started_at: string
 }
 
@@ -18,6 +19,7 @@ export interface PremiumStats {
   lapsed: number
   cancelling: number
   lifetime: number
+  sandbox: number
   by_store: { store: string; count: number }[]
 }
 

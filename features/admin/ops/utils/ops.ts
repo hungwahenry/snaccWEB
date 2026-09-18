@@ -95,14 +95,14 @@ const DRIFT_LABELS: Record<string, string> = {
   "premium.profiles": "Premium status vs subscription",
 }
 
-/** Earnings and premium are kept by database triggers; "Repair now" never touches them. */
+/** Earnings are kept by a database trigger; "Repair now" never touches them. */
 const REPAIRED: Record<keyof OpsDrift, boolean> = {
   profiles: true,
   snaccs: true,
   scores: true,
   wallets: true,
   earnings: false,
-  premium: false,
+  premium: true,
 }
 
 /** Every number that disagrees with its source, one row each. */
@@ -127,6 +127,7 @@ export const REPAIR_TASKS: readonly OpsTask[] = [
   "repair-counters",
   "repair-scores",
   "repair-wallets",
+  "repair-premium",
 ]
 
 export function repairMessage(results: OpsRepairResult[]): string {

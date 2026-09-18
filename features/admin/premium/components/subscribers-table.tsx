@@ -19,8 +19,8 @@ import { cn } from "@/lib/utils"
 import type { AdminSubscriber } from "../types"
 import {
   GRANT_DAYS,
-  storeLabel,
   subscriberStanding,
+  subscriberStore,
   untilLabel,
 } from "../utils/premium"
 
@@ -54,7 +54,7 @@ export function SubscribersTable({
       {
         id: "store",
         header: "Store",
-        cell: (row) => storeLabel(row.store),
+        cell: (row) => subscriberStore(row),
       },
       {
         id: "plan",
