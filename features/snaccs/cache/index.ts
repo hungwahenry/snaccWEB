@@ -93,8 +93,11 @@ export function removeAuthorSnaccs(userId: string): void {
   )
 }
 
-export function insertSnacc(snacc: Snacc): void {
-  bumpProfileSnaccs(snacc.author.username, 1)
+export function insertSnacc(
+  snacc: Snacc,
+  { counted = true }: { counted?: boolean } = {}
+): void {
+  if (counted) bumpProfileSnaccs(snacc.author.username, 1)
 
   if (snacc.parent_id) {
     const parentId = snacc.parent_id

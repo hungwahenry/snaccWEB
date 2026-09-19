@@ -4,7 +4,7 @@ import type { Snacc } from "../../../types"
 import { snaccVoiceSource } from "../../../utils/voice"
 import { PollView, type PollViewProps } from "../poll-view"
 import { MatchAttachment } from "@/features/football/components/match-attachment"
-import { ClipPlayer } from "@/features/clips/components/clip-player"
+import { ClipCard } from "@/features/clips/components/card/clip-card"
 import { SnaccGifView } from "./snacc-gif"
 import { SnaccImages } from "./snacc-images"
 
@@ -72,7 +72,7 @@ export function SnaccMedia({
       ) : null}
 
       {snacc.clip ? (
-        <ClipPlayer
+        <ClipCard
           clip={snacc.clip}
           spoiler={snacc.spoiler}
           snaccId={snacc.id}

@@ -1,10 +1,11 @@
 import { api } from "@/lib/api/client"
 
-type ViewSource = "feed" | "detail"
+type ViewSource = "feed" | "detail" | "clip"
 
 interface RecordOptions {
   source?: ViewSource
   dwellMs?: Record<string, number>
+  watchMs?: Record<string, number>
 }
 
 export async function recordViews(

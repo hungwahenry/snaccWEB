@@ -1,5 +1,6 @@
 "use client"
 
+import { useResumePendingSnaccs } from "@/features/snaccs/hooks/use-resume-pending-snaccs"
 import { useAccentEntitlement } from "@/features/appearance/hooks/use-accent-entitlement"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, type ReactNode } from "react"
@@ -27,6 +28,7 @@ const IMMERSIVE = [
   /^\/chat\/[^/]+/,
   /^\/compose/,
   /^\/moments/,
+  /^\/clips\//,
   /^\/wallet/,
   /^\/pay$/,
 ]
@@ -64,6 +66,7 @@ function Shell({ children }: { children: ReactNode }) {
   const logout = useLogout()
   const ghost = useGhostWindow()
   useAccentEntitlement()
+  useResumePendingSnaccs()
   const searchEnabled = useFlag("search")
   const profile = nav.user?.profile
   const immersive = IMMERSIVE.some((pattern) => pattern.test(pathname))

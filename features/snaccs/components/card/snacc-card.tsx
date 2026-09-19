@@ -127,6 +127,7 @@ function SnaccCardComponent(props: SnaccCardProps) {
   const actions = pending ? (
     <SnaccPendingBar
       status={snacc.status!}
+      cancellable={!!snacc.clip}
       onRetry={() => onRetry(snacc)}
       onDiscard={() => onDiscard(snacc)}
     />

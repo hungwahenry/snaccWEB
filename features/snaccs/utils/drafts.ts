@@ -25,7 +25,7 @@ export function toStoredImage(asset: PickedImage): StoredDraftImage {
   }
 }
 
-function toPicked(image: StoredDraftImage): PickedImage {
+export function toPicked(image: StoredDraftImage): PickedImage {
   return fromBlob(image.blob, image, image.fileName)
 }
 
@@ -37,7 +37,7 @@ export function toStoredVoice(voice: VoiceDraft): StoredVoice {
   }
 }
 
-function toVoiceDraft(voice: StoredVoice): VoiceDraft {
+export function toVoiceDraft(voice: StoredVoice): VoiceDraft {
   return {
     file: voice.blob,
     uri: URL.createObjectURL(voice.blob),

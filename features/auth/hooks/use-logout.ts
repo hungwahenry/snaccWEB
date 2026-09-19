@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { wearAccentFor } from "@/features/appearance/utils/accent-store"
 import { clearPendingChatMessages } from "@/features/chats/cache/pending-chat-messages"
 import { clearPendingMessages } from "@/features/messages/cache/pending-messages"
+import { clearPendingSnaccs } from "@/features/snaccs/cache/pending-snaccs"
 import { voicePlayer } from "@/features/voice/hooks/use-voice-player"
 import { LANDING_PATH } from "@/lib/routes"
 import { signOut } from "../api"
@@ -16,9 +17,9 @@ export function useLogout() {
   return useMutation({
     mutationFn: signOut,
     onSettled: () => {
-      // Nothing half-sent may go out later under whoever signs in next.
       clearPendingMessages()
       clearPendingChatMessages()
+      clearPendingSnaccs()
       voicePlayer.stop()
       wearAccentFor(null)
       queryClient.clear()

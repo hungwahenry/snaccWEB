@@ -352,3 +352,32 @@ export interface NumberOption {
   value: number
   label: string
 }
+
+export interface StoredClip {
+  file: File
+  durationMs: number
+  width: number
+  height: number
+}
+
+export interface StoredOutboxDraft extends Omit<
+  SnaccDraft,
+  "images" | "voice" | "clip" | "poll"
+> {
+  images: StoredDraftImage[]
+  voice: StoredVoice | null
+  clip: StoredClip | null
+  poll?: {
+    options: string[]
+    images?: StoredDraftImage[]
+    durationMinutes: number
+  }
+}
+
+export interface OutboxEntry {
+  id: string
+  author: SnaccAuthor
+  draft: StoredOutboxDraft
+  clipUploadId?: string
+}
+

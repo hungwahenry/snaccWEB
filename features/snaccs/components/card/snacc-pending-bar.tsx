@@ -4,10 +4,12 @@ import type { SnaccStatus } from "../../types"
 
 export function SnaccPendingBar({
   status,
+  cancellable = false,
   onRetry,
   onDiscard,
 }: {
   status: SnaccStatus
+  cancellable?: boolean
   onRetry: () => void
   onDiscard: () => void
 }) {
@@ -15,6 +17,18 @@ export function SnaccPendingBar({
     return (
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <Spinner className="size-4" /> Posting…
+        {cancellable ? (
+          <>
+            <span className="flex-1" />
+            <button
+              type="button"
+              onClick={onDiscard}
+              className="px-3 text-sm font-bold text-muted-foreground active:opacity-60"
+            >
+              Cancel
+            </button>
+          </>
+        ) : null}
       </div>
     )
   }
