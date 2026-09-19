@@ -1,3 +1,4 @@
+import { LazyImage } from "@/components/ui/lazy-image"
 import { Eyebrow } from "@/components/ui/eyebrow"
 import { clockTime } from "@/lib/format"
 import { cn } from "@/lib/utils"
@@ -13,7 +14,7 @@ function Crest({ url, size }: { url: string | null; size: number }) {
       />
     )
   return (
-    <img
+    <LazyImage
       src={url}
       alt=""
       width={size}

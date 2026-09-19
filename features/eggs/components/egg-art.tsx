@@ -1,3 +1,4 @@
+import { LazyImage } from "@/components/ui/lazy-image"
 import { EggIcon } from "lucide-react"
 import type { DiscoveredEgg, EggRarity } from "../types"
 import { RARITY_LABELS } from "../utils/rarity"
@@ -11,7 +12,7 @@ export function EggArt({
 }) {
   if (egg.image_url) {
     return (
-      <img
+      <LazyImage
         src={egg.image_url}
         alt=""
         className="shrink-0 rounded-full object-cover"

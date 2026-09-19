@@ -3,6 +3,7 @@
 import type { UseQueryResult } from "@tanstack/react-query"
 import { Flag, Trash2, Undo2 } from "lucide-react"
 import { useMemo, type ReactNode } from "react"
+import { LazyImage } from "@/components/ui/lazy-image"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { CanAct } from "@/features/admin/auth/containers/can-act"
@@ -39,7 +40,7 @@ export function MomentsTable({
         cell: (moment) => (
           <div className="flex items-center gap-3">
             {moment.image_url ? (
-              <img
+              <LazyImage
                 src={moment.image_url}
                 alt=""
                 className="h-12 w-9 rounded object-cover"

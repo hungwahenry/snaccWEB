@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { LazyImage } from "@/components/ui/lazy-image"
 import { signal } from "@/features/signals/utils/queue"
 import { useHoldAction } from "@/hooks/use-hold-action"
 import { aspectRatio } from "@/lib/aspect"
@@ -53,10 +54,9 @@ export function SnaccImages({
         className="relative block w-full overflow-hidden rounded-2xl bg-muted"
         style={{ aspectRatio: Math.max(aspectRatio(image), SINGLE_MIN_RATIO) }}
       >
-        <img
+        <LazyImage
           src={image.thumb_url ?? image.url}
           alt=""
-          loading="lazy"
           className={cn(
             "size-full object-cover transition-[filter]",
             hidden && "blur-2xl"
@@ -94,10 +94,9 @@ export function SnaccImages({
             images.length === 3 && index === 0 && "row-span-2"
           )}
         >
-          <img
+          <LazyImage
             src={image.thumb_url ?? image.url}
             alt=""
-            loading="lazy"
             className={cn("size-full object-cover", hidden && "blur-2xl")}
           />
           {images.length > 4 && index === 3 ? (

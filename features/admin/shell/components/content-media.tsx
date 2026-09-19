@@ -1,3 +1,4 @@
+import { LazyImage } from "@/components/ui/lazy-image"
 import { ClipPlayer } from "@/features/clips/components/clip-player"
 import { cn } from "@/lib/utils"
 import type {
@@ -26,10 +27,9 @@ function Frame({
       className="block overflow-hidden rounded-lg border bg-muted/40 transition-opacity hover:opacity-90"
       title="Open the original"
     >
-      <img
+      <LazyImage
         src={url}
         alt={alt}
-        loading="lazy"
         className={cn("max-h-72 w-auto object-contain", className)}
       />
     </a>

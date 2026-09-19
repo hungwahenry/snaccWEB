@@ -1,3 +1,4 @@
+import { LazyImage } from "@/components/ui/lazy-image"
 import { cn } from "@/lib/utils"
 
 const SIZES = {
@@ -28,10 +29,9 @@ export function MomentThumb({
       style={{ ...SIZES[size], backgroundColor: background ?? "#000000" }}
     >
       {imageUrl ? (
-        <img
+        <LazyImage
           src={imageUrl}
           alt=""
-          loading="lazy"
           draggable={false}
           className="size-full object-cover"
         />

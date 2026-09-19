@@ -1,4 +1,4 @@
-import { Upload } from "tus-js-client"
+import type { Upload } from "tus-js-client"
 import { api } from "@/lib/api/client"
 import type { ClipUpload } from "../types"
 
@@ -40,14 +40,17 @@ export function startClipUpload(file: File): ClipUpload {
   }
 
   const send = async (): Promise<string> => {
-    const { id, url } = await requestLink()
+    const [{ id, url }, { Upload: Transfer }] = await Promise.all([
+      requestLink(),
+      import("tus-js-client"),
+    ])
 
     await new Promise<void>((resolve, reject) => {
       if (cancelled) {
         reject(new Error(UPLOAD_FAILED))
         return
       }
-      transfer = new Upload(file, {
+      transfer = new Transfer(file, {
         uploadUrl: url,
         chunkSize: CHUNK_BYTES,
         retryDelays: RETRY_DELAYS_MS,

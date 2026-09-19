@@ -1,3 +1,4 @@
+import { LazyImage } from "@/components/ui/lazy-image"
 import type { MessageGif as Gif } from "../../types"
 
 const WIDTH = 220
@@ -15,12 +16,7 @@ export function MessageGif({ gif }: { gif: Gif }) {
       className="overflow-hidden rounded-2xl bg-muted"
       style={{ width: WIDTH, aspectRatio: ratio }}
     >
-      <img
-        src={gif.url}
-        alt="GIF"
-        className="size-full object-cover"
-        loading="lazy"
-      />
+      <LazyImage src={gif.url} alt="GIF" className="size-full object-cover" />
     </div>
   )
 }

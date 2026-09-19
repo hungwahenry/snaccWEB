@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { sameOriginMedia } from "@/lib/media-url"
-import { usernameFromPayCode } from "../utils/pay-code"
+import { usernameFromPayCode } from "../utils/scanned-pay-code"
 
 type Detector = {
   detect: (source: ImageBitmapSource) => Promise<{ rawValue: string }[]>

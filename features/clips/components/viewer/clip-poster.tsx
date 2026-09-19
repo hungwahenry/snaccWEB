@@ -1,3 +1,4 @@
+import { LazyImage } from "@/components/ui/lazy-image"
 import type { SnaccClip } from "@/features/snaccs/types"
 import { cn } from "@/lib/utils"
 import { clipFit } from "../../utils/viewer"
@@ -15,10 +16,9 @@ export function ClipPoster({ clip, height, veiled }: ClipPosterProps) {
       className="snap-start snap-always overflow-hidden bg-black"
     >
       {clip.poster_url ? (
-        <img
+        <LazyImage
           src={clip.poster_url}
           alt=""
-          loading="lazy"
           draggable={false}
           className={cn(
             "size-full",

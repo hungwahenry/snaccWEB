@@ -6,6 +6,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import type { ReactNode } from "react"
+import { LazyImage } from "@/components/ui/lazy-image"
 import { reportPath } from "@/features/admin/shell/routes"
 import type { AdminReport, ReportTargetType } from "../types"
 import { describeTarget, targetThumb } from "../utils/reports"
@@ -26,7 +27,7 @@ export function ReportTargetCell({ report }: { report: AdminReport }) {
     <div className="flex items-center gap-3">
       <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted/40 text-muted-foreground">
         {thumb ? (
-          <img src={thumb} alt="" className="size-full object-cover" />
+          <LazyImage src={thumb} alt="" className="size-full object-cover" />
         ) : (
           FALLBACK_ICON[report.target?.type ?? "user"]
         )}

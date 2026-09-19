@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { LazyImage } from "@/components/ui/lazy-image"
 import { signal } from "@/features/signals/utils/queue"
 import { aspectRatio } from "@/lib/aspect"
 import { cn } from "@/lib/utils"
@@ -34,10 +35,9 @@ export function SnaccGifView({
       className="relative w-full overflow-hidden rounded-2xl bg-muted"
       style={{ aspectRatio: aspectRatio(gif) }}
     >
-      <img
+      <LazyImage
         src={gif.url}
         alt="GIF"
-        loading="lazy"
         className={cn("size-full object-cover", hidden && "blur-2xl")}
       />
       {hidden ? <SpoilerVeil /> : null}

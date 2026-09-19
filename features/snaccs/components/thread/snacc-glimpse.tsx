@@ -5,6 +5,7 @@ import {
   TrophyIcon,
   type LucideIcon,
 } from "lucide-react"
+import { LazyImage } from "@/components/ui/lazy-image"
 import { StickerAttachmentView } from "@/features/stickers/components/sticker-attachment-view"
 import { VoiceNotePlayer } from "@/features/voice/components/voice-note-player"
 import { aspectRatio } from "@/lib/aspect"
@@ -65,12 +66,7 @@ export function SnaccGlimpse({
               className="relative overflow-hidden rounded-lg bg-muted"
               style={{ width: THUMB, height: THUMB }}
             >
-              <img
-                src={url}
-                alt=""
-                loading="lazy"
-                className="size-full object-cover"
-              />
+              <LazyImage src={url} alt="" className="size-full object-cover" />
               {glimpse.thumbs &&
               glimpse.thumbs.extra > 0 &&
               index === glimpse.thumbs.urls.length - 1 ? (
@@ -84,10 +80,9 @@ export function SnaccGlimpse({
       ) : null}
 
       {glimpse.gif ? (
-        <img
+        <LazyImage
           src={glimpse.gif.url}
           alt="GIF"
-          loading="lazy"
           className="self-start rounded-lg bg-muted object-cover"
           style={{ height: THUMB, aspectRatio: aspectRatio(glimpse.gif) }}
         />

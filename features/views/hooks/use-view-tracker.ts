@@ -9,6 +9,8 @@ const MIN_DWELL_MS = 1000
 const MAX_DWELL_MS = 300_000
 const VISIBLE_SHARE = 0.6
 
+type CardRef = (node: HTMLElement | null) => (() => void) | undefined
+
 /**
  * Counts how long each snacc is actually on screen and reports it in batches, and tells
  * `onVisible` which ones are on screen as that changes.
@@ -22,6 +24,7 @@ export function useViewTracker({
   const since = useRef<Map<string, number>>(new Map())
   const pending = useRef<Map<string, number>>(new Map())
   const sent = useRef<Map<string, number>>(new Map())
+  const refs = useRef<Map<string, CardRef>>(new Map())
   const visibleChanged = useRef(onVisible)
 
   useEffect(() => {
@@ -98,6 +101,7 @@ export function useViewTracker({
       },
       { threshold: VISIBLE_SHARE }
     )
+    for (const node of ids.current.keys()) observer.current.observe(node)
 
     const interval = setInterval(() => flush(), FLUSH_INTERVAL_MS)
     const onVisibility = () => {
@@ -120,16 +124,23 @@ export function useViewTracker({
   }, [announce, bank, flush])
 
   const ref = useCallback(
-    (id: string) => (node: HTMLElement | null) => {
-      if (!node) return
-      ids.current.set(node, id)
-      observer.current?.observe(node)
-      return () => {
-        ids.current.delete(node)
-        observer.current?.unobserve(node)
-        bank(id, Date.now())
-        if (visible.current.delete(id)) announce()
+    (id: string): CardRef => {
+      const known = refs.current.get(id)
+      if (known) return known
+
+      const attach: CardRef = (node) => {
+        if (!node) return
+        ids.current.set(node, id)
+        observer.current?.observe(node)
+        return () => {
+          ids.current.delete(node)
+          observer.current?.unobserve(node)
+          bank(id, Date.now())
+          if (visible.current.delete(id)) announce()
+        }
       }
+      refs.current.set(id, attach)
+      return attach
     },
     [announce, bank]
   )

@@ -1,5 +1,6 @@
 import { BuildingIcon, HandCoinsIcon } from "lucide-react"
 import Link from "next/link"
+import { LazyImage } from "@/components/ui/lazy-image"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { campusPath } from "@/features/campus/routes"
 import { QuotedSnacc } from "@/features/snaccs/components/card/quote/quoted-snacc"
@@ -62,7 +63,7 @@ function CampusRow({
   return (
     <div className="flex items-center gap-3 p-3">
       {target.logo_url ? (
-        <img
+        <LazyImage
           src={target.logo_url}
           alt=""
           className="size-10 rounded-full object-cover"

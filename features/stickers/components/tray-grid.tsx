@@ -1,6 +1,7 @@
 "use client"
 
 import { memo } from "react"
+import { LazyImage } from "@/components/ui/lazy-image"
 import { EmptyState } from "@/components/ui/empty-state"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { LoadMore } from "@/components/ui/load-more"
@@ -77,12 +78,11 @@ const Tile = memo(function Tile({
       className="w-full overflow-hidden rounded-2xl bg-muted transition-opacity outline-none hover:opacity-80 focus-visible:ring-2 focus-visible:ring-ring [@media(pointer:coarse)]:select-none"
       style={{ aspectRatio: aspectRatio(tile) }}
     >
-      <img
+      <LazyImage
         src={tile.preview_url ?? tile.url}
         alt=""
         draggable={false}
         className="size-full object-contain"
-        loading="lazy"
       />
     </button>
   )

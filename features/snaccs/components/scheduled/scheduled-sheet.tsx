@@ -1,4 +1,5 @@
 import { ArrowLeftIcon, CalendarClockIcon, Trash2Icon } from "lucide-react"
+import { LazyImage } from "@/components/ui/lazy-image"
 import { ActionSheet } from "@/components/ui/action-sheet"
 import {
   DateTimePicker,
@@ -143,7 +144,7 @@ function ScheduledRow({
         className="flex min-w-0 flex-1 items-center gap-3 text-left"
       >
         {thumb ? (
-          <img
+          <LazyImage
             src={thumb.url}
             alt=""
             className={cn(

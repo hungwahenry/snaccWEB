@@ -1,3 +1,4 @@
+import { LazyImage } from "@/components/ui/lazy-image"
 import { cn } from "@/lib/utils"
 
 /** A row of square thumbnails; the last one counts what did not fit. */
@@ -22,10 +23,9 @@ export function ThumbStrip({
           className="relative shrink-0 overflow-hidden rounded-lg bg-muted"
           style={{ width: size, height: size }}
         >
-          <img
+          <LazyImage
             src={url}
             alt=""
-            loading="lazy"
             draggable={false}
             className="size-full object-cover"
           />

@@ -8,7 +8,7 @@ import {
   useMemo,
   useRef,
 } from "react"
-import { io, type Socket } from "socket.io-client"
+import type { Socket } from "socket.io-client"
 import { getQueryClient } from "@/lib/query/client"
 import { REALTIME_HANDLERS } from "./realtime-handlers"
 
@@ -61,36 +61,42 @@ export function RealtimeProvider({
 
     let cancelled = false
 
-    void fetchSocketTicket().then((first) => {
-      if (!first || cancelled) return
+    void Promise.all([fetchSocketTicket(), import("socket.io-client")]).then(
+      ([first, { io }]) => {
+        if (!first || cancelled) return
 
-      let unused: string | null = first
-      const socket = io(API_URL, {
-        auth: (send) => {
-          const ready = unused
-          unused = null
-          if (ready) return send({ ticket: ready })
-          void fetchSocketTicket().then((ticket) =>
-            send({ ticket: ticket ?? "" })
-          )
-        },
-        transports: ["websocket"],
-      })
-      socketRef.current = socket
+        let unused: string | null = first
+        const socket = io(API_URL, {
+          auth: (send) => {
+            const ready = unused
+            unused = null
+            if (ready) return send({ ticket: ready })
+            void fetchSocketTicket().then((ticket) =>
+              send({ ticket: ticket ?? "" })
+            )
+          },
+          transports: ["websocket"],
+        })
+        socketRef.current = socket
 
-      for (const [event, handler] of Object.entries(REALTIME_HANDLERS)) {
-        socket.on(event, handler as (payload: unknown) => void)
-      }
-      for (const { event, handler } of listenersRef.current)
-        socket.on(event, handler)
+        for (const [event, handler] of Object.entries(REALTIME_HANDLERS)) {
+          socket.on(event, handler as (payload: unknown) => void)
+        }
+        for (const { event, handler } of listenersRef.current)
+          socket.on(event, handler)
 
-      socket.on("connect", () => {
-        for (const room of roomsRef.current.keys())
-          socket.emit("subscribe", room)
-      })
+        socket.on("connect", () => {
+          for (const room of roomsRef.current.keys())
+            socket.emit("subscribe", room)
+        })
 
-      socket.io.on("reconnect", () => void getQueryClient().invalidateQueries())
-    })
+        socket.io.on(
+          "reconnect",
+          () => void getQueryClient().invalidateQueries()
+        )
+      },
+      noop
+    )
 
     return () => {
       cancelled = true

@@ -1,3 +1,4 @@
+import { LazyImage } from "@/components/ui/lazy-image"
 import type { University } from "@/features/universities/types"
 import { cn } from "@/lib/utils"
 import { campusInitials } from "../utils/labels"
@@ -12,7 +13,7 @@ export function CampusBadge({
 }) {
   if (campus.logo_url) {
     return (
-      <img
+      <LazyImage
         src={campus.logo_url}
         alt=""
         className={cn("size-11 shrink-0 rounded-full object-cover", className)}

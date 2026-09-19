@@ -1,3 +1,4 @@
+import { LazyImage } from "@/components/ui/lazy-image"
 import { cn } from "@/lib/utils"
 import type { AdminEgg } from "../types"
 
@@ -11,7 +12,7 @@ export function EggMark({
 }) {
   if (egg.image_url) {
     return (
-      <img
+      <LazyImage
         src={egg.image_url}
         alt=""
         className={cn("shrink-0 rounded-full object-cover", className)}

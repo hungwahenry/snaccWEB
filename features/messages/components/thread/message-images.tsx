@@ -1,3 +1,4 @@
+import { LazyImage } from "@/components/ui/lazy-image"
 import { aspectRatio } from "@/lib/aspect"
 import { countLabel } from "@/lib/format"
 import type { ShownImage } from "../../types"
@@ -34,11 +35,10 @@ export function MessageImages({
         className="block overflow-hidden transition-opacity active:opacity-80"
         style={card}
       >
-        <img
+        <LazyImage
           src={images[0].thumb_url ?? images[0].url}
           alt="Photo"
           className="size-full object-cover"
-          loading="lazy"
         />
       </button>
     )
@@ -55,7 +55,7 @@ export function MessageImages({
       style={{ width: WIDTH + 24, height: height + 24 }}
     >
       {behind.map((image, index) => (
-        <img
+        <LazyImage
           key={image.id}
           src={image.thumb_url ?? image.url}
           alt=""
@@ -64,15 +64,13 @@ export function MessageImages({
             ...card,
             transform: `rotate(${TILTS[behind.length - 1 - index]}deg)`,
           }}
-          loading="lazy"
         />
       ))}
-      <img
+      <LazyImage
         src={images[0].thumb_url ?? images[0].url}
         alt=""
         className="relative object-cover shadow-sm"
         style={card}
-        loading="lazy"
       />
       <span className="absolute right-5 bottom-5 rounded-full bg-foreground/70 px-2 py-0.5 text-[11px] font-bold text-background tabular-nums">
         {images.length}

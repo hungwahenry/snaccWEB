@@ -2,6 +2,7 @@
 
 import { VolumeXIcon } from "lucide-react"
 import Link from "next/link"
+import { LazyImage } from "@/components/ui/lazy-image"
 import { SpoilerVeil } from "@/features/snaccs/components/card/media/spoiler-veil"
 import type { SnaccClip } from "@/features/snaccs/types"
 import { clock } from "@/features/voice/utils/clock"
@@ -81,10 +82,9 @@ function Poster({ url, blurred }: { url: string | null; blurred?: boolean }) {
   if (!url) return null
 
   return (
-    <img
+    <LazyImage
       src={url}
       alt=""
-      loading="lazy"
       className={cn("size-full object-cover", blurred && "scale-110 blur-2xl")}
     />
   )

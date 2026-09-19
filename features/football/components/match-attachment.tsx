@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { LazyImage } from "@/components/ui/lazy-image"
 import { clockTime } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { matchRoomPath } from "../routes"
@@ -9,7 +10,7 @@ function Crest({ url }: { url: string | null }) {
   if (!url) return <span className="size-6 shrink-0 rounded-full bg-border" />
 
   return (
-    <img
+    <LazyImage
       src={url}
       alt=""
       width={24}

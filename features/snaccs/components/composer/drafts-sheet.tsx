@@ -2,6 +2,7 @@
 
 import { FileTextIcon, Trash2Icon } from "lucide-react"
 import { useEffect, useMemo } from "react"
+import { LazyImage } from "@/components/ui/lazy-image"
 import { ActionSheet } from "@/components/ui/action-sheet"
 import { EmptyState } from "@/components/ui/empty-state"
 import type { StoredDraft } from "../../types"
@@ -83,7 +84,7 @@ function DraftRow({
         className="flex min-w-0 flex-1 items-center gap-3 text-left"
       >
         {thumb ? (
-          <img
+          <LazyImage
             src={thumb}
             alt=""
             className="size-12 shrink-0 rounded-lg object-cover"

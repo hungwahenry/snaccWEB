@@ -1,4 +1,5 @@
 import { CheckCircle2Icon } from "lucide-react"
+import { LazyImage } from "@/components/ui/lazy-image"
 import { cn } from "@/lib/utils"
 import type { SnaccPoll, SnaccPollOption } from "../../types"
 import { optionShare, pollFooter, pollRevealed } from "../../utils/polls"
@@ -30,7 +31,7 @@ function OptionThumb({
       aria-label={`${option.label} image`}
       className="shrink-0 transition-opacity active:opacity-80"
     >
-      <img
+      <LazyImage
         src={option.image.thumb_url ?? option.image.url}
         alt=""
         className="size-10 rounded-full object-cover"

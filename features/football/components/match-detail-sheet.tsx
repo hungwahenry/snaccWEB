@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { LazyImage } from "@/components/ui/lazy-image"
 import { Button } from "@/components/ui/button"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { composePath } from "@/features/snaccs/routes"
@@ -17,7 +18,7 @@ function TeamBadge({ team }: { team: MatchTeam }) {
   return (
     <div className="flex flex-1 flex-col items-center gap-2">
       {team.crest ? (
-        <img
+        <LazyImage
           src={team.crest}
           alt=""
           width={44}

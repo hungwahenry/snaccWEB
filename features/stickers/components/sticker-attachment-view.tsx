@@ -1,5 +1,6 @@
 "use client"
 
+import { LazyImage } from "@/components/ui/lazy-image"
 import { useHoldAction } from "@/hooks/use-hold-action"
 import { cn } from "@/lib/utils"
 import { stickerBox } from "../utils/size"
@@ -18,7 +19,7 @@ export function StickerAttachmentView({
   const hold = useHoldAction(onHold)
 
   return (
-    <img
+    <LazyImage
       {...hold}
       src={sticker.url}
       alt="Sticker"
