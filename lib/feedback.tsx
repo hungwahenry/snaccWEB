@@ -55,6 +55,20 @@ export function showHeld(): void {
   })
 }
 
+const OFFLINE_TOAST = "offline"
+
+export function showOffline(): void {
+  toast("You’re offline", {
+    id: OFFLINE_TOAST,
+    duration: Infinity,
+    description: "What you post will send when you’re back.",
+  })
+}
+
+export function hideOffline(): void {
+  toast.dismiss(OFFLINE_TOAST)
+}
+
 /** A plain toast with an Undo button. Returns a function that takes the toast down. */
 export function showUndo(message: string, onUndo: () => void): () => void {
   const id = toast(message, {

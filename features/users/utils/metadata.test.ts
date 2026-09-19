@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import type { PublicProfile } from "../types"
-import { profileCta, profileMetadata } from "./metadata"
+import { profileCta, profileJsonLd, profileMetadata } from "./metadata"
 
 const ada = {
   id: "u1",
@@ -37,5 +37,41 @@ describe("profileCta", () => {
     expect(profileCta({ ...ada, display_name: null })).toBe(
       "See everything ada posts"
     )
+  })
+})
+
+describe("private profiles", () => {
+  it("asks search engines to leave a private profile out", () => {
+    expect(profileMetadata({ ...ada, is_private: true }).robots).toEqual({
+      index: false,
+      follow: false,
+    })
+    expect(profileMetadata(ada).robots).toBeUndefined()
+  })
+
+  it("describes nobody who chose to be private", () => {
+    expect(profileJsonLd({ ...ada, is_private: true })).toBeNull()
+  })
+})
+
+describe("profileJsonLd", () => {
+  it("describes the person, where they study and how many follow them", () => {
+    const data = profileJsonLd({
+      ...ada,
+      followers_count: 12,
+      snaccs_count: 30,
+      university: { acronym: "UNILAG", name: "University of Lagos" },
+    } as PublicProfile)
+
+    expect(data).toMatchObject({
+      "@type": "ProfilePage",
+      url: "https://snacc.fyi/@ada",
+      mainEntity: {
+        "@type": "Person",
+        name: "Ada",
+        alternateName: "@ada",
+        affiliation: { name: "University of Lagos" },
+      },
+    })
   })
 })

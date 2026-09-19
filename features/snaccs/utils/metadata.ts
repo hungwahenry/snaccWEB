@@ -1,18 +1,21 @@
 import type { Metadata } from "next"
+import { isReadyClip } from "@/features/clips/utils/viewer"
+import { profilePath } from "@/features/users/routes"
 import { authorNameOf, handleOf } from "@/features/users/utils/names"
+import { counter, isoDuration, type JsonLd } from "@/lib/json-ld"
+import { absoluteUrl } from "@/lib/site"
 import { snaccPath } from "../routes"
 import type { Snacc } from "../types"
 import { attachmentSummary } from "./preview"
 
-export function snaccMetadata(snacc: Snacc | null): Metadata {
-  if (!snacc) return { title: "Snacc not found" }
+const HEADLINE_LENGTH = 110
 
+function describe(snacc: Snacc) {
   const who = authorNameOf(
     snacc.author,
     snacc.anonymous,
     handleOf(snacc.author) ?? "Someone"
   )
-  const title = `${who} on Snacc`
   const description =
     snacc.body?.trim() ||
     attachmentSummary({
@@ -21,11 +24,34 @@ export function snaccMetadata(snacc: Snacc | null): Metadata {
       sticker: snacc.sticker !== null,
       gif: snacc.gif !== null,
       images: snacc.images.length,
+      clip: snacc.clip !== null,
     }) ||
     `${who} posted on Snacc.`
-  const media = snacc.spoiler
-    ? undefined
-    : (snacc.images[0]?.url ?? snacc.gif?.url)
+
+  return { who, title: `${who} on Snacc`, description }
+}
+
+function shownClip(snacc: Snacc) {
+  const clip = snacc.clip
+  return !snacc.spoiler && clip && isReadyClip(clip) ? clip : null
+}
+
+export function snaccPictures(snacc: Snacc): string[] {
+  if (snacc.spoiler) return []
+
+  const poster = shownClip(snacc)?.poster_url
+  return [
+    ...snacc.images.map((image) => image.url),
+    ...(snacc.gif ? [snacc.gif.url] : []),
+    ...(poster ? [poster] : []),
+  ]
+}
+
+export function snaccMetadata(snacc: Snacc | null): Metadata {
+  if (!snacc) return { title: "Snacc not found" }
+
+  const { title, description } = describe(snacc)
+  const media = snaccPictures(snacc)[0]
   const avatar = snacc.anonymous
     ? undefined
     : snacc.author.avatar_url || undefined
@@ -49,5 +75,49 @@ export function snaccMetadata(snacc: Snacc | null): Metadata {
       description,
       images: image ? [image] : undefined,
     },
+  }
+}
+
+export function snaccJsonLd(snacc: Snacc): JsonLd {
+  const { who, title, description } = describe(snacc)
+  const clip = shownClip(snacc)
+  const pictures = snaccPictures(snacc)
+  const body = snacc.body?.trim()
+  const username = snacc.author.username
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "SocialMediaPosting",
+    url: absoluteUrl(snaccPath(snacc.id)),
+    datePublished: snacc.created_at,
+    headline: (body || title).slice(0, HEADLINE_LENGTH),
+    articleBody: body || undefined,
+    author: snacc.anonymous
+      ? { "@type": "Person", name: who }
+      : {
+          "@type": "Person",
+          name: who,
+          alternateName: handleOf(snacc.author) ?? undefined,
+          url: username ? absoluteUrl(profilePath(username)) : undefined,
+          image: snacc.author.avatar_url || undefined,
+        },
+    image: pictures.length > 0 ? pictures : undefined,
+    video:
+      clip?.poster_url && clip.hls_url
+        ? {
+            "@type": "VideoObject",
+            name: title,
+            description,
+            thumbnailUrl: clip.poster_url,
+            contentUrl: clip.hls_url,
+            uploadDate: snacc.created_at,
+            duration: isoDuration(clip.duration_ms),
+          }
+        : undefined,
+    interactionStatistic: [
+      counter("LikeAction", snacc.reactions_count),
+      counter("CommentAction", snacc.comments_count),
+      counter("ShareAction", snacc.resnaccs_count),
+    ],
   }
 }

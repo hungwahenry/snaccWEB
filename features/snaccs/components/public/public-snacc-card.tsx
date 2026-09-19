@@ -8,6 +8,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 import Link from "next/link"
+import { PublicClip } from "@/features/clips/components/public-clip"
 import { compactCount, timeAgo } from "@/lib/format"
 import { richText } from "@/lib/rich-text"
 import { AuthorBadges } from "@/features/users/components/public/author-badges"
@@ -93,7 +94,15 @@ export function PublicSnaccCard({
         </div>
       </div>
 
-      {media ? (
+      {snacc.clip ? (
+        <div className="ml-14">
+          <PublicClip
+            clip={snacc.clip}
+            spoiler={snacc.spoiler}
+            playable={!href}
+          />
+        </div>
+      ) : media ? (
         <img
           src={media.url}
           alt=""

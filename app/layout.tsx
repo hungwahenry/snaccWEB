@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Geist_Mono, Inter_Tight } from "next/font/google"
 
 import "./globals.css"
@@ -40,6 +40,14 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
   },
+  appleWebApp: { capable: true, title: "Snacc", statusBarStyle: "default" },
+}
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
 }
 
 export default function RootLayout({

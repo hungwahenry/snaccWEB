@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { LandingShell } from "@/components/marketing/landing-shell"
+import { JsonLd } from "@/components/seo/json-ld"
 import { getUserSnaccs } from "@/features/snaccs/api/public"
 import { PublicSnaccCard } from "@/features/snaccs/components/public/public-snacc-card"
 import { loginPath } from "@/features/auth/routes"
@@ -12,6 +13,7 @@ import { PublicProfileHeader } from "@/features/users/components/public/public-p
 import { PublicProfileTabs } from "@/features/users/components/public/public-profile-tabs"
 import { profilePath } from "@/features/users/routes"
 import { ProfileScreen } from "@/features/users/screens/profile-screen"
+import { profileJsonLd, profileMetadata } from "@/features/users/utils/metadata"
 import { nameOf } from "@/features/users/utils/names"
 import { profileMeta, profileStats } from "@/features/users/utils/profile"
 import { hasSession } from "@/lib/auth-server"
@@ -20,32 +22,7 @@ type Props = { params: Promise<{ username: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params
-  const profile = await getPublicProfile(username)
-  if (!profile) return { title: "Profile not found" }
-
-  const name = nameOf(profile)
-  const title = `${name} (@${profile.username}) on Snacc`
-  const description =
-    profile.bio?.trim() ||
-    `${name} is on Snacc.${profile.university ? ` ${profile.university.acronym}.` : ""}`
-
-  return {
-    title,
-    description,
-    alternates: { canonical: `/@${profile.username}` },
-    openGraph: {
-      title,
-      description,
-      url: `/@${profile.username}`,
-      images: [profile.avatar_url],
-    },
-    twitter: {
-      card: "summary",
-      title,
-      description,
-      images: [profile.avatar_url],
-    },
-  }
+  return profileMetadata(await getPublicProfile(username))
 }
 
 export default async function ProfilePage({ params }: Props) {
@@ -63,6 +40,7 @@ export default async function ProfilePage({ params }: Props) {
       cta={`See everything ${nameOf(profile)} posts`}
       next={profilePath(username)}
     >
+      <JsonLd data={profileJsonLd(profile)} />
       <PublicProfileHeader
         profile={profile}
         meta={profileMeta(profile)}

@@ -13,7 +13,6 @@ export interface GlimpseChip {
   label: string
 }
 
-/** What a snacc in brief shows: its words, and a taste of each thing it carries. */
 export interface Glimpse {
   body: string | null
   voice: EmbeddedSnacc["voice"]
@@ -23,7 +22,6 @@ export interface Glimpse {
   chips: GlimpseChip[]
 }
 
-/** The name a byline shows: the handle people know, else whatever name there is. */
 export function bylineName(
   author: Pick<SnaccAuthor, "username" | "display_name">
 ): string {
@@ -97,8 +95,10 @@ export function attachmentSummary(parts: {
   sticker: boolean
   gif: boolean
   images: number
+  clip?: boolean
 }): string | null {
   if (parts.poll) return "📊 Poll"
+  if (parts.clip) return "🎬 Clip"
   if (parts.voiceMs !== null) return `🎤 ${voiceLabel(parts.voiceMs)}`
   if (parts.sticker) return "✨ Sticker"
   if (parts.gif) return "🎞️ GIF"

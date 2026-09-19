@@ -10,6 +10,7 @@ import { useMe } from "@/features/auth/hooks/use-me"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { useGhostWindow } from "@/features/ghost/hooks/use-ghost-window"
 import { DiscoverRail } from "@/features/search/screens/discover-rail"
+import { useOfflineNotice } from "@/hooks/use-offline-notice"
 import { isSuspended, isUnauthenticated } from "@/lib/api/errors"
 import { AppProviders } from "@/providers/app-providers"
 import { AppFrame } from "../components/app-frame"
@@ -67,6 +68,7 @@ function Shell({ children }: { children: ReactNode }) {
   const ghost = useGhostWindow()
   useAccentEntitlement()
   useResumePendingSnaccs()
+  useOfflineNotice()
   const searchEnabled = useFlag("search")
   const profile = nav.user?.profile
   const immersive = IMMERSIVE.some((pattern) => pattern.test(pathname))
