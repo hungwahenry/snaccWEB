@@ -1,6 +1,8 @@
 import type { PayMode } from "./types"
 
 export const WALLET_PATH = "/wallet"
+export const WALLET_SECTION_PARAM = "section"
+export const WALLET_REQUESTS_PATH = `${WALLET_PATH}?${WALLET_SECTION_PARAM}=requests`
 export const PAY_LINK_PATH = "/wallet/pay-link"
 export const RECEIVE_PATH = "/wallet/receive"
 export const WALLET_PIN_PATH = "/wallet/pin"

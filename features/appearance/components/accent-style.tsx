@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { useAccent } from "../hooks/use-accent"
+import { useWornAccent } from "../hooks/use-accent"
 import { accentCss, ACCENT_STYLE_ID } from "../utils/accent-css"
 
 /**
@@ -10,7 +10,7 @@ import { accentCss, ACCENT_STYLE_ID } from "../utils/accent-css"
  * switching back to the default actually clears the old colour.
  */
 export function AccentStyle() {
-  const [accent] = useAccent()
+  const accent = useWornAccent()
 
   useEffect(() => {
     let node = document.getElementById(ACCENT_STYLE_ID)

@@ -1,5 +1,6 @@
 import { ACCENTS } from "../utils/accents"
 import { accentCss, ACCENT_STYLE_ID } from "../utils/accent-css"
+import { ACCENT_STORAGE_KEY, SIGNED_IN_HINT } from "../utils/accent-store"
 
 const CSS_BY_KEY = Object.fromEntries(
   ACCENTS.map((accent) => [accent.key, accentCss(accent)])
@@ -18,7 +19,9 @@ export function AccentScript() {
   const script = `(function(){try{
 var s=document.createElement("style");
 s.id=${JSON.stringify(ACCENT_STYLE_ID)};
-s.textContent=(${JSON.stringify(CSS_BY_KEY)}[localStorage.getItem("snacc_accent")])||"";
+var k=(localStorage.getItem(${JSON.stringify(ACCENT_STORAGE_KEY)})||"").split(":")[0];
+var on=document.cookie.indexOf(${JSON.stringify(SIGNED_IN_HINT)})>-1;
+s.textContent=(on&&${JSON.stringify(CSS_BY_KEY)}[k])||"";
 document.head.appendChild(s);
 }catch(e){}})()`
 

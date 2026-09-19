@@ -6,6 +6,7 @@ import { showError } from "@/lib/feedback"
 import { createSnacc, undoResnacc } from "../../api"
 import {
   cancelSnaccQueries,
+  feedsChanged,
   patchSnacc,
   resnaccsChanged,
   restoreSnaccs,
@@ -40,6 +41,9 @@ export function useResnacc() {
       restoreSnaccs(context?.snapshot ?? [])
       showError(error)
     },
-    onSettled: (_data, _error, snacc) => resnaccsChanged(snacc.id),
+    onSettled: (_data, _error, snacc) => {
+      feedsChanged(snacc.id)
+      resnaccsChanged(snacc.id)
+    },
   })
 }

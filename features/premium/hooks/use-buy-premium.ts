@@ -6,6 +6,7 @@ import { walletChanged } from "@/features/wallet/cache"
 import { useMoneyConfirm } from "@/features/wallet/hooks/pin/use-money-confirm"
 import { showError, showSuccess } from "@/lib/feedback"
 import { buyPremium } from "../api"
+import { onPremiumChanged } from "../realtime"
 import type { PremiumPlan, PremiumWalletPlan } from "../types"
 import { PREMIUM_KEY } from "../utils/keys"
 
@@ -25,6 +26,7 @@ export function useBuyPremium() {
       if (!bought) return
 
       walletChanged()
+      onPremiumChanged()
       await queryClient.invalidateQueries({ queryKey: PREMIUM_KEY })
       showSuccess("Premium is yours.")
     } catch (error) {

@@ -20,6 +20,7 @@ import {
   patchSnacc,
   removeSnacc,
   restoreSnaccs,
+  savedChanged,
   setPinned,
   snapshotSnaccs,
 } from "../cache"
@@ -39,6 +40,7 @@ export function useSnaccMenu() {
       input.saved ? saveSnacc(input.id) : unsaveSnacc(input.id),
     onError: (_error, { id, saved }) =>
       patchSnacc(id, (snacc) => ({ ...snacc, saved: !saved })),
+    onSettled: savedChanged,
   })
   const pin = useMutation({
     mutationFn: (input: { id: string; pinned: boolean }) =>

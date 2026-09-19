@@ -28,6 +28,7 @@ import {
   onNotification,
   onNotificationsChanged,
 } from "@/features/notifications/realtime"
+import { onPremiumChanged } from "@/features/premium/realtime"
 import { onScoreChanged } from "@/features/score/realtime"
 import {
   onMoneyRequest,
@@ -62,6 +63,7 @@ export const REALTIME_HANDLERS = {
   "config.changed": onConfigChanged,
   "match.snacc": onMatchSnacc,
   "score.changed": onScoreChanged,
+  "premium.changed": onPremiumChanged,
   "snacc.reaction": onSnaccReaction,
   "snacc.comment": onSnaccComment,
   "snacc.poll": onSnaccPoll,

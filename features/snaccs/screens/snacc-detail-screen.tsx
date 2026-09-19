@@ -35,6 +35,7 @@ import { useSnaccActions } from "../hooks/use-snacc-actions"
 import { composePath, snaccPath } from "../routes"
 import type { CommentSort, Snacc } from "../types"
 import { DEFAULT_COMMENT_SORT, REPLY_SORT } from "../utils/sorts"
+import { viewedId } from "../utils/resnaccs"
 import { addresseeOf } from "../utils/threads"
 
 export function SnaccDetailScreen({ id }: { id: string }) {
@@ -162,7 +163,7 @@ export function SnaccDetailScreen({ id }: { id: string }) {
                   snacc={item}
                   addressee={addresseeOf(item, loaded.author.id)}
                   votingPollFor={votingPollFor}
-                  itemRef={tracker.ref(item.id)}
+                  itemRef={tracker.ref(viewedId(item))}
                   {...handlers}
                   onPress={undefined}
                 />

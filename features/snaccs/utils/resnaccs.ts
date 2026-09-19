@@ -11,6 +11,12 @@ export function isPlainResnacc(snacc: Snacc): boolean {
   )
 }
 
+export function viewedId(snacc: Snacc): string {
+  return snacc.resnacc_of && isPlainResnacc(snacc)
+    ? snacc.resnacc_of.id
+    : snacc.id
+}
+
 export function asSnacc(embedded: EmbeddedSnacc): Snacc {
   return { ...embedded, resnacc_of: null, quoted_gone: null }
 }

@@ -251,6 +251,11 @@ export function reactionsChanged(id: string): void {
   void client().invalidateQueries({ queryKey: snaccKeys.reactorLists(id) })
 }
 
+export function feedsChanged(id: string): void {
+  void client().invalidateQueries({ queryKey: snaccKeys.detail(id) })
+  void client().invalidateQueries({ queryKey: snaccKeys.feeds() })
+}
+
 export function savedChanged(): void {
   void client().invalidateQueries({ queryKey: snaccKeys.bookmarks() })
 }

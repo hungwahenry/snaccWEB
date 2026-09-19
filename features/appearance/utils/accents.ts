@@ -90,3 +90,29 @@ export const ACCENTS: Accent[] = [
 export function accentOf(key: string | null): Accent {
   return ACCENTS.find((accent) => accent.key === key) ?? INK
 }
+
+export interface SavedAccent {
+  key: string
+  owner: string | null
+}
+
+export const NO_ACCENT: SavedAccent = { key: INK.key, owner: null }
+
+export function parseSavedAccent(raw: string | null): SavedAccent {
+  if (!raw) return NO_ACCENT
+  const [key, owner] = raw.split(":")
+
+  return { key: accentOf(key).key, owner: owner || null }
+}
+
+export function formatSavedAccent(saved: SavedAccent): string {
+  return saved.owner ? `${saved.key}:${saved.owner}` : saved.key
+}
+
+export function wornBy(saved: SavedAccent, userId: string | null): Accent {
+  if (!userId) return INK
+
+  return saved.owner === null || saved.owner === userId
+    ? accentOf(saved.key)
+    : INK
+}

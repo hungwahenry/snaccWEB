@@ -1,5 +1,6 @@
 "use client"
 
+import { useAccentEntitlement } from "@/features/appearance/hooks/use-accent-entitlement"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, type ReactNode } from "react"
 import { Spinner } from "@/components/ui/spinner"
@@ -62,6 +63,7 @@ function Shell({ children }: { children: ReactNode }) {
   const nav = useAppNav()
   const logout = useLogout()
   const ghost = useGhostWindow()
+  useAccentEntitlement()
   const searchEnabled = useFlag("search")
   const profile = nav.user?.profile
   const immersive = IMMERSIVE.some((pattern) => pattern.test(pathname))

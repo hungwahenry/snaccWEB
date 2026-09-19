@@ -16,10 +16,11 @@ export function limitKeyOf(error: unknown): ConfigKey | null {
 /** True when the failure was a limit Premium raises, and Premium is on to offer. */
 export function offersPremium(
   error: unknown,
-  config: AppConfig | undefined
+  config: AppConfig | undefined,
+  premium: boolean
 ): boolean {
   const key = limitKeyOf(error)
-  if (!key || !config?.flags.premium) return false
+  if (premium || !key || !config?.flags.premium) return false
 
   return config.upgrades[key] !== undefined
 }

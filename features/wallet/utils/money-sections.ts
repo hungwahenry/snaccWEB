@@ -38,6 +38,10 @@ const TABS: MoneyTab[] = [
 
 const WITHOUT_EARNINGS = TABS.filter((tab) => tab.key !== "earnings")
 
+export function sectionFrom(value: string | null): MoneySection {
+  return TABS.find((tab) => tab.key === value)?.key ?? "home"
+}
+
 export function moneyTabs(earningsEnabled: boolean): MoneyTab[] {
   return earningsEnabled ? TABS : WITHOUT_EARNINGS
 }

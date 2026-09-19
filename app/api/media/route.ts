@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server"
 import { forbidden } from "@/lib/same-origin"
-import { isProxyableMedia } from "@/lib/media-url"
+import { isProxyableMedia, isServableMedia } from "@/lib/media-url"
 
 const YEAR_S = 31_536_000
 
@@ -13,11 +13,16 @@ export async function GET(request: NextRequest) {
     return new Response(null, { status: upstream.status })
   }
 
+  const type = upstream.headers.get("content-type") ?? "image/jpeg"
+  if (!isServableMedia(type)) return new Response(null, { status: 415 })
+
   return new Response(upstream.body, {
     status: 200,
     headers: {
-      "Content-Type": upstream.headers.get("content-type") ?? "image/jpeg",
+      "Content-Type": type,
       "Cache-Control": `public, max-age=${YEAR_S}, immutable`,
+      "X-Content-Type-Options": "nosniff",
+      "Content-Security-Policy": "sandbox; default-src 'none'",
     },
   })
 }

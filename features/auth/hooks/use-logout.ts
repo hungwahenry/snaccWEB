@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
+import { wearAccentFor } from "@/features/appearance/utils/accent-store"
 import { clearPendingChatMessages } from "@/features/chats/cache/pending-chat-messages"
 import { clearPendingMessages } from "@/features/messages/cache/pending-messages"
 import { voicePlayer } from "@/features/voice/hooks/use-voice-player"
@@ -19,6 +20,7 @@ export function useLogout() {
       clearPendingMessages()
       clearPendingChatMessages()
       voicePlayer.stop()
+      wearAccentFor(null)
       queryClient.clear()
       router.replace(LANDING_PATH)
     },

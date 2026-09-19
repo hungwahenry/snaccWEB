@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import type { EmbeddedSnacc, Snacc } from "../types"
-import { isPlainResnacc } from "./resnaccs"
+import { isPlainResnacc, viewedId } from "./resnaccs"
 
 const resnacc = (patch: Partial<Snacc> = {}) =>
   ({
@@ -34,5 +34,18 @@ describe("isPlainResnacc", () => {
 
   it("is never a snacc that points at nothing", () => {
     expect(isPlainResnacc(resnacc({ resnacc_of: null }))).toBe(false)
+  })
+})
+
+describe("viewedId", () => {
+  it("credits a plain resnacc to the post it shows", () => {
+    expect(viewedId({ ...resnacc(), id: "row" } as Snacc)).toBe("original")
+  })
+
+  it("credits a quote, and anything else, to itself", () => {
+    expect(viewedId({ ...resnacc({ body: "my take" }), id: "row" } as Snacc)).toBe(
+      "row"
+    )
+    expect(viewedId({ id: "plain", resnacc_of: null } as Snacc)).toBe("plain")
   })
 })

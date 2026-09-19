@@ -3,6 +3,7 @@ import { toast } from "sonner"
 import { cachedConfig } from "@/features/config/utils/flag"
 import { PREMIUM_PATH } from "@/features/premium/routes"
 import { offersPremium } from "@/features/premium/utils/limit"
+import { cachedPremium } from "@/features/premium/utils/standing"
 import { getErrorMessage } from "./api/errors"
 
 export interface ToastAction {
@@ -17,7 +18,7 @@ export interface ToastAction {
  */
 export function showError(error: unknown, action?: ToastAction): void {
   const message = getErrorMessage(error)
-  if (action || !offersPremium(error, cachedConfig())) {
+  if (action || !offersPremium(error, cachedConfig(), cachedPremium())) {
     showErrorMessage(message, action)
     return
   }

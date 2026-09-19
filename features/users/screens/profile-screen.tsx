@@ -24,6 +24,7 @@ import { ProfileHeaderSkeleton } from "../components/profile-header-skeleton"
 import { ProfileMenuSheet } from "../components/profile-menu-sheet"
 import { useProfileScreen } from "../hooks/use-profile-screen"
 import { PROFILE_TABS } from "../utils/profile-tabs"
+import { viewedId } from "@/features/snaccs/utils/resnaccs"
 
 export function ProfileScreen({ username }: { username: string }) {
   const screen = useProfileScreen(username)
@@ -120,7 +121,7 @@ export function ProfileScreen({ username }: { username: string }) {
                     snacc={item}
                     header={item.pinned ? <PinnedHeader /> : undefined}
                     votingPollFor={snaccs.votingPollFor}
-                    itemRef={screen.trackRef(item.id)}
+                    itemRef={screen.trackRef(viewedId(item))}
                     onOpenParent={screen.onOpenParent}
                     {...snaccs.handlers}
                   />

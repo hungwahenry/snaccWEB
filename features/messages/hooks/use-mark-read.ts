@@ -4,14 +4,20 @@ import { useEffect } from "react"
 import { markConversationRead } from "../api"
 import { markConversationSeen, unreadChanged } from "../cache"
 
-/** Marks the thread read whenever it grows while open, and clears its badge at once. */
 export function useMarkRead(conversationId: string, messageCount: number) {
   useEffect(() => {
     if (!conversationId) return
 
-    markConversationSeen(conversationId)
-    void markConversationRead(conversationId)
-      .then(unreadChanged)
-      .catch(() => undefined)
+    const read = () => {
+      if (document.visibilityState !== "visible") return
+      markConversationSeen(conversationId)
+      void markConversationRead(conversationId)
+        .then(unreadChanged)
+        .catch(() => undefined)
+    }
+
+    read()
+    document.addEventListener("visibilitychange", read)
+    return () => document.removeEventListener("visibilitychange", read)
   }, [conversationId, messageCount])
 }

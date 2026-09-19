@@ -35,11 +35,14 @@ export function useRealtime(): RealtimeApi {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? ""
 
-async function fetchSocketToken(): Promise<string | null> {
-  const res = await fetch("/api/session/token", { credentials: "same-origin" })
-  if (!res.ok) return null
-  const json = (await res.json()) as { data?: { token?: string } }
-  return json.data?.token ?? null
+async function fetchSocketTicket(): Promise<string | null> {
+  const res = await fetch("/api/v1/realtime/ticket", {
+    method: "POST",
+    credentials: "same-origin",
+  }).catch(() => null)
+  if (!res?.ok) return null
+  const json = (await res.json()) as { data?: { ticket?: string } }
+  return json.data?.ticket ?? null
 }
 
 export function RealtimeProvider({
@@ -58,14 +61,19 @@ export function RealtimeProvider({
 
     let cancelled = false
 
-    void fetchSocketToken().then((token) => {
-      if (!token || cancelled) return
+    void fetchSocketTicket().then((first) => {
+      if (!first || cancelled) return
 
+      let unused: string | null = first
       const socket = io(API_URL, {
-        auth: (send) =>
-          void fetchSocketToken()
-            .catch(() => null)
-            .then((fresh) => send({ token: fresh ?? token })),
+        auth: (send) => {
+          const ready = unused
+          unused = null
+          if (ready) return send({ ticket: ready })
+          void fetchSocketTicket().then((ticket) =>
+            send({ ticket: ticket ?? "" })
+          )
+        },
         transports: ["websocket"],
       })
       socketRef.current = socket

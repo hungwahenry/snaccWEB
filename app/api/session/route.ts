@@ -6,6 +6,7 @@ import {
   getUserToken,
   setUserToken,
   SNACC_API_URL,
+  visitorHeaders,
   WEB_CLIENT_INFO,
 } from "@/lib/session"
 
@@ -25,6 +26,7 @@ export async function POST(request: NextRequest) {
       "X-Install-Id": installId,
       "X-Client-Info": WEB_CLIENT_INFO,
       "User-Agent": request.headers.get("user-agent") ?? "web",
+      ...visitorHeaders(request.headers),
     },
     body: JSON.stringify({ email, code }),
     cache: "no-store",

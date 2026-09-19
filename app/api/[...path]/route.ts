@@ -1,9 +1,11 @@
 import type { NextRequest } from "next/server"
 import { forbidden, isSameOrigin } from "@/lib/same-origin"
 import {
+  clearUserToken,
   getBearerToken,
   readInstallId,
   SNACC_API_URL,
+  visitorHeaders,
   WEB_CLIENT_INFO,
 } from "@/lib/session"
 
@@ -33,6 +35,7 @@ async function proxy(
   const upstream = new Headers({
     Accept: "application/json",
     "X-Client-Info": WEB_CLIENT_INFO,
+    ...visitorHeaders(request.headers),
   })
   for (const name of FORWARDED) {
     const value = request.headers.get(name)
@@ -44,14 +47,16 @@ async function proxy(
   const method = request.method
   const hasBody = method !== "GET" && method !== "HEAD"
 
-  const res = await fetch(target, {
+  const init: RequestInit & { duplex?: "half" } = {
     method,
     headers: upstream,
     body: hasBody ? request.body : undefined,
-    // @ts-expect-error -- streaming a request body needs half duplex in Node's fetch
     duplex: hasBody ? "half" : undefined,
     cache: "no-store",
-  })
+  }
+  const res = await fetch(target, init)
+
+  if (res.status === 401 && token) await clearUserToken()
 
   const headers = new Headers({
     "Content-Type": res.headers.get("content-type") ?? "application/json",

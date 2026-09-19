@@ -32,7 +32,11 @@ import { momentsPath } from "@/features/moments/routes"
 import { SCORE_PATH } from "@/features/score/routes"
 import { snaccPath } from "@/features/snaccs/routes"
 import { profilePath } from "@/features/users/routes"
-import { EARNINGS_PATH, WALLET_PATH } from "@/features/wallet/routes"
+import {
+  EARNINGS_PATH,
+  WALLET_PATH,
+  WALLET_REQUESTS_PATH,
+} from "@/features/wallet/routes"
 import type {
   Notification,
   NotificationTarget,
@@ -83,6 +87,8 @@ function routeFromTarget(target: NotificationTarget | null): string | null {
       return target.ref ? chatRoomPath(target.ref) : null
     case "wallet":
       return WALLET_PATH
+    case "requests":
+      return WALLET_REQUESTS_PATH
     case "earnings":
       return EARNINGS_PATH
     case "score":

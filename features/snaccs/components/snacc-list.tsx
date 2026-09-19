@@ -6,6 +6,7 @@ import { LoadFailed } from "@/components/ui/load-failed"
 import { LoadMore } from "@/components/ui/load-more"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
 import type { Snacc } from "../types"
+import { viewedId } from "../utils/resnaccs"
 import { SnaccCard, type SnaccActionHandlers } from "./card/snacc-card"
 import { SnaccCardSkeleton } from "./card/snacc-card-skeleton"
 
@@ -87,7 +88,7 @@ export function SnaccList({
               key={snacc.id}
               snacc={snacc}
               votingPollFor={votingPollFor}
-              itemRef={itemRef?.(snacc.id)}
+              itemRef={itemRef?.(viewedId(snacc))}
               {...handlers}
             />
           )
