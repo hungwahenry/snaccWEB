@@ -1,9 +1,7 @@
-import Link from "next/link"
 import type { ReactNode } from "react"
+import { RichLink } from "@/components/ui/rich-link"
 import { profilePath } from "@/features/users/routes"
 
-// The same detectors the app uses for bios: web addresses with a lowercase ending so prose like
-// "nice.Also" stays prose, and @mentions with the username rules.
 const URL_PATTERN =
   /(?<=^|[\s(])(?:https?:\/\/)?(?:[A-Za-z0-9-]+\.)+[a-z]{2,24}(?:\/\S*)?/g
 const MENTION_PATTERN =
@@ -26,16 +24,9 @@ function spansOf(text: string): Span[] {
       start: match.index,
       text: raw,
       node: (
-        <a
-          key={match.index}
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(event) => event.stopPropagation()}
-          className="font-extrabold hover:underline"
-        >
+        <RichLink key={match.index} href={href} external>
           {raw}
-        </a>
+        </RichLink>
       ),
     })
   }
@@ -45,14 +36,9 @@ function spansOf(text: string): Span[] {
       start: match.index,
       text: match[0],
       node: (
-        <Link
-          key={match.index}
-          href={profilePath(match[1])}
-          onClick={(event) => event.stopPropagation()}
-          className="font-extrabold hover:underline"
-        >
+        <RichLink key={match.index} href={profilePath(match[1])}>
           {match[0]}
-        </Link>
+        </RichLink>
       ),
     })
   }
