@@ -2,6 +2,7 @@
 
 import {
   useCallback,
+  useRef,
   useState,
   type PointerEvent,
   type WheelEvent,
@@ -9,20 +10,43 @@ import {
 
 const MAX_SCALE = 4
 const STEP_SCALE = 2.5
+const SNAP_BACK_SCALE = 1.05
+const SWITCH_AT = 60
+const CLOSE_AT = 110
+
+export type ImageSwipe = "next" | "previous" | "close"
+
+interface Point {
+  x: number
+  y: number
+}
 
 function clamp(value: number, limit: number): number {
   return Math.min(Math.max(value, -limit), limit)
 }
 
-/// Double click or wheel to zoom, drag to pan, the way pinch and double tap work in the app.
-export function useImageZoom() {
+function spread(points: Point[]): number {
+  return Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y)
+}
+
+export function swipeOf(dx: number, dy: number): ImageSwipe | null {
+  if (dy > CLOSE_AT && dy > Math.abs(dx)) return "close"
+  if (Math.abs(dx) < SWITCH_AT || Math.abs(dx) <= Math.abs(dy)) return null
+  return dx < 0 ? "next" : "previous"
+}
+
+export function useImageZoom(onSwipe?: (swipe: ImageSwipe) => void) {
   const [box, setBox] = useState<HTMLDivElement | null>(null)
   const [scale, setScale] = useState(1)
   const [offset, setOffset] = useState({ x: 0, y: 0 })
-  const [drag, setDrag] = useState<{ x: number; y: number } | null>(null)
+  const [drag, setDrag] = useState<Point | null>(null)
+  const [pinching, setPinching] = useState(false)
+  const pointers = useRef(new Map<number, Point>())
+  const pinch = useRef<{ spread: number; scale: number } | null>(null)
+  const swipe = useRef<Point | null>(null)
 
   const bound = useCallback(
-    (next: number, at: { x: number; y: number }) => {
+    (next: number, at: Point) => {
       const rect = box?.getBoundingClientRect()
       if (!rect) return at
       return {
@@ -51,7 +75,25 @@ export function useImageZoom() {
 
   const zoomed = scale > 1
 
-  const release = () => setDrag(null)
+  function release(event: PointerEvent<HTMLElement>, finished: boolean) {
+    const origin = finished ? swipe.current : null
+    pointers.current.delete(event.pointerId)
+    swipe.current = null
+    setDrag(null)
+
+    if (pinch.current) {
+      if (pointers.current.size < 2) {
+        pinch.current = null
+        setPinching(false)
+        if (scale < SNAP_BACK_SCALE) reset()
+      }
+      return
+    }
+
+    if (!origin || zoomed) return
+    const found = swipeOf(event.clientX - origin.x, event.clientY - origin.y)
+    if (found) onSwipe?.(found)
+  }
 
   return {
     attach: setBox,
@@ -59,7 +101,7 @@ export function useImageZoom() {
     reset,
     style: {
       transform: `translate3d(${offset.x}px, ${offset.y}px, 0) scale(${scale})`,
-      transition: drag ? "none" : "transform 160ms ease-out",
+      transition: drag || pinching ? "none" : "transform 160ms ease-out",
     },
     handlers: {
       onDoubleClick: () => zoomTo(zoomed ? 1 : STEP_SCALE),
@@ -68,11 +110,39 @@ export function useImageZoom() {
         zoomTo(scale - event.deltaY / 300)
       },
       onPointerDown: (event: PointerEvent<HTMLElement>) => {
-        if (!zoomed || event.button !== 0) return
+        if (event.button !== 0) return
+        const at = { x: event.clientX, y: event.clientY }
+        pointers.current.set(event.pointerId, at)
         event.currentTarget.setPointerCapture(event.pointerId)
-        setDrag({ x: event.clientX, y: event.clientY })
+
+        if (pointers.current.size === 2) {
+          pinch.current = {
+            spread: spread([...pointers.current.values()]),
+            scale,
+          }
+          swipe.current = null
+          setDrag(null)
+          setPinching(true)
+          return
+        }
+
+        if (zoomed) setDrag(at)
+        else if (event.pointerType !== "mouse") swipe.current = at
       },
       onPointerMove: (event: PointerEvent<HTMLElement>) => {
+        if (!pointers.current.has(event.pointerId)) return
+        pointers.current.set(event.pointerId, {
+          x: event.clientX,
+          y: event.clientY,
+        })
+
+        const held = pinch.current
+        if (held && pointers.current.size === 2 && held.spread > 0) {
+          const now = spread([...pointers.current.values()])
+          zoomTo(held.scale * (now / held.spread))
+          return
+        }
+
         if (!drag) return
         const dx = event.clientX - drag.x
         const dy = event.clientY - drag.y
@@ -81,8 +151,9 @@ export function useImageZoom() {
           bound(scale, { x: current.x + dx, y: current.y + dy })
         )
       },
-      onPointerUp: release,
-      onPointerCancel: release,
+      onPointerUp: (event: PointerEvent<HTMLElement>) => release(event, true),
+      onPointerCancel: (event: PointerEvent<HTMLElement>) =>
+        release(event, false),
     },
   }
 }

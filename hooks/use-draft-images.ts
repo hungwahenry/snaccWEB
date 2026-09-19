@@ -2,15 +2,14 @@
 
 import { useState } from "react"
 import { showErrorMessage } from "@/lib/feedback"
-import { pickImages, type PickedImage } from "@/lib/media"
+import { pickImages, readImages, type PickedImage } from "@/lib/media"
 
-/** Photos picked for something not yet sent: add up to a limit, remove, clear. */
 export function useDraftImages() {
   const [draft, setDraft] = useState<PickedImage[]>([])
 
-  async function add(max: number) {
+  async function take(read: Promise<PickedImage[]>, max: number) {
     try {
-      const picked = await pickImages(max - draft.length)
+      const picked = await read
       if (picked.length > 0)
         setDraft((current) => [...current, ...picked].slice(0, max))
     } catch {
@@ -20,7 +19,9 @@ export function useDraftImages() {
 
   return {
     draft,
-    add: (max: number) => void add(max),
+    add: (max: number) => void take(pickImages(max - draft.length), max),
+    addFiles: (files: File[], max: number) =>
+      void take(readImages(files, max - draft.length), max),
     remove: (uri: string) =>
       setDraft((current) => current.filter((image) => image.uri !== uri)),
     reset: () => setDraft([]),

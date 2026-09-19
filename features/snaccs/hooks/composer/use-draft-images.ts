@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useImageEditor } from "@/features/image-editor/hooks/use-image-editor"
 import { usePremiumNudge } from "@/features/premium/hooks/use-premium-limit"
 import { showErrorMessage } from "@/lib/feedback"
-import { fromUrl, pickImages } from "@/lib/media"
+import { fromUrl, pickImages, readImages } from "@/lib/media"
 import type { DraftImage } from "../../types"
 import { draftImageKey, toPickedImages } from "../../utils/draft-images"
 
@@ -20,9 +20,12 @@ export function useDraftImages(seed: DraftImage[]) {
   )
   const maxImages = limit.value
 
-  async function addImages() {
+  async function addImages(files?: File[]) {
     try {
-      const picked = await pickImages(maxImages - images.length)
+      const room = maxImages - images.length
+      const picked = files
+        ? await readImages(files, room)
+        : await pickImages(room)
       if (picked.length === 0) return
       setImages((current) =>
         [...current, ...toPickedImages(picked)].slice(0, maxImages)
@@ -60,6 +63,7 @@ export function useDraftImages(seed: DraftImage[]) {
     imageUpgrade: limit,
     imageEditor: editor.sheet,
     addImages: () => void addImages(),
+    addImageFiles: (files: File[]) => void addImages(files),
     editImage: (key: string) => void editImage(key),
     removeImage: (key: string) =>
       setImages((current) =>

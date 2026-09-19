@@ -107,10 +107,24 @@ export async function pickImage(): Promise<PickedImage | null> {
   return file ? downscale(file, AVATAR_MAX_EDGE) : null
 }
 
-export async function pickImages(limit: number): Promise<PickedImage[]> {
-  const files = await chooseFiles(limit > 1)
+export function readImages(
+  files: File[],
+  limit: number
+): Promise<PickedImage[]> {
   return Promise.all(
-    files.slice(0, limit).map((file) => downscale(file, SNACC_MAX_EDGE))
+    files
+      .slice(0, Math.max(0, limit))
+      .map((file) => downscale(file, SNACC_MAX_EDGE))
+  )
+}
+
+export async function pickImages(limit: number): Promise<PickedImage[]> {
+  return readImages(await chooseFiles(limit > 1), limit)
+}
+
+export function imageFilesIn(data: DataTransfer | null): File[] {
+  return Array.from(data?.files ?? []).filter((file) =>
+    file.type.startsWith("image/")
   )
 }
 

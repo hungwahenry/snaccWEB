@@ -165,6 +165,10 @@ export function useConversationComposer(
       imageUpgrade: attachments.imageUpgrade,
       images: attachments.draft,
       onRemoveImage: attachments.onRemoveImage,
+      onImageFiles:
+        composer.canAttach && !editing
+          ? attachments.onAddImageFiles
+          : undefined,
       viewOnce: attachments.viewOnce,
       onToggleViewOnce: attachments.viewOnceEnabled
         ? attachments.onToggleViewOnce

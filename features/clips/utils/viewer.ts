@@ -1,4 +1,5 @@
 import type { Snacc, SnaccClip } from "@/features/snaccs/types"
+import { isBusyWithKeys } from "@/lib/keyboard"
 
 const LOAD_AHEAD = 3
 const POSTERS_AHEAD = 3
@@ -22,8 +23,6 @@ const KEYS: Record<string, ViewerKey> = {
   Escape: "close",
 }
 
-const TYPING =
-  "input, textarea, select, [contenteditable='true'], [role='dialog'], [role='menu'], [role='listbox'], [role='slider']"
 const PRESSABLE = "button, a, [role='button']"
 
 export function isReadyClip(clip: SnaccClip | null | undefined): boolean {
@@ -96,6 +95,6 @@ export function viewerKey(key: string): ViewerKey | null {
 
 export function ownsKey(target: EventTarget | null, key: ViewerKey): boolean {
   if (!(target instanceof Element)) return false
-  if (target.closest(TYPING)) return true
+  if (isBusyWithKeys(target)) return true
   return key === "pause" && target.closest(PRESSABLE) !== null
 }

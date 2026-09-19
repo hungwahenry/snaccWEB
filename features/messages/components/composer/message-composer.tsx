@@ -6,6 +6,7 @@ import { Spinner } from "@/components/ui/spinner"
 import { PremiumNudge } from "@/features/premium/components/premium-nudge"
 import { VoiceRecordButton } from "@/features/voice/components/voice-record-button"
 import { VoiceRecordingBar } from "@/features/voice/components/voice-recording-bar"
+import { useImageDrop } from "@/hooks/use-image-drop"
 import type { PickedImage } from "@/lib/media"
 import { cn } from "@/lib/utils"
 import type {
@@ -40,6 +41,7 @@ export type MessageComposerProps = {
   showCounter: boolean
   images?: PickedImage[]
   onRemoveImage?: (uri: string) => void
+  onImageFiles?: (files: File[]) => void
   viewOnce?: boolean
   onToggleViewOnce?: () => void
   actions?: ComposerAction[]
@@ -68,6 +70,7 @@ export function MessageComposer({
   showCounter,
   images = [],
   onRemoveImage,
+  onImageFiles,
   viewOnce = false,
   onToggleViewOnce,
   actions = [],
@@ -82,6 +85,7 @@ export function MessageComposer({
   const showDrafts = images.length > 0 && onRemoveImage !== undefined
   const showViewOnce = images.length === 1 && onToggleViewOnce !== undefined
   const [tall, setTall] = useState(false)
+  const drop = useImageDrop(onImageFiles)
 
   const fieldRef = useCallback(
     (node: HTMLTextAreaElement | null) => {
@@ -101,9 +105,11 @@ export function MessageComposer({
 
   return (
     <div
+      {...drop.handlers}
       className={cn(
         "px-3 py-2 pb-[max(env(safe-area-inset-bottom),8px)]",
-        !onDark && "border-t border-border bg-background"
+        !onDark && "border-t border-border bg-background",
+        drop.over && "ring-2 ring-primary ring-inset"
       )}
     >
       {context || showDrafts ? (

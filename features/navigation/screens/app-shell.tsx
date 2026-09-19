@@ -10,6 +10,7 @@ import { useMe } from "@/features/auth/hooks/use-me"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { useGhostWindow } from "@/features/ghost/hooks/use-ghost-window"
 import { DiscoverRail } from "@/features/search/screens/discover-rail"
+import { useFileDropGuard } from "@/hooks/use-image-drop"
 import { useOfflineNotice } from "@/hooks/use-offline-notice"
 import { isSuspended, isUnauthenticated } from "@/lib/api/errors"
 import { AppProviders } from "@/providers/app-providers"
@@ -18,6 +19,8 @@ import { BottomTabBar } from "../components/bottom-tab-bar"
 import { RightRail } from "../components/right-rail"
 import { Sidebar } from "../components/sidebar"
 import { useAppNav } from "../hooks/use-app-nav"
+import { useUnreadTitle } from "../hooks/use-unread-title"
+import { emitNavReselect } from "../reselect"
 import { SUSPENDED_PATH } from "@/features/suspensions/routes"
 import { COMPLETE_PROFILE_PATH } from "@/features/onboarding/routes"
 import { COMPOSE_PATH } from "@/features/snaccs/routes"
@@ -69,6 +72,8 @@ function Shell({ children }: { children: ReactNode }) {
   useAccentEntitlement()
   useResumePendingSnaccs()
   useOfflineNotice()
+  useUnreadTitle(nav.unread)
+  useFileDropGuard()
   const searchEnabled = useFlag("search")
   const profile = nav.user?.profile
   const immersive = IMMERSIVE.some((pattern) => pattern.test(pathname))
@@ -94,6 +99,7 @@ function Shell({ children }: { children: ReactNode }) {
           onCompose={openCompose}
           onSettings={() => router.push(SETTINGS_PATH)}
           onLogout={() => logout.mutate()}
+          onReselect={emitNavReselect}
         />
       }
       rail={
@@ -108,6 +114,7 @@ function Shell({ children }: { children: ReactNode }) {
             activeKey={nav.activeKey}
             ghostActive={ghost.active}
             onCompose={openCompose}
+            onReselect={emitNavReselect}
           />
         )
       }

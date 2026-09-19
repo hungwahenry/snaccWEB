@@ -44,9 +44,15 @@ export function LightboxViewer({
   payCode?: ReactNode
   footer?: ReactNode
 }) {
-  const { attach, reset, style, zoomed, handlers } = useImageZoom()
   const count = images.length
   const image = images[index]
+  const neighbour = (by: number) =>
+    count === 0 ? 0 : (index + by + count) % count
+
+  const { attach, reset, style, zoomed, handlers } = useImageZoom((swipe) => {
+    if (swipe === "close") onClose()
+    else if (count > 1) onIndex(neighbour(swipe === "next" ? 1 : -1))
+  })
 
   const step = useCallback(
     (by: number) => {

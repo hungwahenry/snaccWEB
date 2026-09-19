@@ -32,6 +32,7 @@ type SidebarProps = {
   onCompose: () => void
   onSettings: () => void
   onLogout: () => void
+  onReselect?: (key: string) => void
 }
 
 export function Sidebar({
@@ -42,6 +43,7 @@ export function Sidebar({
   onCompose,
   onSettings,
   onLogout,
+  onReselect,
 }: SidebarProps) {
   return (
     <div className="flex h-full flex-col items-center gap-1 px-2 py-3 wide:items-stretch wide:px-3">
@@ -60,6 +62,7 @@ export function Sidebar({
               href={item.href}
               aria-current={active ? "page" : undefined}
               aria-label={item.label}
+              onClick={active ? () => onReselect?.(item.key) : undefined}
               className={cn(
                 "group flex h-12 items-center gap-4 rounded-full px-3 transition-colors hover:bg-accent wide:pr-6",
                 active ? "text-foreground" : "text-muted-foreground"

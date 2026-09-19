@@ -25,6 +25,7 @@ export function useMessageAttachments() {
     maxImages,
     imageUpgrade: imageLimit,
     onAddImages: () => images.add(maxImages),
+    onAddImageFiles: (files: File[]) => images.addFiles(files, maxImages),
     onToggleViewOnce: () => setViewOnce((current) => !current),
     onRemoveImage: (uri: string) => {
       setViewOnce(false)

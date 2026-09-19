@@ -10,6 +10,7 @@ type BottomTabBarProps = {
   activeKey: string | null
   ghostActive: boolean
   onCompose: () => void
+  onReselect?: (key: string) => void
 }
 
 export function BottomTabBar({
@@ -17,6 +18,7 @@ export function BottomTabBar({
   activeKey,
   ghostActive,
   onCompose,
+  onReselect,
 }: BottomTabBarProps) {
   const middle = Math.ceil(items.length / 2)
 
@@ -29,6 +31,7 @@ export function BottomTabBar({
         href={item.href}
         aria-label={item.label}
         aria-current={active ? "page" : undefined}
+        onClick={active ? () => onReselect?.(item.key) : undefined}
         className="flex flex-1 items-center justify-center py-2 active:opacity-60"
       >
         <span className="relative">

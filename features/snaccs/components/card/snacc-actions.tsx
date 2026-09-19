@@ -1,11 +1,16 @@
+"use client"
+
 import {
   GhostIcon,
   MessageCircleIcon,
   SendIcon,
   type LucideIcon,
 } from "lucide-react"
+import { useRef } from "react"
 import { Bump } from "@/components/motion/bump"
+import { ReactionBursts } from "@/components/motion/reaction-bursts"
 import { ReactionPicker } from "@/features/reactions/components/reaction-picker"
+import { useReactionBursts } from "@/hooks/use-reaction-bursts"
 import { compactCount } from "@/lib/format"
 import type { SnaccReaction } from "../../types"
 import { ReactionSummary } from "./reactions/reaction-summary"
@@ -42,6 +47,17 @@ export function SnaccActions({
   onResnacc,
   onShare,
 }: SnaccActionsProps) {
+  const bursts = useReactionBursts()
+  const trigger = useRef<HTMLDivElement>(null)
+
+  function react(emoji: string) {
+    const box = trigger.current?.getBoundingClientRect()
+    if (box && emoji !== myReaction) {
+      bursts.add(emoji, box.width / 2, box.height / 2)
+    }
+    onReact(emoji)
+  }
+
   return (
     <div
       className="flex items-center gap-2"
@@ -55,8 +71,9 @@ export function SnaccActions({
             onPress={onOpenBreakdown}
           />
         </div>
-        <div className="shrink-0">
-          <ReactionPicker mine={myReaction} onSelect={onReact} />
+        <div ref={trigger} className="relative shrink-0">
+          <ReactionPicker mine={myReaction} onSelect={react} />
+          <ReactionBursts bursts={bursts.bursts} onDone={bursts.remove} />
         </div>
       </div>
 

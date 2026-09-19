@@ -54,7 +54,10 @@ function ComposeBody(params: ComposeParams) {
   const { schedule } = composer
 
   return (
-    <ComposerScreen className="overflow-y-auto">
+    <ComposerScreen
+      className="overflow-y-auto"
+      onImageFiles={composer.canAddImages ? composer.addImageFiles : undefined}
+    >
       <ComposerHeader
         title={copy.title}
         onClose={composer.close}

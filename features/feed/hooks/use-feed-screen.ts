@@ -1,7 +1,8 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useEffectEvent, useState } from "react"
 import { useMe } from "@/features/auth/hooks/use-me"
+import { onNavReselect } from "@/features/navigation/reselect"
 import { signal } from "@/features/signals/utils/queue"
 import { useRealtimeEvent } from "@/hooks/use-realtime-event"
 import { useRealtimeRoom } from "@/hooks/use-realtime-room"
@@ -79,6 +80,9 @@ export function useFeedScreen() {
     window.scrollTo({ top: 0, behavior: "smooth" })
     feed.refresh()
   }
+
+  const refreshFromNav = useEffectEvent(showNew)
+  useEffect(() => onNavReselect("home", () => refreshFromNav()), [])
 
   return {
     tabs: {

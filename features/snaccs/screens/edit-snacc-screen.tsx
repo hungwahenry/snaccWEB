@@ -55,7 +55,10 @@ function Editor({ snacc }: { snacc: Snacc }) {
   const editor = useSnaccEditor(snacc)
 
   return (
-    <ComposerScreen className="overflow-y-auto">
+    <ComposerScreen
+      className="overflow-y-auto"
+      onImageFiles={editor.canAddImages ? editor.addImageFiles : undefined}
+    >
       <ComposerHeader title="Edit snacc" onClose={editor.close} />
 
       <div className="flex-1 px-4 pt-4 pb-6">

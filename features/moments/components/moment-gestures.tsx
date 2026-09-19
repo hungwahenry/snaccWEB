@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, type PointerEvent } from "react"
+import { isBusyWithKeys } from "@/lib/keyboard"
 
 const CLOSE_AT = 110
 const SWITCH_AT = 60
@@ -44,6 +45,7 @@ export function MomentGestures({
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
+      if (isBusyWithKeys(event.target)) return
       if (event.key === "ArrowRight") onForward()
       else if (event.key === "ArrowLeft") onBack()
       else if (event.key === "Escape") onClose()

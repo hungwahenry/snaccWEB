@@ -142,6 +142,10 @@ export function useChatComposer(
       actions,
       images: images.draft,
       onRemoveImage: images.remove,
+      onImageFiles:
+        composer.canAttach && !editing
+          ? (files: File[]) => images.addFiles(files, maxImages)
+          : undefined,
     },
     stickerTray: trayOffered
       ? {

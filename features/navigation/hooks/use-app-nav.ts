@@ -122,5 +122,8 @@ export function useAppNav() {
     activeKey:
       items.find((item) => isActive(pathname, item.href, own))?.key ?? null,
     user: me.data ?? null,
+    unread:
+      unreadNotifications +
+      (messagesEnabled ? unreadMessages + unreadRooms : 0),
   }
 }
