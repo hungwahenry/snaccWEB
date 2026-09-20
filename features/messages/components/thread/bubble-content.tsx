@@ -1,4 +1,5 @@
 import { LinkPreviews } from "@/features/links/containers/link-previews"
+import { VoiceGlowFor } from "@/features/voice/components/voice-glow-for"
 import { VoiceNotePlayer } from "@/features/voice/components/voice-note-player"
 import type { VoiceNote, VoiceSource } from "@/features/voice/types"
 import { cn } from "@/lib/utils"
@@ -35,15 +36,17 @@ export function BubbleVoice({
   beforeText: boolean
 }) {
   return (
-    <div
-      className={cn(
-        "px-3 pt-3",
-        afterQuote && "pt-1.5",
-        beforeText ? "pb-1" : "pb-3"
-      )}
-    >
-      <VoiceNotePlayer note={note} source={source} onDark={mine} />
-    </div>
+    <VoiceGlowFor noteId={note.id}>
+      <div
+        className={cn(
+          "px-3 pt-3",
+          afterQuote && "pt-1.5",
+          beforeText ? "pb-1" : "pb-3"
+        )}
+      >
+        <VoiceNotePlayer note={note} source={source} onDark={mine} />
+      </div>
+    </VoiceGlowFor>
   )
 }
 

@@ -29,6 +29,7 @@ import { SnaccSheets } from "../components/sheets/snacc-sheets"
 import { CommentSortRow } from "../components/thread/comment-sort-row"
 import { CommentSortSheet } from "../components/thread/comment-sort-sheet"
 import { ReplyContext } from "../components/thread/reply-context"
+import { ReplyContextSkeleton } from "../components/thread/reply-context-skeleton"
 import { useComments } from "../hooks/thread/use-comments"
 import { useSnacc } from "../hooks/use-snacc"
 import { useSnaccActions } from "../hooks/use-snacc-actions"
@@ -48,6 +49,8 @@ export function SnaccDetailScreen({ id }: { id: string }) {
   const loaded = snacc.data
   const isPost = loaded ? loaded.parent_id === null : undefined
   const parent = useSnacc(loaded?.parent_id ?? "")
+  // The answer paints from the cache straight away; keep its place until the parent lands.
+  const awaitingParent = loaded?.parent_id != null && !parent.data
 
   useRecordView(loaded?.id)
 
@@ -101,6 +104,8 @@ export function SnaccDetailScreen({ id }: { id: string }) {
         <SkeletonRows count={5} item={SnaccCardSkeleton} />
       ) : (
         <>
+          {awaitingParent ? <ReplyContextSkeleton /> : null}
+
           {parent.data ? (
             <ReplyContext
               snacc={parent.data}
@@ -119,7 +124,7 @@ export function SnaccDetailScreen({ id }: { id: string }) {
 
           <SnaccCard
             snacc={loaded}
-            flushTop={!!parent.data}
+            flushTop={!!parent.data || awaitingParent}
             votingPollFor={votingPollFor}
             {...handlers}
             onPress={undefined}

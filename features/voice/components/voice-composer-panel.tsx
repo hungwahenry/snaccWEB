@@ -7,6 +7,7 @@ import type { VoiceDraft, VoiceNote } from "../types"
 import { clock } from "../utils/clock"
 import { RecordingDot } from "./recording-dot"
 import { RecordingWave } from "./recording-wave"
+import { useGlowLevel, useNotePlaying } from "./voice-glow-for"
 import { VoiceNotePlayer } from "./voice-note-player"
 
 type VoiceComposerPanelProps = {
@@ -30,11 +31,20 @@ export function VoiceComposerPanel({
   onStop,
   onDiscard,
 }: VoiceComposerPanelProps) {
+  const storedId = stored?.id ?? ""
+  const storedPlaying = useNotePlaying(storedId)
+  const storedLevel = useGlowLevel(storedId)
+
   if (!recording && !voice && !stored) return null
 
   return (
     <div className="px-4 pt-3">
-      <VoiceBeam active={recording} stream={live} scale={0.8}>
+      <VoiceBeam
+        active={recording || storedPlaying}
+        stream={recording ? live : null}
+        level={storedLevel}
+        scale={0.8}
+      >
         <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-border px-3 py-2.5">
           {recording ? (
             <>

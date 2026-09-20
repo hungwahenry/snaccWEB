@@ -25,6 +25,7 @@ export function useNowPlaying() {
 
   return {
     open: live !== null && !hidesNowPlaying(pathname),
+    noteId: shown.note.id,
     label: source.label,
     avatarUrl: source.avatarUrl,
     time: nowPlayingTime(shown.positionMs, shown.durationMs),

@@ -1,4 +1,5 @@
 import { StickerAttachmentView } from "@/features/stickers/components/sticker-attachment-view"
+import { VoiceGlowFor } from "@/features/voice/components/voice-glow-for"
 import { VoiceNotePlayer } from "@/features/voice/components/voice-note-player"
 import type { Snacc } from "../../../types"
 import { snaccVoiceSource } from "../../../utils/voice"
@@ -62,13 +63,15 @@ export function SnaccMedia({
       ) : null}
 
       {snacc.voice ? (
-        <div className="rounded-2xl border border-border px-3 py-2">
-          <VoiceNotePlayer
-            note={snacc.voice}
-            source={snaccVoiceSource(snacc)}
-            fill
-          />
-        </div>
+        <VoiceGlowFor noteId={snacc.voice.id}>
+          <div className="rounded-2xl border border-border px-3 py-2">
+            <VoiceNotePlayer
+              note={snacc.voice}
+              source={snaccVoiceSource(snacc)}
+              fill
+            />
+          </div>
+        </VoiceGlowFor>
       ) : null}
 
       {snacc.clip ? (
