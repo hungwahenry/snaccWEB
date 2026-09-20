@@ -6,6 +6,7 @@ import { Spinner } from "@/components/ui/spinner"
 import { PremiumNudge } from "@/features/premium/components/premium-nudge"
 import { VoiceRecordButton } from "@/features/voice/components/voice-record-button"
 import { VoiceRecordingBar } from "@/features/voice/components/voice-recording-bar"
+import { VoiceBeam } from "voice-glow"
 import { useImageDrop } from "@/hooks/use-image-drop"
 import type { PickedImage } from "@/lib/media"
 import { cn } from "@/lib/utils"
@@ -163,87 +164,93 @@ export function MessageComposer({
           <ComposerActionsMenu actions={actions} />
         ) : null}
 
-        <div
-          className={cn(
-            "flex min-h-14 flex-1 items-end gap-3 bg-input py-1.5 pr-1.5 pl-5",
-            tall ? "rounded-2xl" : "rounded-full",
-            onDark && "border border-white/40 bg-black/35"
-          )}
+        <VoiceBeam
+          active={recording}
+          stream={voice?.live ?? null}
+          className="flex min-w-0 flex-1"
         >
-          {recording && voice ? (
-            <VoiceRecordingBar
-              durationMs={voice.durationMs}
-              levels={voice.levels}
-              slide={voice.slide}
-            />
-          ) : (
-            <textarea
-              ref={fieldRef}
-              value={body}
-              rows={1}
-              maxLength={maxLength}
-              placeholder={editing ? "Edit message…" : placeholder}
-              aria-label={editing ? "Edit message" : placeholder}
-              onChange={(event) => onChange(event.target.value)}
-              onFocus={onFocus}
-              onBlur={onBlur}
-              onKeyDown={(event) => {
-                if (event.nativeEvent.isComposing) return
-                if (event.key === "Enter" && !event.shiftKey) {
-                  event.preventDefault()
-                  onSend()
-                } else if (
-                  event.key === "Escape" &&
-                  context &&
-                  onCancelContext
-                ) {
-                  event.preventDefault()
-                  onCancelContext()
-                }
-              }}
-              className={cn(
-                "field-sizing-content max-h-32 flex-1 resize-none self-center bg-transparent py-2 text-base leading-5 outline-none",
-                onDark
-                  ? "text-white placeholder:text-white/50"
-                  : "text-foreground placeholder:text-muted-foreground/50"
-              )}
-              style={{ minHeight: INPUT_REST_HEIGHT }}
-            />
-          )}
-          {showMic && voice ? (
-            <VoiceRecordButton
-              recording={voice.recording}
-              onStart={voice.onStart}
-              onSlide={voice.onSlide}
-              onFinish={voice.onFinish}
-            />
-          ) : (
-            <button
-              type="submit"
-              disabled={!canSend}
-              aria-label={editing ? "Save edit" : "Send"}
-              className={cn(
-                "flex size-11 shrink-0 items-center justify-center rounded-full transition-colors",
-                onDark
-                  ? canSend || sending
-                    ? "bg-white text-black hover:opacity-90"
-                    : "bg-white/25 text-white/60"
-                  : canSend || sending
-                    ? "bg-primary text-primary-foreground hover:opacity-90"
-                    : "bg-muted text-muted-foreground",
-                tall && "mb-1.5"
-              )}
-            >
-              {sending ? (
-                <Spinner className="size-5" />
-              ) : editing ? (
-                <CheckIcon className="size-6" />
-              ) : (
-                <ArrowUpIcon className="size-6" />
-              )}
-            </button>
-          )}
-        </div>
+          <div
+            className={cn(
+              "flex min-h-14 w-full items-end gap-3 bg-input py-1.5 pr-1.5 pl-5",
+              tall ? "rounded-2xl" : "rounded-full",
+              onDark && "border border-white/40 bg-black/35"
+            )}
+          >
+            {recording && voice ? (
+              <VoiceRecordingBar
+                durationMs={voice.durationMs}
+                levels={voice.levels}
+                slide={voice.slide}
+              />
+            ) : (
+              <textarea
+                ref={fieldRef}
+                value={body}
+                rows={1}
+                maxLength={maxLength}
+                placeholder={editing ? "Edit message…" : placeholder}
+                aria-label={editing ? "Edit message" : placeholder}
+                onChange={(event) => onChange(event.target.value)}
+                onFocus={onFocus}
+                onBlur={onBlur}
+                onKeyDown={(event) => {
+                  if (event.nativeEvent.isComposing) return
+                  if (event.key === "Enter" && !event.shiftKey) {
+                    event.preventDefault()
+                    onSend()
+                  } else if (
+                    event.key === "Escape" &&
+                    context &&
+                    onCancelContext
+                  ) {
+                    event.preventDefault()
+                    onCancelContext()
+                  }
+                }}
+                className={cn(
+                  "field-sizing-content max-h-32 flex-1 resize-none self-center bg-transparent py-2 text-base leading-5 outline-none",
+                  onDark
+                    ? "text-white placeholder:text-white/50"
+                    : "text-foreground placeholder:text-muted-foreground/50"
+                )}
+                style={{ minHeight: INPUT_REST_HEIGHT }}
+              />
+            )}
+            {showMic && voice ? (
+              <VoiceRecordButton
+                recording={voice.recording}
+                onStart={voice.onStart}
+                onSlide={voice.onSlide}
+                onFinish={voice.onFinish}
+              />
+            ) : (
+              <button
+                type="submit"
+                disabled={!canSend}
+                aria-label={editing ? "Save edit" : "Send"}
+                className={cn(
+                  "flex size-11 shrink-0 items-center justify-center rounded-full transition-colors",
+                  onDark
+                    ? canSend || sending
+                      ? "bg-white text-black hover:opacity-90"
+                      : "bg-white/25 text-white/60"
+                    : canSend || sending
+                      ? "bg-primary text-primary-foreground hover:opacity-90"
+                      : "bg-muted text-muted-foreground",
+                  tall && "mb-1.5"
+                )}
+              >
+                {sending ? (
+                  <Spinner className="size-5" />
+                ) : editing ? (
+                  <CheckIcon className="size-6" />
+                ) : (
+                  <ArrowUpIcon className="size-6" />
+                )}
+              </button>
+            )}
+          </div>
+        </VoiceBeam>
       </form>
     </div>
   )

@@ -15,6 +15,7 @@ export function useVoiceRecorder() {
   const [preparing, setPreparing] = useState(false)
   const [durationMs, setDurationMs] = useState(0)
   const [levels, setLevels] = useState<number[]>([])
+  const [live, setLive] = useState<MediaStream | null>(null)
 
   const recorder = useRef<MediaRecorder | null>(null)
   const stream = useRef<MediaStream | null>(null)
@@ -34,6 +35,7 @@ export function useVoiceRecorder() {
     }
     stream.current?.getTracks().forEach((track) => track.stop())
     stream.current = null
+    setLive(null)
     void audio.current?.close().catch(() => undefined)
     audio.current = null
     analyser.current = null
@@ -88,6 +90,7 @@ export function useVoiceRecorder() {
       source.connect(node)
 
       stream.current = media
+      setLive(media)
       recorder.current = instance
       audio.current = context
       analyser.current = node
@@ -156,5 +159,5 @@ export function useVoiceRecorder() {
 
   useEffect(() => () => teardown(), [teardown])
 
-  return { recording, preparing, durationMs, levels, start, stop, cancel }
+  return { recording, preparing, durationMs, levels, live, start, stop, cancel }
 }

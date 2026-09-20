@@ -24,6 +24,7 @@ export function useDraftVoice(seed: VoiceDraft | null) {
     recording,
     recordingMs: durationMs,
     recordingLevels: recorder.levels,
+    recordingStream: recorder.live,
     startVoice: () => void recorder.start(),
     stopVoice: () =>
       void stop().then((take) => {

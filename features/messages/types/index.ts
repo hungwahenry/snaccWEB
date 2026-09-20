@@ -212,6 +212,8 @@ export interface VoiceControls {
   recording: boolean
   durationMs: number
   levels: number[]
+  /** The live microphone, for the glow along the composer while recording. */
+  live: MediaStream | null
   slide: number
   onStart: () => void
   onSlide: (translationX: number) => void

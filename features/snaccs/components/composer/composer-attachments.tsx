@@ -45,6 +45,7 @@ export type ComposerVoice = {
   recording: boolean
   durationMs: number
   levels: number[]
+  live: MediaStream | null
   draft: VoiceDraft | null
   onStop: () => void
   onDiscard: () => void
@@ -159,6 +160,7 @@ export function ComposerAttachments({
           recording={voice?.recording ?? false}
           durationMs={voice?.durationMs ?? 0}
           levels={voice?.levels ?? []}
+          live={voice?.live ?? null}
           voice={voice?.draft ?? null}
           stored={storedVoice}
           onStop={voice?.onStop ?? (() => {})}

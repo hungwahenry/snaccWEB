@@ -80,6 +80,7 @@ export function useMessageComposer({
           recording: recorder.recording,
           durationMs: recorder.durationMs,
           levels: recorder.levels,
+          live: recorder.live,
           slide,
           onStart: () => void recorder.start(),
           onSlide: setSlide,

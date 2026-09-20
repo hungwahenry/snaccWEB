@@ -167,6 +167,7 @@ function ComposeBody(params: ComposeParams) {
               recording: composer.recording,
               durationMs: composer.recordingMs,
               levels: composer.recordingLevels,
+              live: composer.recordingStream,
               draft: composer.voice,
               onStop: composer.stopVoice,
               onDiscard: composer.discardVoice,
