@@ -9,6 +9,7 @@ import { Eyebrow } from "@/components/ui/eyebrow"
 import { clockTime, shortDate } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import type { FormRow, MatchDetail, MatchTeam, TableSlot } from "../types"
+import { statusLabel } from "../utils/status"
 import { MatchDetailSkeleton } from "./match-detail-skeleton"
 import { LiveBadge } from "./matchday"
 
@@ -57,11 +58,7 @@ function ScoreHeader({ detail }: { detail: MatchDetail }) {
           <LiveBadge size="md" />
         ) : (
           <span className="text-[11px] font-bold tracking-wider text-muted-foreground">
-            {match.status === "halftime"
-              ? "HALF TIME"
-              : settled
-                ? "FULL TIME"
-                : shortDate(match.kickoff_at)}
+            {statusLabel(match.status, match.kickoff_at, "long")}
           </span>
         )}
         {halftime && (playing || settled) ? (

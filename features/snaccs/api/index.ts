@@ -92,6 +92,10 @@ export function createSnacc(input: CreateSnaccInput): Promise<Snacc> {
     resnaccOfId: input.resnaccOfId,
     matchId: input.matchId,
     clipUploadId: input.clipUploadId,
+    clipCoverMs:
+      input.clipUploadId && input.clipCoverMs !== undefined
+        ? String(Math.round(input.clipCoverMs))
+        : undefined,
   })
 }
 

@@ -1,4 +1,8 @@
+"use client"
+
 import { DeleteIcon } from "lucide-react"
+import { useEffect, useEffectEvent, useRef } from "react"
+import { isTypingField } from "@/lib/keyboard"
 import { cn } from "@/lib/utils"
 
 const KEYS = [
@@ -16,7 +20,15 @@ const KEYS = [
   "back",
 ] as const
 
+const COVERED = "[inert], [aria-hidden='true']"
+
 export type KeypadKey = (typeof KEYS)[number]
+
+export function keypadKey(key: string, decimal: boolean): KeypadKey | null {
+  if (key === "Backspace" || key === "Delete") return "back"
+  if (key === "." || key === ",") return decimal ? "." : null
+  return /^\d$/.test(key) ? (key as KeypadKey) : null
+}
 
 export function Keypad({
   onKey,
@@ -27,8 +39,27 @@ export function Keypad({
   decimal?: boolean
   className?: string
 }) {
+  const pad = useRef<HTMLDivElement>(null)
+
+  const typed = useEffectEvent((event: KeyboardEvent) => {
+    if (event.metaKey || event.ctrlKey || event.altKey) return
+    if (isTypingField(event.target) || pad.current?.closest(COVERED)) return
+
+    const key = keypadKey(event.key, decimal)
+    if (!key) return
+    event.preventDefault()
+    onKey(key)
+  })
+
+  useEffect(() => {
+    const listen = (event: KeyboardEvent) => typed(event)
+    window.addEventListener("keydown", listen)
+    return () => window.removeEventListener("keydown", listen)
+  }, [])
+
   return (
     <div
+      ref={pad}
       className={cn(
         "mx-auto grid w-full max-w-xs grid-cols-3 px-4 md:max-w-sm",
         className

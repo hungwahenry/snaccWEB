@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { showErrorMessage } from "@/lib/feedback"
-import { pickVideo, readVideo } from "@/lib/media"
+import { pickVideo, readVideo, videoFrameAt } from "@/lib/media"
 import { startClipUpload } from "../api"
 import type { ClipDraft } from "../types"
 import { CLIP_TYPES, clipProblem } from "../utils/clips"
@@ -45,9 +45,25 @@ export function useDraftClip() {
     }
   }
 
+  async function setClipCover(ms: number) {
+    const target = unposted.current
+    if (!target) return
+
+    const frame = await videoFrameAt(target.file, ms)
+    if (!frame) return
+    if (unposted.current !== target) {
+      URL.revokeObjectURL(frame)
+      return
+    }
+
+    if (target.posterUrl) URL.revokeObjectURL(target.posterUrl)
+    keep({ ...target, posterUrl: frame, coverMs: Math.round(ms) })
+  }
+
   return {
     clip,
     addClip,
+    setClipCover: (ms: number) => void setClipCover(ms),
     removeClip: () => {
       drop(clip)
       keep(null)

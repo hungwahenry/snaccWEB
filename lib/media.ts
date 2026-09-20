@@ -186,6 +186,32 @@ export function readVideo(file: File): Promise<ReadVideo> {
   }).finally(() => URL.revokeObjectURL(url))
 }
 
+export function videoFrameAt(file: File, ms: number): Promise<string | null> {
+  const url = URL.createObjectURL(file)
+  const video = document.createElement("video")
+  video.muted = true
+  video.playsInline = true
+  video.preload = "auto"
+
+  return new Promise<string | null>((resolve) => {
+    const giveUp = window.setTimeout(() => resolve(null), POSTER_WAIT_MS)
+    const settle = (frame: string | null) => {
+      window.clearTimeout(giveUp)
+      resolve(frame)
+    }
+
+    video.onloadedmetadata = () => {
+      video.onseeked = () => posterFrom(video).then(settle, () => settle(null))
+      video.currentTime = Math.min(
+        ms / 1000,
+        Math.max(0, video.duration - 0.05)
+      )
+    }
+    video.onerror = () => settle(null)
+    video.src = url
+  }).finally(() => URL.revokeObjectURL(url))
+}
+
 function loadFromUrl(uri: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const image = new Image()

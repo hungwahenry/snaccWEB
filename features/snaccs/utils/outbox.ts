@@ -18,6 +18,7 @@ export function toStoredOutboxDraft(draft: SnaccDraft): StoredOutboxDraft {
           durationMs: draft.clip.durationMs,
           width: draft.clip.width,
           height: draft.clip.height,
+          coverMs: draft.clip.coverMs,
         }
       : null,
     poll: draft.poll && {

@@ -233,6 +233,7 @@ async function createWithClip(id: string, item: PendingSnacc): Promise<Snacc> {
   return createSnacc({
     ...draftToInput(id, item.draft),
     clipUploadId: item.entry.clipUploadId,
+    clipCoverMs: clip?.coverMs,
   })
 }
 

@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { composePath } from "../../routes"
+import { composePath, resnaccsPath } from "../../routes"
 import type { Snacc } from "../../types"
 import { useResnacc } from "./use-resnacc"
 
@@ -31,6 +31,13 @@ export function useResnaccSheet() {
         setOpen(false)
         if (passing) router.push(composePath({ resnaccOfId: passing.id }))
       },
+      onSeeResnaccs:
+        passing && passing.resnaccs_count > 0
+          ? () => {
+              setOpen(false)
+              router.push(resnaccsPath(passing.id))
+            }
+          : undefined,
     },
   }
 }

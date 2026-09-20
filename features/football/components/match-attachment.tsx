@@ -1,9 +1,9 @@
 import Link from "next/link"
 import { LazyImage } from "@/components/ui/lazy-image"
-import { clockTime } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { matchRoomPath } from "../routes"
 import type { SnaccMatch } from "../types"
+import { statusLabel } from "../utils/status"
 import { MATCH_ATTACHMENT_SHELL } from "./match-attachment-shell"
 
 function Crest({ url }: { url: string | null }) {
@@ -63,7 +63,7 @@ function Status({ match }: { match: SnaccMatch }) {
 
   return (
     <span className="text-[10px] font-bold tracking-wider text-muted-foreground">
-      {match.status === "finished" ? "FT" : clockTime(match.kickoff_at)}
+      {statusLabel(match.status, match.kickoff_at)}
     </span>
   )
 }

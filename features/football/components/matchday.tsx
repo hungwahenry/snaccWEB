@@ -1,9 +1,9 @@
 import { LazyImage } from "@/components/ui/lazy-image"
 import { Eyebrow } from "@/components/ui/eyebrow"
-import { clockTime } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { MessageCircleIcon } from "lucide-react"
 import type { LiveMatch, MatchSnaccCounts, MatchTeam } from "../types"
+import { statusLabel } from "../utils/status"
 
 function Crest({ url, size }: { url: string | null; size: number }) {
   if (!url)
@@ -73,15 +73,9 @@ export function LiveBadge({ size = "sm" }: { size?: "sm" | "md" }) {
 
 function StatusBadge({ match }: { match: LiveMatch }) {
   if (match.status === "live") return <LiveBadge />
-  const label =
-    match.status === "halftime"
-      ? "HT"
-      : match.status === "finished"
-        ? "FT"
-        : clockTime(match.kickoff_at)
   return (
     <span className="text-[10px] font-bold tracking-wider text-muted-foreground">
-      {label}
+      {statusLabel(match.status, match.kickoff_at)}
     </span>
   )
 }

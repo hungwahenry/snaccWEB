@@ -182,6 +182,7 @@ export interface CreateSnaccInput {
   spoiler?: boolean
   voice?: VoiceDraft
   clipUploadId?: string
+  clipCoverMs?: number
 }
 
 export interface EditSnaccInput {
@@ -358,6 +359,7 @@ export interface StoredClip {
   durationMs: number
   width: number
   height: number
+  coverMs?: number
 }
 
 export interface StoredOutboxDraft extends Omit<
@@ -380,4 +382,3 @@ export interface OutboxEntry {
   draft: StoredOutboxDraft
   clipUploadId?: string
 }
-

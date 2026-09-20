@@ -12,6 +12,7 @@ export interface ClipDraft {
   durationMs: number
   width: number
   height: number
+  coverMs?: number
   upload: ClipUpload
 }
 

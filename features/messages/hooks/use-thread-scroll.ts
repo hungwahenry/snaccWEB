@@ -1,6 +1,6 @@
 "use client"
 
-import { useLayoutEffect, useRef, type RefObject } from "react"
+import { useEffect, useLayoutEffect, useRef, type RefObject } from "react"
 
 const NEAR_BOTTOM_PX = 120
 
@@ -43,6 +43,29 @@ export function useThreadScroll(
       top: node.scrollTop,
     }
   }, [ref, edges.newestId, edges.oldestId, edges.ready])
+
+  useEffect(() => {
+    const node = ref.current
+    const content = node?.firstElementChild
+    if (!node || !content) return
+
+    const observer = new ResizeObserver(() => {
+      const last = previous.current
+      const wasAtBottom =
+        last.height - last.top - node.clientHeight < NEAR_BOTTOM_PX
+      if (settled.current && wasAtBottom && node.scrollHeight > last.height) {
+        node.scrollTop = node.scrollHeight
+      }
+      previous.current = {
+        ...previous.current,
+        height: node.scrollHeight,
+        top: node.scrollTop,
+      }
+    })
+    observer.observe(content)
+
+    return () => observer.disconnect()
+  }, [ref, edges.ready])
 
   return {
     onScroll: () => {

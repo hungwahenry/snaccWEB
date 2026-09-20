@@ -177,6 +177,7 @@ function ComposeBody(params: ComposeParams) {
             onRemoveSticker={composer.removeSticker}
             clip={composer.clip}
             onRemoveClip={composer.removeClip}
+            onClipCover={composer.setClipCover}
           />
         )}
         {schedule.active ? (

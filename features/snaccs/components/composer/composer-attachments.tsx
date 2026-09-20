@@ -62,6 +62,7 @@ export function ComposerAttachments({
   onRemoveGif,
   onRemoveSticker,
   onRemoveClip,
+  onClipCover,
   match,
   onRemoveMatch,
 }: {
@@ -76,6 +77,7 @@ export function ComposerAttachments({
   onRemoveGif: () => void
   onRemoveSticker?: () => void
   onRemoveClip?: () => void
+  onClipCover?: (ms: number) => void
   match?: SnaccMatch | null
   onRemoveMatch?: () => void
 }) {
@@ -114,6 +116,29 @@ export function ComposerAttachments({
               />
             ) : null}
           </div>
+          {onClipCover ? (
+            <label className="ml-4 flex min-w-0 flex-1 flex-col justify-center gap-2">
+              <span className="text-sm font-bold text-foreground">Cover</span>
+              <input
+                key={`${clip.file.size}-${clip.durationMs}`}
+                type="range"
+                min={0}
+                max={clip.durationMs}
+                step={100}
+                defaultValue={clip.coverMs ?? 0}
+                onPointerUp={(event) =>
+                  onClipCover(Number(event.currentTarget.value))
+                }
+                onKeyUp={(event) =>
+                  onClipCover(Number(event.currentTarget.value))
+                }
+                className="w-full accent-primary"
+              />
+              <span className="text-xs text-muted-foreground">
+                Slide to pick the frame people see first.
+              </span>
+            </label>
+          ) : null}
         </div>
       ) : null}
       {match ? (

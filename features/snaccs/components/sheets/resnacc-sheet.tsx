@@ -1,4 +1,4 @@
-import { QuoteIcon, RepeatIcon, Undo2Icon } from "lucide-react"
+import { ListIcon, QuoteIcon, RepeatIcon, Undo2Icon } from "lucide-react"
 import { ActionSheet, ActionSheetChoice } from "@/components/ui/action-sheet"
 
 export type ResnaccSheetProps = {
@@ -8,6 +8,7 @@ export type ResnaccSheetProps = {
   own: boolean
   onResnacc: () => void
   onQuote: () => void
+  onSeeResnaccs?: () => void
 }
 
 export function ResnaccSheet({
@@ -17,6 +18,7 @@ export function ResnaccSheet({
   own,
   onResnacc,
   onQuote,
+  onSeeResnaccs,
 }: ResnaccSheetProps) {
   return (
     <ActionSheet open={open} onOpenChange={onOpenChange}>
@@ -34,6 +36,14 @@ export function ResnaccSheet({
         hint="Add something of your own"
         onPress={onQuote}
       />
+      {onSeeResnaccs ? (
+        <ActionSheetChoice
+          icon={ListIcon}
+          label="See resnaccs"
+          hint="Who passed this on, and what they said"
+          onPress={onSeeResnaccs}
+        />
+      ) : null}
     </ActionSheet>
   )
 }

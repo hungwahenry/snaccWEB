@@ -38,34 +38,36 @@ export function ThreadView<T extends ThreadMessage>({
     <div
       ref={scrollRef}
       onScroll={onScroll}
-      className="flex min-h-0 flex-1 flex-col overflow-y-auto px-3 py-4"
+      className="min-h-0 flex-1 overflow-y-auto"
     >
-      {list.loading ? (
-        <MessageThreadSkeleton />
-      ) : items.length === 0 ? (
-        <div className="flex flex-1 items-center justify-center">
-          {list.failed ? (
-            <LoadFailed title={failedTitle} onRetry={list.retry} />
-          ) : (
-            empty
-          )}
-        </div>
-      ) : (
-        <>
-          <LoadMore
-            onReach={list.loadMore}
-            disabled={list.loadingMore || !list.hasMore}
-          />
-          <ListFooter loading={list.loadingMore} />
-          <div className="flex-1" />
-          {items.map(renderRow)}
-          {typing ? (
-            <TypingIndicator
-              label={typeof typing === "string" ? typing : undefined}
+      <div className="flex min-h-full flex-col px-3 py-4">
+        {list.loading ? (
+          <MessageThreadSkeleton />
+        ) : items.length === 0 ? (
+          <div className="flex flex-1 items-center justify-center">
+            {list.failed ? (
+              <LoadFailed title={failedTitle} onRetry={list.retry} />
+            ) : (
+              empty
+            )}
+          </div>
+        ) : (
+          <>
+            <LoadMore
+              onReach={list.loadMore}
+              disabled={list.loadingMore || !list.hasMore}
             />
-          ) : null}
-        </>
-      )}
+            <ListFooter loading={list.loadingMore} />
+            <div className="flex-1" />
+            {items.map(renderRow)}
+            {typing ? (
+              <TypingIndicator
+                label={typeof typing === "string" ? typing : undefined}
+              />
+            ) : null}
+          </>
+        )}
+      </div>
     </div>
   )
 }
