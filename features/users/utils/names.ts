@@ -8,6 +8,10 @@ export function nameOf(person: Named, fallback = "Someone"): string {
   return person.display_name || person.username || fallback
 }
 
+export function usernameOf(person: Named, fallback = "Someone"): string {
+  return person.username || person.display_name || fallback
+}
+
 export function handleOf(person: Pick<Named, "username">): string | null {
   return person.username ? `@${person.username}` : null
 }

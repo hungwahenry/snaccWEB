@@ -4,7 +4,7 @@ import type {
   MessageGlimpse,
   ReplyGlimpse,
 } from "@/features/messages/types"
-import { handleOf, nameOf, type Named } from "@/features/users/utils/names"
+import { handleOf, usernameOf, type Named } from "@/features/users/utils/names"
 import type { VoiceSource } from "@/features/voice/types"
 import { voiceSource } from "@/features/voice/utils/source"
 import { dateAtTime, editWindowClosesAt } from "@/lib/format"
@@ -72,7 +72,10 @@ export function lineText(
   actor: Named,
   subject: Named | null
 ): string {
-  return LINES[event](nameOf(actor), subject ? nameOf(subject) : "someone")
+  return LINES[event](
+    usernameOf(actor),
+    subject ? usernameOf(subject) : "someone"
+  )
 }
 
 /** Rooms with something new, the way the DM count is conversations rather than messages. */

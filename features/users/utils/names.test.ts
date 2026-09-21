@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { authorNameOf, handleOf, nameOf } from "./names"
+import { authorNameOf, handleOf, nameOf, usernameOf } from "./names"
 
 describe("nameOf", () => {
   it("prefers the display name, then the username, then the fallback", () => {
@@ -8,6 +8,14 @@ describe("nameOf", () => {
     expect(nameOf({ display_name: "", username: "bola" })).toBe("bola")
     expect(nameOf({ display_name: null, username: null })).toBe("Someone")
     expect(nameOf({ display_name: null, username: null }, "They")).toBe("They")
+  })
+})
+
+describe("usernameOf", () => {
+  it("leads with the username, falling back the same way", () => {
+    expect(usernameOf({ display_name: "Bola", username: "bola" })).toBe("bola")
+    expect(usernameOf({ display_name: "Bola", username: null })).toBe("Bola")
+    expect(usernameOf({ display_name: null, username: null })).toBe("Someone")
   })
 })
 

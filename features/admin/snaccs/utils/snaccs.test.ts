@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest"
-import type { SnaccContent } from "../types"
+import type { AdminHangout, SnaccContent } from "../types"
 import {
   engagementLine,
+  hangoutGoing,
+  hangoutStatus,
   isBlank,
   reportTally,
   snaccBadges,
@@ -29,6 +31,20 @@ const content = (patch: Partial<SnaccContent> = {}): SnaccContent => ({
   sticker: null,
   voice: null,
   clip: null,
+  hangout: null,
+  ...patch,
+})
+
+const hangout = (patch: Partial<AdminHangout> = {}): AdminHangout => ({
+  title: "watch the derby",
+  emoji: "⚽",
+  place: "SUB common room",
+  starts_at: "2026-10-03T18:00:00Z",
+  capacity: 6,
+  going_count: 2,
+  full: false,
+  private: true,
+  state: "upcoming",
   ...patch,
 })
 
@@ -39,7 +55,31 @@ describe("snaccPreview", () => {
       snaccPreview(content({ images: [{ url: "a" }, { url: "b" }] }))
     ).toBe("2 image(s)")
     expect(snaccPreview(content({ gif: { url: "g" } }))).toBe("GIF")
+    expect(snaccPreview(content({ hangout: hangout() }))).toBe(
+      "⚽ watch the derby"
+    )
     expect(snaccPreview(content())).toBe("—")
+  })
+})
+
+describe("hangouts", () => {
+  it("is not blank when all it carries is a hangout", () => {
+    expect(isBlank(content({ hangout: hangout() }))).toBe(false)
+  })
+
+  it("labels where a hangout stands", () => {
+    expect(hangoutStatus(hangout()).label).toBe("Upcoming")
+    expect(hangoutStatus(hangout({ state: "cancelled" }))).toEqual({
+      label: "Called off",
+      variant: "destructive",
+    })
+  })
+
+  it("counts who is going, and says when it is full", () => {
+    expect(hangoutGoing(hangout())).toBe("2 of 6")
+    expect(hangoutGoing(hangout({ going_count: 6, full: true }))).toBe(
+      "6 of 6 · full"
+    )
   })
 })
 

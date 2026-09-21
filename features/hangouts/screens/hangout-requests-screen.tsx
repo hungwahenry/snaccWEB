@@ -43,6 +43,7 @@ export function HangoutRequestsScreen({ snaccId }: { snaccId: string }) {
               person={person}
               onAccept={onAccept}
               onDecline={onDecline}
+              leadWithUsername
             />
           ))}
           <LoadMore onReach={list.loadMore} disabled={list.loadingMore} />

@@ -5,6 +5,7 @@ import { TierName } from "@/features/users/components/flair"
 import { profilePath } from "@/features/users/routes"
 import type { FollowUser } from "../types"
 import { nameOf } from "@/features/users/utils/names"
+import { personLines } from "@/features/users/utils/profile"
 import { followButtonLabel } from "../utils/follow-state"
 
 type FollowUserRowProps = {
@@ -12,6 +13,7 @@ type FollowUserRowProps = {
   isMe: boolean
   onToggleFollow: () => void
   onRemove?: () => void
+  leadWithUsername?: boolean
 }
 
 export function FollowUserRow({
@@ -19,8 +21,10 @@ export function FollowUserRow({
   isMe,
   onToggleFollow,
   onRemove,
+  leadWithUsername = false,
 }: FollowUserRowProps) {
   const href = profilePath(user.username)
+  const lines = personLines(user, leadWithUsername)
 
   return (
     <div className="flex items-center gap-3 px-4 py-3">
@@ -38,7 +42,7 @@ export function FollowUserRow({
             score={user.score}
             official={user.official}
             birthday={user.is_birthday}
-            name={nameOf(user)}
+            name={lines.name}
             className="truncate font-extrabold text-foreground"
           />
           {user.follows_you ? (
@@ -47,10 +51,11 @@ export function FollowUserRow({
             </span>
           ) : null}
         </span>
-        <span className="block truncate text-sm text-muted-foreground">
-          @{user.username}
-          {user.university ? ` · ${user.university.acronym}` : ""}
-        </span>
+        {lines.detail ? (
+          <span className="block truncate text-sm text-muted-foreground">
+            {lines.detail}
+          </span>
+        ) : null}
       </Link>
 
       {onRemove ? (

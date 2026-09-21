@@ -10,6 +10,20 @@ import type {
 
 export type SnaccAuthor = UserRefWithCampus
 
+export type HangoutState = "upcoming" | "happening" | "over" | "cancelled"
+
+export interface AdminHangout {
+  title: string
+  emoji: string
+  place: string | null
+  starts_at: string
+  capacity: number
+  going_count: number
+  full: boolean
+  private: boolean
+  state: HangoutState
+}
+
 export interface SnaccContent {
   id: string
   body: string | null
@@ -23,6 +37,7 @@ export interface SnaccContent {
   sticker: MediaSticker | null
   voice: MediaVoice | null
   clip: MediaClip | null
+  hangout: AdminHangout | null
 }
 
 export interface AdminSnacc extends SnaccContent {

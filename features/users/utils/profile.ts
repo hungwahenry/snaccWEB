@@ -1,5 +1,5 @@
 import type { PublicProfile } from "../types"
-import { handleOf, nameOf } from "./names"
+import { handleOf, nameOf, usernameOf, type Named } from "./names"
 
 type ClassFields = Pick<PublicProfile, "graduated" | "graduation_year">
 
@@ -74,4 +74,20 @@ export function handleWithCampus(person: {
   return [handleOf(person), person.university?.acronym]
     .filter((part): part is string => Boolean(part))
     .join(" · ")
+}
+
+export function personLines(
+  person: Named & { university: { acronym: string } | null },
+  leadWithUsername: boolean
+): { name: string; detail: string } {
+  if (!leadWithUsername) {
+    return { name: nameOf(person), detail: handleWithCampus(person) }
+  }
+
+  return {
+    name: usernameOf(person),
+    detail: [person.display_name, person.university?.acronym]
+      .filter((part): part is string => Boolean(part))
+      .join(" · "),
+  }
 }

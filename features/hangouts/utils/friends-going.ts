@@ -1,10 +1,10 @@
-import { nameOf, type Named } from "@/features/users/utils/names"
+import { usernameOf, type Named } from "@/features/users/utils/names"
 
 export function friendsGoingLine(
   friends: Named[],
   count: number
 ): string | null {
-  const [first, second] = friends.map((friend) => nameOf(friend))
+  const [first, second] = friends.map((friend) => usernameOf(friend))
   if (!first || count <= 0) return null
   if (count === 1) return `${first} is going`
   if (count === 2 && second) return `${first} and ${second} are going`

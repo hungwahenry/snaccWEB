@@ -228,6 +228,7 @@ function ComposeBody(params: ComposeParams) {
           spoiler={composer.spoiler}
           onToggleSpoiler={composer.toggleSpoiler}
           showSchedule={schedule.available}
+          canSchedule={schedule.usable}
           scheduleActive={schedule.active}
           onSchedule={schedule.open}
           remaining={composer.remaining}

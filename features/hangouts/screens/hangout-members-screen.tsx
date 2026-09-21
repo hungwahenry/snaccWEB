@@ -43,6 +43,7 @@ export function HangoutMembersScreen({ snaccId }: { snaccId: string }) {
               onRemove={
                 onRemove && meId !== user.id ? () => onRemove(user) : undefined
               }
+              leadWithUsername
             />
           ))}
           <LoadMore onReach={list.loadMore} disabled={list.loadingMore} />

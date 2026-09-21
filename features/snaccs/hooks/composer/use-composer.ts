@@ -62,13 +62,9 @@ export function useComposer(params: ComposeParams) {
     mode === "new" && !ghost.active
   )
   const schedule = useComposerSchedule({
+    shown: mode === "new" && !params.matchId && !ghost.active,
     allowed:
-      mode === "new" &&
-      !params.matchId &&
-      !ghost.active &&
-      draft.clip === null &&
-      draft.hangout === null &&
-      !hangoutTag.hangoutId,
+      draft.clip === null && draft.hangout === null && !hangoutTag.hangoutId,
   })
   const dirty = hasContent(draft.content)
   const hangoutProblem =

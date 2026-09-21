@@ -10,14 +10,14 @@ describe("friendsGoingLine", () => {
     expect(friendsGoingLine([], 0)).toBeNull()
   })
 
-  it("names one or two people, then counts the rest", () => {
-    expect(friendsGoingLine([ada], 1)).toBe("Ada is going")
-    expect(friendsGoingLine([ada, bola], 2)).toBe("Ada and bola are going")
+  it("names one or two people by username, then counts the rest", () => {
+    expect(friendsGoingLine([ada], 1)).toBe("ada is going")
+    expect(friendsGoingLine([ada, bola], 2)).toBe("ada and bola are going")
     expect(friendsGoingLine([ada, bola, chi], 3)).toBe(
-      "Ada, bola and 1 other you follow are going"
+      "ada, bola and 1 other you follow are going"
     )
     expect(friendsGoingLine([ada, bola, chi], 7)).toBe(
-      "Ada, bola and 5 others you follow are going"
+      "ada, bola and 5 others you follow are going"
     )
   })
 })

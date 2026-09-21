@@ -6,6 +6,7 @@ import {
   classOf,
   handleWithCampus,
   notifyLabel,
+  personLines,
   profileMeta,
   profileStats,
 } from "./profile"
@@ -87,6 +88,31 @@ describe("handleWithCampus", () => {
     expect(handleWithCampus({ username: null, university: unilag })).toBe(
       "UNILAG"
     )
+  })
+})
+
+describe("personLines", () => {
+  const bola = {
+    display_name: "Bola",
+    username: "bola",
+    university: { acronym: "FUTMINNA" },
+  }
+
+  it("leads with the name and follows with the handle and campus", () => {
+    expect(personLines(bola, false)).toEqual({
+      name: "Bola",
+      detail: "@bola · FUTMINNA",
+    })
+  })
+
+  it("can lead with the username and follow with the name instead", () => {
+    expect(personLines(bola, true)).toEqual({
+      name: "bola",
+      detail: "Bola · FUTMINNA",
+    })
+    expect(
+      personLines({ ...bola, display_name: null, university: null }, true)
+    ).toEqual({ name: "bola", detail: "" })
   })
 })
 

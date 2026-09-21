@@ -5,6 +5,7 @@ import { UserCell } from "@/features/admin/shell/components/user-cell"
 import { formatDate, formatNumber } from "@/lib/format"
 import type { AdminSnacc, SnaccContent } from "../types"
 import { isBlank, snaccBadges } from "../utils/snaccs"
+import { HangoutPanel } from "./hangout-panel"
 
 function SnaccBody({ snacc }: { snacc: SnaccContent }) {
   return (
@@ -21,6 +22,7 @@ function SnaccBody({ snacc }: { snacc: SnaccContent }) {
       {snacc.body ? (
         <p className="text-sm whitespace-pre-wrap">{snacc.body}</p>
       ) : null}
+      {snacc.hangout ? <HangoutPanel hangout={snacc.hangout} /> : null}
       <ContentMedia
         images={snacc.images}
         gif={snacc.gif}

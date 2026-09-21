@@ -3,7 +3,13 @@ import { countOpen } from "@/features/admin/reports/utils/status"
 import type { Option, StatusMeta } from "@/features/admin/shell/types"
 import { plural } from "@/features/admin/shell/utils/format"
 import { formatNumber } from "@/lib/format"
-import type { AdminSnacc, SnaccContent, SnaccState } from "../types"
+import type {
+  AdminHangout,
+  AdminSnacc,
+  HangoutState,
+  SnaccContent,
+  SnaccState,
+} from "../types"
 
 export const SNACC_STATES = [
   "live",
@@ -17,9 +23,10 @@ export const STATE_OPTIONS: Option<SnaccState>[] = [
 
 /** The text a snaccs row links with: its body, else what is attached. */
 export function snaccPreview(
-  snacc: Pick<SnaccContent, "body" | "images" | "gif">
+  snacc: Pick<SnaccContent, "body" | "images" | "gif" | "hangout">
 ): string {
   if (snacc.body) return snacc.body
+  if (snacc.hangout) return `${snacc.hangout.emoji} ${snacc.hangout.title}`
   if (snacc.images.length) return `${snacc.images.length} image(s)`
   if (snacc.gif) return "GIF"
   return "—"
@@ -53,8 +60,29 @@ export function isBlank(snacc: SnaccContent): boolean {
     !snacc.gif &&
     !snacc.sticker &&
     !snacc.voice &&
-    !snacc.clip
+    !snacc.clip &&
+    !snacc.hangout
   )
+}
+
+const HANGOUT_STATES: Record<HangoutState, StatusMeta> = {
+  upcoming: { label: "Upcoming", variant: "outline" },
+  happening: { label: "Happening now", variant: "secondary" },
+  over: { label: "Over", variant: "outline" },
+  cancelled: { label: "Called off", variant: "destructive" },
+}
+
+export function hangoutStatus(
+  hangout: Pick<AdminHangout, "state">
+): StatusMeta {
+  return HANGOUT_STATES[hangout.state]
+}
+
+export function hangoutGoing(
+  hangout: Pick<AdminHangout, "going_count" | "capacity" | "full">
+): string {
+  const going = `${hangout.going_count} of ${hangout.capacity}`
+  return hangout.full ? `${going} · full` : going
 }
 
 export function engagementLine(

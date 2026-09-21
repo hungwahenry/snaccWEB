@@ -12,7 +12,13 @@ import type { SnaccDraft } from "../../types"
 import { goesOutLabel, goesOutSentence } from "../../utils/schedule"
 import { useSchedulePicker } from "../scheduled/use-schedule-picker"
 
-export function useComposerSchedule({ allowed }: { allowed: boolean }) {
+export function useComposerSchedule({
+  shown,
+  allowed,
+}: {
+  shown: boolean
+  allowed: boolean
+}) {
   const enabled = usePremiumFeature("scheduled_posts")
   const picker = useSchedulePicker()
   const [publishAt, setPublishAt] = useState<Date | null>(null)
@@ -26,8 +32,9 @@ export function useComposerSchedule({ allowed }: { allowed: boolean }) {
     },
   })
 
-  const available = enabled && allowed
-  const active = available && publishAt !== null
+  const available = enabled && shown
+  const usable = available && allowed
+  const active = usable && publishAt !== null
   const tooSoon = publishAt !== null && picker.isTooSoon(publishAt)
 
   function submit(draft: SnaccDraft, onDone: () => void) {
@@ -40,6 +47,7 @@ export function useComposerSchedule({ allowed }: { allowed: boolean }) {
 
   return {
     available,
+    usable,
     active,
     busy: schedule.isPending,
     ready: !active || (!tooSoon && !schedule.isPending),

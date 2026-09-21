@@ -98,12 +98,12 @@ describe("rooms", () => {
     ).toMatch(/is over/)
   })
 
-  it("writes a line for what happened, naming who", () => {
+  it("writes a line for what happened, naming who by username", () => {
     const ada = { display_name: "Ada", username: "ada" }
-    const bola = { display_name: null, username: "bola" }
-    expect(lineText("joined", ada, null)).toBe("Ada joined")
-    expect(lineText("removed", ada, bola)).toBe("Ada removed bola")
-    expect(lineText("cancelled", ada, null)).toBe("Ada called it off")
+    const bola = { display_name: "Bola", username: "bola" }
+    expect(lineText("joined", ada, null)).toBe("ada joined")
+    expect(lineText("removed", ada, bola)).toBe("ada removed bola")
+    expect(lineText("cancelled", ada, null)).toBe("ada called it off")
   })
 
   it("never runs a line into the messages around it", () => {

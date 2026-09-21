@@ -37,6 +37,7 @@ type ComposerToolbarProps = {
   onToggleSpoiler: () => void
   showSchedule?: boolean
   scheduleActive?: boolean
+  canSchedule?: boolean
   onSchedule?: () => void
   remaining: number
   showCounter: boolean
@@ -69,6 +70,7 @@ export function ComposerToolbar({
   onToggleSpoiler,
   showSchedule = false,
   scheduleActive = false,
+  canSchedule = true,
   onSchedule,
   remaining,
   showCounter,
@@ -141,6 +143,7 @@ export function ComposerToolbar({
               scheduleActive ? "Change when it goes out" : "Schedule for later"
             }
             onClick={onSchedule}
+            disabled={!canSchedule}
             iconClassName={cn(scheduleActive && "text-success")}
           />
         ) : null}

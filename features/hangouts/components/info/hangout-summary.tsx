@@ -2,7 +2,7 @@ import { LockIcon, MapPinIcon } from "lucide-react"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import type { Author } from "@/features/users/types"
 import { ProfileLink } from "@/features/users/components/profile-link"
-import { nameOf } from "@/features/users/utils/names"
+import { nameOf, usernameOf } from "@/features/users/utils/names"
 import { HangoutDetail } from "../block/hangout-detail"
 
 export function HangoutSummary({
@@ -58,7 +58,7 @@ export function HangoutSummary({
             textClassName="text-[10px]"
           />
           <span className="truncate">
-            Hosted by <span className="font-bold">{nameOf(host)}</span>
+            Hosted by <span className="font-bold">{usernameOf(host)}</span>
           </span>
         </ProfileLink>
       </div>
