@@ -14,6 +14,9 @@ const EMPTY: DraftState = {
   poll: false,
   pollValid: false,
   pollProblem: null,
+  hangout: false,
+  hangoutValid: false,
+  carriesHangout: false,
   voiceAllowed: true,
   stickersAllowed: true,
   clip: false,
@@ -45,5 +48,40 @@ describe("draftRules with clips", () => {
         rules.canStartPoll,
       ].some(Boolean)
     ).toBe(false)
+  })
+})
+
+describe("draftRules with hangouts", () => {
+  it("takes words and pictures beside a hangout, and nothing else", () => {
+    const rules = draftRules({ ...EMPTY, hangout: true, hangoutValid: true })
+
+    expect(rules.withinLimits).toBe(true)
+    expect(rules.canAddImages).toBe(true)
+    expect(
+      [
+        rules.canAddGif,
+        rules.canAddSticker,
+        rules.canRecordVoice,
+        rules.canStartPoll,
+        rules.canAddClip,
+      ].some(Boolean)
+    ).toBe(false)
+  })
+
+  it("waits for the plan to be ready before it can post", () => {
+    expect(draftRules({ ...EMPTY, hangout: true }).withinLimits).toBe(false)
+  })
+
+  it("lets an edit of a hangout's snacc go out with no words", () => {
+    const rules = draftRules({ ...EMPTY, carriesHangout: true })
+    expect(rules.withinLimits).toBe(true)
+    expect(rules.canAddGif).toBe(false)
+  })
+
+  it("offers a hangout only while nothing it cannot share with is there", () => {
+    expect(draftRules(EMPTY).canStartHangout).toBe(true)
+    expect(draftRules({ ...EMPTY, images: 2 }).canStartHangout).toBe(true)
+    expect(draftRules({ ...EMPTY, poll: true }).canStartHangout).toBe(false)
+    expect(draftRules({ ...EMPTY, gif: true }).canStartHangout).toBe(false)
   })
 })

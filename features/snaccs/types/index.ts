@@ -1,6 +1,12 @@
 import type { ClipDraft } from "@/features/clips/types"
 import type { LiveMatch, SnaccMatch } from "@/features/football/types"
 import type { Gif } from "@/features/giphy/types"
+import type {
+  HangoutDraft,
+  HangoutPayload,
+  HangoutTag,
+  SnaccHangout,
+} from "@/features/hangouts/types"
 import type { DraftSticker, StickerAttachment } from "@/features/stickers/types"
 import type { UniversityBadge } from "@/features/universities/types"
 import type { Author } from "@/features/users/types"
@@ -135,6 +141,8 @@ export interface Snacc {
   voice: SnaccVoiceNote | null
   clip: SnaccClip | null
   poll: SnaccPoll | null
+  hangout: SnaccHangout | null
+  hangout_tag: HangoutTag | null
   gif: SnaccGif | null
   match: SnaccMatch | null
   sticker: StickerAttachment | null
@@ -179,6 +187,8 @@ export interface CreateSnaccInput {
   parentId?: string
   resnaccOfId?: string
   poll?: PollPayload
+  hangout?: HangoutPayload
+  hangoutId?: string
   spoiler?: boolean
   voice?: VoiceDraft
   clipUploadId?: string
@@ -220,6 +230,9 @@ export interface SnaccDraft {
   parentId?: string
   resnaccOfId?: string
   poll?: PollPayload
+  hangout?: HangoutPayload
+  hangoutId?: string
+  hangoutTag?: HangoutTag
   spoiler: boolean
   anonymous: boolean
 }
@@ -231,6 +244,8 @@ export interface ComposeParams {
   resnaccOfId?: string
   initialBody?: string
   matchId?: string
+  hangoutId?: string
+  newHangout?: boolean
   draftId?: string
 }
 
@@ -261,6 +276,8 @@ export interface DraftSeed {
   sticker?: DraftSticker | null
   voice?: VoiceDraft | null
   poll?: PollDraft | null
+  hangout?: HangoutDraft | null
+  carriesHangout?: boolean
   storedVoice?: SnaccVoiceNote | null
 }
 
@@ -312,6 +329,7 @@ export interface StoredDraft {
   gif: Gif | null
   sticker: DraftSticker | null
   poll: StoredPollDraft | null
+  hangout?: HangoutDraft | null
 }
 
 export type DraftContent = Omit<StoredDraft, "id" | "saved_at">
@@ -320,7 +338,7 @@ export type DraftThumb = { url: string } | { blob: Blob } | null
 
 export type SnaccContentInput = Omit<
   CreateSnaccInput,
-  "parentId" | "resnaccOfId" | "matchId"
+  "parentId" | "resnaccOfId" | "matchId" | "hangoutId"
 >
 
 export interface ScheduleSnaccInput extends SnaccContentInput {

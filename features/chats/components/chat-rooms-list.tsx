@@ -34,7 +34,7 @@ export function ChatRoomsList({
       <EmptyState
         icon={MessagesSquareIcon}
         title="No rooms yet"
-        description="Your campus room and the room for everyone show up here once they're open."
+        description="Your campus room, the room for everyone and the chats of hangouts you're going to show up here."
         className="py-24"
       />
     )

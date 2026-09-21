@@ -1,4 +1,5 @@
 import { matchLine } from "@/features/football/utils/card"
+import { hangoutTitle } from "@/features/hangouts/utils/hangouts"
 import { nameOf } from "@/features/users/utils/names"
 import { clock } from "@/features/voice/utils/clock"
 import { countLabel } from "@/lib/format"
@@ -6,7 +7,8 @@ import type { EmbeddedSnacc, GlimpsedSnacc, SnaccAuthor } from "../types"
 
 export const GLIMPSE_THUMBS = 4
 
-export type GlimpseChipKind = "poll" | "match" | "quote" | "sensitive"
+export type GlimpseChipKind =
+  "hangout" | "poll" | "match" | "quote" | "sensitive"
 
 export interface GlimpseChip {
   kind: GlimpseChipKind
@@ -58,6 +60,8 @@ export function glimpseOf(snacc: GlimpsedSnacc): Glimpse {
   const shown = veiled ? [] : snacc.images.slice(0, GLIMPSE_THUMBS)
 
   const chips: GlimpseChip[] = []
+  if (snacc.hangout)
+    chips.push({ kind: "hangout", label: hangoutTitle(snacc.hangout) })
   if (veiled) chips.push({ kind: "sensitive", label: sensitiveLabel(snacc) })
   if (snacc.poll)
     chips.push({ kind: "poll", label: pollLabel(snacc.poll.options.length) })

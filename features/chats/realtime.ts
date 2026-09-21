@@ -3,6 +3,7 @@ import {
   claimBroadcast,
   patchChatMessage,
   removeChatMessage,
+  roomsChanged,
   setRoomLocked,
   upsertChatMessage,
 } from "./cache"
@@ -18,7 +19,11 @@ export function onChatMessage({
   if (message.held && !message.mine) return
 
   upsertChatMessage(room_id, message)
-  if (!message.mine) bumpRoom(room_id, message.created_at)
+  if (message.event === "changed" || message.event === "cancelled") {
+    roomsChanged()
+  } else if (!message.mine && message.event === null) {
+    bumpRoom(room_id, message.created_at)
+  }
 }
 
 export function onChatMessageUpdated(payload: RoomPayload): void {

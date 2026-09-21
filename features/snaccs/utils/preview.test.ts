@@ -20,6 +20,7 @@ const snacc = (patch: Partial<GlimpsedSnacc> = {}) =>
     gif: null,
     sticker: null,
     poll: null,
+    hangout: null,
     match: null,
     resnacc_of: null,
     ...patch,
@@ -62,6 +63,20 @@ describe("glimpseOf", () => {
     expect(glimpse.chips.map((chip) => chip.label)).toEqual([
       "Poll · 2 options",
       "Quoting @ada",
+    ])
+  })
+
+  it("names a hangout by its title", () => {
+    const glimpse = glimpseOf(
+      snacc({
+        hangout: {
+          emoji: "⚽",
+          title: "watch the derby",
+        } as GlimpsedSnacc["hangout"],
+      })
+    )
+    expect(glimpse.chips).toEqual([
+      { kind: "hangout", label: "⚽ watch the derby" },
     ])
   })
 })

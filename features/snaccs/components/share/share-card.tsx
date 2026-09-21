@@ -6,6 +6,7 @@ import {
 } from "lucide-react"
 import { Mark } from "@/components/marketing/mark"
 import { GhostAvatar } from "@/components/ui/ghost-avatar"
+import { goingLine, whenLineFor } from "@/features/hangouts/utils/hangouts"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { TierName } from "@/features/users/components/flair"
 import { VoiceBars } from "@/features/voice/components/voice-bars"
@@ -120,6 +121,23 @@ export function ShareCard({ snacc }: { snacc: Snacc }) {
         <p className="text-lg leading-6 whitespace-pre-wrap text-foreground">
           {snacc.body}
         </p>
+      ) : null}
+
+      {snacc.hangout ? (
+        <div className="flex items-center gap-3 rounded-2xl border border-border p-3">
+          <span aria-hidden className="text-3xl">
+            {snacc.hangout.emoji}
+          </span>
+          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className="line-clamp-2 text-base font-extrabold text-foreground">
+              {snacc.hangout.title}
+            </span>
+            <span className="text-sm text-muted-foreground">
+              {whenLineFor(snacc.hangout.state, snacc.hangout.starts_at)} ·{" "}
+              {goingLine(snacc.hangout)}
+            </span>
+          </span>
+        </div>
       ) : null}
 
       {snacc.voice ? (

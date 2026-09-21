@@ -7,6 +7,7 @@ import { BirthdayFab } from "@/features/birthdays/components/birthday-fab"
 import { BirthdayNudgeSheet } from "@/features/birthdays/components/birthday-nudge-sheet"
 import { BirthdayWishDialog } from "@/features/birthdays/components/birthday-wish-dialog"
 import { FirstPostCard } from "@/features/first-post/components/first-post-card"
+import { CampusHangouts } from "@/features/hangouts/containers/campus-hangouts"
 import { MomentTray } from "@/features/moments/components/moment-tray"
 import { MomentTraySkeleton } from "@/features/moments/components/moment-tray-skeleton"
 import { AppHeader } from "@/features/navigation/components/app-header"
@@ -72,6 +73,7 @@ export function HomeScreen() {
                 />
               )
             ) : null}
+            <CampusHangouts />
             {firstPost.show ? (
               <FirstPostCard onPosted={firstPost.markPosted} />
             ) : null}

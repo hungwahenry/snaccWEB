@@ -10,7 +10,11 @@ import type {
   StoredDraft,
   TypeaheadSuggestion,
 } from "../../types"
-import { COMPOSER_COPY, isSubmitShortcut } from "../../utils/composer"
+import {
+  COMPOSER_COPY,
+  HANGOUT_COPY,
+  isSubmitShortcut,
+} from "../../utils/composer"
 import { useScheduledSheet } from "../scheduled/use-scheduled-sheet"
 import { useSnacc } from "../use-snacc"
 import { useComposer } from "./use-composer"
@@ -76,7 +80,7 @@ export function useComposeScreen(params: ComposeParams) {
 
   return {
     composer,
-    copy: COMPOSER_COPY[composer.mode],
+    copy: composer.hangout ? HANGOUT_COPY : COMPOSER_COPY[composer.mode],
     parent: parent.data ?? null,
     quoting: quoting.data ?? null,
     onKeyDown,

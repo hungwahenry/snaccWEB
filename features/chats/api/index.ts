@@ -19,6 +19,14 @@ export function getChatRooms(): Promise<ChatRoom[]> {
   return api.get<ChatRoom[]>("/chats/rooms")
 }
 
+export function getChatRoom(roomId: string): Promise<ChatRoom> {
+  return api.get<ChatRoom>(roomPath(roomId))
+}
+
+export function getHangoutRoom(snaccId: string): Promise<ChatRoom> {
+  return api.get<ChatRoom>(`/chats/hangouts/${id(snaccId)}`)
+}
+
 export async function listChatMessages(
   roomId: string,
   page: number

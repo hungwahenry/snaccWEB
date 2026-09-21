@@ -4,8 +4,16 @@ import {
   onChatMessageUpdated,
   onChatRoomUpdated,
 } from "@/features/chats/realtime"
+import { roomsChanged } from "@/features/chats/cache"
 import { onEarningsWallet } from "@/features/earnings/realtime"
 import { onMatchSnacc } from "@/features/football/realtime"
+import {
+  onHangoutEdited,
+  onHangoutsDeleted,
+  onHangoutState,
+  onSnaccHangout,
+} from "@/features/hangouts/realtime"
+import type { JoinState } from "@/features/hangouts/types"
 import { onGhostWindow } from "@/features/ghost/realtime"
 import { onMomentsChanged } from "@/features/moments/realtime"
 import { onSessionRevoked } from "@/features/auth/realtime"
@@ -67,9 +75,20 @@ export const REALTIME_HANDLERS = {
   "snacc.reaction": onSnaccReaction,
   "snacc.comment": onSnaccComment,
   "snacc.poll": onSnaccPoll,
+  "snacc.hangout": onSnaccHangout,
+  "hangout.state": (payload: { snacc_id: string; state: JoinState }) => {
+    onHangoutState(payload)
+    roomsChanged()
+  },
   "snacc.resnacc": onSnaccResnacc,
-  "snacc.deleted": onSnaccDeleted,
-  "snacc.edited": onSnaccEdited,
+  "snacc.deleted": (payload: { snacc_ids: string[] }) => {
+    onSnaccDeleted(payload)
+    onHangoutsDeleted(payload)
+  },
+  "snacc.edited": (payload: { snacc_id: string }) => {
+    onSnaccEdited(payload)
+    onHangoutEdited(payload)
+  },
   "snacc.processed": onSnaccProcessed,
   "scheduled.changed": onScheduledChanged,
   "chat.message": onChatMessage,

@@ -31,6 +31,7 @@ export function useSnaccEditor(snacc: Snacc) {
       : null,
     spoiler: snacc.spoiler,
     storedVoice: snacc.voice,
+    carriesHangout: snacc.hangout !== null,
   })
 
   const save = useMutation({

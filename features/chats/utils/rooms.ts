@@ -4,19 +4,75 @@ import type {
   MessageGlimpse,
   ReplyGlimpse,
 } from "@/features/messages/types"
-import { handleOf } from "@/features/users/utils/names"
+import { handleOf, nameOf, type Named } from "@/features/users/utils/names"
 import type { VoiceSource } from "@/features/voice/types"
 import { voiceSource } from "@/features/voice/utils/source"
-import { editWindowClosesAt } from "@/lib/format"
-import type { ChatMessage, ChatReplyPreview, ChatRoom } from "../types"
+import { dateAtTime, editWindowClosesAt } from "@/lib/format"
+import type {
+  ChatEvent,
+  ChatMessage,
+  ChatReplyPreview,
+  ChatRoom,
+  ChatRoomHangout,
+} from "../types"
 
 export function roomTitle(room: ChatRoom | null): string {
-  if (!room) return "Room"
-  return room.campus ? room.campus.acronym : "Everyone"
+  return room?.name ?? "Room"
 }
 
-export function roomSubtitle(room: ChatRoom | null): string {
-  return room?.campus ? room.campus.name : "Everyone on Snacc"
+function hangoutOver(hangout: ChatRoomHangout, now: number): boolean {
+  return now >= Date.parse(hangout.wraps_at)
+}
+
+function hangoutLine(hangout: ChatRoomHangout | null, now: number): string {
+  if (!hangout) return "Hangout"
+  if (hangout.cancelled) return "Called off"
+  if (hangoutOver(hangout, now)) return "Over"
+  return dateAtTime(hangout.starts_at)
+}
+
+export function roomSubtitle(room: ChatRoom | null, now = Date.now()): string {
+  if (!room) return ""
+
+  switch (room.kind) {
+    case "campus":
+      return room.campus?.name ?? "Your campus"
+    case "global":
+      return "Everyone on Snacc"
+    case "hangout":
+      return hangoutLine(room.hangout, now)
+  }
+}
+
+export function roomClosure(
+  room: ChatRoom | null,
+  now = Date.now()
+): string | null {
+  if (!room) return null
+  if (room.locked) return "This room is closed for now."
+  if (room.hangout?.cancelled) {
+    return "This hangout was called off, so its chat is closed."
+  }
+  if (room.hangout && hangoutOver(room.hangout, now)) {
+    return "This hangout is over, so its chat is closed."
+  }
+  return null
+}
+
+const LINES: Record<ChatEvent, (actor: string, subject: string) => string> = {
+  joined: (actor) => `${actor} joined`,
+  left: (actor) => `${actor} left`,
+  removed: (actor, subject) => `${actor} removed ${subject}`,
+  changed: (actor) => `${actor} changed the plan`,
+  cancelled: (actor) => `${actor} called it off`,
+}
+
+export function lineText(
+  event: ChatEvent,
+  actor: Named,
+  subject: Named | null
+): string {
+  return LINES[event](nameOf(actor), subject ? nameOf(subject) : "someone")
 }
 
 /** Rooms with something new, the way the DM count is conversations rather than messages. */
@@ -92,9 +148,8 @@ export function chatStickerSource(
     : null
 }
 
-/** A room's runs follow the speaker, where a DM's follow the side. */
 export const sameSender = (a: ChatMessage, b: ChatMessage) =>
-  a.sender.id === b.sender.id
+  a.event === null && b.event === null && a.sender.id === b.sender.id
 
 /** Your message once withdrawn: the gap everyone else sees. */
 export function withdrawn(message: ChatMessage): ChatMessage {

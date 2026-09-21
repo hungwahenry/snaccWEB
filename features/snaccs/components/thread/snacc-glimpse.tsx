@@ -1,6 +1,7 @@
 import {
   ChartBarBigIcon,
   EyeOffIcon,
+  PartyPopperIcon,
   QuoteIcon,
   TrophyIcon,
   type LucideIcon,
@@ -16,6 +17,7 @@ import { snaccVoiceSource } from "../../utils/voice"
 const THUMB = 56
 
 const CHIP_ICON: Record<GlimpseChipKind, LucideIcon> = {
+  hangout: PartyPopperIcon,
   poll: ChartBarBigIcon,
   match: TrophyIcon,
   quote: QuoteIcon,

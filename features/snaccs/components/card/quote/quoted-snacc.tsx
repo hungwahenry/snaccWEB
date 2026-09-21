@@ -91,7 +91,7 @@ export function QuotedSnacc({
         entities={snacc.entities}
         className="text-sm leading-5"
       />
-      <SnaccMedia snacc={snacc} onPressImage={onPressImage} />
+      <SnaccMedia snacc={snacc} onPressImage={onPressImage} readOnly />
     </div>
   )
 }

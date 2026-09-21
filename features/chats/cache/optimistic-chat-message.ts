@@ -36,7 +36,9 @@ export function buildOptimisticChatMessage(
     deleted: false,
     deleted_by_sender: false,
     held: false,
+    event: null,
     sender,
+    subject: null,
     images: draft.images.map((image, position) => ({
       id: image.uri,
       url: image.uri,

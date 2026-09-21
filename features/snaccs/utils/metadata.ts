@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { isReadyClip } from "@/features/clips/utils/viewer"
+import { hangoutTitle } from "@/features/hangouts/utils/hangouts"
 import { profilePath } from "@/features/users/routes"
 import { authorNameOf, handleOf } from "@/features/users/utils/names"
 import { counter, isoDuration, type JsonLd } from "@/lib/json-ld"
@@ -10,14 +11,23 @@ import { attachmentSummary } from "./preview"
 
 const HEADLINE_LENGTH = 110
 
+function leadOf(snacc: Snacc): string {
+  const body = snacc.body?.trim() ?? ""
+  if (!snacc.hangout) return body
+
+  const title = hangoutTitle(snacc.hangout)
+  return body ? `${title} · ${body}` : title
+}
+
 function describe(snacc: Snacc) {
   const who = authorNameOf(
     snacc.author,
     snacc.anonymous,
     handleOf(snacc.author) ?? "Someone"
   )
+  const lead = leadOf(snacc)
   const description =
-    snacc.body?.trim() ||
+    lead ||
     attachmentSummary({
       poll: snacc.poll !== null,
       voiceMs: snacc.voice?.duration_ms ?? null,
@@ -28,7 +38,7 @@ function describe(snacc: Snacc) {
     }) ||
     `${who} posted on Snacc.`
 
-  return { who, title: `${who} on Snacc`, description }
+  return { who, title: `${who} on Snacc`, lead, description }
 }
 
 function shownClip(snacc: Snacc) {
@@ -79,7 +89,7 @@ export function snaccMetadata(snacc: Snacc | null): Metadata {
 }
 
 export function snaccJsonLd(snacc: Snacc): JsonLd {
-  const { who, title, description } = describe(snacc)
+  const { who, title, lead, description } = describe(snacc)
   const clip = shownClip(snacc)
   const pictures = snaccPictures(snacc)
   const body = snacc.body?.trim()
@@ -90,7 +100,7 @@ export function snaccJsonLd(snacc: Snacc): JsonLd {
     "@type": "SocialMediaPosting",
     url: absoluteUrl(snaccPath(snacc.id)),
     datePublished: snacc.created_at,
-    headline: (body || title).slice(0, HEADLINE_LENGTH),
+    headline: (lead || title).slice(0, HEADLINE_LENGTH),
     articleBody: body || undefined,
     author: snacc.anonymous
       ? { "@type": "Person", name: who }

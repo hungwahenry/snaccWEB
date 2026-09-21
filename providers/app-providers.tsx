@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 import { AccentStyle } from "@/features/appearance/components/accent-style"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { LightboxProvider } from "@/providers/lightbox-provider"
+import { HangoutGateProvider } from "./hangout-gate-provider"
 import { PinPromptProvider } from "./pin-prompt-provider"
 import { RealtimeProvider } from "./realtime-provider"
 import { StepUpProvider } from "./step-up-provider"
@@ -21,13 +22,15 @@ export function AppProviders({ children }: { children: ReactNode }) {
         <TiersProvider>
           <StepUpProvider>
             <PinPromptProvider>
-              <StickerStudioProvider>
-                <LightboxProvider>
-                  <AccentStyle />
-                  {children}
-                  <ConfirmHost />
-                </LightboxProvider>
-              </StickerStudioProvider>
+              <HangoutGateProvider>
+                <StickerStudioProvider>
+                  <LightboxProvider>
+                    <AccentStyle />
+                    {children}
+                    <ConfirmHost />
+                  </LightboxProvider>
+                </StickerStudioProvider>
+              </HangoutGateProvider>
             </PinPromptProvider>
           </StepUpProvider>
         </TiersProvider>

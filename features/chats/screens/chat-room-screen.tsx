@@ -6,6 +6,7 @@ import {
   LockIcon,
   MessagesSquareIcon,
 } from "lucide-react"
+import Link from "next/link"
 import { useRef } from "react"
 import { ComposerScreen } from "@/components/ui/composer-screen"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -19,6 +20,7 @@ import { ReactionBreakdownSheet } from "@/features/snaccs/components/card/reacti
 import { StickerCreator } from "@/features/stickers/components/sticker-creator"
 import { StickerTraySheet } from "@/features/stickers/containers/sticker-tray-sheet"
 import { useBack } from "@/hooks/use-back"
+import { ChatLineRow } from "../components/chat-line-row"
 import { ChatMessageActionsSheet } from "../components/chat-message-actions-sheet"
 import { ChatMessageRow } from "../components/chat-message-row"
 import { RoomIcon } from "../components/room-icon"
@@ -40,7 +42,13 @@ export function ChatRoomScreen({ roomId }: { roomId: string }) {
         right={
           room ? (
             <>
-              <RoomIcon room={room} small />
+              {screen.hangoutHref ? (
+                <Link href={screen.hangoutHref} aria-label="Open the hangout">
+                  <RoomIcon room={room} small />
+                </Link>
+              ) : (
+                <RoomIcon room={room} small />
+              )}
               <IconButton
                 icon={screen.muted ? BellOffIcon : BellIcon}
                 label={screen.muted ? "Unmute room" : "Mute room"}
@@ -65,22 +73,31 @@ export function ChatRoomScreen({ roomId }: { roomId: string }) {
             description="Be the first to say something."
           />
         }
-        renderRow={(item) => (
-          <ChatMessageRow
-            key={item.message.id}
-            {...item}
-            handlers={screen.handlers}
-          />
-        )}
+        renderRow={(item) =>
+          item.message.event ? (
+            <ChatLineRow
+              key={item.message.id}
+              message={item.message}
+              dayBreak={item.dayBreak}
+              event={item.message.event}
+            />
+          ) : (
+            <ChatMessageRow
+              key={item.message.id}
+              {...item}
+              handlers={screen.handlers}
+            />
+          )
+        }
       />
 
-      {screen.canPost ? (
-        <MessageComposer {...screen.composer} placeholder="Message the room…" />
-      ) : (
+      {screen.closure ? (
         <div className="flex items-center justify-center gap-2 border-t border-border px-4 py-4 text-sm text-muted-foreground">
-          <LockIcon className="size-4" />
-          This room is closed for now.
+          <LockIcon className="size-4 shrink-0" />
+          {screen.closure}
         </div>
+      ) : (
+        <MessageComposer {...screen.composer} placeholder="Message the room…" />
       )}
 
       <ChatMessageActionsSheet {...screen.actions} />

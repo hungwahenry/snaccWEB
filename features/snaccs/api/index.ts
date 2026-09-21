@@ -1,3 +1,4 @@
+import type { HangoutPayload } from "@/features/hangouts/types"
 import { voiceFileName } from "@/features/voice/utils/recording"
 import { api } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
@@ -35,6 +36,19 @@ function pollField(poll: PollPayload | undefined): string | undefined {
     : undefined
 }
 
+function hangoutField(hangout: HangoutPayload | undefined): string | undefined {
+  return hangout
+    ? JSON.stringify({
+        title: hangout.title,
+        emoji: hangout.emoji,
+        place: hangout.place,
+        starts_at: hangout.startsAt,
+        capacity: hangout.capacity,
+        private: hangout.private,
+      })
+    : undefined
+}
+
 function sendContent<T>(
   path: string,
   input: SnaccContentInput,
@@ -53,6 +67,7 @@ function sendContent<T>(
       stickerId: input.stickerId,
       spoiler: input.spoiler,
       poll: pollField(input.poll),
+      hangout: hangoutField(input.hangout),
       ...extra,
     })
   }
@@ -65,6 +80,7 @@ function sendContent<T>(
     ["stickerId", input.stickerId],
     ["spoiler", input.spoiler ? "true" : undefined],
     ["poll", pollField(input.poll)],
+    ["hangout", hangoutField(input.hangout)],
     [
       "voiceDurationMs",
       input.voice ? String(input.voice.durationMs) : undefined,
@@ -91,6 +107,7 @@ export function createSnacc(input: CreateSnaccInput): Promise<Snacc> {
     parentId: input.parentId,
     resnaccOfId: input.resnaccOfId,
     matchId: input.matchId,
+    hangoutId: input.hangoutId,
     clipUploadId: input.clipUploadId,
     clipCoverMs:
       input.clipUploadId && input.clipCoverMs !== undefined

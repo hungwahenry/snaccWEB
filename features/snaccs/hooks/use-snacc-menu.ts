@@ -26,6 +26,7 @@ import {
 } from "../cache"
 import { editSnaccPath } from "../routes"
 import type { Snacc } from "../types"
+import { deleteWarning } from "../utils/delete-warning"
 import { canEditSnacc } from "../utils/editing"
 import { snaccKeys } from "../utils/keys"
 import { useDeleteSnacc } from "./use-delete-snacc"
@@ -65,10 +66,7 @@ export function useSnaccMenu() {
   const confirmDelete = withActing((target) =>
     confirm({
       title: "Delete snacc?",
-      message:
-        target.comments_count > 0
-          ? "Its replies go with it. This cannot be undone."
-          : "This cannot be undone.",
+      message: deleteWarning(target),
       actions: [
         {
           label: "Delete",

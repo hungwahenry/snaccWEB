@@ -11,6 +11,7 @@ import {
   mapItems,
   prependItem,
 } from "@/lib/query/pages"
+import { getSnacc } from "../api"
 import type { QuotedGone, Snacc, SnaccReaction } from "../types"
 import {
   commentSortOf,
@@ -116,6 +117,12 @@ export function insertSnacc(
   client().setQueriesData<SnaccPages>({ queryKey: snaccKeys.feeds() }, (data) =>
     prependItem(data, snacc)
   )
+  if (snacc.hangout_tag) {
+    client().setQueryData<SnaccPages>(
+      snaccKeys.hangout(snacc.hangout_tag.snacc_id),
+      (data) => prependItem(data, snacc)
+    )
+  }
 
   const username = snacc.author.username
   if (!username) return
@@ -162,6 +169,12 @@ export function patchSnacc(
   changeLists((data) => mapItems(data, apply))
 
   return previous
+}
+
+export function refreshSnacc(id: string): void {
+  void getSnacc(id)
+    .then((fresh) => patchSnacc(fresh.id, () => fresh))
+    .catch(() => undefined)
 }
 
 export function setPinned(authorId: string, pinnedId: string | null): void {

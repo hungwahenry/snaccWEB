@@ -15,6 +15,8 @@ export function composePath(params: ComposeParams = {}): string {
   if (params.resnaccOfId) search.set("resnaccOfId", params.resnaccOfId)
   if (params.initialBody) search.set("initialBody", params.initialBody)
   if (params.matchId) search.set("matchId", params.matchId)
+  if (params.hangoutId) search.set("hangoutId", params.hangoutId)
+  if (params.newHangout) search.set("newHangout", "1")
   const qs = search.toString()
   return qs ? `${COMPOSE_PATH}?${qs}` : COMPOSE_PATH
 }

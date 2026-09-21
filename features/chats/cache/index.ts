@@ -75,15 +75,42 @@ export function claimBroadcast(
   return claimPayload(payload, me?.id, findChatMessage(roomId, payload.id))
 }
 
+export interface RoomSnapshot {
+  roomId: string
+  list: ChatRoom[] | undefined
+  room: ChatRoom | undefined
+}
+
+export function findRoom(roomId: string): ChatRoom | undefined {
+  return (
+    client().getQueryData<ChatRoom>(chatKeys.room(roomId)) ??
+    client()
+      .getQueryData<ChatRoom[]>(chatKeys.rooms())
+      ?.find((room) => room.id === roomId)
+  )
+}
+
+export function seedRoom(room: ChatRoom): void {
+  client().setQueryData(chatKeys.room(room.id), room)
+}
+
 function patchRoom(
   roomId: string,
   patch: (room: ChatRoom) => ChatRoom
-): ChatRoom[] | undefined {
-  const previous = client().getQueryData<ChatRoom[]>(chatKeys.rooms())
+): RoomSnapshot {
+  const snapshot = {
+    roomId,
+    list: client().getQueryData<ChatRoom[]>(chatKeys.rooms()),
+    room: client().getQueryData<ChatRoom>(chatKeys.room(roomId)),
+  }
   client().setQueryData<ChatRoom[]>(chatKeys.rooms(), (rooms) =>
     rooms?.map((room) => (room.id === roomId ? patch(room) : room))
   )
-  return previous
+  client().setQueryData<ChatRoom>(
+    chatKeys.room(roomId),
+    (room) => room && patch(room)
+  )
+  return snapshot
 }
 
 /** A new message, counted where the list already is: refetching here would send every reader in a
@@ -100,10 +127,7 @@ export function markRoomSeen(roomId: string): void {
   patchRoom(roomId, (room) => ({ ...room, unread: 0 }))
 }
 
-export function setRoomMuted(
-  roomId: string,
-  muted: boolean
-): ChatRoom[] | undefined {
+export function setRoomMuted(roomId: string, muted: boolean): RoomSnapshot {
   return patchRoom(roomId, (room) => ({ ...room, muted }))
 }
 
@@ -111,10 +135,14 @@ export function setRoomLocked(roomId: string, locked: boolean): void {
   patchRoom(roomId, (room) => ({ ...room, locked }))
 }
 
-export function restoreRooms(rooms: ChatRoom[] | undefined): void {
-  if (rooms) client().setQueryData(chatKeys.rooms(), rooms)
+export function restoreRooms(snapshot: RoomSnapshot | undefined): void {
+  if (snapshot?.list) client().setQueryData(chatKeys.rooms(), snapshot.list)
+  if (snapshot?.room) {
+    client().setQueryData(chatKeys.room(snapshot.roomId), snapshot.room)
+  }
 }
 
 export function roomsChanged(): void {
   void client().invalidateQueries({ queryKey: chatKeys.rooms() })
+  void client().invalidateQueries({ queryKey: chatKeys.roomDetails() })
 }

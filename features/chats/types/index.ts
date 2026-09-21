@@ -13,11 +13,23 @@ export interface ChatRoomCampus {
   slug: string
 }
 
+export type ChatRoomKind = "global" | "campus" | "hangout"
+
+export interface ChatRoomHangout {
+  snacc_id: string
+  title: string
+  emoji: string
+  starts_at: string
+  wraps_at: string
+  cancelled: boolean
+}
+
 export interface ChatRoom {
   id: string
+  kind: ChatRoomKind
   name: string
-  /** Null marks the room everyone is in. */
   campus: ChatRoomCampus | null
+  hangout: ChatRoomHangout | null
   locked: boolean
   muted: boolean
   unread: number
@@ -54,6 +66,8 @@ export interface ChatReplyPreview {
   has_voice: boolean
 }
 
+export type ChatEvent = "joined" | "left" | "removed" | "changed" | "cancelled"
+
 export interface ChatMessage {
   id: string
   room_id: string
@@ -66,7 +80,9 @@ export interface ChatMessage {
   deleted: boolean
   deleted_by_sender: boolean
   held: boolean
+  event: ChatEvent | null
   sender: Author
+  subject: Author | null
   images: ChatImage[]
   voice: VoiceNote | null
   sticker: StickerAttachment | null

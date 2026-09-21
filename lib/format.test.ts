@@ -3,6 +3,7 @@ import {
   badgeCount,
   compactCount,
   countLabel,
+  dateAtTime,
   dayLabel,
   formatDuration,
   koboToInput,
@@ -20,6 +21,18 @@ describe("weekdayDate", () => {
     const at = new Date(2026, 9, 14, 21, 5).toISOString()
     expect(weekdayDay(at)).toBe("Wed 14")
     expect(weekdayDate(at)).toBe("Wed 14 Oct")
+  })
+
+  it("says the day and the time together", () => {
+    expect(dateAtTime(new Date(2026, 9, 14, 21, 5).toISOString())).toBe(
+      "Wed 14 Oct at 9:05 PM"
+    )
+  })
+
+  it("reads the time on a given clock when asked, the day included", () => {
+    expect(dateAtTime("2026-10-14T23:30:00.000Z", "Africa/Lagos")).toBe(
+      "Thu 15 Oct at 12:30 AM"
+    )
   })
 })
 

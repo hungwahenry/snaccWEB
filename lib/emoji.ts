@@ -1,6 +1,6 @@
 export const QUICK_CATEGORY = "quick"
 
-export type ReactionCategory =
+export type EmojiCategory =
   | "smileys_emotion"
   | "people_body"
   | "animals_nature"
@@ -11,71 +11,20 @@ export type ReactionCategory =
   | "symbols"
   | "flags"
 
-export type PickerCategory = typeof QUICK_CATEGORY | ReactionCategory
+export type PickerCategory = typeof QUICK_CATEGORY | EmojiCategory
 
-export interface ReactionEmoji {
+export interface CatalogEmoji {
   emoji: string
   name: string
   keywords: string[]
 }
 
 export interface Catalog {
-  byCategory: Map<ReactionCategory, ReactionEmoji[]>
-  all: ReactionEmoji[]
+  byCategory: Map<EmojiCategory, CatalogEmoji[]>
+  all: CatalogEmoji[]
 }
 
-const QUICK_REACTIONS = [
-  "👍",
-  "❤️",
-  "😂",
-  "🤣",
-  "😭",
-  "🔥",
-  "💀",
-  "💯",
-  "🙏",
-  "😮",
-  "👀",
-  "🥺",
-  "🥰",
-  "😍",
-  "😅",
-  "😊",
-  "😎",
-  "🤔",
-  "🤯",
-  "🥳",
-  "👏",
-  "🙌",
-  "💪",
-  "🤝",
-  "✅",
-  "🎉",
-  "💔",
-  "😔",
-  "😩",
-  "🙄",
-  "😤",
-  "😬",
-  "🤦",
-  "🤷",
-  "🫡",
-  "😢",
-  "😳",
-  "😡",
-  "🤢",
-  "🤮",
-  "🤧",
-  "🥵",
-]
-
-const QUICK: ReactionEmoji[] = QUICK_REACTIONS.map((emoji) => ({
-  emoji,
-  name: "",
-  keywords: [],
-}))
-
-const GROUPS: Record<number, ReactionCategory> = {
+const GROUPS: Record<number, EmojiCategory> = {
   0: "smileys_emotion",
   1: "people_body",
   3: "animals_nature",
@@ -111,7 +60,7 @@ export function loadCatalog(): Promise<Catalog> {
       .filter((row) => row.group !== undefined && row.group in GROUPS)
       .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
 
-    const byCategory = new Map<ReactionCategory, ReactionEmoji[]>()
+    const byCategory = new Map<EmojiCategory, CatalogEmoji[]>()
     const all = rows.map((row) => {
       const emoji = {
         emoji: row.unicode,
@@ -130,7 +79,7 @@ export function loadCatalog(): Promise<Catalog> {
   return loading
 }
 
-function rank(emoji: ReactionEmoji, query: string): number {
+function rank(emoji: CatalogEmoji, query: string): number {
   const name = emoji.name.toLowerCase()
   const keywords = emoji.keywords.map((keyword) => keyword.toLowerCase())
 
@@ -144,11 +93,11 @@ function rank(emoji: ReactionEmoji, query: string): number {
   return -1
 }
 
-export function searchEmojis(catalog: Catalog, query: string): ReactionEmoji[] {
+export function searchEmojis(catalog: Catalog, query: string): CatalogEmoji[] {
   const needle = query.trim().toLowerCase()
   if (!needle) return []
 
-  const hits: { emoji: ReactionEmoji; rank: number; index: number }[] = []
+  const hits: { emoji: CatalogEmoji; rank: number; index: number }[] = []
 
   catalog.all.forEach((emoji, index) => {
     const hit = rank(emoji, needle)
@@ -160,10 +109,15 @@ export function searchEmojis(catalog: Catalog, query: string): ReactionEmoji[] {
     .map((hit) => hit.emoji)
 }
 
+export function quickEmojis(chars: readonly string[]): CatalogEmoji[] {
+  return chars.map((emoji) => ({ emoji, name: "", keywords: [] }))
+}
+
 export function emojisFor(
   catalog: Catalog | null,
-  category: PickerCategory
-): ReactionEmoji[] {
-  if (category === QUICK_CATEGORY) return QUICK
+  category: PickerCategory,
+  quick: readonly string[]
+): CatalogEmoji[] {
+  if (category === QUICK_CATEGORY) return quickEmojis(quick)
   return catalog?.byCategory.get(category) ?? []
 }

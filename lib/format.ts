@@ -1,5 +1,7 @@
 const LOCALE = "en-NG"
 
+export const WAT_TIME_ZONE = "Africa/Lagos"
+
 function upperMeridiem(value: string): string {
   return value.replace(/\b[ap]\.?m\.?\b/gi, (match) => match.toUpperCase())
 }
@@ -116,12 +118,13 @@ export function sameDay(a: string, b: string): boolean {
   return midnight(new Date(a)) === midnight(new Date(b))
 }
 
-export function clockTime(iso: string): string {
+export function clockTime(iso: string, timeZone?: string): string {
   return upperMeridiem(
     new Date(iso).toLocaleTimeString(LOCALE, {
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
+      timeZone,
     })
   )
 }
@@ -137,14 +140,26 @@ export function dayLabel(iso: string): string {
   return shortDate(iso)
 }
 
-export function weekdayDay(iso: string): string {
+export function weekdayDay(iso: string, timeZone?: string): string {
   const date = new Date(iso)
-  return `${date.toLocaleDateString(LOCALE, { weekday: "short" })} ${date.getDate()}`
+  const weekday = date.toLocaleDateString(LOCALE, {
+    weekday: "short",
+    timeZone,
+  })
+  const day = date.toLocaleDateString(LOCALE, { day: "numeric", timeZone })
+  return `${weekday} ${day}`
 }
 
-export function weekdayDate(iso: string): string {
-  const month = new Date(iso).toLocaleDateString(LOCALE, { month: "short" })
-  return `${weekdayDay(iso)} ${month}`
+export function weekdayDate(iso: string, timeZone?: string): string {
+  const month = new Date(iso).toLocaleDateString(LOCALE, {
+    month: "short",
+    timeZone,
+  })
+  return `${weekdayDay(iso, timeZone)} ${month}`
+}
+
+export function dateAtTime(iso: string, timeZone?: string): string {
+  return `${weekdayDate(iso, timeZone)} at ${clockTime(iso, timeZone)}`
 }
 
 export function monthYear(iso: string): string {

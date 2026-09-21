@@ -1,5 +1,5 @@
 import { roundUpToStep } from "@/lib/calendar"
-import { clockTime, countLabel, weekdayDate } from "@/lib/format"
+import { clockTime, countLabel, dateAtTime, weekdayDate } from "@/lib/format"
 import type { ScheduledSnacc } from "../types"
 
 export const SLOT_MINUTES = 5
@@ -47,7 +47,7 @@ export function goesOutLabel(iso: string): string {
 }
 
 export function goesOutSentence(iso: string): string {
-  return `${weekdayDate(iso)} at ${clockTime(iso)}`
+  return dateAtTime(iso)
 }
 
 export function rescheduleSeed(

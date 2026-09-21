@@ -5,11 +5,13 @@ import { useMatchDetail } from "@/features/football/hooks/use-match-detail"
 import { useMatchSnaccCounts } from "@/features/football/hooks/use-match-room"
 import { useScoreboard } from "@/features/football/hooks/use-scoreboard"
 import type { LiveMatch, MatchSnaccCounts } from "@/features/football/types"
+import { useHangoutsStrip } from "@/features/hangouts/hooks/lists/use-hangouts-strip"
 import { useDiscoverRail } from "./use-discover-rail"
 
 const NO_COUNTS: MatchSnaccCounts = {}
 
 export function useDiscover() {
+  const hangouts = useHangoutsStrip({ always: true })
   const rail = useDiscoverRail()
   const scoreboard = useScoreboard()
   const counts = useMatchSnaccCounts()
@@ -18,6 +20,8 @@ export function useDiscover() {
 
   const matches = scoreboard.data?.matches ?? []
   const quiet =
+    !hangouts.loading &&
+    !hangouts.show &&
     !scoreboard.isLoading &&
     !rail.tags.loading &&
     !rail.suggestions.loading &&
@@ -38,6 +42,7 @@ export function useDiscover() {
       counts: counts.data ?? NO_COUNTS,
       onPressMatch: openMatch,
     },
+    hangouts,
     quiet,
     matchSheet: {
       open: matchId !== null,

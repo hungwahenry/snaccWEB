@@ -8,6 +8,7 @@ import type {
   SnaccReplyTo,
 } from "../types"
 import { liveMatchCard } from "@/features/football/utils/card"
+import { optimisticHangout } from "@/features/hangouts/utils/optimistic-hangout"
 import { toEmbedded } from "../utils/resnaccs"
 import { findSnacc } from "."
 
@@ -19,10 +20,12 @@ export function draftToInput(id: string, draft: SnaccDraft): CreateSnaccInput {
     giphyId: draft.gif?.id,
     stickerId: draft.sticker?.id,
     matchId: draft.matchId,
+    hangoutId: draft.hangoutId,
     voice: draft.voice ?? undefined,
     parentId: draft.parentId,
     resnaccOfId: draft.resnaccOfId,
     poll: draft.poll,
+    hangout: draft.hangout,
     spoiler: draft.spoiler,
   }
 }
@@ -94,6 +97,10 @@ export function buildOptimisticSnacc(
         }
       : null,
     poll: draft.poll ? optimisticPoll(id, draft.poll) : null,
+    hangout: draft.hangout
+      ? optimisticHangout(draft.hangout, author.university?.id ?? "")
+      : null,
+    hangout_tag: draft.hangoutTag ?? null,
     images: draft.images.map((image, position) => ({
       id: image.uri,
       url: image.uri,

@@ -1,6 +1,7 @@
 import { memo, type ReactNode, type Ref } from "react"
 import { GhostAvatar } from "@/components/ui/ghost-avatar"
 import { UserAvatar } from "@/components/ui/user-avatar"
+import { HangoutTagChip } from "@/features/hangouts/components/tagging/hangout-tag-chip"
 import { LinkPreviews } from "@/features/links/containers/link-previews"
 import { ProfileLink } from "@/features/users/components/profile-link"
 import { cn } from "@/lib/utils"
@@ -10,6 +11,7 @@ import type {
   SnaccPollOption,
   SnaccReplyTo,
 } from "../../types"
+import { snaccPath } from "../../routes"
 import { asSnacc, isPlainResnacc } from "../../utils/resnaccs"
 import { AddresseeLine, AuthorRow } from "./author-row"
 import { ResnaccHeader } from "./card-labels"
@@ -177,6 +179,12 @@ function SnaccCardComponent(props: SnaccCardProps) {
             onOpenActions={onOpenActions}
           />
           <AddresseeLine addressee={addressee} />
+          {snacc.hangout_tag ? (
+            <HangoutTagChip
+              tag={snacc.hangout_tag}
+              href={pending ? undefined : snaccPath(snacc.hangout_tag.snacc_id)}
+            />
+          ) : null}
           <SnaccBody body={snacc.body} entities={snacc.entities} stripLinks />
           <LinkPreviews body={snacc.body} onOpenSnacc={onPressQuote} />
           {media}

@@ -1,5 +1,6 @@
 import type { ClipDraft } from "@/features/clips/types"
 import type { Gif } from "@/features/giphy/types"
+import type { HangoutDraft } from "@/features/hangouts/types"
 import type { DraftSticker } from "@/features/stickers/types"
 import type { VoiceDraft } from "@/features/voice/types"
 import type {
@@ -20,6 +21,11 @@ export const COMPOSER_COPY: Record<
   reply: { title: "Reply", placeholder: "Say something about this snacc" },
   quote: { title: "Quote", placeholder: "Add something to this" },
   new: { title: "New snacc", placeholder: "What's happening on campus?" },
+}
+
+export const HANGOUT_COPY = {
+  title: "New hangout",
+  placeholder: "Add a note, if you like",
 }
 
 export const COUNTER_APPEARS_AT = 80
@@ -47,6 +53,7 @@ export interface ComposerContent {
   voice: VoiceDraft | null
   clip: ClipDraft | null
   poll: PollDraft | null
+  hangout: HangoutDraft | null
   spoiler: boolean
 }
 
@@ -58,7 +65,8 @@ export function hasContent(content: ComposerContent): boolean {
     content.sticker !== null ||
     content.voice !== null ||
     content.clip !== null ||
-    content.poll !== null
+    content.poll !== null ||
+    content.hangout !== null
   )
 }
 
@@ -76,6 +84,7 @@ export function toDraftContent(
     gif: content.gif,
     sticker: content.sticker,
     poll: content.poll ? toStoredPoll(content.poll) : null,
+    hangout: content.hangout,
   }
 }
 
@@ -92,6 +101,9 @@ export interface DraftState {
   poll: boolean
   pollValid: boolean
   pollProblem: string | null
+  hangout: boolean
+  hangoutValid: boolean
+  carriesHangout: boolean
   voiceAllowed: boolean
   stickersAllowed: boolean
   clip: boolean
@@ -109,6 +121,7 @@ export interface DraftRules {
   canAddSticker: boolean
   canRecordVoice: boolean
   canStartPoll: boolean
+  canStartHangout: boolean
   canAddClip: boolean
   hint: string | null
   tagProblem: string | null
@@ -119,6 +132,7 @@ export function draftRules(state: DraftState): DraftRules {
   const hasMedia = state.images > 0 || state.gif || state.clip
   const voiceBusy = state.recording || state.voice || state.storedVoice
   const hasBody = state.bodyLength > 0
+  const hangoutBound = state.hangout || state.carriesHangout
   const pollHint = state.poll
     ? (state.pollProblem ??
       (hasBody ? null : "Write your question above the options."))
@@ -134,11 +148,14 @@ export function draftRules(state: DraftState): DraftRules {
       state.tagProblem === null &&
       (state.poll
         ? hasBody && state.pollValid
-        : hasMedia ||
-          hasBody ||
-          state.sticker ||
-          state.voice ||
-          state.storedVoice),
+        : state.hangout
+          ? state.hangoutValid
+          : state.carriesHangout ||
+            hasMedia ||
+            hasBody ||
+            state.sticker ||
+            state.voice ||
+            state.storedVoice),
     canAddImages:
       !state.poll &&
       !state.gif &&
@@ -147,23 +164,32 @@ export function draftRules(state: DraftState): DraftRules {
       !voiceBusy &&
       state.images < state.maxImages,
     canAddGif:
-      !state.poll && state.images === 0 && !state.clip && !state.recording,
+      !state.poll &&
+      !hangoutBound &&
+      state.images === 0 &&
+      !state.clip &&
+      !state.recording,
     canAddSticker:
       !state.poll &&
+      !hangoutBound &&
       state.stickersAllowed &&
       state.images === 0 &&
       !state.clip &&
       !voiceBusy,
     canRecordVoice:
       !state.poll &&
+      !hangoutBound &&
       state.voiceAllowed &&
       state.images === 0 &&
       !state.sticker &&
       !state.clip &&
       !voiceBusy,
-    canStartPoll: !hasMedia && !state.sticker && !voiceBusy,
+    canStartPoll: !hasMedia && !state.sticker && !voiceBusy && !hangoutBound,
+    canStartHangout:
+      !state.poll && !state.gif && !state.sticker && !state.clip && !voiceBusy,
     canAddClip:
       state.clipsAllowed &&
+      !hangoutBound &&
       !state.clip &&
       !state.poll &&
       state.images === 0 &&

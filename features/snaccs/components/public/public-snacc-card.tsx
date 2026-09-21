@@ -9,6 +9,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { PublicClip } from "@/features/clips/components/public-clip"
+import { PublicHangout } from "@/features/hangouts/components/public/public-hangout"
 import { compactCount, timeAgo } from "@/lib/format"
 import { richText } from "@/lib/rich-text"
 import { AuthorBadges } from "@/features/users/components/public/author-badges"
@@ -93,6 +94,12 @@ export function PublicSnaccCard({
           ) : null}
         </div>
       </div>
+
+      {snacc.hangout ? (
+        <div className="ml-14">
+          <PublicHangout hangout={snacc.hangout} />
+        </div>
+      ) : null}
 
       {snacc.clip ? (
         <div className="ml-14">

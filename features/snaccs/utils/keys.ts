@@ -28,6 +28,7 @@ export const snaccKeys = {
   search: (q: string) => [LIST, "search", q] as const,
   campus: (slug: string) => [LIST, "campus", slug.toLowerCase()] as const,
   match: (matchId: string) => [LIST, "match", matchId] as const,
+  hangout: (snaccId: string) => [LIST, "hangout", snaccId] as const,
   clipLists: () => [LIST, "clips"] as const,
   clips: (scope: FeedScope) => [LIST, "clips", scope] as const,
   commentLists: (snaccId: string) => [LIST, "comments", snaccId] as const,

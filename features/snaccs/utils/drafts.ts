@@ -76,6 +76,7 @@ export function toDraftSeed(draft: StoredDraft): DraftSeed {
           })),
         }
       : null,
+    hangout: draft.hangout ?? null,
   }
 }
 
@@ -98,6 +99,10 @@ export function withoutDraft(drafts: StoredDraft[], id: string): StoredDraft[] {
 }
 
 export function draftPreview(draft: StoredDraft): string {
+  if (!draft.body.trim() && draft.hangout) {
+    return `${draft.hangout.emoji} ${draft.hangout.title.trim() || "Hangout"}`
+  }
+
   return (
     draft.body.trim() ||
     attachmentSummary({

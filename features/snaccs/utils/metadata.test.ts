@@ -66,6 +66,17 @@ describe("snaccMetadata", () => {
     expect(metadata.description).toBe("🎬 Clip")
   })
 
+  it("leads a hangout with its title, then its note", () => {
+    const hangout = { emoji: "⚽", title: "watch the derby" }
+    expect(
+      snaccMetadata(post({ body: null, hangout } as Partial<Snacc>)).description
+    ).toBe("⚽ watch the derby")
+    expect(
+      snaccMetadata(post({ body: "bring snacks", hangout } as Partial<Snacc>))
+        .description
+    ).toBe("⚽ watch the derby · bring snacks")
+  })
+
   it("never puts sensitive media in a link preview", () => {
     const metadata = snaccMetadata(
       post({ spoiler: true, images: [photo], clip } as Partial<Snacc>)

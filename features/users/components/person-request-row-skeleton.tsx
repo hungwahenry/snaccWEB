@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton"
 
-export function FollowRequestRowSkeleton() {
+export function PersonRequestRowSkeleton() {
   return (
     <div className="flex items-center gap-3 px-4 py-3">
       <Skeleton className="size-11 shrink-0 rounded-full" />

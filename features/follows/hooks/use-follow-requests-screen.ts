@@ -7,11 +7,11 @@ import { useBack } from "@/hooks/use-back"
 import { showError } from "@/lib/feedback"
 import { acceptFollowRequest, declineFollowRequest } from "../api"
 import { removeRequest, requestsChanged } from "../cache"
-import type { FollowUser } from "../types"
+import type { Author } from "@/features/users/types"
 import { useFollowRequests } from "./use-follow-requests"
 
 interface Answer {
-  user: FollowUser
+  user: Author
   accept: boolean
 }
 
@@ -42,7 +42,7 @@ export function useFollowRequestsScreen() {
   return {
     onBack: back,
     list,
-    onAccept: (user: FollowUser) => answer.mutate({ user, accept: true }),
-    onDecline: (user: FollowUser) => answer.mutate({ user, accept: false }),
+    onAccept: (user: Author) => answer.mutate({ user, accept: true }),
+    onDecline: (user: Author) => answer.mutate({ user, accept: false }),
   }
 }

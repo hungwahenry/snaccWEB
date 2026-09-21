@@ -6,6 +6,7 @@ import { snaccVoiceSource } from "../../../utils/voice"
 import { PollView, type PollViewProps } from "../poll-view"
 import { MatchAttachment } from "@/features/football/components/match-attachment"
 import { ClipCard } from "@/features/clips/components/card/clip-card"
+import { SnaccHangoutBlock } from "@/features/hangouts/containers/snacc-hangout-block"
 import { SnaccGifView } from "./snacc-gif"
 import { SnaccImages } from "./snacc-images"
 
@@ -24,6 +25,7 @@ type SnaccMediaProps = {
     | "match"
     | "spoiler"
     | "poll"
+    | "hangout"
     | "status"
     | "mine"
     | "anonymous"
@@ -33,6 +35,7 @@ type SnaccMediaProps = {
   onHoldImage?: (index: number) => void
   onHoldSticker?: () => void
   poll?: Omit<PollViewProps, "poll" | "disabled">
+  readOnly?: boolean
 }
 
 export function SnaccMedia({
@@ -41,8 +44,10 @@ export function SnaccMedia({
   onHoldImage,
   onHoldSticker,
   poll,
+  readOnly = false,
 }: SnaccMediaProps) {
   const hasAny =
+    snacc.hangout ||
     snacc.poll ||
     snacc.voice ||
     snacc.clip ||
@@ -54,6 +59,16 @@ export function SnaccMedia({
 
   return (
     <div className="flex flex-col gap-2">
+      {snacc.hangout ? (
+        <SnaccHangoutBlock
+          snaccId={snacc.id}
+          hangout={snacc.hangout}
+          mine={snacc.mine}
+          disabled={snacc.status !== undefined}
+          readOnly={readOnly}
+        />
+      ) : null}
+
       {snacc.poll && poll ? (
         <PollView
           {...poll}

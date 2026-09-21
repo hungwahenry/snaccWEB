@@ -6,6 +6,8 @@ import { ComposerBar } from "@/components/ui/composer-bar"
 import { ComposerScreen } from "@/components/ui/composer-screen"
 import { Spinner } from "@/components/ui/spinner"
 import { liveMatchCard } from "@/features/football/utils/card"
+import { HangoutEditor } from "@/features/hangouts/components/hosting/hangout-editor"
+import { HangoutTimeSheet } from "@/features/hangouts/components/hosting/hangout-time-sheet"
 import { ImageEditorSheet } from "@/features/image-editor/components/image-editor-sheet"
 import { StickerCreator } from "@/features/stickers/components/sticker-creator"
 import { StickerTraySheet } from "@/features/stickers/containers/sticker-tray-sheet"
@@ -139,6 +141,12 @@ function ComposeBody(params: ComposeParams) {
             </div>
           ) : null}
 
+          {composer.hangoutEditor ? (
+            <div className="mt-3">
+              <HangoutEditor {...composer.hangoutEditor} />
+            </div>
+          ) : null}
+
           {screen.quoting ? (
             <div className="flex gap-3">
               <div className="w-12 shrink-0">
@@ -159,6 +167,8 @@ function ComposeBody(params: ComposeParams) {
           <ComposerAttachments
             match={composer.match ? liveMatchCard(composer.match) : null}
             onRemoveMatch={composer.removeMatch}
+            hangoutTag={composer.hangoutTag}
+            onRemoveHangoutTag={composer.removeHangoutTag}
             images={composer.images}
             gif={composer.gif}
             sticker={composer.sticker}
@@ -192,6 +202,7 @@ function ComposeBody(params: ComposeParams) {
           </div>
         ) : null}
         <ComposerProblem problem={composer.tagProblem} />
+        <ComposerProblem problem={composer.hangoutProblem} />
         <ComposerNudges body={composer.upgrade} image={composer.imageUpgrade} />
         <ComposerToolbar
           canAddImages={composer.canAddImages}
@@ -209,6 +220,10 @@ function ComposeBody(params: ComposeParams) {
           pollActive={composer.poll !== null}
           canStartPoll={composer.canStartPoll}
           onTogglePoll={composer.togglePoll}
+          showHangout={composer.showHangout || composer.hangout !== null}
+          hangoutActive={composer.hangout !== null}
+          canStartHangout={composer.canStartHangout}
+          onToggleHangout={composer.toggleHangout}
           showSpoiler={composer.hasMedia}
           spoiler={composer.spoiler}
           onToggleSpoiler={composer.toggleSpoiler}
@@ -243,6 +258,7 @@ function ComposeBody(params: ComposeParams) {
       <DraftsSheet {...screen.draftsSheet} />
       <ScheduledSheet {...screen.scheduledSheet} />
       <ScheduleSheet {...schedule.sheet} />
+      <HangoutTimeSheet {...composer.hangoutTimeSheet} />
     </ComposerScreen>
   )
 }

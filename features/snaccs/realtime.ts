@@ -1,19 +1,13 @@
-import { getSnacc } from "./api"
 import {
   commentsChanged,
   patchSnacc,
   reactionsChanged,
+  refreshSnacc,
   removeSnacc,
   resnaccsChanged,
 } from "./cache"
 import { scheduledChanged } from "./cache/scheduled"
 import type { ClipStatus, SnaccReaction } from "./types"
-
-function refreshSnacc(id: string): void {
-  void getSnacc(id)
-    .then((fresh) => patchSnacc(fresh.id, () => fresh))
-    .catch(() => undefined)
-}
 
 export function onScheduledChanged(): void {
   scheduledChanged()

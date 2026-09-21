@@ -3,6 +3,8 @@ import type { ClipDraft } from "@/features/clips/types"
 import type { Gif } from "@/features/giphy/types"
 import { MatchAttachment } from "@/features/football/components/match-attachment"
 import type { SnaccMatch } from "@/features/football/types"
+import { HangoutTagChip } from "@/features/hangouts/components/tagging/hangout-tag-chip"
+import type { HangoutTag } from "@/features/hangouts/types"
 import { StickerAttachmentView } from "@/features/stickers/components/sticker-attachment-view"
 import type { DraftSticker } from "@/features/stickers/types"
 import { VoiceComposerPanel } from "@/features/voice/components/voice-composer-panel"
@@ -66,6 +68,8 @@ export function ComposerAttachments({
   onClipCover,
   match,
   onRemoveMatch,
+  hangoutTag,
+  onRemoveHangoutTag,
 }: {
   images: DraftImage[]
   gif: Gif | null
@@ -81,13 +85,28 @@ export function ComposerAttachments({
   onClipCover?: (ms: number) => void
   match?: SnaccMatch | null
   onRemoveMatch?: () => void
+  hangoutTag?: HangoutTag | null
+  onRemoveHangoutTag?: () => void
 }) {
   const hasVoice = !!storedVoice || !!voice?.recording || !!voice?.draft
-  if (!gif && !sticker && !clip && images.length === 0 && !hasVoice && !match)
+  if (
+    !gif &&
+    !sticker &&
+    !clip &&
+    images.length === 0 &&
+    !hasVoice &&
+    !match &&
+    !hangoutTag
+  )
     return null
 
   return (
     <>
+      {hangoutTag ? (
+        <div className="flex px-4 pt-3">
+          <HangoutTagChip tag={hangoutTag} onRemove={onRemoveHangoutTag} />
+        </div>
+      ) : null}
       {clip ? (
         <div className="flex px-4 pt-3">
           <div

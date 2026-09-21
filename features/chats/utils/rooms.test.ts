@@ -5,8 +5,12 @@ import {
   canEditChatMessage,
   chatComposerContext,
   chatVoiceSource,
+  lineText,
   removedLabel,
+  roomClosure,
+  roomSubtitle,
   roomTitle,
+  sameSender,
   typingLabel,
   unreadRoomCount,
   withdrawn,
@@ -24,7 +28,9 @@ const message = (patch: Partial<ChatMessage> = {}): ChatMessage =>
     deleted: false,
     deleted_by_sender: false,
     held: false,
+    event: null,
     sender: { id: "u1", username: "ada" },
+    subject: null,
     images: [],
     voice: null,
     sticker: null,
@@ -34,11 +40,76 @@ const message = (patch: Partial<ChatMessage> = {}): ChatMessage =>
     ...patch,
   }) as ChatMessage
 
+const NOW = Date.parse("2026-10-03T12:00:00.000Z")
+
+const hangoutRoom = (patch: Partial<NonNullable<ChatRoom["hangout"]>> = {}) =>
+  ({
+    kind: "hangout",
+    name: "⚽ watch the derby",
+    locked: false,
+    campus: null,
+    hangout: {
+      snacc_id: "s1",
+      title: "watch the derby",
+      emoji: "⚽",
+      starts_at: "2026-10-03T18:00:00.000Z",
+      wraps_at: "2026-10-04T18:00:00.000Z",
+      cancelled: false,
+      ...patch,
+    },
+  }) as ChatRoom
+
 describe("rooms", () => {
-  it("names a room by its campus, or Everyone", () => {
+  it("names a room the way the server does, or Room before it loads", () => {
     expect(roomTitle(null)).toBe("Room")
-    expect(roomTitle({ campus: null } as ChatRoom)).toBe("Everyone")
-    expect(roomTitle({ campus: { acronym: "UI" } } as ChatRoom)).toBe("UI")
+    expect(roomTitle({ name: "Everyone" } as ChatRoom)).toBe("Everyone")
+    expect(roomTitle(hangoutRoom())).toBe("⚽ watch the derby")
+  })
+
+  it("says what each kind of room is under its name", () => {
+    expect(roomSubtitle({ kind: "global" } as ChatRoom)).toBe(
+      "Everyone on Snacc"
+    )
+    expect(
+      roomSubtitle({
+        kind: "campus",
+        campus: { name: "University of Ibadan" },
+      } as ChatRoom)
+    ).toBe("University of Ibadan")
+    expect(roomSubtitle(hangoutRoom({ cancelled: true }), NOW)).toBe(
+      "Called off"
+    )
+    expect(
+      roomSubtitle(hangoutRoom({ wraps_at: "2026-10-03T11:00:00.000Z" }), NOW)
+    ).toBe("Over")
+  })
+
+  it("closes a hangout chat once it is called off or over", () => {
+    expect(roomClosure(null)).toBeNull()
+    expect(roomClosure(hangoutRoom(), NOW)).toBeNull()
+    expect(roomClosure({ ...hangoutRoom(), locked: true }, NOW)).toBe(
+      "This room is closed for now."
+    )
+    expect(roomClosure(hangoutRoom({ cancelled: true }), NOW)).toMatch(
+      /called off/
+    )
+    expect(
+      roomClosure(hangoutRoom({ wraps_at: "2026-10-03T12:00:00.000Z" }), NOW)
+    ).toMatch(/is over/)
+  })
+
+  it("writes a line for what happened, naming who", () => {
+    const ada = { display_name: "Ada", username: "ada" }
+    const bola = { display_name: null, username: "bola" }
+    expect(lineText("joined", ada, null)).toBe("Ada joined")
+    expect(lineText("removed", ada, bola)).toBe("Ada removed bola")
+    expect(lineText("cancelled", ada, null)).toBe("Ada called it off")
+  })
+
+  it("never runs a line into the messages around it", () => {
+    const line = message({ event: "joined" })
+    expect(sameSender(message(), message({ id: "m2" }))).toBe(true)
+    expect(sameSender(line, message())).toBe(false)
   })
 
   it("counts rooms with something new, leaving muted ones out", () => {

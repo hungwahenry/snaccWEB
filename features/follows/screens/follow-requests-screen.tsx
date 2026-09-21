@@ -7,8 +7,8 @@ import { LoadFailed } from "@/components/ui/load-failed"
 import { LoadMore } from "@/components/ui/load-more"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
 import { BackHeader } from "@/features/navigation/components/back-header"
-import { FollowRequestRow } from "../components/follow-request-row"
-import { FollowRequestRowSkeleton } from "../components/follow-request-row-skeleton"
+import { PersonRequestRow } from "@/features/users/components/person-request-row"
+import { PersonRequestRowSkeleton } from "@/features/users/components/person-request-row-skeleton"
 import { useFollowRequestsScreen } from "../hooks/use-follow-requests-screen"
 
 export function FollowRequestsScreen() {
@@ -26,7 +26,7 @@ export function FollowRequestsScreen() {
           />
         </div>
       ) : list.loading ? (
-        <SkeletonRows count={6} item={FollowRequestRowSkeleton} />
+        <SkeletonRows count={6} item={PersonRequestRowSkeleton} />
       ) : list.users.length === 0 ? (
         <EmptyState
           icon={UserRoundPlusIcon}
@@ -37,9 +37,9 @@ export function FollowRequestsScreen() {
       ) : (
         <>
           {list.users.map((user) => (
-            <FollowRequestRow
+            <PersonRequestRow
               key={user.id}
-              user={user}
+              person={user}
               onAccept={onAccept}
               onDecline={onDecline}
             />

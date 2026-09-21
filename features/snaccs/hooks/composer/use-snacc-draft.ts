@@ -6,6 +6,7 @@ import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import type { Gif } from "@/features/giphy/types"
 import { usePremiumNudge } from "@/features/premium/hooks/use-premium-limit"
+import { useHangoutDraft } from "@/features/hangouts/hooks/hosting/use-hangout-draft"
 import type { DraftSticker } from "@/features/stickers/types"
 import type { DraftSeed } from "../../types"
 import { draftRules, type ComposerContent } from "../../utils/composer"
@@ -35,6 +36,7 @@ export function useSnaccDraft(
   const images = useDraftImages(seed.images)
   const voice = useDraftVoice(seed.voice ?? null)
   const poll = usePollDraft(seed.poll ?? null)
+  const hangoutDraft = useHangoutDraft(seed.hangout ?? null)
   const clipDraft = useDraftClip()
   const storedVoice = seed.storedVoice ?? null
   const voiceAllowed = voiceEnabled && options.allowVoice !== false
@@ -60,6 +62,9 @@ export function useSnaccDraft(
     poll: poll.poll !== null,
     pollValid: poll.pollValid,
     pollProblem: poll.pollProblem,
+    hangout: hangoutDraft.hangout !== null,
+    hangoutValid: hangoutDraft.hangoutValid,
+    carriesHangout: seed.carriesHangout ?? false,
     voiceAllowed,
     stickersAllowed: stickersEnabled,
     clip: clipDraft.clip !== null,
@@ -75,6 +80,7 @@ export function useSnaccDraft(
     voice: voice.voice,
     clip: clipDraft.clip,
     poll: poll.poll,
+    hangout: hangoutDraft.hangout,
     spoiler,
   }
 
@@ -89,6 +95,7 @@ export function useSnaccDraft(
     ...images,
     ...voice,
     ...poll,
+    ...hangoutDraft,
     ...clipDraft,
     ...rules,
     content,
@@ -103,7 +110,6 @@ export function useSnaccDraft(
     spoiler,
     storedVoice,
     upgrade: bodyLimit,
-    showPoll: poll.pollsEnabled,
     showVoice: voiceAllowed,
     showClip: clipsAllowed,
     showGif: gifsEnabled,

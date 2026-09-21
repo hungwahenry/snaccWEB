@@ -4,6 +4,7 @@ import {
   EyeOffIcon,
   ImageIcon,
   MicIcon,
+  PartyPopperIcon,
   StickerIcon,
   VideoIcon,
 } from "lucide-react"
@@ -27,6 +28,10 @@ type ComposerToolbarProps = {
   pollActive: boolean
   canStartPoll: boolean
   onTogglePoll: () => void
+  showHangout?: boolean
+  hangoutActive?: boolean
+  canStartHangout?: boolean
+  onToggleHangout?: () => void
   showSpoiler: boolean
   spoiler: boolean
   onToggleSpoiler: () => void
@@ -55,6 +60,10 @@ export function ComposerToolbar({
   pollActive,
   canStartPoll,
   onTogglePoll,
+  showHangout = false,
+  hangoutActive = false,
+  canStartHangout = false,
+  onToggleHangout,
   showSpoiler,
   spoiler,
   onToggleSpoiler,
@@ -67,8 +76,8 @@ export function ComposerToolbar({
   right,
 }: ComposerToolbarProps) {
   return (
-    <div className="flex items-center justify-between px-2 py-2">
-      <div className="flex items-center gap-1">
+    <div className="flex items-center gap-2 px-2 py-2">
+      <div className="flex min-w-0 flex-1 [scrollbar-width:none] items-center gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden">
         <IconButton
           icon={ImageIcon}
           label="Add photos"
@@ -108,6 +117,15 @@ export function ComposerToolbar({
             iconClassName={cn(pollActive && "text-success")}
           />
         ) : null}
+        {showHangout && onToggleHangout ? (
+          <IconButton
+            icon={PartyPopperIcon}
+            label={hangoutActive ? "Remove the hangout" : "Make it a hangout"}
+            disabled={!hangoutActive && !canStartHangout}
+            onClick={onToggleHangout}
+            iconClassName={cn(hangoutActive && "text-success")}
+          />
+        ) : null}
         {showSpoiler ? (
           <IconButton
             icon={EyeOffIcon}
@@ -128,7 +146,7 @@ export function ComposerToolbar({
         ) : null}
       </div>
 
-      <div className="flex items-center gap-3 pr-2">
+      <div className="flex shrink-0 items-center gap-3 pr-2">
         {showCounter ? (
           <span
             className={cn(

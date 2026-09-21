@@ -5,6 +5,7 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { MatchDetailSheet } from "@/features/football/components/match-detail-sheet"
 import { Matchday } from "@/features/football/components/matchday"
 import { MatchdaySkeleton } from "@/features/football/components/matchday-skeleton"
+import { HangoutsStrip } from "@/features/hangouts/components/lists/hangouts-strip"
 import { DiscoverSections } from "../components/discover-sections"
 import { useDiscover } from "../hooks/use-discover"
 
@@ -23,6 +24,15 @@ export function Discover() {
           onPressMatch={matchday.onPressMatch}
         />
       )}
+      {discover.hangouts.show ? (
+        <HangoutsStrip
+          cards={discover.hangouts.cards}
+          now={discover.hangouts.now}
+          seeAllHref={discover.hangouts.seeAllHref}
+          onPlan={discover.hangouts.onPlan}
+          className="-mx-(--gutter)"
+        />
+      ) : null}
       <DiscoverSections
         ghost={discover.ghost}
         celebrants={discover.celebrants}

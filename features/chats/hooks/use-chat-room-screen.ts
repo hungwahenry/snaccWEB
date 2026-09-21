@@ -3,21 +3,25 @@
 import { useEffect, useMemo, useRef, type RefObject } from "react"
 import { useThreadScroll } from "@/features/messages/hooks/use-thread-scroll"
 import { useReportSheet } from "@/features/reports/hooks/use-report-sheet"
+import { useNow } from "@/hooks/use-now"
 import { useLightbox } from "@/providers/lightbox-provider"
 import {
   discardChatMessage,
   retryChatMessage,
 } from "../cache/pending-chat-messages"
 import type { ChatMessageRowHandlers } from "../components/chat-message-row"
-import { roomSubtitle, roomTitle } from "../utils/rooms"
+import { snaccPath } from "@/features/snaccs/routes"
+import { roomClosure, roomSubtitle, roomTitle } from "../utils/rooms"
 import { useReactToChatMessage } from "./use-chat-actions"
 import { useChatComposer } from "./use-chat-composer"
 import { useChatMessageSheet } from "./use-chat-message-sheet"
 import { useChatReactionsSheet } from "./use-chat-reactions-sheet"
-import { useChatRooms } from "./use-chat-rooms"
+import { useChatRoom } from "./use-chat-room"
 import { useChatThread } from "./use-chat-thread"
 import { useChatTyping } from "./use-chat-typing"
 import { useMuteChatRoom } from "./use-mute-chat-room"
+
+const CLOSURE_TICK_MS = 60_000
 
 type Elements = {
   scrollRef: RefObject<HTMLDivElement | null>
@@ -28,8 +32,8 @@ export function useChatRoomScreen(
   roomId: string,
   { scrollRef, inputRef }: Elements
 ) {
-  const rooms = useChatRooms()
-  const room = rooms.data?.find((each) => each.id === roomId) ?? null
+  const room = useChatRoom(roomId).data ?? null
+  const now = useNow(CLOSURE_TICK_MS)
   const { messages, items } = useChatThread(roomId)
   const typing = useChatTyping(roomId)
   const react = useReactToChatMessage(roomId)
@@ -75,13 +79,16 @@ export function useChatRoomScreen(
     [roomId]
   )
 
+  const closure = roomClosure(room, now)
+
   return {
     room,
     title: roomTitle(room),
-    subtitle: roomSubtitle(room),
+    subtitle: roomSubtitle(room, now),
+    hangoutHref: room?.hangout ? snaccPath(room.hangout.snacc_id) : null,
     muted: room?.muted ?? false,
     onToggleMuted: () => mute(!(room?.muted ?? false)),
-    canPost: !room?.locked,
+    closure,
     messages,
     thread: items,
     typingLabel: typing.label,

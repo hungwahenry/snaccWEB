@@ -9,9 +9,9 @@ import {
   searchEmojis,
   type Catalog,
   type PickerCategory,
-} from "../utils/emoji"
+} from "@/lib/emoji"
 
-export function useReactionPicker() {
+export function useEmojiPicker(quick: readonly string[]) {
   const [query, setQuery] = useState("")
   const [category, setCategory] = useState<PickerCategory>(QUICK_CATEGORY)
   const [catalog, setCatalog] = useState<Catalog | null>(catalogLoaded)
@@ -35,8 +35,8 @@ export function useReactionPicker() {
         ? catalog
           ? searchEmojis(catalog, query)
           : []
-        : emojisFor(catalog, category),
-    [searching, catalog, query, category]
+        : emojisFor(catalog, category, quick),
+    [searching, catalog, query, category, quick]
   )
 
   return {
