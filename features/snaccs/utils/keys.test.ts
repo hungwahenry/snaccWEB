@@ -10,7 +10,7 @@ import {
 describe("snaccKeys", () => {
   it("puts every list of snaccs under one root", () => {
     const lists = [
-      snaccKeys.feed("campus", "top"),
+      snaccKeys.feed("campus"),
       snaccKeys.user("Bola", "media"),
       snaccKeys.bookmarks(),
       snaccKeys.hashtag("Exams"),
