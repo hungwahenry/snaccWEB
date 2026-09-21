@@ -1,85 +1,50 @@
 "use client"
 
-import {
-  CalendarXIcon,
-  MessageCircleIcon,
-  MessageSquareDashedIcon,
-} from "lucide-react"
-import { EmptyState } from "@/components/ui/empty-state"
-import { LoadFailed } from "@/components/ui/load-failed"
-import { useFlagWhenKnown } from "@/features/config/hooks/use-flag"
+import { MessageCircleIcon, PlusIcon } from "lucide-react"
+import { IconButton } from "@/components/ui/icon-button"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { SnaccSheets } from "@/features/snaccs/components/sheets/snacc-sheets"
 import { SnaccList } from "@/features/snaccs/components/snacc-list"
-import { useSnacc } from "@/features/snaccs/hooks/use-snacc"
 import { useSnaccActions } from "@/features/snaccs/hooks/use-snacc-actions"
-import { snaccPath } from "@/features/snaccs/routes"
-import { useBack } from "@/hooks/use-back"
-import { useRealtimeRoom } from "@/hooks/use-realtime-room"
-import { isNotFound } from "@/lib/api/errors"
-import { realtimeRooms } from "@/providers/realtime-rooms"
 import { HangoutBlockSkeleton } from "../components/block/hangout-block-skeleton"
+import { HangoutUnavailable } from "../components/info/hangout-unavailable"
 import { SnaccHangoutBlock } from "../containers/snacc-hangout-block"
-import { useHangoutSnaccs } from "../hooks/tagging/use-hangout-snaccs"
-import { hangoutTitle } from "../utils/hangouts"
+import { useHangoutSnaccsScreen } from "../hooks/tagging/use-hangout-snaccs-screen"
 
 export function HangoutSnaccsScreen({ snaccId }: { snaccId: string }) {
-  const back = useBack(snaccPath(snaccId))
-  const enabled = useFlagWhenKnown("hangouts")
-  const query = useSnacc(snaccId)
-  const snacc = query.data ?? null
-  const list = useHangoutSnaccs(snaccId)
+  const screen = useHangoutSnaccsScreen(snaccId)
   const { handlers, votingPollFor, sheets } = useSnaccActions()
-  useRealtimeRoom(enabled ? realtimeRooms.snacc(snaccId) : null)
+  const { snacc, list } = screen
 
-  const title = snacc?.hangout ? hangoutTitle(snacc.hangout) : "Hangout"
-  const missing = query.isError
-    ? isNotFound(query.error)
-    : snacc !== null && !snacc.hangout
-
-  if (enabled === false) {
+  if (screen.state !== "ready") {
     return (
       <>
-        <BackHeader title={title} onBack={back} />
-        <EmptyState
-          icon={CalendarXIcon}
-          title="Not available"
-          description="Hangouts are switched off right now."
-          className="py-24"
-        />
-      </>
-    )
-  }
-
-  if (missing || query.isError) {
-    return (
-      <>
-        <BackHeader title={title} onBack={back} />
-        <div className="py-24">
-          {missing ? (
-            <EmptyState
-              icon={MessageSquareDashedIcon}
-              title="This hangout isn't available"
-              description="It may have been deleted, or hidden."
-            />
-          ) : (
-            <LoadFailed
-              title="Could not load this hangout"
-              onRetry={() => void query.refetch()}
-            />
-          )}
-        </div>
+        <BackHeader title={screen.title} onBack={screen.onBack} />
+        <HangoutUnavailable state={screen.state} onRetry={screen.retry} />
       </>
     )
   }
 
   return (
     <>
-      <BackHeader title={title} subtitle="Snaccs from it" onBack={back} />
+      <BackHeader
+        title={screen.title}
+        subtitle="Snaccs from it"
+        onBack={screen.onBack}
+        right={
+          screen.onPost ? (
+            <IconButton
+              icon={PlusIcon}
+              label="Post from this hangout"
+              onClick={screen.onPost}
+            />
+          ) : undefined
+        }
+      />
 
       <SnaccList
         snaccs={list.items}
-        loading={enabled === null || list.loading}
+        loading={screen.loading || list.loading}
         failed={list.failed}
         loadingMore={list.loadingMore}
         onRetry={list.retry}

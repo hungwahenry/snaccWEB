@@ -5,43 +5,15 @@ import {
   MapPinIcon,
   MessageCircleIcon,
   MessagesSquareIcon,
-  PencilIcon,
   PlusIcon,
   UsersIcon,
-  type LucideIcon,
 } from "lucide-react"
 import Link from "next/link"
-import type { ReactNode } from "react"
 import { Button } from "@/components/ui/button"
-import { badgeCount } from "@/lib/format"
-import { cn } from "@/lib/utils"
 import type { HangoutBlockState } from "../../hooks/block/use-hangout-block"
 import type { SnaccHangout } from "../../types"
 import type { JoinButton } from "../../utils/join"
-
-function Detail({
-  icon: Icon,
-  muted = false,
-  children,
-}: {
-  icon: LucideIcon
-  muted?: boolean
-  children: ReactNode
-}) {
-  return (
-    <span className="flex min-w-0 items-center gap-2 text-sm">
-      <Icon className="size-4 shrink-0 text-muted-foreground" />
-      <span
-        className={cn(
-          "min-w-0 truncate",
-          muted ? "text-muted-foreground italic" : "text-foreground"
-        )}
-      >
-        {children}
-      </span>
-    </span>
-  )
-}
+import { HangoutDetail } from "./hangout-detail"
 
 function JoinAction({
   button,
@@ -125,61 +97,25 @@ export function HangoutBlock({
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Detail icon={MapPinIcon} muted={block.placeHidden}>
+        <HangoutDetail icon={MapPinIcon} muted={block.placeHidden}>
           {block.place}
-        </Detail>
-        {block.membersHref && !disabled ? (
-          <Link
-            href={block.membersHref}
-            className="flex items-center gap-1 self-start hover:underline"
-          >
-            <Detail icon={UsersIcon}>{block.going}</Detail>
-            <ChevronRightIcon className="size-3.5 text-muted-foreground" />
-          </Link>
-        ) : (
-          <Detail icon={UsersIcon}>{block.going}</Detail>
-        )}
+        </HangoutDetail>
+        <HangoutDetail icon={UsersIcon}>{block.going}</HangoutDetail>
         {hangout.private ? (
-          <Detail icon={LockIcon}>The host approves who joins</Detail>
+          <HangoutDetail icon={LockIcon}>
+            The host approves who joins
+          </HangoutDetail>
         ) : null}
       </div>
 
       {block.live ? (
         <>
           <div className="flex flex-wrap items-center gap-2">
-            {block.host ? (
-              <>
-                {block.host.editHref && !disabled ? (
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    nativeButton={false}
-                    render={<Link href={block.host.editHref} />}
-                  >
-                    <PencilIcon /> Edit
-                  </Button>
-                ) : null}
-                {block.host.requests && !disabled ? (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    nativeButton={false}
-                    render={<Link href={block.host.requestsHref} />}
-                  >
-                    Requests
-                    <span className="min-w-5 rounded-full bg-primary px-1.5 py-0.5 text-center text-xs font-bold text-primary-foreground">
-                      {badgeCount(block.host.requests)}
-                    </span>
-                  </Button>
-                ) : null}
-              </>
-            ) : (
-              <JoinAction
-                button={block.button}
-                disabled={disabled}
-                onJoin={block.onJoin}
-              />
-            )}
+            <JoinAction
+              button={block.button}
+              disabled={disabled}
+              onJoin={block.onJoin}
+            />
             {block.chat ? (
               <Button
                 size="sm"
@@ -190,21 +126,10 @@ export function HangoutBlock({
                 <MessagesSquareIcon /> Chat
               </Button>
             ) : null}
-            {block.postHref && !disabled ? (
-              <Button
-                size="sm"
-                variant="outline"
-                className="ml-auto"
-                nativeButton={false}
-                render={<Link href={block.postHref} />}
-              >
-                <PlusIcon /> Post
-              </Button>
-            ) : null}
           </div>
 
           {linkToSnaccs ? (
-            <div className="-mx-3.5 border-t border-border px-3.5 pt-2.5">
+            <div className="-mx-3.5 flex items-center justify-between gap-2 border-t border-border px-3.5 pt-2.5">
               {disabled ? (
                 <span className="flex min-w-0 items-center gap-1.5 text-sm font-semibold text-muted-foreground">
                   <MessageCircleIcon className="size-4 shrink-0" />
@@ -220,6 +145,16 @@ export function HangoutBlock({
                   <ChevronRightIcon className="size-3.5 shrink-0" />
                 </Link>
               )}
+              {block.postHref && !disabled ? (
+                <Link
+                  href={block.postHref}
+                  aria-label="Post from this hangout"
+                  title="Post from this hangout"
+                  className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-foreground transition-colors hover:bg-accent"
+                >
+                  <PlusIcon className="size-4" />
+                </Link>
+              ) : null}
             </div>
           ) : null}
         </>

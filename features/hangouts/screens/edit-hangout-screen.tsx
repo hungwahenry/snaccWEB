@@ -9,7 +9,7 @@ import { LoadFailed } from "@/components/ui/load-failed"
 import { Spinner } from "@/components/ui/spinner"
 import { ComposerHeader } from "@/features/snaccs/components/composer/composer-header"
 import { useSnacc } from "@/features/snaccs/hooks/use-snacc"
-import { snaccPath } from "@/features/snaccs/routes"
+import { hangoutInfoPath } from "../routes"
 import { useBack } from "@/hooks/use-back"
 import { isNotFound } from "@/lib/api/errors"
 import { HangoutBlockSkeleton } from "../components/block/hangout-block-skeleton"
@@ -21,7 +21,7 @@ import type { SnaccHangout } from "../types"
 const TITLE = "Edit hangout"
 
 export function EditHangoutScreen({ snaccId }: { snaccId: string }) {
-  const back = useBack(snaccPath(snaccId))
+  const back = useBack(hangoutInfoPath(snaccId))
   const snacc = useSnacc(snaccId)
   const hangout = snacc.data?.hangout
 

@@ -1,4 +1,5 @@
 import { ArrowLeftIcon } from "lucide-react"
+import Link from "next/link"
 import type { ReactNode } from "react"
 import { IconButton } from "@/components/ui/icon-button"
 import { cn } from "@/lib/utils"
@@ -6,6 +7,7 @@ import { cn } from "@/lib/utils"
 type BackHeaderProps = {
   title: string
   subtitle?: string
+  titleHref?: string
   onBack: () => void
   right?: ReactNode
   divider?: boolean
@@ -17,12 +19,29 @@ type BackHeaderProps = {
 export function BackHeader({
   title,
   subtitle,
+  titleHref,
   onBack,
   right,
   divider = true,
   floating = false,
   className,
 }: BackHeaderProps) {
+  const heading = (
+    <>
+      <h1
+        className={cn(
+          "truncate text-lg font-extrabold tracking-tight text-foreground transition-opacity",
+          floating && "opacity-0"
+        )}
+      >
+        {title}
+      </h1>
+      {subtitle ? (
+        <p className="truncate text-xs text-muted-foreground">{subtitle}</p>
+      ) : null}
+    </>
+  )
+
   return (
     <header
       className={cn(
@@ -35,19 +54,16 @@ export function BackHeader({
       )}
     >
       <IconButton icon={ArrowLeftIcon} label="Back" onClick={onBack} />
-      <div className="min-w-0 flex-1">
-        <h1
-          className={cn(
-            "truncate text-lg font-extrabold tracking-tight text-foreground transition-opacity",
-            floating && "opacity-0"
-          )}
+      {titleHref ? (
+        <Link
+          href={titleHref}
+          className="block min-w-0 flex-1 rounded-lg transition-opacity hover:opacity-80"
         >
-          {title}
-        </h1>
-        {subtitle ? (
-          <p className="truncate text-xs text-muted-foreground">{subtitle}</p>
-        ) : null}
-      </div>
+          {heading}
+        </Link>
+      ) : (
+        <div className="min-w-0 flex-1">{heading}</div>
+      )}
       {right ? (
         <div className="flex shrink-0 items-center gap-1">{right}</div>
       ) : null}

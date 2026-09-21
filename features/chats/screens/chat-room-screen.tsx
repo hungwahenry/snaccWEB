@@ -38,12 +38,13 @@ export function ChatRoomScreen({ roomId }: { roomId: string }) {
       <BackHeader
         title={screen.title}
         subtitle={screen.subtitle}
+        titleHref={screen.hangoutHref ?? undefined}
         onBack={back}
         right={
           room ? (
             <>
               {screen.hangoutHref ? (
-                <Link href={screen.hangoutHref} aria-label="Open the hangout">
+                <Link href={screen.hangoutHref} aria-label="Hangout info">
                   <RoomIcon room={room} small />
                 </Link>
               ) : (

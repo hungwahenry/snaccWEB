@@ -10,7 +10,7 @@ import {
   retryChatMessage,
 } from "../cache/pending-chat-messages"
 import type { ChatMessageRowHandlers } from "../components/chat-message-row"
-import { snaccPath } from "@/features/snaccs/routes"
+import { hangoutInfoPath } from "@/features/hangouts/routes"
 import { roomClosure, roomSubtitle, roomTitle } from "../utils/rooms"
 import { useReactToChatMessage } from "./use-chat-actions"
 import { useChatComposer } from "./use-chat-composer"
@@ -85,7 +85,7 @@ export function useChatRoomScreen(
     room,
     title: roomTitle(room),
     subtitle: roomSubtitle(room, now),
-    hangoutHref: room?.hangout ? snaccPath(room.hangout.snacc_id) : null,
+    hangoutHref: room?.hangout ? hangoutInfoPath(room.hangout.snacc_id) : null,
     muted: room?.muted ?? false,
     onToggleMuted: () => mute(!(room?.muted ?? false)),
     closure,

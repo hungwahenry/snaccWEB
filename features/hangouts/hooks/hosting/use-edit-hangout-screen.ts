@@ -3,7 +3,7 @@
 import { useMutation } from "@tanstack/react-query"
 import { useState } from "react"
 import { confirm } from "@/components/ui/confirm"
-import { snaccPath } from "@/features/snaccs/routes"
+import { hangoutInfoPath } from "../../routes"
 import { useBack } from "@/hooks/use-back"
 import { showSuccess } from "@/lib/feedback"
 import { cancelHangout, editHangout } from "../../api"
@@ -20,7 +20,7 @@ import { useHangoutEditor } from "./use-hangout-editor"
 import { useHangoutLimits } from "./use-hangout-limits"
 
 export function useEditHangoutScreen(snaccId: string, hangout: SnaccHangout) {
-  const back = useBack(snaccPath(snaccId))
+  const back = useBack(hangoutInfoPath(snaccId))
   const base = useHangoutLimits()
   const limits = {
     ...base,

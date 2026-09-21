@@ -6,7 +6,7 @@ import { useMe } from "@/features/auth/hooks/use-me"
 import { usePeopleList } from "@/features/follows/hooks/use-people-list"
 import type { FollowUser } from "@/features/follows/types"
 import { useSnacc } from "@/features/snaccs/hooks/use-snacc"
-import { snaccPath } from "@/features/snaccs/routes"
+import { hangoutInfoPath } from "../../routes"
 import { nameOf } from "@/features/users/utils/names"
 import { useBack } from "@/hooks/use-back"
 import { showError } from "@/lib/feedback"
@@ -17,7 +17,7 @@ import { afterRemoval } from "../../utils/host"
 import { hangoutKeys } from "../../utils/keys"
 
 export function useHangoutMembersScreen(snaccId: string) {
-  const back = useBack(snaccPath(snaccId))
+  const back = useBack(hangoutInfoPath(snaccId))
   const me = useMe()
   const snacc = useSnacc(snaccId).data
   const hangout = snacc?.hangout ?? null

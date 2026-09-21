@@ -2,7 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query"
 import { useSnacc } from "@/features/snaccs/hooks/use-snacc"
-import { snaccPath } from "@/features/snaccs/routes"
+import { hangoutInfoPath } from "../../routes"
 import type { Author } from "@/features/users/types"
 import { useBack } from "@/hooks/use-back"
 import { useInfiniteList } from "@/hooks/use-infinite-list"
@@ -23,7 +23,7 @@ interface Answer {
 }
 
 export function useHangoutRequestsScreen(snaccId: string) {
-  const back = useBack(snaccPath(snaccId))
+  const back = useBack(hangoutInfoPath(snaccId))
   const hangout = useSnacc(snaccId).data?.hangout ?? null
   const { items, ...list } = useInfiniteList(
     hangoutKeys.requests(snaccId),

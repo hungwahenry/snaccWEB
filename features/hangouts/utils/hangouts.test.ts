@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import type { SnaccHangout } from "../types"
 import {
+  canPostFrom,
   goingLine,
   hangoutTitle,
   isOngoing,
@@ -44,6 +45,16 @@ describe("stateAt", () => {
   it("counts a hangout as on until it is over or called off", () => {
     expect(isOngoing(hangout({ starts_at: at(-1) }), NOW)).toBe(true)
     expect(isOngoing(hangout({ state: "cancelled" }), NOW)).toBe(false)
+  })
+})
+
+describe("canPostFrom", () => {
+  it("lets the people going post from it, until it is called off", () => {
+    expect(canPostFrom(hangout({ join_state: "going" }), NOW)).toBe(true)
+    expect(canPostFrom(hangout({ join_state: "requested" }), NOW)).toBe(false)
+    expect(
+      canPostFrom(hangout({ join_state: "going", state: "cancelled" }), NOW)
+    ).toBe(false)
   })
 })
 

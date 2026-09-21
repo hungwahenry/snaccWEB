@@ -21,6 +21,13 @@ export function isOngoing(hangout: Timed, now: number): boolean {
   return state === "upcoming" || state === "happening"
 }
 
+export function canPostFrom(
+  hangout: Timed & Pick<SnaccHangout, "join_state">,
+  now: number
+): boolean {
+  return hangout.join_state === "going" && stateAt(hangout, now) !== "cancelled"
+}
+
 export function whenLineFor(
   state: HangoutState,
   startsAt: string,

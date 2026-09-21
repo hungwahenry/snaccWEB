@@ -6,18 +6,12 @@ import { useOpenHangoutChat } from "@/features/chats/hooks/use-open-hangout-chat
 import { useGhostWindow } from "@/features/ghost/hooks/use-ghost-window"
 import { composePath } from "@/features/snaccs/routes"
 import { useNow } from "@/hooks/use-now"
-import {
-  editHangoutPath,
-  hangoutMembersPath,
-  hangoutRequestsPath,
-  hangoutSnaccsPath,
-} from "../../routes"
+import { hangoutSnaccsPath } from "../../routes"
 import type { SnaccHangout } from "../../types"
 import {
+  canPostFrom,
   goingLine,
-  isOngoing,
   placeLine,
-  stateAt,
   whenLine,
 } from "../../utils/hangouts"
 import { joinButton } from "../../utils/join"
@@ -37,7 +31,6 @@ export function useHangoutBlock(
   const toggle = useHangoutJoin()
   const chat = useOpenHangoutChat()
   const now = useNow(TICK_MS)
-  const requests = hangout.requests_count ?? 0
   const live = enabled && !readOnly
 
   const button = joinButton(
@@ -53,24 +46,14 @@ export function useHangoutBlock(
     place: placeLine(hangout),
     placeHidden: hangout.place === null,
     going: goingLine(hangout),
-    membersHref:
-      live && hangout.place !== null ? hangoutMembersPath(snaccId) : null,
     button,
     onJoin: () => toggle(snaccId, hangout),
-    host:
-      button.kind === "hosting"
-        ? {
-            editHref: isOngoing(hangout, now) ? editHangoutPath(snaccId) : null,
-            requests: requests > 0 ? requests : null,
-            requestsHref: hangoutRequestsPath(snaccId),
-          }
-        : null,
     chat: inside
       ? { pending: chat.pending, onOpen: () => chat.open(snaccId) }
       : null,
     snaccsHref: hangoutSnaccsPath(snaccId),
     postHref:
-      inside && stateAt(hangout, now) !== "cancelled" && !ghost.active
+      canPostFrom(hangout, now) && !ghost.active
         ? composePath({ hangoutId: snaccId })
         : null,
   }
