@@ -24,11 +24,11 @@ type SnaccActionsProps = {
   resnaccsCount: number
   myResnacc: boolean
   anonymous?: boolean
-  onReact: (emoji: string) => void
-  onOpenBreakdown: () => void
-  onOpenResnaccs: () => void
+  onReact?: (emoji: string) => void
+  onOpenBreakdown?: () => void
+  onOpenResnaccs?: () => void
   onComment: () => void
-  onResnacc: () => void
+  onResnacc?: () => void
   onShare: () => void
 }
 
@@ -51,6 +51,7 @@ export function SnaccActions({
   const trigger = useRef<HTMLDivElement>(null)
 
   function react(emoji: string) {
+    if (!onReact) return
     const box = trigger.current?.getBoundingClientRect()
     if (box && emoji !== myReaction) {
       bursts.add(emoji, box.width / 2, box.height / 2)
@@ -71,10 +72,12 @@ export function SnaccActions({
             onPress={onOpenBreakdown}
           />
         </div>
-        <div ref={trigger} className="relative shrink-0">
-          <ReactionPicker mine={myReaction} onSelect={react} />
-          <ReactionBursts bursts={bursts.bursts} onDone={bursts.remove} />
-        </div>
+        {onReact ? (
+          <div ref={trigger} className="relative shrink-0">
+            <ReactionPicker mine={myReaction} onSelect={react} />
+            <ReactionBursts bursts={bursts.bursts} onDone={bursts.remove} />
+          </div>
+        ) : null}
       </div>
 
       <div className="flex shrink-0 items-center gap-3">
@@ -91,14 +94,14 @@ export function SnaccActions({
           >
             <GhostIcon className="size-[22px]" />
           </span>
-        ) : (
+        ) : onResnacc ? (
           <ResnaccButton
             count={resnaccsCount}
             mine={myResnacc}
             onPress={onResnacc}
             onLongPress={resnaccsCount > 0 ? onOpenResnaccs : undefined}
           />
-        )}
+        ) : null}
         <Action icon={SendIcon} label="Share" count={0} onPress={onShare} />
       </div>
     </div>

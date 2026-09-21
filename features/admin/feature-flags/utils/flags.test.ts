@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
-import type { AdminFeatureFlag, FlagPlatformRule } from "../types"
+import type { AdminFeatureFlag, FlagDraft, FlagPlatformRule } from "../types"
 import {
+  audienceLabel,
   described,
   draftErrors,
   draftFrom,
@@ -20,6 +21,9 @@ const flag = (overrides: Partial<AdminFeatureFlag> = {}): AdminFeatureFlag => ({
   enabled: true,
   category: "social",
   description: "",
+  is_public: true,
+  audience: "everyone",
+  member_count: 0,
   min_version: null,
   max_version: null,
   overrides: [],
@@ -101,6 +105,29 @@ describe("described", () => {
     )
     expect(described(flag())).toBe("ghost_hour on for every build.")
   })
+
+  it("says who it is for when that is not everyone", () => {
+    expect(described(flag({ audience: "listed", member_count: 3 }))).toBe(
+      "ghost_hour on for 3 listed people."
+    )
+    expect(described(flag({ audience: "premium" }))).toBe(
+      "ghost_hour on for premium subscribers."
+    )
+  })
+})
+
+describe("audienceLabel", () => {
+  it("counts the list, and names everyone else plainly", () => {
+    expect(audienceLabel({ audience: "everyone", member_count: 4 })).toBe(
+      "Everyone"
+    )
+    expect(audienceLabel({ audience: "premium", member_count: 0 })).toBe(
+      "Premium subscribers"
+    )
+    expect(audienceLabel({ audience: "listed", member_count: 1 })).toBe(
+      "1 listed person"
+    )
+  })
 })
 
 describe("windowErrors", () => {
@@ -137,6 +164,7 @@ describe("drafts", () => {
 
   it("starts from what is saved", () => {
     expect(draftFrom(saved)).toEqual({
+      audience: "everyone",
       min: "1.2.0",
       max: "",
       rules: { android: { enabled: false, min: "", max: "1.5.0" } },
@@ -156,7 +184,8 @@ describe("drafts", () => {
   })
 
   it("checks every window except the web's", () => {
-    const draft = {
+    const draft: FlagDraft = {
+      audience: "everyone",
       min: "x",
       max: "",
       rules: {
@@ -172,8 +201,9 @@ describe("drafts", () => {
     expect(isDraftReady(draftFrom(saved))).toBe(true)
   })
 
-  it("sends both windows and every rule, blanks as no limit", () => {
-    const draft = {
+  it("sends who it is for, both windows and every rule, blanks as no limit", () => {
+    const draft: FlagDraft = {
+      audience: "listed",
       min: " 1.2.0 ",
       max: "",
       rules: {
@@ -182,6 +212,7 @@ describe("drafts", () => {
       },
     }
     expect(toFlagChanges(draft)).toEqual({
+      audience: "listed",
       minVersion: "1.2.0",
       maxVersion: null,
       overrides: [
@@ -192,7 +223,10 @@ describe("drafts", () => {
   })
 
   it("sends an empty rule set to clear every platform rule", () => {
-    expect(toFlagChanges({ min: "", max: "", rules: {} }).overrides).toEqual([])
+    expect(
+      toFlagChanges({ audience: "everyone", min: "", max: "", rules: {} })
+        .overrides
+    ).toEqual([])
   })
 })
 

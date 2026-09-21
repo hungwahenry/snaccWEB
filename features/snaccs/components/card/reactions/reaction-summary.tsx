@@ -5,7 +5,7 @@ import { TOP_REACTIONS_SHOWN } from "../../../utils/constants"
 type ReactionSummaryProps = {
   reactions: SnaccReaction[]
   total: number
-  onPress: () => void
+  onPress?: () => void
 }
 
 export function ReactionSummary({
@@ -18,12 +18,13 @@ export function ReactionSummary({
   return (
     <button
       type="button"
+      disabled={!onPress}
       onClick={(event) => {
         event.stopPropagation()
-        onPress()
+        onPress?.()
       }}
       aria-label={`${total} reactions`}
-      className="flex h-9 items-center gap-1.5 rounded-full px-1 transition-colors hover:bg-accent active:scale-95"
+      className="flex h-9 items-center gap-1.5 rounded-full px-1 transition-colors enabled:hover:bg-accent enabled:active:scale-95"
     >
       <span className="flex items-center gap-0.5">
         {reactions.slice(0, TOP_REACTIONS_SHOWN).map((reaction) => (

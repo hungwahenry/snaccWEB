@@ -1,6 +1,8 @@
+import type { Option } from "@/features/admin/shell/types"
 import { plural } from "@/features/admin/shell/utils/format"
 import type {
   AdminFeatureFlag,
+  FlagAudience,
   FlagDraft,
   FlagGroup,
   FlagPlatform,
@@ -53,9 +55,27 @@ export function reachLabel(
   return windowLabel(rule ?? flag) ?? "Every build"
 }
 
-/** The toast after a save, saying what the flag now does. */
+export const AUDIENCE_OPTIONS: Option<FlagAudience>[] = [
+  { value: "everyone", label: "Everyone" },
+  { value: "premium", label: "Premium subscribers" },
+  { value: "listed", label: "Listed people only" },
+]
+
+export function audienceLabel(
+  flag: Pick<AdminFeatureFlag, "audience" | "member_count">
+): string {
+  if (flag.audience === "premium") return "Premium subscribers"
+  if (flag.audience === "listed") {
+    return plural(flag.member_count, "listed person", "listed people")
+  }
+  return "Everyone"
+}
+
 export function described(flag: AdminFeatureFlag): string {
   if (!flag.enabled) return `${flag.key} turned off.`
+  if (flag.audience !== "everyone") {
+    return `${flag.key} on for ${audienceLabel(flag).toLowerCase()}.`
+  }
   if (flag.overrides.length > 0) {
     return `${flag.key} saved, with ${plural(flag.overrides.length, "platform rule")}.`
   }
@@ -95,6 +115,7 @@ export function windowErrors(min: string, max: string): WindowErrors {
 
 export function draftFrom(flag: AdminFeatureFlag): FlagDraft {
   return {
+    audience: flag.audience,
     min: flag.min_version ?? "",
     max: flag.max_version ?? "",
     rules: Object.fromEntries(
@@ -177,6 +198,7 @@ export function toFlagChanges(draft: FlagDraft): UpdateFlagInput {
   })
 
   return {
+    audience: draft.audience,
     minVersion: draft.min.trim() || null,
     maxVersion: draft.max.trim() || null,
     overrides,

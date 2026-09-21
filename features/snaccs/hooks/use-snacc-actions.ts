@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { createElement, useEffect, useMemo, useRef } from "react"
+import { useFlag } from "@/features/config/hooks/use-flag"
 import { signal } from "@/features/signals/utils/queue"
 import { useKeepSnaccSticker } from "@/features/stickers/hooks/use-keep-sticker"
 import { useStickerStudio } from "@/providers/sticker-studio-provider"
@@ -24,6 +25,8 @@ type Overrides = {
 
 export function useSnaccActions(overrides: Overrides = {}) {
   const router = useRouter()
+  const canReact = useFlag("reactions")
+  const canResnacc = useFlag("resnacc")
   const react = useReactToSnacc()
   const breakdown = useBreakdownSheet()
   const resnacc = useResnaccSheet()
@@ -68,16 +71,23 @@ export function useSnaccActions(overrides: Overrides = {}) {
       else latest.current.router.push(snaccPath(snacc.id))
     }
 
+    const openBreakdown = (snacc: Snacc) =>
+      latest.current.breakdown.onOpen(snacc)
+    const openResnacc = (snacc: Snacc) => latest.current.resnacc.onOpen(snacc)
+
     return {
-      onReact: (snacc, emoji) =>
-        latest.current.react.mutate({
-          snaccId: snacc.id,
-          emoji: snacc.my_reaction === emoji ? null : emoji,
-        }),
-      onOpenBreakdown: (snacc) => latest.current.breakdown.onOpen(snacc),
-      onOpenResnaccs: (snacc) =>
-        latest.current.router.push(resnaccsPath(snacc.id)),
-      onResnacc: (snacc) => latest.current.resnacc.onOpen(snacc),
+      onReact: canReact
+        ? (snacc, emoji) =>
+            latest.current.react.mutate({
+              snaccId: snacc.id,
+              emoji: snacc.my_reaction === emoji ? null : emoji,
+            })
+        : undefined,
+      onOpenBreakdown: canReact ? openBreakdown : undefined,
+      onOpenResnaccs: canResnacc
+        ? (snacc) => latest.current.router.push(resnaccsPath(snacc.id))
+        : undefined,
+      onResnacc: canResnacc ? openResnacc : undefined,
       onOpenActions: (snacc) => latest.current.menu.onOpen(snacc),
       onShare: (snacc) => latest.current.menu.onShare(snacc),
       onComment,
@@ -100,18 +110,22 @@ export function useSnaccActions(overrides: Overrides = {}) {
                 reactionsCount: snacc.reactions_count,
                 commentsCount: snacc.comments_count,
                 resnaccsCount: snacc.resnaccs_count,
-                onOpenBreakdown: () => {
-                  lightbox.close()
-                  latest.current.breakdown.onOpen(snacc)
-                },
+                onOpenBreakdown: canReact
+                  ? () => {
+                      lightbox.close()
+                      openBreakdown(snacc)
+                    }
+                  : undefined,
                 onComment: () => {
                   lightbox.close()
                   onComment(snacc)
                 },
-                onResnacc: () => {
-                  lightbox.close()
-                  latest.current.resnacc.onOpen(snacc)
-                },
+                onResnacc: canResnacc
+                  ? () => {
+                      lightbox.close()
+                      openResnacc(snacc)
+                    }
+                  : undefined,
               })
             : undefined
         lightbox.open({ images: snacc.images, index, footer })
@@ -140,7 +154,7 @@ export function useSnaccActions(overrides: Overrides = {}) {
       },
       onKeepSticker: (snacc) => latest.current.keepSticker?.(snacc.id),
     }
-  }, [])
+  }, [canReact, canResnacc])
 
   return {
     handlers,

@@ -15,8 +15,8 @@ const toast = vi.hoisted(() => {
 const config = vi.hoisted(() => ({ current: undefined as unknown }))
 
 vi.mock("sonner", () => ({ toast }))
-vi.mock("@/features/config/utils/flag", () => ({
-  cachedConfig: () => config.current,
+vi.mock("@/features/config/cache", () => ({
+  readConfig: () => config.current,
 }))
 
 const { showError, showUndo } = await import("./feedback")

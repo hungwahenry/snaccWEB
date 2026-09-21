@@ -8,9 +8,9 @@ type LightboxActionsProps = {
   reactionsCount: number
   commentsCount: number
   resnaccsCount: number
-  onOpenBreakdown: () => void
+  onOpenBreakdown?: () => void
   onComment: () => void
-  onResnacc: () => void
+  onResnacc?: () => void
 }
 
 export function LightboxActions({
@@ -39,12 +39,14 @@ export function LightboxActions({
           count={commentsCount}
           onPress={onComment}
         />
-        <Count
-          icon={RepeatIcon}
-          label="Resnacc"
-          count={resnaccsCount}
-          onPress={onResnacc}
-        />
+        {onResnacc ? (
+          <Count
+            icon={RepeatIcon}
+            label="Resnacc"
+            count={resnaccsCount}
+            onPress={onResnacc}
+          />
+        ) : null}
       </div>
     </div>
   )

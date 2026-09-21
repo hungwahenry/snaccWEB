@@ -12,7 +12,7 @@ export function FlagsScreen() {
     <>
       <PageHeader
         title="Feature flags"
-        description="Turn features on or off, and choose which app builds get them."
+        description="Turn features on or off, and choose who and which app builds get them."
       />
       <QueryView query={query} what="flags">
         {(groups) => (

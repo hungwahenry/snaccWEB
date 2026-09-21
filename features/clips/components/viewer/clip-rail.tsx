@@ -20,9 +20,9 @@ import type { PlayableClip } from "../../utils/viewer"
 
 export type ClipRailProps = {
   snacc: PlayableClip
-  onReact: (emoji: string) => void
+  onReact?: (emoji: string) => void
   onComment: () => void
-  onResnacc: () => void
+  onResnacc?: () => void
   onShare: () => void
   onMore: () => void
 }
@@ -103,25 +103,27 @@ export function ClipRail({
         </Link>
       )}
 
-      <div className="flex flex-col items-center gap-1">
-        <ReactionPicker
-          mine={snacc.my_reaction}
-          onSelect={onReact}
-          align="end"
-          trigger={
-            <span className="flex size-11 cursor-pointer items-center justify-center">
-              {snacc.my_reaction ? (
-                <span className="text-[28px] leading-9">
-                  {snacc.my_reaction}
-                </span>
-              ) : (
-                <SmilePlusIcon className={cn("size-7 text-white", SHADOW)} />
-              )}
-            </span>
-          }
-        />
-        <Count value={snacc.reactions_count} />
-      </div>
+      {onReact ? (
+        <div className="flex flex-col items-center gap-1">
+          <ReactionPicker
+            mine={snacc.my_reaction}
+            onSelect={onReact}
+            align="end"
+            trigger={
+              <span className="flex size-11 cursor-pointer items-center justify-center">
+                {snacc.my_reaction ? (
+                  <span className="text-[28px] leading-9">
+                    {snacc.my_reaction}
+                  </span>
+                ) : (
+                  <SmilePlusIcon className={cn("size-7 text-white", SHADOW)} />
+                )}
+              </span>
+            }
+          />
+          <Count value={snacc.reactions_count} />
+        </div>
+      ) : null}
 
       <RailButton
         icon={MessageCircleIcon}
@@ -130,7 +132,7 @@ export function ClipRail({
         onPress={onComment}
       />
 
-      {snacc.anonymous ? null : (
+      {snacc.anonymous || !onResnacc ? null : (
         <RailButton
           icon={snacc.my_resnacc ? Repeat1Icon : RepeatIcon}
           label={snacc.my_resnacc ? "Undo resnacc" : "Resnacc"}

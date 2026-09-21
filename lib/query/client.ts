@@ -1,4 +1,5 @@
-import { MutationCache, QueryClient } from "@tanstack/react-query"
+import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query"
+import { configKeys } from "@/features/config/utils/keys"
 import { MINUTE_MS } from "@/lib/duration"
 import { isApiError } from "../api/errors"
 import { showError } from "../feedback"
@@ -10,11 +11,24 @@ declare module "@tanstack/react-query" {
   }
 }
 
+function refetchFlagsWhenOff(client: QueryClient, error: unknown): void {
+  if (!isApiError(error) || error.code !== "feature_disabled") return
+
+  void client.invalidateQueries(
+    { queryKey: configKeys.app() },
+    { cancelRefetch: false }
+  )
+}
+
 export function makeQueryClient() {
-  return new QueryClient({
+  const client: QueryClient = new QueryClient({
+    queryCache: new QueryCache({
+      onError: (error) => refetchFlagsWhenOff(client, error),
+    }),
     mutationCache: new MutationCache({
       // A mutation with its own onError owns its feedback, so it is left to say it once.
       onError: (error, _variables, _context, mutation) => {
+        refetchFlagsWhenOff(client, error)
         if (mutation.meta?.silent || mutation.options.onError) return
         showError(error)
       },
@@ -31,6 +45,8 @@ export function makeQueryClient() {
       mutations: { retry: false },
     },
   })
+
+  return client
 }
 
 let browserClient: QueryClient | undefined

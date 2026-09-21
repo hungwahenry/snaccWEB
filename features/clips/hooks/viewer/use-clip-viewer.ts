@@ -170,6 +170,7 @@ export function useClipViewer(startId: string, startRevealed: boolean) {
       },
       onHold: setFast,
       onQuickReact: (snacc) => {
+        if (!actions.onReact) return null
         if (snacc.my_reaction) return snacc.my_reaction
         actions.onReact(snacc, QUICK_REACTION)
         return QUICK_REACTION

@@ -15,12 +15,14 @@ import { TableFrame } from "@/features/admin/shell/components/table-frame"
 import { humanize } from "@/features/admin/shell/utils/format"
 import type { AdminFeatureFlag, FlagDraft, FlagGroup } from "../types"
 import {
+  audienceLabel,
   PLATFORM_LABELS,
   PLATFORMS,
   reachLabel,
   windowLabel,
 } from "../utils/flags"
 import { AvailabilityDialog } from "./availability-dialog"
+import { MembersDialog } from "./members-dialog"
 
 function Reach({ flag }: { flag: AdminFeatureFlag }) {
   if (flag.overrides.length === 0) {
@@ -77,12 +79,30 @@ export function FlagsTables({
         className: "max-w-md whitespace-normal align-top",
         cell: (flag) => (
           <div className="min-w-0">
-            <p className="font-mono text-xs">{flag.key}</p>
+            <p className="flex items-center gap-2 font-mono text-xs">
+              {flag.key}
+              {flag.is_public ? null : (
+                <Badge variant="secondary" className="font-sans">
+                  Server only
+                </Badge>
+              )}
+            </p>
             <p className="mt-1 text-xs text-pretty text-muted-foreground">
               {flag.description}
             </p>
           </div>
         ),
+      },
+      {
+        id: "audience",
+        header: "For",
+        className: "align-top",
+        cell: (flag) =>
+          flag.audience === "everyone" ? (
+            <span className="text-xs text-muted-foreground">Everyone</span>
+          ) : (
+            <Badge variant="outline">{audienceLabel(flag)}</Badge>
+          ),
       },
       {
         id: "reach",
@@ -97,6 +117,17 @@ export function FlagsTables({
         className: "align-top",
         cell: (flag) => (
           <div className="flex items-center justify-end gap-3">
+            {flag.is_public &&
+            (flag.audience === "listed" || flag.member_count > 0) ? (
+              <MembersDialog
+                flag={flag}
+                trigger={
+                  <Button variant="outline" size="sm">
+                    People
+                  </Button>
+                }
+              />
+            ) : null}
             <CanAct permission="flags.write">
               <AvailabilityDialog
                 flag={flag}

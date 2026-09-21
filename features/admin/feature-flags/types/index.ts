@@ -1,4 +1,8 @@
+import type { UserRefWithCampus } from "@/lib/api/types"
+
 export type FlagPlatform = "ios" | "android" | "web"
+
+export type FlagAudience = "everyone" | "premium" | "listed"
 
 export interface FlagPlatformRule {
   platform: FlagPlatform
@@ -12,10 +16,18 @@ export interface AdminFeatureFlag {
   enabled: boolean
   category: string
   description: string
+  is_public: boolean
+  audience: FlagAudience
+  member_count: number
   min_version: string | null
   max_version: string | null
   overrides: FlagPlatformRule[]
   updated_at: string
+}
+
+export interface FlagMember {
+  user: UserRefWithCampus
+  added_at: string
 }
 
 export interface FlagPlatformRuleInput {
@@ -27,10 +39,9 @@ export interface FlagPlatformRuleInput {
 
 export interface UpdateFlagInput {
   enabled?: boolean
+  audience?: FlagAudience
   minVersion?: string | null
   maxVersion?: string | null
-  /** The whole set: a platform left out loses its rule, and [] puts every platform back on the
-   * flag's own window. Leave it off entirely to change nothing but the flag itself. */
   overrides?: FlagPlatformRuleInput[]
 }
 
@@ -46,6 +57,7 @@ export interface FlagRuleDraft {
 }
 
 export interface FlagDraft {
+  audience: FlagAudience
   min: string
   max: string
   rules: Partial<Record<FlagPlatform, FlagRuleDraft>>

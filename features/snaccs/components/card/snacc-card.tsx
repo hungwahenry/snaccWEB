@@ -25,11 +25,11 @@ import { SnaccPendingBar } from "./snacc-pending-bar"
 import { nameOf } from "@/features/users/utils/names"
 
 export type SnaccActionHandlers = {
-  onReact: (snacc: Snacc, emoji: string) => void
-  onOpenBreakdown: (snacc: Snacc) => void
-  onOpenResnaccs: (snacc: Snacc) => void
+  onReact?: (snacc: Snacc, emoji: string) => void
+  onOpenBreakdown?: (snacc: Snacc) => void
+  onOpenResnaccs?: (snacc: Snacc) => void
   onComment: (snacc: Snacc) => void
-  onResnacc: (snacc: Snacc) => void
+  onResnacc?: (snacc: Snacc) => void
   onShare: (snacc: Snacc) => void
   onOpenActions: (snacc: Snacc) => void
   onOpenImages: (snacc: Snacc | EmbeddedSnacc, index: number) => void
@@ -142,11 +142,13 @@ function SnaccCardComponent(props: SnaccCardProps) {
       resnaccsCount={snacc.resnaccs_count}
       myResnacc={snacc.my_resnacc}
       anonymous={snacc.anonymous}
-      onReact={(emoji) => onReact(snacc, emoji)}
-      onOpenBreakdown={() => onOpenBreakdown(snacc)}
-      onOpenResnaccs={() => onOpenResnaccs(snacc)}
+      onReact={onReact ? (emoji) => onReact(snacc, emoji) : undefined}
+      onOpenBreakdown={
+        onOpenBreakdown ? () => onOpenBreakdown(snacc) : undefined
+      }
+      onOpenResnaccs={onOpenResnaccs ? () => onOpenResnaccs(snacc) : undefined}
       onComment={() => onComment(snacc)}
-      onResnacc={() => onResnacc(snacc)}
+      onResnacc={onResnacc ? () => onResnacc(snacc) : undefined}
       onShare={() => onShare(snacc)}
     />
   )

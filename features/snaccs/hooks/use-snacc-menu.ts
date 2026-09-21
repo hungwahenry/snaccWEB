@@ -53,6 +53,9 @@ export function useSnaccMenu() {
   const [acting, setActing] = useState<Snacc | null>(null)
   const [open, setOpen] = useState(false)
   const editingEnabled = useFlag("post_editing")
+  const canSave = useFlag("bookmarks")
+  const canPin = useFlag("post_pinning")
+  const canHide = useFlag("hides")
   const configuredWindow = useConfigValue("content.snacc.edit_window_minutes")
   const editWindowMinutes = editingEnabled ? configuredWindow : 0
 
@@ -136,12 +139,12 @@ export function useSnaccMenu() {
       onEdit: withActing((snacc) => router.push(editSnaccPath(snacc.id))),
       onShare: withActing((snacc) => share.open({ kind: "snacc", snacc })),
       onCopyLink: withActing(copySnaccLink),
-      onBookmark: toggleSave,
+      onBookmark: canSave ? toggleSave : undefined,
       saved: acting?.saved ?? false,
-      onPin: togglePin,
+      onPin: canPin ? togglePin : undefined,
       pinned: acting?.pinned ?? false,
       anonymous: acting?.anonymous ?? false,
-      onHide: notInterested,
+      onHide: canHide ? notInterested : undefined,
       onDelete: confirmDelete,
       onReportSnacc: withActing((snacc) =>
         report.open({ type: "snacc", id: snacc.id })

@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { toast } from "sonner"
-import { cachedConfig } from "@/features/config/utils/flag"
+import { readConfig } from "@/features/config/cache"
 import { PREMIUM_PATH } from "@/features/premium/routes"
 import { offersPremium } from "@/features/premium/utils/limit"
 import { cachedPremium } from "@/features/premium/utils/standing"
@@ -18,7 +18,7 @@ export interface ToastAction {
  */
 export function showError(error: unknown, action?: ToastAction): void {
   const message = getErrorMessage(error)
-  if (action || !offersPremium(error, cachedConfig(), cachedPremium())) {
+  if (action || !offersPremium(error, readConfig(), cachedPremium())) {
     showErrorMessage(message, action)
     return
   }

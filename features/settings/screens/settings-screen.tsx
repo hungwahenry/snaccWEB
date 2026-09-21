@@ -66,6 +66,7 @@ export function SettingsScreen() {
   const walletEnabled = useFlag("wallet")
   const premiumEnabled = useFlag("premium")
   const eggsEnabled = useFlag("easter_eggs")
+  const savedEnabled = useFlag("bookmarks")
 
   function confirmLogout() {
     confirm({
@@ -110,15 +111,23 @@ export function SettingsScreen() {
           </Section>
         ) : null}
 
-        <Section title="Content">
-          <Row icon={BookmarkIcon} label="Saved snaccs" href={SAVED_PATH} />
-          {eggsEnabled ? (
-            <Row icon={EggIcon} label="Easter eggs" href={EGGS_PATH} />
-          ) : null}
-          {accentsEnabled ? (
-            <Row icon={PaletteIcon} label="Appearance" href={APPEARANCE_PATH} />
-          ) : null}
-        </Section>
+        {savedEnabled || eggsEnabled || accentsEnabled ? (
+          <Section title="Content">
+            {savedEnabled ? (
+              <Row icon={BookmarkIcon} label="Saved snaccs" href={SAVED_PATH} />
+            ) : null}
+            {eggsEnabled ? (
+              <Row icon={EggIcon} label="Easter eggs" href={EGGS_PATH} />
+            ) : null}
+            {accentsEnabled ? (
+              <Row
+                icon={PaletteIcon}
+                label="Appearance"
+                href={APPEARANCE_PATH}
+              />
+            ) : null}
+          </Section>
+        ) : null}
 
         <Section title="Account">
           <Row icon={MailIcon} label="Change email" href={CHANGE_EMAIL_PATH} />

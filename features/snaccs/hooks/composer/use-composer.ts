@@ -194,7 +194,7 @@ export function useComposer(params: ComposeParams) {
     username: me.data?.profile?.username ?? null,
     showPoll: draft.pollsEnabled && mode !== "quote",
     showHangout:
-      draft.hangoutsEnabled &&
+      draft.canHost &&
       mode === "new" &&
       !params.matchId &&
       !hangoutTag.hangoutId &&

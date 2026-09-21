@@ -1,16 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import { useFlag } from "@/features/config/hooks/use-flag"
 import { showError } from "@/lib/feedback"
 import { useHangoutGate } from "@/providers/hangout-gate-provider"
 import type { HangoutDraft } from "../../types"
 import { freshHangout } from "../../utils/hangout-draft"
+import { useCanHost } from "./use-can-host"
 import { useHangoutEditor } from "./use-hangout-editor"
 import { useHangoutLimits } from "./use-hangout-limits"
 
 export function useHangoutDraft(seed: HangoutDraft | null = null) {
-  const hangoutsEnabled = useFlag("hangouts")
+  const canHost = useCanHost()
   const limits = useHangoutLimits()
   const ensureAgreed = useHangoutGate()
   const [hangout, setHangout] = useState<HangoutDraft | null>(seed)
@@ -35,7 +35,7 @@ export function useHangoutDraft(seed: HangoutDraft | null = null) {
   }
 
   return {
-    hangoutsEnabled,
+    canHost,
     hangout,
     hangoutValid: editor.valid,
     toggleHangout,

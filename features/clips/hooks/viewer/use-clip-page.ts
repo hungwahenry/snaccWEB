@@ -67,12 +67,16 @@ export function useClipPage(
       else handlers.onTogglePause()
     },
     onDoubleTap: (x, y) => {
-      if (snacc && !veiled) bursts.add(handlers.onQuickReact(snacc), x, y)
+      if (!snacc || veiled) return
+      const emoji = handlers.onQuickReact(snacc)
+      if (emoji) bursts.add(emoji, x, y)
     },
     onHold: (held) => {
       if (!veiled || !held) handlers.onHold(held)
     },
   })
+  const react = handlers.onReact
+  const resnacc = handlers.onResnacc
 
   return {
     framed,
@@ -128,9 +132,9 @@ export function useClipPage(
     rail: snacc
       ? {
           snacc,
-          onReact: (emoji: string) => handlers.onReact(snacc, emoji),
+          onReact: react ? (emoji: string) => react(snacc, emoji) : undefined,
           onComment: () => handlers.onComment(snacc),
-          onResnacc: () => handlers.onResnacc(snacc),
+          onResnacc: resnacc ? () => resnacc(snacc) : undefined,
           onShare: () => handlers.onShare(snacc),
           onMore: () => handlers.onMore(snacc),
         }

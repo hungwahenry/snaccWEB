@@ -21,13 +21,13 @@ export type SnaccActionsSheetProps = {
   onEdit: () => void
   onShare: () => void
   onCopyLink: () => void
-  onBookmark: () => void
+  onBookmark?: () => void
   saved: boolean
-  onPin: () => void
+  onPin?: () => void
   pinned: boolean
   anonymous: boolean
   onDelete: () => void
-  onHide: () => void
+  onHide?: () => void
   onReportSnacc: () => void
   onReportAuthor: () => void
   onBlockAuthor: () => void
@@ -76,16 +76,18 @@ export function SnaccActionsSheet({
         hint="Paste it anywhere"
         onPress={onCopyLink}
       />
-      <ActionSheetChoice
-        icon={saved ? BookmarkCheckIcon : BookmarkIcon}
-        label={saved ? "Saved" : "Save"}
-        hint={saved ? "Remove from saved" : "Keep it for later"}
-        onPress={onBookmark}
-      />
+      {onBookmark ? (
+        <ActionSheetChoice
+          icon={saved ? BookmarkCheckIcon : BookmarkIcon}
+          label={saved ? "Saved" : "Save"}
+          hint={saved ? "Remove from saved" : "Keep it for later"}
+          onPress={onBookmark}
+        />
+      ) : null}
 
       {mine ? (
         <>
-          {anonymous ? null : (
+          {anonymous || !onPin ? null : (
             <ActionSheetChoice
               icon={PinIcon}
               label={pinned ? "Unpin from profile" : "Pin to profile"}
@@ -107,12 +109,14 @@ export function SnaccActionsSheet({
         </>
       ) : (
         <>
-          <ActionSheetChoice
-            icon={EyeOffIcon}
-            label="Not interested"
-            hint="Don't show this snacc again"
-            onPress={onHide}
-          />
+          {onHide ? (
+            <ActionSheetChoice
+              icon={EyeOffIcon}
+              label="Not interested"
+              hint="Don't show this snacc again"
+              onPress={onHide}
+            />
+          ) : null}
           <ActionSheetChoice
             icon={FlagIcon}
             label="Report snacc"
