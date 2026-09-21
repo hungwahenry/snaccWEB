@@ -51,6 +51,7 @@ export const FLAG_KEYS = [
   'moderation_enforce',
   'app_icon',
   'polls',
+  'hangouts',
   'easter_eggs',
   'live_scores',
   'accent_colors',
@@ -133,6 +134,12 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly 'moments.ttl_hours': number;
   readonly 'moments.max_per_day': number;
   readonly 'moments.caption_max_length': number;
+  readonly 'hangouts.title_max_length': number;
+  readonly 'hangouts.place_max_length': number;
+  readonly 'hangouts.capacity_min': number;
+  readonly 'hangouts.capacity_max': number;
+  readonly 'hangouts.min_lead_minutes': number;
+  readonly 'hangouts.max_ahead_days': number;
   readonly 'score.floor.unique_engagers': number;
   readonly 'score.daily.full_posts': number;
   readonly 'score.daily.half_posts': number;
@@ -213,6 +220,12 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   'moments.ttl_hours': 24,
   'moments.max_per_day': 20,
   'moments.caption_max_length': 200,
+  'hangouts.title_max_length': 80,
+  'hangouts.place_max_length': 120,
+  'hangouts.capacity_min': 2,
+  'hangouts.capacity_max': 50,
+  'hangouts.min_lead_minutes': 15,
+  'hangouts.max_ahead_days': 14,
   'score.floor.unique_engagers': 3,
   'score.daily.full_posts': 20,
   'score.daily.half_posts': 20,
