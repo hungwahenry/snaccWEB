@@ -174,6 +174,9 @@ function ComposeBody(params: ComposeParams) {
             clip={composer.clip}
             onRemoveClip={composer.removeClip}
             onClipCover={composer.setClipCover}
+            showSpoiler={composer.hasMedia}
+            spoiler={composer.spoiler}
+            onToggleSpoiler={composer.toggleSpoiler}
           />
         )}
         {schedule.active ? (
@@ -208,9 +211,6 @@ function ComposeBody(params: ComposeParams) {
           hangoutActive={composer.hangout !== null}
           canStartHangout={composer.canStartHangout}
           onToggleHangout={composer.toggleHangout}
-          showSpoiler={composer.hasMedia}
-          spoiler={composer.spoiler}
-          onToggleSpoiler={composer.toggleSpoiler}
           showSchedule={schedule.available}
           canSchedule={schedule.usable}
           scheduleActive={schedule.active}

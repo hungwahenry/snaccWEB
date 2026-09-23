@@ -11,8 +11,10 @@ import { VoiceComposerPanel } from "@/features/voice/components/voice-composer-p
 import type { VoiceDraft } from "@/features/voice/types"
 import { clock } from "@/features/voice/utils/clock"
 import { aspectRatio } from "@/lib/aspect"
+import { cn } from "@/lib/utils"
 import type { DraftImage, SnaccVoiceNote } from "../../types"
 import { draftImageKey, draftImageUri } from "../../utils/draft-images"
+import { SpoilerToggle } from "./spoiler-toggle"
 
 const STICKER_PREVIEW = 120
 
@@ -70,6 +72,9 @@ export function ComposerAttachments({
   onRemoveMatch,
   hangoutTag,
   onRemoveHangoutTag,
+  showSpoiler = false,
+  spoiler = false,
+  onToggleSpoiler,
 }: {
   images: DraftImage[]
   gif: Gif | null
@@ -87,6 +92,9 @@ export function ComposerAttachments({
   onRemoveMatch?: () => void
   hangoutTag?: HangoutTag | null
   onRemoveHangoutTag?: () => void
+  showSpoiler?: boolean
+  spoiler?: boolean
+  onToggleSpoiler?: () => void
 }) {
   const hasVoice = !!storedVoice || !!voice?.recording || !!voice?.draft
   if (
@@ -121,7 +129,7 @@ export function ComposerAttachments({
               <img
                 src={clip.posterUrl}
                 alt=""
-                className="size-full object-cover"
+                className={cn("size-full object-cover", spoiler && "blur-2xl")}
               />
             ) : null}
             <span className="absolute bottom-2 left-2 rounded-full bg-black/55 px-2 py-0.5 text-xs font-bold text-white">
@@ -210,7 +218,11 @@ export function ComposerAttachments({
                 maxWidth: "100%",
               }}
             >
-              <img src={gif.url} alt="GIF" className="size-full object-cover" />
+              <img
+                src={gif.url}
+                alt="GIF"
+                className={cn("size-full object-cover", spoiler && "blur-2xl")}
+              />
               <CornerButton
                 onPress={onRemoveGif}
                 label="Remove GIF"
@@ -230,7 +242,10 @@ export function ComposerAttachments({
                     <img
                       src={draftImageUri(image)}
                       alt=""
-                      className="size-full object-cover"
+                      className={cn(
+                        "size-full object-cover",
+                        spoiler && "blur-2xl"
+                      )}
                     />
                     <CornerButton
                       onPress={() => onRemoveImage(key)}
@@ -251,6 +266,12 @@ export function ComposerAttachments({
               })}
             </div>
           )}
+        </div>
+      ) : null}
+
+      {showSpoiler && onToggleSpoiler ? (
+        <div className="flex px-4 pt-2.5">
+          <SpoilerToggle spoiler={spoiler} onToggle={onToggleSpoiler} />
         </div>
       ) : null}
     </>

@@ -1,7 +1,6 @@
 import {
   CalendarClockIcon,
   ChartBarBigIcon,
-  EyeOffIcon,
   ImageIcon,
   MicIcon,
   PartyPopperIcon,
@@ -32,9 +31,6 @@ type ComposerToolbarProps = {
   hangoutActive?: boolean
   canStartHangout?: boolean
   onToggleHangout?: () => void
-  showSpoiler: boolean
-  spoiler: boolean
-  onToggleSpoiler: () => void
   showSchedule?: boolean
   scheduleActive?: boolean
   canSchedule?: boolean
@@ -65,9 +61,6 @@ export function ComposerToolbar({
   hangoutActive = false,
   canStartHangout = false,
   onToggleHangout,
-  showSpoiler,
-  spoiler,
-  onToggleSpoiler,
   showSchedule = false,
   scheduleActive = false,
   canSchedule = true,
@@ -126,14 +119,6 @@ export function ComposerToolbar({
             disabled={!hangoutActive && !canStartHangout}
             onClick={onToggleHangout}
             iconClassName={cn(hangoutActive && "text-success")}
-          />
-        ) : null}
-        {showSpoiler ? (
-          <IconButton
-            icon={EyeOffIcon}
-            label={spoiler ? "Unmark as sensitive" : "Mark as sensitive"}
-            onClick={onToggleSpoiler}
-            iconClassName={cn(spoiler && "text-success")}
           />
         ) : null}
         {showSchedule ? (

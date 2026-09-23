@@ -83,6 +83,9 @@ function Editor({ snacc }: { snacc: Snacc }) {
           onRemoveImage={editor.removeImage}
           onEditImage={editor.editImage}
           onRemoveGif={editor.removeGif}
+          showSpoiler={editor.hasMedia}
+          spoiler={editor.spoiler}
+          onToggleSpoiler={editor.toggleSpoiler}
         />
         <ComposerProblem problem={editor.tagProblem} />
         <ComposerNudges body={editor.upgrade} image={editor.imageUpgrade} />
@@ -93,9 +96,6 @@ function Editor({ snacc }: { snacc: Snacc }) {
           pollActive={false}
           canStartPoll={false}
           onTogglePoll={() => {}}
-          showSpoiler={editor.hasMedia}
-          spoiler={editor.spoiler}
-          onToggleSpoiler={editor.toggleSpoiler}
           remaining={editor.remaining}
           showCounter={editor.showCounter}
           upgrade={editor.upgrade}
