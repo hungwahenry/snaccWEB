@@ -13,7 +13,6 @@ function SnaccBody({ snacc }: { snacc: SnaccContent }) {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <UserCell user={snacc.author} note={formatDate(snacc.created_at)} />
         <div className="flex flex-wrap gap-2">
-          {snacc.anonymous ? <Badge variant="outline">Anonymous</Badge> : null}
           {snacc.spoiler ? <Badge variant="outline">Spoiler</Badge> : null}
           {snacc.edited_at ? <Badge variant="outline">Edited</Badge> : null}
         </div>

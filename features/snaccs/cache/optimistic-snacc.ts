@@ -41,13 +41,7 @@ function placeReply(targetId: string): {
 
   return {
     parent_id: target.reply_to_user === null ? target.id : target.parent_id,
-    reply_to_user: target.anonymous
-      ? { id: "", username: null, anonymous: true }
-      : {
-          id: target.author.id,
-          username: target.author.username,
-          anonymous: false,
-        },
+    reply_to_user: { id: target.author.id, username: target.author.username },
   }
 }
 
@@ -70,9 +64,7 @@ export function buildOptimisticSnacc(
     my_resnacc: false,
     mine: true,
     body: draft.body,
-    anonymous: draft.anonymous,
     spoiler: draft.spoiler,
-    expires_at: null,
     created_at: new Date().toISOString(),
     edited_at: null,
     author,

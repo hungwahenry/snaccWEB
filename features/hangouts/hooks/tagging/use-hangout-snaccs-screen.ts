@@ -1,7 +1,6 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useGhostWindow } from "@/features/ghost/hooks/use-ghost-window"
 import { composePath } from "@/features/snaccs/routes"
 import { useBack } from "@/hooks/use-back"
 import { useNow } from "@/hooks/use-now"
@@ -17,7 +16,6 @@ export function useHangoutSnaccsScreen(snaccId: string) {
   const page = useHangoutPage(snaccId)
   const back = useBack(hangoutInfoPath(snaccId))
   const list = useHangoutSnaccs(snaccId)
-  const ghost = useGhostWindow()
   const now = useNow(TICK_MS)
   const { hangout } = page
 
@@ -26,7 +24,7 @@ export function useHangoutSnaccsScreen(snaccId: string) {
     onBack: back,
     list,
     onPost:
-      hangout && canPostFrom(hangout, now) && !ghost.active
+      hangout && canPostFrom(hangout, now)
         ? () => router.push(composePath({ hangoutId: snaccId }))
         : undefined,
   }

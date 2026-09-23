@@ -10,13 +10,11 @@ export interface FeedScopesEnabled {
 export interface NewPoster {
   key: string
   avatarUrl: string | null
-  anonymous: boolean
 }
 
 /** The `feed.snacc` socket event: someone just posted to a feed you are watching. */
 export interface FeedSnaccEvent {
   snacc_id?: string
-  anonymous?: boolean
   actor_id?: string
   avatar_url?: string | null
 }

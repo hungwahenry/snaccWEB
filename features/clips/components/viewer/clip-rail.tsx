@@ -2,7 +2,6 @@
 
 import {
   EllipsisIcon,
-  GhostIcon,
   MessageCircleIcon,
   Repeat1Icon,
   RepeatIcon,
@@ -85,23 +84,17 @@ export function ClipRail({
 
   return (
     <div className="flex flex-col items-center gap-4 pb-1">
-      {snacc.anonymous ? (
-        <span className="flex size-11 items-center justify-center rounded-full bg-white/15">
-          <GhostIcon className="size-6 text-white" />
-        </span>
-      ) : (
-        <Link
-          href={profilePath(username)}
-          aria-label={`Open ${username ?? "the author"}`}
-        >
-          <UserAvatar
-            avatarUrl={snacc.author.avatar_url}
-            name={username}
-            alt={username ?? "Author"}
-            className="size-11 border-2 border-white"
-          />
-        </Link>
-      )}
+      <Link
+        href={profilePath(username)}
+        aria-label={`Open ${username ?? "the author"}`}
+      >
+        <UserAvatar
+          avatarUrl={snacc.author.avatar_url}
+          name={username}
+          alt={username ?? "Author"}
+          className="size-11 border-2 border-white"
+        />
+      </Link>
 
       {onReact ? (
         <div className="flex flex-col items-center gap-1">
@@ -132,7 +125,7 @@ export function ClipRail({
         onPress={onComment}
       />
 
-      {snacc.anonymous || !onResnacc ? null : (
+      {!onResnacc ? null : (
         <RailButton
           icon={snacc.my_resnacc ? Repeat1Icon : RepeatIcon}
           label={snacc.my_resnacc ? "Undo resnacc" : "Resnacc"}

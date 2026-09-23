@@ -22,17 +22,7 @@ describe("withNewPoster", () => {
 
   it("keeps the picture of a named poster", () => {
     expect(withNewPoster([], { actor_id: "a", avatar_url: "a.png" })).toEqual([
-      { key: "a", avatarUrl: "a.png", anonymous: false },
-    ])
-  })
-
-  it("shows anonymous posters as one ghost with no picture", () => {
-    const posters = withNewPoster(
-      withNewPoster([], { anonymous: true, avatar_url: "leak.png" }),
-      { anonymous: true }
-    )
-    expect(posters).toEqual([
-      { key: "ghost", avatarUrl: null, anonymous: true },
+      { key: "a", avatarUrl: "a.png" },
     ])
   })
 

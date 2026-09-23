@@ -5,7 +5,6 @@ import {
   RepeatIcon,
 } from "lucide-react"
 import { Mark } from "@/components/marketing/mark"
-import { GhostAvatar } from "@/components/ui/ghost-avatar"
 import { goingLine, whenLineFor } from "@/features/hangouts/utils/hangouts"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { TierName } from "@/features/users/components/flair"
@@ -83,36 +82,24 @@ export function ShareCard({ snacc }: { snacc: Snacc }) {
       className="flex flex-col gap-4 border border-border bg-background p-6"
     >
       <div className="flex items-center gap-3">
-        {snacc.anonymous ? (
-          <GhostAvatar className="size-11" iconClassName="size-6" />
-        ) : (
-          <UserAvatar
-            alt={nameOf(author)}
-            className="size-11"
-            avatarUrl={sameOriginMedia(author.avatar_url)}
-            name={author.username}
-          />
-        )}
+        <UserAvatar
+          alt={nameOf(author)}
+          className="size-11"
+          avatarUrl={sameOriginMedia(author.avatar_url)}
+          name={author.username}
+        />
         <div className="flex min-w-0 flex-1 flex-col">
-          {snacc.anonymous ? (
-            <span className="truncate font-extrabold text-foreground">
-              Ghost
-            </span>
-          ) : (
-            <span className="flex items-center gap-1.5">
-              <TierName
-                score={author.score}
-                official={author.official}
-                birthday={author.is_birthday}
-                name={nameOf(author)}
-                className="font-extrabold text-foreground"
-              />
-            </span>
-          )}
+          <span className="flex items-center gap-1.5">
+            <TierName
+              score={author.score}
+              official={author.official}
+              birthday={author.is_birthday}
+              name={nameOf(author)}
+              className="font-extrabold text-foreground"
+            />
+          </span>
           <span className="truncate text-sm text-muted-foreground">
-            {snacc.anonymous
-              ? (author.university?.acronym ?? "Anonymous")
-              : `@${author.username}${author.university ? ` · ${author.university.acronym}` : ""}`}
+            {`@${author.username}${author.university ? ` · ${author.university.acronym}` : ""}`}
           </span>
         </div>
       </div>

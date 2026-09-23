@@ -15,16 +15,12 @@ export function ClipCaption({ snacc }: { snacc: PlayableClip }) {
   return (
     <div className="flex flex-col gap-1.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
       <div className="flex items-center gap-2">
-        {snacc.anonymous ? (
-          <span className="text-[15px] font-extrabold text-white">Ghost</span>
-        ) : (
-          <Link
-            href={profilePath(snacc.author.username)}
-            className="min-w-0 truncate text-[15px] font-extrabold text-white hover:underline"
-          >
-            {snacc.author.username}
-          </Link>
-        )}
+        <Link
+          href={profilePath(snacc.author.username)}
+          className="min-w-0 truncate text-[15px] font-extrabold text-white hover:underline"
+        >
+          {snacc.author.username}
+        </Link>
         <span className="shrink-0 text-sm text-white/70">
           {timeAgo(snacc.created_at)}
         </span>

@@ -1,6 +1,6 @@
 "use client"
 
-import { CalendarClockIcon, FileTextIcon, GhostIcon } from "lucide-react"
+import { CalendarClockIcon, FileTextIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ComposerBar } from "@/components/ui/composer-bar"
 import { ComposerScreen } from "@/components/ui/composer-screen"
@@ -12,7 +12,6 @@ import { ImageEditorSheet } from "@/features/image-editor/components/image-edito
 import { StickerCreator } from "@/features/stickers/components/sticker-creator"
 import { StickerTraySheet } from "@/features/stickers/containers/sticker-tray-sheet"
 import { useBack } from "@/hooks/use-back"
-import { cn } from "@/lib/utils"
 import { QuoteCurve } from "../components/card/quote/quote-connector"
 import { QuotedSnacc } from "../components/card/quote/quoted-snacc"
 import { ComposerAttachments } from "../components/composer/composer-attachments"
@@ -92,26 +91,12 @@ function ComposeBody(params: ComposeParams) {
       />
 
       <div className="flex flex-1 flex-col gap-4 px-4 pt-4 pb-6">
-        {composer.ghost ? (
-          <span className="flex items-center gap-1.5 self-start rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-            <GhostIcon className="size-3.5" /> All posts are now anonymous ·
-            completely deleted at midnight
-          </span>
-        ) : null}
-
-        <div
-          className={cn(
-            composer.ghost &&
-              "rounded-2xl border-2 border-dashed border-muted-foreground/40 p-3"
-          )}
-        >
+        <div>
           {screen.parent ? <ReplyTo snacc={screen.parent} /> : null}
 
           <ComposerFrame
             avatarUrl={composer.avatarUrl}
             username={composer.username}
-            ghost={composer.ghost}
-            ghostTimeLeft={composer.ghostTimeLeft}
             connectDown={screen.quoting !== null}
           >
             <ComposerInput
@@ -202,7 +187,6 @@ function ComposeBody(params: ComposeParams) {
           </div>
         ) : null}
         <ComposerProblem problem={composer.tagProblem} />
-        <ComposerProblem problem={composer.hangoutProblem} />
         <ComposerNudges body={composer.upgrade} image={composer.imageUpgrade} />
         <ComposerToolbar
           canAddImages={composer.canAddImages}

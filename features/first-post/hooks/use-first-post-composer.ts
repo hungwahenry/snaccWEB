@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
-import { useGhostWindow } from "@/features/ghost/hooks/use-ghost-window"
 import { authorFromUser } from "@/features/users/utils/author"
 import { submitSnacc } from "@/features/snaccs/cache/pending-snaccs"
 import { DEFAULT_PROMPTS } from "../types"
@@ -14,7 +13,6 @@ export function useFirstPostComposer(onPosted: () => void) {
   const me = useMe()
   const prompts = useOnboardingPrompts().data ?? DEFAULT_PROMPTS
   const maxLength = useConfigValue("content.snacc.body_max_length")
-  const ghost = useGhostWindow()
 
   const [text, setText] = useState("")
   const [active, setActive] = useState(0)
@@ -44,7 +42,6 @@ export function useFirstPostComposer(onPosted: () => void) {
         voice: null,
         clip: null,
         spoiler: false,
-        anonymous: ghost.active,
       },
       authorFromUser(me.data)
     )

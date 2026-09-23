@@ -1,4 +1,3 @@
-import { GhostAvatar } from "@/components/ui/ghost-avatar"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { LinkPreviews } from "@/features/links/containers/link-previews"
 import { TierName } from "@/features/users/components/flair"
@@ -43,40 +42,30 @@ export function ReplyContext({
       style={{ cursor: onPress ? "pointer" : undefined }}
     >
       <div className="flex w-11 shrink-0 flex-col items-center">
-        {snacc.anonymous ? (
-          <GhostAvatar />
-        ) : (
-          <ProfileLink username={author.username}>
-            <UserAvatar
-              alt={nameOf(author)}
-              avatarUrl={author.avatar_url}
-              name={author.username}
-            />
-          </ProfileLink>
-        )}
+        <ProfileLink username={author.username}>
+          <UserAvatar
+            alt={nameOf(author)}
+            avatarUrl={author.avatar_url}
+            name={author.username}
+          />
+        </ProfileLink>
         <ThreadConnector className="min-h-6" />
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col gap-2 pb-4">
         <div className="flex min-w-0 items-center gap-1.5">
-          {snacc.anonymous ? (
-            <span className="truncate font-extrabold text-foreground">
-              Ghost
-            </span>
-          ) : (
-            <ProfileLink
-              username={author.username}
-              className="flex min-w-0 shrink items-center gap-1.5 hover:underline"
-            >
-              <TierName
-                score={author.score}
-                official={author.official}
-                birthday={author.is_birthday}
-                name={author.username}
-                className="font-extrabold text-foreground"
-              />
-            </ProfileLink>
-          )}
+          <ProfileLink
+            username={author.username}
+            className="flex min-w-0 shrink items-center gap-1.5 hover:underline"
+          >
+            <TierName
+              score={author.score}
+              official={author.official}
+              birthday={author.is_birthday}
+              name={author.username}
+              className="font-extrabold text-foreground"
+            />
+          </ProfileLink>
           <AuthorMeta
             university={author.university}
             createdAt={snacc.created_at}

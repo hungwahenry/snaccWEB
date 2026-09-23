@@ -143,7 +143,6 @@ export function useSnaccMenu() {
       saved: acting?.saved ?? false,
       onPin: canPin ? togglePin : undefined,
       pinned: acting?.pinned ?? false,
-      anonymous: acting?.anonymous ?? false,
       onHide: canHide ? notInterested : undefined,
       onDelete: confirmDelete,
       onReportSnacc: withActing((snacc) =>

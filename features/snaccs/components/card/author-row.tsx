@@ -17,27 +17,21 @@ export function AuthorRow({
 
   return (
     <div className="flex min-w-0 items-center gap-1.5">
-      {snacc.anonymous ? (
-        <span className="shrink truncate font-extrabold text-foreground">
-          Ghost
-        </span>
-      ) : (
-        <ProfileLink
-          username={author.username}
-          fromSnaccId={snacc.id}
-          className="flex min-w-0 shrink items-center gap-1.5 hover:underline"
-        >
-          <TierName
-            score={author.score}
-            official={author.official}
-            birthday={author.is_birthday}
-            name={author.username}
-            className="font-extrabold text-foreground"
-          />
-        </ProfileLink>
-      )}
+      <ProfileLink
+        username={author.username}
+        fromSnaccId={snacc.id}
+        className="flex min-w-0 shrink items-center gap-1.5 hover:underline"
+      >
+        <TierName
+          score={author.score}
+          official={author.official}
+          birthday={author.is_birthday}
+          name={author.username}
+          className="font-extrabold text-foreground"
+        />
+      </ProfileLink>
 
-      {!snacc.anonymous ? <OgBadge score={author.score} /> : null}
+      <OgBadge score={author.score} />
 
       <AuthorMeta
         university={author.university}
@@ -73,16 +67,12 @@ export function AddresseeLine({
     <div className="flex items-center gap-1">
       <CornerDownRightIcon className="size-3.5 text-muted-foreground" />
       <span className="text-sm text-muted-foreground">to</span>
-      {addressee.anonymous ? (
-        <span className="text-sm font-bold text-foreground">Ghost</span>
-      ) : (
-        <ProfileLink
-          username={addressee.username}
-          className="shrink truncate text-sm font-bold text-foreground hover:underline"
-        >
-          @{addressee.username ?? "someone"}
-        </ProfileLink>
-      )}
+      <ProfileLink
+        username={addressee.username}
+        className="shrink truncate text-sm font-bold text-foreground hover:underline"
+      >
+        @{addressee.username ?? "someone"}
+      </ProfileLink>
     </div>
   )
 }

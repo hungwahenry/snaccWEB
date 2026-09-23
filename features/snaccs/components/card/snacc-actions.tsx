@@ -1,11 +1,6 @@
 "use client"
 
-import {
-  GhostIcon,
-  MessageCircleIcon,
-  SendIcon,
-  type LucideIcon,
-} from "lucide-react"
+import { MessageCircleIcon, SendIcon, type LucideIcon } from "lucide-react"
 import { useRef } from "react"
 import { Bump } from "@/components/motion/bump"
 import { ReactionBursts } from "@/components/motion/reaction-bursts"
@@ -23,7 +18,6 @@ type SnaccActionsProps = {
   commentsCount: number
   resnaccsCount: number
   myResnacc: boolean
-  anonymous?: boolean
   onReact?: (emoji: string) => void
   onOpenBreakdown?: () => void
   onOpenResnaccs?: () => void
@@ -39,7 +33,6 @@ export function SnaccActions({
   commentsCount,
   resnaccsCount,
   myResnacc,
-  anonymous,
   onReact,
   onOpenBreakdown,
   onOpenResnaccs,
@@ -87,14 +80,7 @@ export function SnaccActions({
           count={commentsCount}
           onPress={onComment}
         />
-        {anonymous ? (
-          <span
-            className="flex h-9 items-center justify-center px-1.5 text-muted-foreground"
-            title="Ghost posts can't be resnacced"
-          >
-            <GhostIcon className="size-[22px]" />
-          </span>
-        ) : onResnacc ? (
+        {onResnacc ? (
           <ResnaccButton
             count={resnaccsCount}
             mine={myResnacc}

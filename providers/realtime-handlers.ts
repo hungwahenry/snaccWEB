@@ -14,7 +14,6 @@ import {
   onSnaccHangout,
 } from "@/features/hangouts/realtime"
 import type { JoinState } from "@/features/hangouts/types"
-import { onGhostWindow } from "@/features/ghost/realtime"
 import { onMomentsChanged } from "@/features/moments/realtime"
 import { onSessionRevoked } from "@/features/auth/realtime"
 import { onBlocked } from "@/features/blocks/realtime"
@@ -59,7 +58,6 @@ export const REALTIME_HANDLERS = {
   notification: onNotification,
   "notification.removed": onNotification,
   "notifications.changed": onNotificationsChanged,
-  "ghost.window": onGhostWindow,
   "moments.changed": onMomentsChanged,
   "follow.state": (payload: FollowStatePayload) => {
     onFollowState(payload)

@@ -30,10 +30,7 @@ export function bylineName(
   return author.username || nameOf(author)
 }
 
-export function quotingLabel(
-  quoted: Pick<EmbeddedSnacc, "anonymous" | "author">
-): string {
-  if (quoted.anonymous) return "Quoting Ghost"
+export function quotingLabel(quoted: Pick<EmbeddedSnacc, "author">): string {
   return quoted.author.username
     ? `Quoting @${quoted.author.username}`
     : "Quoting a snacc"

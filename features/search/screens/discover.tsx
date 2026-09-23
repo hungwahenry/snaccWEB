@@ -34,7 +34,6 @@ export function Discover() {
         />
       ) : null}
       <DiscoverSections
-        ghost={discover.ghost}
         celebrants={discover.celebrants}
         suggestions={discover.suggestions}
         tags={discover.tags}

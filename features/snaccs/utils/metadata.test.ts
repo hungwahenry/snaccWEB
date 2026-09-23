@@ -7,7 +7,6 @@ const post = (over: Partial<Snacc> = {}) =>
     id: "01SNACC",
     body: "First day back on campus",
     created_at: "2026-09-19T10:00:00.000Z",
-    anonymous: false,
     spoiler: false,
     author: {
       username: "ada",
@@ -83,12 +82,6 @@ describe("snaccMetadata", () => {
     )
     expect(metadata.openGraph?.images).toEqual(["https://cdn/ada.png"])
   })
-
-  it("keeps a ghost's face and name out of it", () => {
-    const metadata = snaccMetadata(post({ anonymous: true }))
-    expect(metadata.title).toEqual({ absolute: "Ghost on Snacc" })
-    expect(metadata.openGraph?.images).toBeUndefined()
-  })
 })
 
 describe("snaccPictures", () => {
@@ -127,20 +120,5 @@ describe("snaccJsonLd", () => {
       contentUrl: "https://stream/c1/video.m3u8",
       duration: "PT12S",
     })
-  })
-
-  it("says nothing about who a ghost is, and shows nothing sensitive", () => {
-    const data = snaccJsonLd(
-      post({
-        anonymous: true,
-        spoiler: true,
-        images: [photo],
-        clip,
-      } as Partial<Snacc>)
-    )
-
-    expect(data.author).toEqual({ "@type": "Person", name: "Ghost" })
-    expect(data.image).toBeUndefined()
-    expect(data.video).toBeUndefined()
   })
 })

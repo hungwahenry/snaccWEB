@@ -29,7 +29,6 @@ export interface SnaccContent {
   body: string | null
   created_at: string
   edited_at: string | null
-  anonymous: boolean
   spoiler: boolean
   author: SnaccAuthor
   images: MediaImage[]

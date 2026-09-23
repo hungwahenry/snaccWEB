@@ -41,7 +41,6 @@ const draft = (patch: Partial<SnaccDraft> = {}): SnaccDraft => ({
   voice: null,
   clip: null,
   spoiler: false,
-  anonymous: false,
   ...patch,
 })
 
@@ -69,7 +68,11 @@ describe("storing a draft for later", () => {
           height: 1280,
           upload,
         },
-        poll: { options: ["a", "b"], images: [image("p")], durationMinutes: 60 },
+        poll: {
+          options: ["a", "b"],
+          images: [image("p")],
+          durationMinutes: 60,
+        },
       })
     )
 

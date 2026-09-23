@@ -17,7 +17,6 @@ const content = (patch: Partial<SnaccContent> = {}): SnaccContent => ({
   body: null,
   created_at: "2026-09-01T00:00:00Z",
   edited_at: null,
-  anonymous: false,
   spoiler: false,
   author: {
     id: "u1",

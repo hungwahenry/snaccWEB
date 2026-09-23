@@ -3,7 +3,6 @@
 import { useMe } from "@/features/auth/hooks/use-me"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { useOpenHangoutChat } from "@/features/chats/hooks/use-open-hangout-chat"
-import { useGhostWindow } from "@/features/ghost/hooks/use-ghost-window"
 import { composePath } from "@/features/snaccs/routes"
 import { useNow } from "@/hooks/use-now"
 import { hangoutSnaccsPath } from "../../routes"
@@ -27,7 +26,6 @@ export function useHangoutBlock(
 ) {
   const enabled = useFlag("hangouts")
   const me = useMe()
-  const ghost = useGhostWindow()
   const toggle = useHangoutJoin()
   const chat = useOpenHangoutChat()
   const now = useNow(TICK_MS)
@@ -52,10 +50,9 @@ export function useHangoutBlock(
       ? { pending: chat.pending, onOpen: () => chat.open(snaccId) }
       : null,
     snaccsHref: hangoutSnaccsPath(snaccId),
-    postHref:
-      canPostFrom(hangout, now) && !ghost.active
-        ? composePath({ hangoutId: snaccId })
-        : null,
+    postHref: canPostFrom(hangout, now)
+      ? composePath({ hangoutId: snaccId })
+      : null,
   }
 }
 

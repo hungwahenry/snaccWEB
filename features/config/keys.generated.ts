@@ -121,7 +121,6 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly 'premium.rc_android_key': string;
   readonly 'premium.offering_id': string;
   readonly 'premium.trial_days': number;
-  readonly 'ghost.window.minutes': number;
   readonly 'avatar.base': string;
   readonly 'avatar.style': string;
   readonly 'avatar.format': string;
@@ -207,7 +206,6 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   'premium.rc_android_key': "",
   'premium.offering_id': "",
   'premium.trial_days': 0,
-  'ghost.window.minutes': 10,
   'avatar.base': "https://api.dicebear.com/9.x",
   'avatar.style': "adventurer",
   'avatar.format': "png",

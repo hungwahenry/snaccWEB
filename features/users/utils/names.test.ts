@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { authorNameOf, handleOf, nameOf, usernameOf } from "./names"
+import { handleOf, nameOf, usernameOf } from "./names"
 
 describe("nameOf", () => {
   it("prefers the display name, then the username, then the fallback", () => {
@@ -23,13 +23,5 @@ describe("handleOf", () => {
   it("writes a username as a handle and has none without one", () => {
     expect(handleOf({ username: "bola" })).toBe("@bola")
     expect(handleOf({ username: null })).toBeNull()
-  })
-})
-
-describe("authorNameOf", () => {
-  it("hides the author of anything anonymous", () => {
-    const bola = { display_name: "Bola", username: "bola" }
-    expect(authorNameOf(bola, true)).toBe("Ghost")
-    expect(authorNameOf(bola, false)).toBe("Bola")
   })
 })

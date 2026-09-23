@@ -17,7 +17,7 @@ import {
 } from "./flags"
 
 const flag = (overrides: Partial<AdminFeatureFlag> = {}): AdminFeatureFlag => ({
-  key: "ghost_hour",
+  key: "voice_snaccs",
   enabled: true,
   category: "social",
   description: "",
@@ -87,31 +87,31 @@ describe("reachLabel", () => {
 
 describe("described", () => {
   it("says what the flag now does", () => {
-    expect(described(flag({ enabled: false }))).toBe("ghost_hour turned off.")
+    expect(described(flag({ enabled: false }))).toBe("voice_snaccs turned off.")
     expect(described(flag({ overrides: [rule("ios")] }))).toBe(
-      "ghost_hour saved, with 1 platform rule."
+      "voice_snaccs saved, with 1 platform rule."
     )
     expect(described(flag({ overrides: [rule("ios"), rule("web")] }))).toBe(
-      "ghost_hour saved, with 2 platform rules."
+      "voice_snaccs saved, with 2 platform rules."
     )
     expect(
       described(flag({ min_version: "1.2.0", max_version: "1.4.0" }))
-    ).toBe("ghost_hour on for 1.2.0 to 1.4.0.")
+    ).toBe("voice_snaccs on for 1.2.0 to 1.4.0.")
     expect(described(flag({ min_version: "1.2.0" }))).toBe(
-      "ghost_hour on from 1.2.0 up."
+      "voice_snaccs on from 1.2.0 up."
     )
     expect(described(flag({ max_version: "1.4.0" }))).toBe(
-      "ghost_hour on up to 1.4.0."
+      "voice_snaccs on up to 1.4.0."
     )
-    expect(described(flag())).toBe("ghost_hour on for every build.")
+    expect(described(flag())).toBe("voice_snaccs on for every build.")
   })
 
   it("says who it is for when that is not everyone", () => {
     expect(described(flag({ audience: "listed", member_count: 3 }))).toBe(
-      "ghost_hour on for 3 listed people."
+      "voice_snaccs on for 3 listed people."
     )
     expect(described(flag({ audience: "premium" }))).toBe(
-      "ghost_hour on for premium subscribers."
+      "voice_snaccs on for premium subscribers."
     )
   })
 })

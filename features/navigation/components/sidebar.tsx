@@ -1,10 +1,4 @@
-import {
-  EllipsisIcon,
-  GhostIcon,
-  LogOutIcon,
-  PlusIcon,
-  SettingsIcon,
-} from "lucide-react"
+import { EllipsisIcon, LogOutIcon, PlusIcon, SettingsIcon } from "lucide-react"
 import Link from "next/link"
 import { Wordmark } from "@/components/marketing/wordmark"
 import { CountBadge } from "@/components/ui/count-badge"
@@ -23,7 +17,6 @@ import { HOME_PATH } from "@/features/feed/routes"
 type SidebarProps = {
   items: NavItem[]
   activeKey: string | null
-  ghostActive: boolean
   user: {
     avatarUrl: string | null
     name: string | null
@@ -38,7 +31,6 @@ type SidebarProps = {
 export function Sidebar({
   items,
   activeKey,
-  ghostActive,
   user,
   onCompose,
   onSettings,
@@ -96,16 +88,10 @@ export function Sidebar({
       <button
         type="button"
         onClick={onCompose}
-        aria-label={
-          ghostActive ? "Post anonymously. Ghost Hour is live" : "Post a snacc"
-        }
+        aria-label="Post a snacc"
         className="mt-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm transition-transform hover:scale-[1.02] active:scale-95 wide:w-full wide:gap-2 wide:px-6"
       >
-        {ghostActive ? (
-          <GhostIcon className="size-6" />
-        ) : (
-          <PlusIcon className="size-6" />
-        )}
+        <PlusIcon className="size-6" />
         <span className="hidden text-base font-extrabold wide:block">
           Snacc
         </span>

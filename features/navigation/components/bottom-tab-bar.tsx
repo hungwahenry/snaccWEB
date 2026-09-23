@@ -1,4 +1,4 @@
-import { GhostIcon, PlusIcon } from "lucide-react"
+import { PlusIcon } from "lucide-react"
 import Link from "next/link"
 import { CountBadge } from "@/components/ui/count-badge"
 import { cn } from "@/lib/utils"
@@ -8,7 +8,6 @@ import { NavAvatar } from "./nav-avatar"
 type BottomTabBarProps = {
   items: NavItem[]
   activeKey: string | null
-  ghostActive: boolean
   onCompose: () => void
   onReselect?: (key: string) => void
 }
@@ -16,7 +15,6 @@ type BottomTabBarProps = {
 export function BottomTabBar({
   items,
   activeKey,
-  ghostActive,
   onCompose,
   onReselect,
 }: BottomTabBarProps) {
@@ -66,18 +64,10 @@ export function BottomTabBar({
         <button
           type="button"
           onClick={onCompose}
-          aria-label={
-            ghostActive
-              ? "Post anonymously. Ghost Hour is live"
-              : "Post a snacc"
-          }
+          aria-label="Post a snacc"
           className="flex h-11 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground active:scale-95"
         >
-          {ghostActive ? (
-            <GhostIcon className="size-7" />
-          ) : (
-            <PlusIcon className="size-7" />
-          )}
+          <PlusIcon className="size-7" />
         </button>
       </div>
       {items.slice(middle).map(tab)}

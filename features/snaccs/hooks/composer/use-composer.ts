@@ -6,7 +6,6 @@ import { confirm } from "@/components/ui/confirm"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { HOME_PATH } from "@/features/feed/routes"
 import { useMatchDetail } from "@/features/football/hooks/use-match-detail"
-import { useGhostCountdown } from "@/features/ghost/hooks/use-ghost-countdown"
 import { useHangoutLimits } from "@/features/hangouts/hooks/hosting/use-hangout-limits"
 import { useHangoutTag } from "@/features/hangouts/hooks/tagging/use-hangout-tag"
 import {
@@ -37,7 +36,6 @@ export function useComposer(params: ComposeParams) {
   const router = useRouter()
   const back = useBack(params.parentId ? snaccPath(params.parentId) : HOME_PATH)
   const me = useMe()
-  const ghost = useGhostCountdown()
   const drafts = useDrafts()
   const done = useRef(false)
   const mode = composerMode(params)
@@ -53,25 +51,14 @@ export function useComposer(params: ComposeParams) {
           hangout: params.newHangout ? freshHangout(hangoutLimits) : null,
         }
   })
-  const draft = useSnaccDraft(seed, {
-    allowVoice: !ghost.active,
-    allowClip: !ghost.active,
-  })
-  const hangoutTag = useHangoutTag(
-    params.hangoutId,
-    mode === "new" && !ghost.active
-  )
+  const draft = useSnaccDraft(seed, { allowVoice: true, allowClip: true })
+  const hangoutTag = useHangoutTag(params.hangoutId, mode === "new")
   const schedule = useComposerSchedule({
-    shown: mode === "new" && !params.matchId && !ghost.active,
+    shown: mode === "new" && !params.matchId,
     allowed:
       draft.clip === null && draft.hangout === null && !hangoutTag.hangoutId,
   })
   const dirty = hasContent(draft.content)
-  const hangoutProblem =
-    ghost.active && draft.hangout !== null
-      ? "Hangouts can't be posted during Ghost Hour. Remove it to post, or wait until it ends."
-      : null
-
   // A match is context the composer was opened with, not something it holds and edits. It comes
   // from the match itself rather than today's board, so an old fixture attaches too.
   const [matchDropped, setMatchDropped] = useState(false)
@@ -108,7 +95,6 @@ export function useComposer(params: ComposeParams) {
       hangoutId: hangoutTag.hangoutId,
       hangoutTag: hangoutTag.tag,
       spoiler: draft.hasMedia && draft.spoiler,
-      anonymous: ghost.active,
     }
   }
 
@@ -125,7 +111,7 @@ export function useComposer(params: ComposeParams) {
   }
 
   function post() {
-    if (!draft.withinLimits || hangoutProblem || done.current) return
+    if (!draft.withinLimits || done.current) return
     if (schedule.active) {
       schedule.submit(toSnaccDraft(), settle)
       return
@@ -188,8 +174,6 @@ export function useComposer(params: ComposeParams) {
     removeMatch: () => setMatchDropped(true),
     hangoutTag: hangoutTag.tag ?? null,
     removeHangoutTag: hangoutTag.remove,
-    ghost: ghost.active,
-    ghostTimeLeft: ghost.label,
     avatarUrl: me.data?.profile?.avatar_url ?? null,
     username: me.data?.profile?.username ?? null,
     showPoll: draft.pollsEnabled && mode !== "quote",
@@ -197,13 +181,11 @@ export function useComposer(params: ComposeParams) {
       draft.canHost &&
       mode === "new" &&
       !params.matchId &&
-      !hangoutTag.hangoutId &&
-      !ghost.active,
+      !hangoutTag.hangoutId,
     canStartHangout: draft.canStartHangout && !schedule.active,
     showClip: draft.showClip && mode !== "quote",
     schedule,
-    hangoutProblem,
-    canPost: draft.withinLimits && hangoutProblem === null && schedule.ready,
+    canPost: draft.withinLimits && schedule.ready,
     post,
     close: () =>
       settleFirst(leave, {

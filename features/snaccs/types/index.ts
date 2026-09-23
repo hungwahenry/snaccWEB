@@ -113,7 +113,6 @@ export type CommentSort = "relevant" | "top" | "newest" | "oldest"
 export interface SnaccReplyTo {
   id: string
   username: string | null
-  anonymous: boolean
 }
 
 export type SnaccStatus = "sending" | "failed"
@@ -130,9 +129,7 @@ export interface Snacc {
   my_resnacc: boolean
   mine: boolean
   body: string | null
-  anonymous: boolean
   spoiler: boolean
-  expires_at: string | null
   created_at: string
   edited_at: string | null
   author: SnaccAuthor
@@ -234,7 +231,6 @@ export interface SnaccDraft {
   hangoutId?: string
   hangoutTag?: HangoutTag
   spoiler: boolean
-  anonymous: boolean
 }
 
 export type ComposerMode = "reply" | "quote" | "new"

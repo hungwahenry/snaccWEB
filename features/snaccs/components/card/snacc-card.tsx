@@ -1,5 +1,4 @@
 import { memo, type ReactNode, type Ref } from "react"
-import { GhostAvatar } from "@/components/ui/ghost-avatar"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { HangoutTagChip } from "@/features/hangouts/components/tagging/hangout-tag-chip"
 import { LinkPreviews } from "@/features/links/containers/link-previews"
@@ -94,9 +93,7 @@ function SnaccCardComponent(props: SnaccCardProps) {
   const pending = snacc.status !== undefined
   const clickable = !!onPress && !pending
 
-  const avatar = snacc.anonymous ? (
-    <GhostAvatar />
-  ) : (
+  const avatar = (
     <ProfileLink
       username={author.username}
       fromSnaccId={snacc.id}
@@ -141,7 +138,6 @@ function SnaccCardComponent(props: SnaccCardProps) {
       commentsCount={snacc.comments_count}
       resnaccsCount={snacc.resnaccs_count}
       myResnacc={snacc.my_resnacc}
-      anonymous={snacc.anonymous}
       onReact={onReact ? (emoji) => onReact(snacc, emoji) : undefined}
       onOpenBreakdown={
         onOpenBreakdown ? () => onOpenBreakdown(snacc) : undefined

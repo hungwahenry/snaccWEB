@@ -15,12 +15,3 @@ export function usernameOf(person: Named, fallback = "Someone"): string {
 export function handleOf(person: Pick<Named, "username">): string | null {
   return person.username ? `@${person.username}` : null
 }
-
-/** Their name, or Ghost for anything posted anonymously. */
-export function authorNameOf(
-  person: Named,
-  anonymous: boolean,
-  fallback?: string
-): string {
-  return anonymous ? "Ghost" : nameOf(person, fallback)
-}

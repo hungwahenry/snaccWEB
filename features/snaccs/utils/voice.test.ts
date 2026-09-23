@@ -11,22 +11,12 @@ const author = {
 
 describe("snaccVoiceSource", () => {
   it("names the author of the snacc", () => {
-    expect(snaccVoiceSource({ id: "s1", anonymous: false, author })).toEqual({
+    expect(snaccVoiceSource({ id: "s1", author })).toEqual({
       kind: "snacc",
       id: "s1",
       label: "@ada",
       avatarUrl: "https://media.test/ada.png",
       authorId: "u1",
-    })
-  })
-
-  it("keeps an anonymous snacc's author hidden", () => {
-    expect(snaccVoiceSource({ id: "s1", anonymous: true, author })).toEqual({
-      kind: "snacc",
-      id: "s1",
-      label: "Ghost",
-      avatarUrl: null,
-      authorId: null,
     })
   })
 })

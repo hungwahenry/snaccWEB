@@ -83,10 +83,10 @@ describe("useFeedScreen", () => {
     expect(result.current.newPill).toBeNull()
 
     act(() => emit?.({ actor_id: "a", avatar_url: null }))
-    act(() => emit?.({ anonymous: true }))
+    act(() => emit?.({ actor_id: "b", avatar_url: null }))
     expect(result.current.newPill?.posters.map((p) => p.key)).toEqual([
       "a",
-      "ghost",
+      "b",
     ])
 
     act(() => result.current.newPill?.onPress())

@@ -30,7 +30,6 @@ export const APP_ICONS_PATH = "/admin/app-icons"
 export const UNIVERSITIES_PATH = "/admin/universities"
 export const NOTIFICATION_TYPES_PATH = "/admin/notification-types"
 export const PROMPTS_PATH = "/admin/prompts"
-export const GHOST_HOUR_PATH = "/admin/ghost-hour"
 
 export const PAGES_PATH = "/admin/pages"
 export const NEW_PAGE_PATH = "/admin/pages/new"

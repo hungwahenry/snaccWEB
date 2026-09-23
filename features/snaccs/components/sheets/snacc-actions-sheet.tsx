@@ -25,7 +25,6 @@ export type SnaccActionsSheetProps = {
   saved: boolean
   onPin?: () => void
   pinned: boolean
-  anonymous: boolean
   onDelete: () => void
   onHide?: () => void
   onReportSnacc: () => void
@@ -46,7 +45,6 @@ export function SnaccActionsSheet({
   saved,
   onPin,
   pinned,
-  anonymous,
   onDelete,
   onHide,
   onReportSnacc,
@@ -87,7 +85,7 @@ export function SnaccActionsSheet({
 
       {mine ? (
         <>
-          {anonymous || !onPin ? null : (
+          {!onPin ? null : (
             <ActionSheetChoice
               icon={PinIcon}
               label={pinned ? "Unpin from profile" : "Pin to profile"}

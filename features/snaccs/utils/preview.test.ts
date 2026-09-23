@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import type { GlimpsedSnacc } from "../types"
-import { attachmentSummary, glimpseOf, quotingLabel } from "./preview"
+import { attachmentSummary, glimpseOf } from "./preview"
 
 const image = (n: number) => ({
   id: `i${n}`,
@@ -55,7 +55,6 @@ describe("glimpseOf", () => {
       snacc({
         poll: { options: [{}, {}] } as GlimpsedSnacc["poll"],
         resnacc_of: {
-          anonymous: false,
           author: { username: "ada" },
         } as GlimpsedSnacc["resnacc_of"],
       })
@@ -78,14 +77,6 @@ describe("glimpseOf", () => {
     expect(glimpse.chips).toEqual([
       { kind: "hangout", label: "⚽ watch the derby" },
     ])
-  })
-})
-
-describe("quotingLabel", () => {
-  it("keeps a Ghost anonymous", () => {
-    expect(
-      quotingLabel({ anonymous: true, author: { username: "ada" } } as never)
-    ).toBe("Quoting Ghost")
   })
 })
 

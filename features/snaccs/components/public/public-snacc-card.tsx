@@ -1,5 +1,4 @@
 import {
-  GhostIcon,
   MessageCircleIcon,
   MoreHorizontalIcon,
   RepeatIcon,
@@ -27,40 +26,29 @@ export function PublicSnaccCard({
 }) {
   const { author } = snacc
   const media = snacc.images[0] ?? snacc.gif
-  const ghost = snacc.anonymous
 
   const inner = (
     <div className="flex flex-col gap-3 border-b border-border px-4 py-4">
       <div className="flex gap-3">
-        {ghost ? (
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-muted">
-            <GhostIcon className="text-muted-foreground" size={20} />
-          </div>
-        ) : (
-          <img
-            src={author.avatar_url}
-            alt=""
-            className="size-11 shrink-0 rounded-full"
-          />
-        )}
+        <img
+          src={author.avatar_url}
+          alt=""
+          className="size-11 shrink-0 rounded-full"
+        />
 
         <div className="flex min-w-0 flex-1 flex-col gap-2">
           <div className="flex items-center gap-1.5 text-sm">
             <span className="shrink truncate font-extrabold text-foreground">
-              {ghost ? "Ghost" : nameOf(author)}
+              {nameOf(author)}
             </span>
-            {!ghost ? (
-              <AuthorBadges
-                official={author.official}
-                premium={author.premium}
-                size={15}
-              />
-            ) : null}
-            {!ghost ? (
-              <span className="shrink truncate text-muted-foreground">
-                @{author.username}
-              </span>
-            ) : null}
+            <AuthorBadges
+              official={author.official}
+              premium={author.premium}
+              size={15}
+            />
+            <span className="shrink truncate text-muted-foreground">
+              @{author.username}
+            </span>
             {author.university ? (
               <>
                 <span className="text-muted-foreground">·</span>
@@ -199,33 +187,24 @@ export function PublicSnaccCard({
 
 function QuotedSnacc({ snacc }: { snacc: EmbeddedSnacc }) {
   const { author } = snacc
-  const ghost = snacc.anonymous
   const hasMedia =
     snacc.images.length > 0 || snacc.gif !== null || snacc.sticker !== null
 
   return (
     <div className="flex flex-col gap-1.5 rounded-2xl border border-border px-3 py-2.5">
       <div className="flex items-center gap-1.5 text-sm">
-        {ghost ? (
-          <GhostIcon className="text-muted-foreground" size={16} />
-        ) : (
-          <img src={author.avatar_url} alt="" className="size-5 rounded-full" />
-        )}
+        <img src={author.avatar_url} alt="" className="size-5 rounded-full" />
         <span className="truncate font-bold text-foreground">
-          {ghost ? "Ghost" : nameOf(author)}
+          {nameOf(author)}
         </span>
-        {!ghost ? (
-          <AuthorBadges
-            official={author.official}
-            premium={author.premium}
-            size={13}
-          />
-        ) : null}
-        {!ghost ? (
-          <span className="truncate text-muted-foreground">
-            @{author.username}
-          </span>
-        ) : null}
+        <AuthorBadges
+          official={author.official}
+          premium={author.premium}
+          size={13}
+        />
+        <span className="truncate text-muted-foreground">
+          @{author.username}
+        </span>
       </div>
 
       {snacc.body ? (

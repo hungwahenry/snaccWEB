@@ -1,5 +1,4 @@
 import { createElement } from "react"
-import { GhostAvatar } from "@/components/ui/ghost-avatar"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { timeAgo } from "@/lib/format"
 import { cn } from "@/lib/utils"
@@ -52,8 +51,6 @@ export function NotificationRow({
 }
 
 function Face({ notification }: { notification: Notification }) {
-  if (notification.anonymous) return <GhostAvatar />
-
   if (!notification.uses_icon && notification.actor) {
     return (
       <UserAvatar

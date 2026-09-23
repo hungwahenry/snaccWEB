@@ -42,7 +42,6 @@ const draft = (body: string): SnaccDraft => ({
   voice: null,
   clip: null,
   spoiler: false,
-  anonymous: false,
 })
 
 const created = (id: string, body: string) =>

@@ -15,7 +15,6 @@ export interface Notification {
   type: string
   actor_count: number
   actor: NotificationActor | null
-  anonymous: boolean
   body: string
   detail: string | null
   icon_name: string

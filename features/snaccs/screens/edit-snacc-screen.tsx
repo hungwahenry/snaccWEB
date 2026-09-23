@@ -63,9 +63,8 @@ function Editor({ snacc }: { snacc: Snacc }) {
 
       <div className="flex-1 px-4 pt-4 pb-6">
         <ComposerFrame
-          avatarUrl={snacc.anonymous ? null : snacc.author.avatar_url}
+          avatarUrl={snacc.author.avatar_url}
           username={snacc.author.username}
-          ghost={snacc.anonymous}
         >
           <ComposerInput
             value={editor.body}

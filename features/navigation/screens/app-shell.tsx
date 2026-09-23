@@ -8,7 +8,6 @@ import { Spinner } from "@/components/ui/spinner"
 import { useLogout } from "@/features/auth/hooks/use-logout"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { useFlag } from "@/features/config/hooks/use-flag"
-import { useGhostWindow } from "@/features/ghost/hooks/use-ghost-window"
 import { DiscoverRail } from "@/features/search/screens/discover-rail"
 import { useFileDropGuard } from "@/hooks/use-image-drop"
 import { useOfflineNotice } from "@/hooks/use-offline-notice"
@@ -68,7 +67,6 @@ function Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   const nav = useAppNav()
   const logout = useLogout()
-  const ghost = useGhostWindow()
   useAccentEntitlement()
   useResumePendingSnaccs()
   useOfflineNotice()
@@ -86,7 +84,6 @@ function Shell({ children }: { children: ReactNode }) {
         <Sidebar
           items={nav.items}
           activeKey={nav.activeKey}
-          ghostActive={ghost.active}
           user={
             profile
               ? {
@@ -112,7 +109,6 @@ function Shell({ children }: { children: ReactNode }) {
           <BottomTabBar
             items={nav.tabItems}
             activeKey={nav.activeKey}
-            ghostActive={ghost.active}
             onCompose={openCompose}
             onReselect={emitNavReselect}
           />

@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { isReadyClip } from "@/features/clips/utils/viewer"
 import { hangoutTitle } from "@/features/hangouts/utils/hangouts"
 import { profilePath } from "@/features/users/routes"
-import { authorNameOf, handleOf } from "@/features/users/utils/names"
+import { handleOf, nameOf } from "@/features/users/utils/names"
 import { counter, isoDuration, type JsonLd } from "@/lib/json-ld"
 import { absoluteUrl } from "@/lib/site"
 import { snaccPath } from "../routes"
@@ -20,11 +20,7 @@ function leadOf(snacc: Snacc): string {
 }
 
 function describe(snacc: Snacc) {
-  const who = authorNameOf(
-    snacc.author,
-    snacc.anonymous,
-    handleOf(snacc.author) ?? "Someone"
-  )
+  const who = nameOf(snacc.author, handleOf(snacc.author) ?? "Someone")
   const lead = leadOf(snacc)
   const description =
     lead ||
@@ -62,9 +58,7 @@ export function snaccMetadata(snacc: Snacc | null): Metadata {
 
   const { title, description } = describe(snacc)
   const media = snaccPictures(snacc)[0]
-  const avatar = snacc.anonymous
-    ? undefined
-    : snacc.author.avatar_url || undefined
+  const avatar = snacc.author.avatar_url || undefined
   const image = media ?? avatar
   const url = snaccPath(snacc.id)
 
@@ -102,15 +96,13 @@ export function snaccJsonLd(snacc: Snacc): JsonLd {
     datePublished: snacc.created_at,
     headline: (lead || title).slice(0, HEADLINE_LENGTH),
     articleBody: body || undefined,
-    author: snacc.anonymous
-      ? { "@type": "Person", name: who }
-      : {
-          "@type": "Person",
-          name: who,
-          alternateName: handleOf(snacc.author) ?? undefined,
-          url: username ? absoluteUrl(profilePath(username)) : undefined,
-          image: snacc.author.avatar_url || undefined,
-        },
+    author: {
+      "@type": "Person",
+      name: who,
+      alternateName: handleOf(snacc.author) ?? undefined,
+      url: username ? absoluteUrl(profilePath(username)) : undefined,
+      image: snacc.author.avatar_url || undefined,
+    },
     image: pictures.length > 0 ? pictures : undefined,
     video:
       clip?.poster_url && clip.hls_url

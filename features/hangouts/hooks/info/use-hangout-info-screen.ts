@@ -1,7 +1,6 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useGhostWindow } from "@/features/ghost/hooks/use-ghost-window"
 import { composePath, snaccPath } from "@/features/snaccs/routes"
 import { useBack } from "@/hooks/use-back"
 import { useNow } from "@/hooks/use-now"
@@ -25,7 +24,6 @@ export function useHangoutInfoScreen(snaccId: string) {
   const router = useRouter()
   const page = useHangoutPage(snaccId)
   const back = useBack(snaccPath(snaccId))
-  const ghost = useGhostWindow()
   const now = useNow(TICK_MS)
   const { snacc, hangout } = page
   const hosting = snacc?.mine ?? false
@@ -60,10 +58,9 @@ export function useHangoutInfoScreen(snaccId: string) {
                 ? () => router.push(editHangoutPath(snaccId))
                 : undefined,
             snaccsHref: hangoutSnaccsPath(snaccId),
-            postHref:
-              canPostFrom(hangout, now) && !ghost.active
-                ? composePath({ hangoutId: snaccId })
-                : null,
+            postHref: canPostFrom(hangout, now)
+              ? composePath({ hangoutId: snaccId })
+              : null,
             snaccHref: snaccPath(snaccId),
           }
         : null,

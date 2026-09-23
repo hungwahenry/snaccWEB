@@ -85,7 +85,7 @@ export function useClipPage(
     fit: snacc ? clipFit(snacc.clip) : ("cover" as const),
     fast: active && fast,
     failed: active && failed,
-    label: `Clip by ${snacc?.anonymous ? "Ghost" : (snacc?.author.username ?? "someone")}`,
+    label: `Clip by ${snacc?.author.username ?? "someone"}`,
     center: loading
       ? slow
         ? ("loading" as const)

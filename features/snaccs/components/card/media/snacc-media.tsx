@@ -28,7 +28,6 @@ type SnaccMediaProps = {
     | "hangout"
     | "status"
     | "mine"
-    | "anonymous"
     | "author"
   >
   onPressImage?: (index: number) => void
