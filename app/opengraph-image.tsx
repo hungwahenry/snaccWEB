@@ -11,6 +11,25 @@ const INK = "#000000"
 const MUTED = "#4a4a4a"
 const FEATURES = ["Posts", "Clips", "Anonymous messages", "Money"]
 
+const SPRINKLES: {
+  emoji: string
+  x: number
+  y: number
+  size: number
+  rotate: number
+  opacity?: number
+  trail?: boolean
+}[] = [
+  { emoji: "🔥", x: 850, y: 290, size: 72, rotate: -12, trail: true },
+  { emoji: "😭", x: 1080, y: 290, size: 80, rotate: 10 },
+  { emoji: "💀", x: 880, y: 420, size: 50, rotate: 6, opacity: 0.6 },
+  { emoji: "❤️", x: 985, y: 140, size: 40, rotate: -6, opacity: 0.7 },
+  { emoji: "👻", x: 1000, y: 385, size: 68, rotate: -8, trail: true },
+  { emoji: "💸", x: 830, y: 462, size: 48, rotate: 12 },
+  { emoji: "😂", x: 1125, y: 468, size: 56, rotate: 8 },
+  { emoji: "🎉", x: 790, y: 380, size: 40, rotate: 12, opacity: 0.6 },
+]
+
 async function loadInterTight(weight: number): Promise<ArrayBuffer> {
   const css = await fetch(
     `https://fonts.googleapis.com/css2?family=Inter+Tight:wght@${weight}`
@@ -95,6 +114,10 @@ export default async function OpengraphImage() {
         }}
       />
 
+      {SPRINKLES.map((sprinkle) => (
+        <Sprinkle key={sprinkle.emoji} {...sprinkle} />
+      ))}
+
       <div
         style={{
           display: "flex",
@@ -158,6 +181,54 @@ export default async function OpengraphImage() {
       </div>
     </div>,
     { ...size, fonts }
+  )
+}
+
+function Sprinkle({
+  emoji,
+  x,
+  y,
+  size,
+  rotate,
+  opacity = 1,
+  trail = false,
+}: (typeof SPRINKLES)[number]) {
+  const ghosts = trail
+    ? [
+        { offset: -size * 0.55, opacity: 0.15 },
+        { offset: -size * 0.28, opacity: 0.35 },
+      ]
+    : []
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: x,
+        top: y,
+        display: "flex",
+        fontSize: size,
+        lineHeight: 1,
+        opacity,
+        transform: `rotate(${rotate}deg)`,
+      }}
+    >
+      {ghosts.map((ghost) => (
+        <div
+          key={ghost.offset}
+          style={{
+            position: "absolute",
+            left: ghost.offset,
+            top: 0,
+            display: "flex",
+            opacity: ghost.opacity,
+          }}
+        >
+          {emoji}
+        </div>
+      ))}
+      <div style={{ display: "flex" }}>{emoji}</div>
+    </div>
   )
 }
 
