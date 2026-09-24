@@ -11,6 +11,7 @@ const SIGNED_IN_ONLY = [
   "/notifications",
   "/wallet",
   "/earnings",
+  "/invite",
   "/insights",
   "/premium",
   "/saved",

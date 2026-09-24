@@ -14,6 +14,7 @@ export const SUSPENSIONS_PATH = "/admin/suspensions"
 export const ADMINS_PATH = "/admin/admins"
 export const ROLES_PATH = "/admin/roles"
 export const RESERVED_USERNAMES_PATH = "/admin/reserved-usernames"
+export const REFERRALS_PATH = "/admin/referrals"
 
 export const WALLETS_PATH = "/admin/wallet"
 export const WITHDRAWALS_PATH = "/admin/withdrawals"

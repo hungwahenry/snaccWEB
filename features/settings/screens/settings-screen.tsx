@@ -19,6 +19,7 @@ import {
   ShieldCheckIcon,
   ShieldIcon,
   UserRoundIcon,
+  UserRoundPlusIcon,
   WalletIcon,
 } from "lucide-react"
 import Link from "next/link"
@@ -32,6 +33,7 @@ import { EGGS_PATH } from "@/features/eggs/routes"
 import { INSIGHTS_PATH } from "@/features/insights/routes"
 import { usePremiumFeature } from "@/features/premium/hooks/use-premium"
 import { PREMIUM_PATH } from "@/features/premium/routes"
+import { INVITE_PATH } from "@/features/referrals/routes"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import {
   EARNINGS_PATH,
@@ -67,6 +69,7 @@ export function SettingsScreen() {
   const premiumEnabled = useFlag("premium")
   const eggsEnabled = useFlag("easter_eggs")
   const savedEnabled = useFlag("bookmarks")
+  const inviteEnabled = useFlag("referrals")
 
   function confirmLogout() {
     confirm({
@@ -83,6 +86,16 @@ export function SettingsScreen() {
       <BackHeader title="Settings" onBack={back} />
 
       <div className="flex flex-col gap-5 px-6 py-6">
+        {inviteEnabled ? (
+          <Section title="Friends">
+            <Row
+              icon={UserRoundPlusIcon}
+              label="Invite friends"
+              href={INVITE_PATH}
+            />
+          </Section>
+        ) : null}
+
         {premiumEnabled ? (
           <Section title="Premium">
             <Row icon={GemIcon} label="Snacc Premium" href={PREMIUM_PATH} />

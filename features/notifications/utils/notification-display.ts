@@ -28,6 +28,7 @@ import {
 } from "lucide-react"
 import { chatRoomPath } from "@/features/chats/routes"
 import { conversationPath } from "@/features/messages/routes"
+import { INVITE_PATH } from "@/features/referrals/routes"
 import { momentsPath } from "@/features/moments/routes"
 import { SCORE_PATH } from "@/features/score/routes"
 import { snaccPath } from "@/features/snaccs/routes"
@@ -93,6 +94,8 @@ function routeFromTarget(target: NotificationTarget | null): string | null {
       return EARNINGS_PATH
     case "score":
       return SCORE_PATH
+    case "referrals":
+      return INVITE_PATH
     case "moment":
       // The ref is whose moments they are, as the app reads it.
       return target.ref ? momentsPath(target.ref) : null

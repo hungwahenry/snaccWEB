@@ -2,6 +2,7 @@
 
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { useFlag } from "@/features/config/hooks/use-flag"
+import { InviteStep } from "../components/invite-step"
 import { OnboardingFooter } from "../components/onboarding-footer"
 import { OnboardingHeader } from "../components/onboarding-header"
 import { ProfileStep } from "../components/profile-step"
@@ -41,7 +42,7 @@ export function CompleteProfileScreen() {
               onChangeUsername={form.changeUsername}
               usernameStatus={form.usernameStatus}
             />
-          ) : (
+          ) : form.step === 1 || !form.invite ? (
             <UniversityStep
               search={form.search}
               onSearch={form.setSearch}
@@ -55,6 +56,8 @@ export function CompleteProfileScreen() {
               graduationYear={form.graduationYear}
               onSelectGraduationYear={form.selectGraduationYear}
             />
+          ) : (
+            <InviteStep form={form.invite} />
           )}
         </div>
 

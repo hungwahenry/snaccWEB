@@ -9,6 +9,7 @@ export const FLAG_KEYS = [
   'message_gifs',
   'search',
   'earnings',
+  'referrals',
   'reactions',
   'resnacc',
   'post_pinning',
@@ -101,6 +102,8 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly 'earn.withdrawal.views': number;
   readonly 'earn.withdrawal.followers': number;
   readonly 'earn.withdrawal.account_age_days': number;
+  readonly 'referral.claim_window_days': number;
+  readonly 'referral.monthly_cap': number;
   readonly 'wallet.send.min_kobo': number;
   readonly 'wallet.send.bank_fee_kobo': number;
   readonly 'wallet.confirm.user_stepup_threshold_kobo': number;
@@ -186,6 +189,8 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   'earn.withdrawal.views': 5000,
   'earn.withdrawal.followers': 50,
   'earn.withdrawal.account_age_days': 14,
+  'referral.claim_window_days': 7,
+  'referral.monthly_cap': 20,
   'wallet.send.min_kobo': 10000,
   'wallet.send.bank_fee_kobo': 2500,
   'wallet.confirm.user_stepup_threshold_kobo': 500000,
