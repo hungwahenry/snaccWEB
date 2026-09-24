@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import { LoginScreen } from "@/features/auth/screens/login-screen"
 import { safeNextPath } from "@/features/auth/utils/next-path"
+import { countCampuses } from "@/features/universities/api/public"
 import { hasSession } from "@/lib/auth-server"
 
 export const metadata: Metadata = { title: "Log in" }
@@ -13,5 +14,5 @@ export default async function LoginPage({ searchParams }: Props) {
 
   if (await hasSession()) redirect(next)
 
-  return <LoginScreen next={next} />
+  return <LoginScreen next={next} campuses={await countCampuses()} />
 }

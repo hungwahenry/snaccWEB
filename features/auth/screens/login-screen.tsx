@@ -5,11 +5,17 @@ import { SignInForm } from "../components/sign-in-form"
 import { VerifyOtpForm } from "../components/verify-otp-form"
 import { useLoginFlow } from "../hooks/use-login-flow"
 
-export function LoginScreen({ next }: { next: string }) {
+export function LoginScreen({
+  next,
+  campuses,
+}: {
+  next: string
+  campuses: number | null
+}) {
   const flow = useLoginFlow(next)
 
   return (
-    <AuthFrame onBack={flow.back}>
+    <AuthFrame onBack={flow.back} campuses={campuses}>
       {flow.step === "email" ? (
         <SignInForm
           email={flow.email}

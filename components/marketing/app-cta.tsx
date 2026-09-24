@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { loginPath } from "@/features/auth/routes"
 import { StoreButtons } from "./store-buttons"
 
 export function AppCTA({ title, next }: { title: string; next: string }) {
@@ -14,7 +15,7 @@ export function AppCTA({ title, next }: { title: string; next: string }) {
         </p>
 
         <Link
-          href={`/login?next=${encodeURIComponent(next)}`}
+          href={loginPath(next)}
           className="inline-flex items-center rounded-full bg-foreground px-6 py-3 text-base font-semibold text-background transition-transform hover:scale-[1.02]"
         >
           Continue on web

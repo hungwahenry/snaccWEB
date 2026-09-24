@@ -11,7 +11,6 @@ export function LandingShell({
 }: {
   children: ReactNode
   cta: string
-  /** Where logging in should land, so a shared link carries on where it left off. */
   next: string
 }) {
   return (

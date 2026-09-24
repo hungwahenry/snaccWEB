@@ -2,14 +2,14 @@ import { MessageCircle, Repeat2, type LucideIcon } from "lucide-react"
 import type { CSSProperties, ReactNode } from "react"
 import { cn } from "@/lib/utils"
 
-function avatar(seed: string) {
-  return `https://api.dicebear.com/9.x/thumbs/png?seed=${seed}`
+export function avatar(seed: string) {
+  return `https://api.dicebear.com/9.x/adventurer/png?seed=${seed}`
 }
 
 export function SnaccDeck() {
   return (
     <div className="flex items-center justify-center">
-      <FloatingCard rotate={-7} baseY={12} delay="0s" className="z-10">
+      <FloatingCard rotate={-7} baseY={12} className="z-10">
         <SnaccMock
           name="Ada"
           handle="ada_l"
@@ -25,7 +25,7 @@ export function SnaccDeck() {
         />
       </FloatingCard>
 
-      <FloatingCard rotate={2} baseY={-6} delay="0.32s" className="z-30 -ml-16">
+      <FloatingCard rotate={2} baseY={-6} className="z-30 -ml-16">
         <SnaccMock
           name="Tunde"
           handle="tundex"
@@ -41,7 +41,7 @@ export function SnaccDeck() {
         />
       </FloatingCard>
 
-      <FloatingCard rotate={8} baseY={16} delay="0.62s" className="z-20 -ml-16">
+      <FloatingCard rotate={8} baseY={16} className="z-20 -ml-16">
         <SnaccMock
           name="Zainab"
           handle="zee"
@@ -179,13 +179,11 @@ function ActionCount({
 function FloatingCard({
   rotate,
   baseY,
-  delay,
   className,
   children,
 }: {
   rotate: number
   baseY: number
-  delay: string
   className?: string
   children: ReactNode
 }) {
@@ -194,10 +192,7 @@ function FloatingCard({
       className={cn("shrink-0", className)}
       style={{ transform: `rotate(${rotate}deg) translateY(${baseY}px)` }}
     >
-      <div
-        className="snacc-bob w-56 rounded-2xl bg-card p-3 shadow-[0_6px_14px_rgba(0,0,0,0.12)]"
-        style={{ animationDelay: delay }}
-      >
+      <div className="w-56 rounded-2xl border border-border bg-background p-3 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
         {children}
       </div>
     </div>

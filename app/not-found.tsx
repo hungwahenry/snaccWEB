@@ -21,7 +21,7 @@ export default function NotFound() {
         </div>
         <Link
           href="/"
-          className="rounded-2xl bg-foreground px-6 py-3 font-semibold text-background transition-transform hover:scale-[1.02]"
+          className="rounded-full bg-foreground px-6 py-3 font-semibold text-background transition-transform hover:scale-[1.02]"
         >
           Back to Snacc
         </Link>

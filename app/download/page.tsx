@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
+import { DownloadBand } from "@/components/marketing/download-band"
 import { SiteFooter } from "@/components/marketing/site-footer"
 import { SiteHeader } from "@/components/marketing/site-header"
-import { StoreButtons } from "@/components/marketing/store-buttons"
 
 export const metadata: Metadata = {
   title: "Download",
@@ -13,29 +13,11 @@ export default function DownloadPage() {
     <div className="flex min-h-dvh flex-col overflow-x-hidden">
       <SiteHeader showDownload={false} />
 
-      <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center justify-center gap-8 px-6 py-12 text-center">
-        <img
-          src="/1.png"
-          alt="Snacc"
-          className="h-14 w-auto max-w-full dark:hidden"
+      <main className="flex flex-1 flex-col justify-center py-10">
+        <DownloadBand
+          title="Get Snacc"
+          line="Download the app on your phone and see what your campus is really talking about."
         />
-        <img
-          src="/2.png"
-          alt="Snacc"
-          className="hidden h-14 w-auto max-w-full dark:block"
-        />
-
-        <div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-balance sm:text-5xl">
-            Get Snacc
-          </h1>
-          <p className="mx-auto mt-4 max-w-md text-lg leading-relaxed text-pretty text-muted-foreground">
-            Download the app on your phone and see what your campus is really
-            talking about.
-          </p>
-        </div>
-
-        <StoreButtons />
       </main>
 
       <SiteFooter />

@@ -1,46 +1,32 @@
-import Link from "next/link"
-import { DownloadButton } from "@/components/marketing/download-button"
+import { redirect } from "next/navigation"
+import { DownloadBand } from "@/components/marketing/download-band"
+import { FeatureGrid } from "@/components/marketing/feature-grid"
+import { Hero } from "@/components/marketing/hero"
 import { SiteFooter } from "@/components/marketing/site-footer"
 import { SiteHeader } from "@/components/marketing/site-header"
-import { SnaccDeck } from "@/components/marketing/snacc-deck"
+import { HOME_PATH } from "@/features/feed/routes"
+import { countCampuses } from "@/features/universities/api/public"
 import { hasSession } from "@/lib/auth-server"
-import { redirect } from "next/navigation"
 
 export default async function Home() {
-  if (await hasSession()) redirect("/home")
+  if (await hasSession()) redirect(HOME_PATH)
+
+  const campuses = await countCampuses()
 
   return (
     <div className="flex min-h-dvh flex-col overflow-x-hidden">
-      <SiteHeader />
-
-      <main className="flex flex-1 flex-col items-center justify-center gap-10 py-10 sm:gap-14 sm:py-14">
-        <div className="flex w-full justify-center overflow-hidden py-10">
-          <SnaccDeck />
+      <div className="mx-auto w-full max-w-6xl sm:px-6 sm:pt-4">
+        <div className="landing-frame overflow-hidden sm:rounded-[2.5rem]">
+          <SiteHeader />
+          <Hero campuses={campuses} />
         </div>
+      </div>
 
-        <div className="mx-auto max-w-2xl px-6 text-center">
-          <h1 className="text-5xl font-extrabold tracking-tight text-balance sm:text-6xl">
-            What&apos;s happening on campus?
-          </h1>
-          <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-pretty text-muted-foreground">
-            Share a thought, a pic, or a GIF, and see what your campus is really
-            talking about right now.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              href="/login"
-              className="inline-flex items-center rounded-full bg-foreground px-6 py-3 text-base font-semibold text-background transition-transform hover:scale-[1.02]"
-            >
-              Get started
-            </Link>
-            <DownloadButton
-              label="Get the app"
-              className="bg-muted px-6 py-3 text-base text-foreground"
-            />
-          </div>
-        </div>
-      </main>
-
+      <FeatureGrid />
+      <DownloadBand
+        title="Get Snacc."
+        line="The feed, the clips, the ghosts, the money — everything your campus is up to, in your pocket. Free on iOS and Android."
+      />
       <SiteFooter />
     </div>
   )

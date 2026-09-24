@@ -11,7 +11,7 @@ const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
 const TITLE = "Snacc — What's happening on campus"
 const DESCRIPTION =
-  "Snacc is the social app for your campus. Share a thought, a photo, or a GIF, and see what everyone is talking about right now."
+  "Snacc is the social app for your campus. Post it, watch it, send it — see what students at your uni and every other one are saying right now."
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://snacc.fyi"),
