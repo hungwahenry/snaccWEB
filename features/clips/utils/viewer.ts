@@ -3,7 +3,6 @@ import { isBusyWithKeys } from "@/lib/keyboard"
 
 const LOAD_AHEAD = 3
 const POSTERS_AHEAD = 3
-const PORTRAIT_RATIO = 1.2
 
 export const LIVE_PAGES = 3
 
@@ -48,15 +47,6 @@ export function viewerQueue(
 
 export function wantsMore(active: number, count: number): boolean {
   return count - 1 - active < LOAD_AHEAD
-}
-
-export function clipFit(clip: {
-  width: number
-  height: number
-}): "cover" | "contain" {
-  return clip.width > 0 && clip.height / clip.width >= PORTRAIT_RATIO
-    ? "cover"
-    : "contain"
 }
 
 export function upcomingPosters(

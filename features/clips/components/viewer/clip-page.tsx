@@ -49,8 +49,7 @@ export function ClipPage({
           disablePictureInPicture
           controlsList="nodownload noremoteplayback noplaybackrate"
           className={cn(
-            "size-full transition-opacity duration-150",
-            page.fit === "cover" ? "object-cover" : "object-contain",
+            "size-full object-contain transition-opacity duration-150",
             page.framed ? "opacity-100" : "opacity-0"
           )}
         />

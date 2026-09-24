@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest"
 import type { Snacc } from "@/features/snaccs/types"
 import {
-  clipFit,
   isReadyClip,
   livePages,
   ownsKey,
@@ -59,14 +58,6 @@ describe("wantsMore", () => {
   it("asks for the next page a few clips before the end", () => {
     expect(wantsMore(0, 10)).toBe(false)
     expect(wantsMore(7, 10)).toBe(true)
-  })
-})
-
-describe("clipFit", () => {
-  it("fills the page with a tall clip and letterboxes a wide one", () => {
-    expect(clipFit({ width: 720, height: 1280 })).toBe("cover")
-    expect(clipFit({ width: 1280, height: 720 })).toBe("contain")
-    expect(clipFit({ width: 0, height: 0 })).toBe("contain")
   })
 })
 

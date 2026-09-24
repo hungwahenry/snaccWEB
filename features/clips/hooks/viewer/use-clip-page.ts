@@ -5,7 +5,7 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { useReactionBursts } from "@/hooks/use-reaction-bursts"
 import { driveVideo, FAST_RATE } from "../../playback"
 import type { ClipPageHandlers, ClipPlayback } from "../../types"
-import { clipFit, type PlayableClip } from "../../utils/viewer"
+import type { PlayableClip } from "../../utils/viewer"
 import { useStreamedVideo } from "../use-streamed-video"
 import { useClipGestures } from "./use-clip-gestures"
 
@@ -82,7 +82,6 @@ export function useClipPage(
     framed,
     veiled,
     gestures,
-    fit: snacc ? clipFit(snacc.clip) : ("cover" as const),
     fast: active && fast,
     failed: active && failed,
     label: `Clip by ${snacc?.author.username ?? "someone"}`,

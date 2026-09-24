@@ -1,7 +1,6 @@
 import { LazyImage } from "@/components/ui/lazy-image"
 import type { SnaccClip } from "@/features/snaccs/types"
 import { cn } from "@/lib/utils"
-import { clipFit } from "../../utils/viewer"
 
 type ClipPosterProps = {
   clip: SnaccClip
@@ -21,8 +20,7 @@ export function ClipPoster({ clip, height, veiled }: ClipPosterProps) {
           alt=""
           draggable={false}
           className={cn(
-            "size-full",
-            clipFit(clip) === "cover" ? "object-cover" : "object-contain",
+            "size-full object-contain",
             veiled && "scale-110 blur-2xl"
           )}
         />
