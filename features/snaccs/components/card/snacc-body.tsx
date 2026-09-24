@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { cashtagPath } from "@/features/cashtags/routes"
 import { hashtagPath } from "@/features/hashtags/routes"
 import { useTierLookup } from "@/providers/tiers-provider"
 import { profilePath } from "@/features/users/routes"
@@ -14,6 +15,12 @@ type SnaccBodyProps = {
   /** Only where the link's card renders underneath; a quote keeps its links as text. */
   stripLinks?: boolean
   className?: string
+}
+
+function entityPath(entity: SnaccEntity): string {
+  if (entity.type === "mention") return profilePath(entity.user.username)
+  if (entity.type === "hashtag") return hashtagPath(entity.tag)
+  return cashtagPath(entity.symbol)
 }
 
 export function SnaccBody({
@@ -41,14 +48,10 @@ export function SnaccBody({
     >
       {toRenderedSegments(body, entities, stripLinks).map((segment, index) => {
         if (!segment.entity) return segment.text
-        const href =
-          segment.entity.type === "mention"
-            ? profilePath(segment.entity.user.username)
-            : hashtagPath(segment.entity.tag)
         return (
           <Link
             key={index}
-            href={href}
+            href={entityPath(segment.entity)}
             onClick={(event) => event.stopPropagation()}
             className="font-extrabold hover:underline"
             style={{ color: entityColor(segment.entity) }}

@@ -1,5 +1,6 @@
 import { memo, type ReactNode, type Ref } from "react"
 import { UserAvatar } from "@/components/ui/user-avatar"
+import { CashtagCards } from "@/features/cashtags/components/cashtag-cards"
 import { HangoutTagChip } from "@/features/hangouts/components/tagging/hangout-tag-chip"
 import { LinkPreviews } from "@/features/links/containers/link-previews"
 import { ProfileLink } from "@/features/users/components/profile-link"
@@ -185,6 +186,7 @@ function SnaccCardComponent(props: SnaccCardProps) {
           ) : null}
           <SnaccBody body={snacc.body} entities={snacc.entities} stripLinks />
           <LinkPreviews body={snacc.body} onOpenSnacc={onPressQuote} />
+          <CashtagCards cashtags={snacc.cashtags} />
           {media}
           {snacc.quoted_gone ? (
             <QuotedTombstone reason={snacc.quoted_gone} />

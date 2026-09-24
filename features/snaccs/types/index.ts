@@ -1,3 +1,4 @@
+import type { Cashtag } from "@/features/cashtags/types"
 import type { ClipDraft } from "@/features/clips/types"
 import type { LiveMatch, SnaccMatch } from "@/features/football/types"
 import type { Gif } from "@/features/giphy/types"
@@ -26,6 +27,7 @@ export interface SnaccMentionUser {
 
 export type SnaccEntity =
   | { type: "hashtag"; start: number; length: number; tag: string }
+  | { type: "cashtag"; start: number; length: number; symbol: string }
   | { type: "mention"; start: number; length: number; user: SnaccMentionUser }
 
 export interface SnaccPollOptionImage {
@@ -134,6 +136,7 @@ export interface Snacc {
   edited_at: string | null
   author: SnaccAuthor
   entities: SnaccEntity[]
+  cashtags: Cashtag[]
   images: SnaccImage[]
   voice: SnaccVoiceNote | null
   clip: SnaccClip | null
@@ -286,7 +289,7 @@ export interface TypeaheadSuggestion {
 }
 
 export interface ActiveToken {
-  kind: "hashtag" | "mention"
+  kind: "hashtag" | "mention" | "cashtag"
   term: string
   start: number
   end: number

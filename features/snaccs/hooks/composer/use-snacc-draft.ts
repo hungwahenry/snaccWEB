@@ -25,6 +25,7 @@ export function useSnaccDraft(
   const clipsEnabled = useFlag("snacc_clips")
   const maxMentions = useConfigValue("content.snacc.max_mentions")
   const maxHashtags = useConfigValue("content.snacc.max_hashtags")
+  const maxCashtags = useConfigValue("content.snacc.max_cashtags")
 
   const [body, setBody] = useState(seed.body)
   const [cursor, setCursor] = useState(seed.body.length)
@@ -69,7 +70,11 @@ export function useSnaccDraft(
     stickersAllowed: stickersEnabled,
     clip: clipDraft.clip !== null,
     clipsAllowed,
-    tagProblem: tagLimitProblem(trimmed, { maxMentions, maxHashtags }),
+    tagProblem: tagLimitProblem(trimmed, {
+      maxMentions,
+      maxHashtags,
+      maxCashtags,
+    }),
   })
 
   const content: ComposerContent = {

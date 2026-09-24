@@ -1,7 +1,19 @@
+import type { Cashtag } from "@/features/cashtags/types"
+import { formatUsd } from "@/features/cashtags/utils/price"
 import type { HashtagSuggestion } from "@/features/hashtags/types"
 import type { UserSuggestion } from "@/features/users/types"
 import { compactCount } from "@/lib/format"
 import type { TypeaheadSuggestion } from "../types"
+
+export function cashtagSuggestion(coin: Cashtag): TypeaheadSuggestion {
+  return {
+    key: coin.id,
+    label: `$${coin.symbol}`,
+    hint: `${coin.name} · ${formatUsd(coin.price_usd)}`,
+    avatarUrl: coin.image_url,
+    replacement: `$${coin.symbol} `,
+  }
+}
 
 export function hashtagSuggestion(
   hashtag: HashtagSuggestion

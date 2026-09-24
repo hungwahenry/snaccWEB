@@ -25,6 +25,7 @@ export const snaccKeys = {
     [LIST, "user", username.toLowerCase(), tab] as const,
   bookmarks: () => [LIST, "bookmarks"] as const,
   hashtag: (tag: string) => [LIST, "hashtag", tag.toLowerCase()] as const,
+  cashtag: (symbol: string) => [LIST, "cashtag", symbol.toUpperCase()] as const,
   search: (q: string) => [LIST, "search", q] as const,
   campus: (slug: string) => [LIST, "campus", slug.toLowerCase()] as const,
   match: (matchId: string) => [LIST, "match", matchId] as const,

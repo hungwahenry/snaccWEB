@@ -6,6 +6,14 @@ const MENTION_PATTERN =
   /(?<=^|\s)@([a-zA-Z][a-zA-Z0-9_]{2,29})(?![a-zA-Z0-9_])/gu
 const HASHTAG_HAS_LETTER = /\p{L}/u
 const TOKEN_CHARACTER = /[\p{L}\p{N}_]/u
+const CASHTAG_PATTERN =
+  /(?<=^|\s)\$(?=[0-9]*[a-zA-Z])([a-zA-Z0-9]{1,10})(?![a-zA-Z0-9])/gu
+const CASHTAG_TERM = /^[a-zA-Z0-9]*$/
+const MARKERS: Record<string, ActiveToken["kind"]> = {
+  "#": "hashtag",
+  "@": "mention",
+  $: "cashtag",
+}
 const HASHTAG_MAX_LENGTH = 100
 
 interface Span {
@@ -117,9 +125,18 @@ function hashtagMatches(body: string): (Span & { tag: string })[] {
   return found
 }
 
+function cashtagMatches(body: string): (Span & { symbol: string })[] {
+  return [...body.matchAll(CASHTAG_PATTERN)].map((match) => ({
+    symbol: match[1].toUpperCase(),
+    start: match.index,
+    end: match.index + match[0].length,
+  }))
+}
+
 export interface TagLimits {
   maxMentions: number
   maxHashtags: number
+  maxCashtags: number
 }
 
 export function tagLimitProblem(
@@ -132,12 +149,16 @@ export function tagLimitProblem(
   const hashtags = new Set(
     hashtagMatches(body).map(({ tag }) => tag.toLowerCase())
   )
+  const coins = new Set(cashtagMatches(body).map(({ symbol }) => symbol))
 
   if (people.size > limits.maxMentions) {
     return `You can tag up to ${limits.maxMentions} people in one snacc.`
   }
   if (hashtags.size > limits.maxHashtags) {
     return `You can use up to ${limits.maxHashtags} hashtags in one snacc.`
+  }
+  if (coins.size > limits.maxCashtags) {
+    return `You can tag up to ${limits.maxCashtags} coins in one snacc.`
   }
   return null
 }
@@ -148,6 +169,9 @@ function entityRanges(body: string): Span[] {
     end,
   }))
 
+  for (const { start, end } of cashtagMatches(body)) {
+    ranges.push({ start, end })
+  }
   for (const match of body.matchAll(MENTION_PATTERN)) {
     ranges.push({ start: match.index, end: match.index + match[0].length })
   }
@@ -170,15 +194,14 @@ export function activeToken(body: string, cursor: number): ActiveToken | null {
   while (index > 0 && TOKEN_CHARACTER.test(body[index - 1])) index -= 1
 
   const marker = body[index - 1]
-  if (marker !== "#" && marker !== "@") return null
+  const kind = marker === undefined ? undefined : MARKERS[marker]
+  if (!kind) return null
 
   const preceding = body[index - 2]
   if (preceding !== undefined && !/\s/.test(preceding)) return null
 
-  return {
-    kind: marker === "#" ? "hashtag" : "mention",
-    term: body.slice(index, cursor),
-    start: index - 1,
-    end: cursor,
-  }
+  const term = body.slice(index, cursor)
+  if (kind === "cashtag" && !CASHTAG_TERM.test(term)) return null
+
+  return { kind, term, start: index - 1, end: cursor }
 }

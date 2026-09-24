@@ -69,6 +69,7 @@ export function buildOptimisticSnacc(
     edited_at: null,
     author,
     entities: [],
+    cashtags: [],
     voice: draft.voice
       ? {
           id: draft.voice.uri,
