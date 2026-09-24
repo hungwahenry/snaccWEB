@@ -39,6 +39,7 @@ export default async function ProfilePage({ params }: Props) {
     <LandingShell
       cta={`See everything ${nameOf(profile)} posts`}
       next={profilePath(username)}
+      floatingHeader
     >
       <JsonLd data={profileJsonLd(profile)} />
       <PublicProfileHeader

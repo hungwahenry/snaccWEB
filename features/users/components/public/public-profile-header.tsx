@@ -19,7 +19,7 @@ export function PublicProfileHeader({
 }) {
   return (
     <div className="flex flex-col">
-      <ProfileCover url={profile.cover_url} />
+      <ProfileCover url={profile.cover_url} className="h-48 sm:h-60" />
 
       <div className="flex flex-col gap-3 px-6 pb-4">
         <PersonAvatar
