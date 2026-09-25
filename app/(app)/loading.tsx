@@ -5,7 +5,7 @@ import { SkeletonRows } from "@/components/ui/skeleton-rows"
 import { FeedTabs } from "@/features/feed/components/feed-tabs"
 import { useFeedTabs } from "@/features/feed/hooks/use-feed-tabs"
 import { useHomeChrome } from "@/features/feed/hooks/use-home-chrome"
-import { DEFAULT_FEED_SCOPE, resolveScope } from "@/features/feed/utils/scopes"
+import { DEFAULT_FEED_SCOPE } from "@/features/feed/utils/scopes"
 import { MomentTraySkeleton } from "@/features/moments/components/moment-tray-skeleton"
 import { AppHeader } from "@/features/navigation/components/app-header"
 import { HeaderLink } from "@/features/navigation/components/header-link"
@@ -31,8 +31,9 @@ export default function Loading() {
       {feed.show ? (
         <FeedTabs
           tabs={feed.tabs}
-          value={resolveScope(DEFAULT_FEED_SCOPE, feed.enabled)}
+          value={DEFAULT_FEED_SCOPE}
           onChange={ignore}
+          onReselect={feed.sortable ? ignore : undefined}
         />
       ) : null}
       {chrome.moments ? <MomentTraySkeleton /> : null}

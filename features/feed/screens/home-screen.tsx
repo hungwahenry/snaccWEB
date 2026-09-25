@@ -18,6 +18,7 @@ import { SnaccList } from "@/features/snaccs/components/snacc-list"
 import { useSnaccActions } from "@/features/snaccs/hooks/use-snacc-actions"
 import { useSnaccTracker } from "@/features/snaccs/hooks/use-snacc-tracker"
 import { MoneyFab } from "@/features/wallet/components/money-fab"
+import { FeedSortMenu } from "../components/feed-sort-menu"
 import { FeedTabs } from "../components/feed-tabs"
 import { NewSnaccsPill } from "../components/new-snaccs-pill"
 import { useHomeScreen } from "../hooks/use-home-screen"
@@ -94,6 +95,7 @@ export function HomeScreen() {
         }}
       />
 
+      <FeedSortMenu {...screen.sortMenu} />
       <SnaccSheets {...sheets} />
       <BirthdayNudgeSheet {...screen.birthdayNudge} />
       <BirthdayWishDialog {...screen.birthdayWish} />

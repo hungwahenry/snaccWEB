@@ -8,6 +8,7 @@ import {
   liveFeedRoom,
   scopeAllowed,
 } from "./scopes"
+import { feedSortOf } from "./sorts"
 
 describe("withNewPoster", () => {
   it("adds each poster once and keeps the newest three", () => {
@@ -33,13 +34,13 @@ describe("withNewPoster", () => {
 })
 
 describe("feed scopes", () => {
-  it("leads with global, always offers campus, and the rest only when switched on", () => {
+  it("always offers campus and the others only when switched on", () => {
     expect(
       feedTabs({ following: false, global: false }).map((tab) => tab.value)
     ).toEqual(["campus"])
     expect(
       feedTabs({ following: true, global: true }).map((tab) => tab.value)
-    ).toEqual(["global", "campus", "following"])
+    ).toEqual(["campus", "following", "global"])
   })
 
   it("only allows a feed that is switched on", () => {
@@ -63,15 +64,28 @@ describe("feed scopes", () => {
 })
 
 describe("liveFeedRoom", () => {
-  it("listens to your campus or to everyone", () => {
-    expect(liveFeedRoom("campus", "unilag")).toBe(
+  it("listens to your campus or everyone when the feed is newest first", () => {
+    expect(liveFeedRoom("campus", "latest", "unilag")).toBe(
       realtimeRooms.feedCampus("unilag")
     )
-    expect(liveFeedRoom("global", "unilag")).toBe(realtimeRooms.feedGlobal)
+    expect(liveFeedRoom("global", "latest", "unilag")).toBe(
+      realtimeRooms.feedGlobal
+    )
   })
 
-  it("has nothing to listen to for following, or without a campus", () => {
-    expect(liveFeedRoom("following", "unilag")).toBeNull()
-    expect(liveFeedRoom("campus", null)).toBeNull()
+  it("does not listen to ranked feeds, the following feed, or a missing campus", () => {
+    expect(liveFeedRoom("campus", "top", "unilag")).toBeNull()
+    expect(liveFeedRoom("global", "top", null)).toBeNull()
+    expect(liveFeedRoom("following", "latest", "unilag")).toBeNull()
+    expect(liveFeedRoom("campus", "latest", null)).toBeNull()
+  })
+})
+
+describe("feedSortOf", () => {
+  it("reads back known sorts and drops anything else", () => {
+    expect(feedSortOf("top")).toBe("top")
+    expect(feedSortOf("latest")).toBe("latest")
+    expect(feedSortOf("newest")).toBeNull()
+    expect(feedSortOf(null)).toBeNull()
   })
 })

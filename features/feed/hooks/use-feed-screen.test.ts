@@ -27,8 +27,9 @@ vi.mock("@/hooks/use-realtime-event", () => ({
   },
 }))
 vi.mock("./use-feed", () => ({
-  useFeed: (scope: string) => ({
+  useFeed: (scope: string, sort: string) => ({
     scope,
+    sort,
     snaccs: [],
     loading: false,
     stale: false,
@@ -39,6 +40,12 @@ vi.mock("./use-feed", () => ({
     refresh,
   }),
 }))
+vi.mock("./use-feed-sort", async () => {
+  const { useState } = await import("react")
+  return {
+    useFeedSort: () => useState<"top" | "latest">("latest"),
+  }
+})
 
 describe("useFeedScreen", () => {
   beforeEach(() => {
@@ -50,17 +57,11 @@ describe("useFeedScreen", () => {
     window.scrollTo = vi.fn()
   })
 
-  it("opens on global, so a quiet campus is never the first thing you see", () => {
-    flags.feed_global = true
-    const { result } = renderHook(() => useFeedScreen())
-
-    expect(result.current.tabs.value).toBe("global")
-    expect(result.current.list.feed).toMatchObject({ scope: "global" })
-  })
-
   it("falls back to campus when the picked feed is switched off", () => {
     flags.feed_global = true
     const { result, rerender } = renderHook(() => useFeedScreen())
+
+    act(() => result.current.tabs.onChange("global"))
     expect(result.current.tabs.value).toBe("global")
 
     flags.feed_global = false
@@ -70,11 +71,11 @@ describe("useFeedScreen", () => {
     expect(result.current.tabs.show).toBe(false)
   })
 
-  it("refreshes when you tap the feed you are already on", () => {
+  it("orders by newest when ranking is off and hides the sort menu", () => {
     const { result } = renderHook(() => useFeedScreen())
-
-    act(() => result.current.tabs.onReselect?.())
-    expect(refresh).toHaveBeenCalledOnce()
+    expect(result.current.sortMenu.value).toBe("latest")
+    expect(result.current.tabs.onReselect).toBeUndefined()
+    expect(result.current.list.feed).toMatchObject({ sort: "latest" })
   })
 
   it("collects new posters and clears them when you look", () => {

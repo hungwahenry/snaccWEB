@@ -1,4 +1,14 @@
+import type { LucideIcon } from "lucide-react"
+
 export type FeedScope = "campus" | "global" | "following"
+export type FeedSort = "top" | "latest"
+
+export interface FeedSortOption {
+  value: FeedSort
+  label: string
+  hint: string
+  icon: LucideIcon
+}
 
 /** Which of the optional feeds are switched on. Campus is always there. */
 export interface FeedScopesEnabled {

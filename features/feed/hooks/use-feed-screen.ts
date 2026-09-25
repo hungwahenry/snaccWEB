@@ -7,28 +7,35 @@ import { signal } from "@/features/signals/utils/queue"
 import { useRealtimeEvent } from "@/hooks/use-realtime-event"
 import { useRealtimeRoom } from "@/hooks/use-realtime-room"
 import { rememberFeedScope } from "../scope-memory"
-import type { FeedScope, FeedSnaccEvent, NewPoster } from "../types"
+import type { FeedScope, FeedSnaccEvent, FeedSort, NewPoster } from "../types"
 import { withNewPoster } from "../utils/new-posters"
 import {
   DEFAULT_FEED_SCOPE,
   FEED_EMPTY,
   FEED_FAILED,
   liveFeedRoom,
-  resolveScope,
+  scopeAllowed,
 } from "../utils/scopes"
 import { useFeed } from "./use-feed"
+import { useFeedSort } from "./use-feed-sort"
 import { useFeedTabs } from "./use-feed-tabs"
+
+type SortMenu = { open: boolean; anchor: HTMLElement | null }
+const CLOSED: SortMenu = { open: false, anchor: null }
 
 export function useFeedScreen() {
   const [picked, setPicked] = useState<FeedScope>(DEFAULT_FEED_SCOPE)
+  const [remembered, rememberSort] = useFeedSort()
   const [newPosters, setNewPosters] = useState<NewPoster[] | null>(null)
+  const [sortMenu, setSortMenu] = useState<SortMenu>(CLOSED)
 
-  const { enabled, tabs, show } = useFeedTabs()
+  const { enabled, tabs, sortable, show } = useFeedTabs()
 
-  const scope = resolveScope(picked, enabled)
-  const feed = useFeed(scope)
+  const scope = scopeAllowed(picked, enabled) ? picked : DEFAULT_FEED_SCOPE
+  const sort: FeedSort = sortable ? remembered : "latest"
+  const feed = useFeed(scope, sort)
   const campusSlug = useMe().data?.profile?.university?.slug ?? null
-  const room = liveFeedRoom(scope, campusSlug)
+  const room = liveFeedRoom(scope, sort, campusSlug)
 
   useRealtimeRoom(room)
   useRealtimeEvent("feed.snacc", (payload) => {
@@ -42,6 +49,7 @@ export function useFeedScreen() {
 
   const pickScope = useCallback(
     (next: FeedScope) => {
+      setSortMenu(CLOSED)
       if (next === scope) return
       signal("feed_scope", { detail: next })
       setNewPosters(null)
@@ -50,14 +58,31 @@ export function useFeedScreen() {
     [scope]
   )
 
+  const pickSort = useCallback(
+    (next: FeedSort) => {
+      setSortMenu(CLOSED)
+      if (next === sort) return
+      signal("feed_scope", { detail: `${scope}:${next}` })
+      setNewPosters(null)
+      rememberSort(next)
+    },
+    [scope, sort, rememberSort]
+  )
+
+  const openSortMenu = useCallback(
+    (_: FeedScope, anchor: HTMLElement) => setSortMenu({ open: true, anchor }),
+    []
+  )
+  const closeSortMenu = useCallback(() => setSortMenu(CLOSED), [])
+
   const showNew = () => {
     setNewPosters(null)
     window.scrollTo({ top: 0, behavior: "smooth" })
     feed.refresh()
   }
 
-  const refresh = useEffectEvent(showNew)
-  useEffect(() => onNavReselect("home", () => refresh()), [])
+  const refreshFromNav = useEffectEvent(showNew)
+  useEffect(() => onNavReselect("home", () => refreshFromNav()), [])
 
   return {
     tabs: {
@@ -65,7 +90,14 @@ export function useFeedScreen() {
       tabs,
       value: scope,
       onChange: pickScope,
-      onReselect: () => showNew(),
+      onReselect: sortable ? openSortMenu : undefined,
+    },
+    sortMenu: {
+      open: sortMenu.open,
+      anchor: sortMenu.anchor,
+      value: sort,
+      onSelect: pickSort,
+      onDismiss: closeSortMenu,
     },
     newPill: newPosters ? { posters: newPosters, onPress: showNew } : null,
     list: {

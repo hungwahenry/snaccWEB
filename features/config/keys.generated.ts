@@ -27,6 +27,7 @@ export const FLAG_KEYS = [
   'feed_global',
   'clip_autoplay',
   'feed_following',
+  'feed_ranking',
   'message_images',
   'message_view_once',
   'message_editing',

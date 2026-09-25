@@ -8,8 +8,9 @@ import { feedTabs } from "../utils/scopes"
 export function useFeedTabs() {
   const following = useFlag("feed_following")
   const global = useFlag("feed_global")
+  const sortable = useFlag("feed_ranking")
   const enabled = useMemo(() => ({ following, global }), [following, global])
   const tabs = useMemo(() => feedTabs(enabled), [enabled])
 
-  return { enabled, tabs, show: tabs.length > 1 }
+  return { enabled, tabs, sortable, show: tabs.length > 1 || sortable }
 }

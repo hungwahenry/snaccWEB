@@ -1,5 +1,5 @@
 import type { QueryKey } from "@tanstack/react-query"
-import type { FeedScope } from "@/features/feed/types"
+import type { FeedScope, FeedSort } from "@/features/feed/types"
 import type { ProfileTab } from "@/features/users/types"
 import type { CommentSort } from "../types"
 
@@ -18,7 +18,8 @@ export const snaccKeys = {
 
   lists: () => [LIST] as const,
   feeds: () => [LIST, "feed"] as const,
-  feed: (scope: FeedScope) => [LIST, "feed", scope] as const,
+  feed: (scope: FeedScope, sort: FeedSort) =>
+    [LIST, "feed", scope, sort] as const,
   userLists: (username: string) =>
     [LIST, "user", username.toLowerCase()] as const,
   user: (username: string, tab: ProfileTab) =>
