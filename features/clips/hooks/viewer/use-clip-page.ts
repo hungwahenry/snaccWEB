@@ -85,13 +85,7 @@ export function useClipPage(
     fast: active && fast,
     failed: active && failed,
     label: `Clip by ${snacc?.author.username ?? "someone"}`,
-    center: loading
-      ? slow
-        ? ("loading" as const)
-        : null
-      : showing && paused
-        ? ("paused" as const)
-        : null,
+    paused: !loading && showing && paused,
     bursts: bursts.bursts,
     clearBurst: bursts.remove,
     onRetry: () => {
@@ -102,6 +96,7 @@ export function useClipPage(
       video,
       enabled: active && framed,
       durationMs: snacc?.clip.duration_ms ?? 0,
+      buffering: loading && slow,
     },
     video: {
       ref: video,

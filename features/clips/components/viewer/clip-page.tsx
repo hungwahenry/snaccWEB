@@ -3,7 +3,6 @@
 import { PlayIcon } from "lucide-react"
 import { ReactionBursts } from "@/components/motion/reaction-bursts"
 import { Button } from "@/components/ui/button"
-import { ProgressRing } from "@/components/ui/progress-ring"
 import { SpoilerVeil } from "@/features/snaccs/components/card/media/spoiler-veil"
 import { cn } from "@/lib/utils"
 import { useClipPage } from "../../hooks/viewer/use-clip-page"
@@ -56,15 +55,11 @@ export function ClipPage({
 
         {page.veiled ? <SpoilerVeil /> : null}
 
-        {page.center ? (
+        {page.paused ? (
           <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            {page.center === "loading" ? (
-              <ProgressRing progress={null} label="Loading clip" />
-            ) : (
-              <span className="flex size-16 items-center justify-center rounded-full bg-black/45">
-                <PlayIcon className="size-8 fill-white text-white" />
-              </span>
-            )}
+            <span className="flex size-16 items-center justify-center rounded-full bg-black/45">
+              <PlayIcon className="size-8 fill-white text-white" />
+            </span>
           </span>
         ) : null}
 

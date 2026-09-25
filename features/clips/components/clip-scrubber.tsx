@@ -5,11 +5,13 @@ import { ScrubZone } from "@/features/voice/components/scrub-zone"
 import { clock } from "@/features/voice/utils/clock"
 import { cn } from "@/lib/utils"
 import { useClipScrubber } from "../hooks/use-clip-scrubber"
+import { BufferPulse } from "./buffer-pulse"
 
 type ClipScrubberProps = {
   video: RefObject<HTMLVideoElement | null>
   enabled: boolean
   durationMs: number
+  buffering?: boolean
   countdown?: boolean
   className?: string
 }
@@ -18,6 +20,7 @@ export function ClipScrubber({
   video,
   enabled,
   durationMs,
+  buffering = false,
   countdown,
   className,
 }: ClipScrubberProps) {
@@ -46,7 +49,7 @@ export function ClipScrubber({
         ) : null}
         <span
           className={cn(
-            "block w-full overflow-hidden rounded-full bg-white/30 transition-[height]",
+            "relative block w-full overflow-hidden rounded-full bg-white/30 transition-[height]",
             scrub.scrubbing ? "h-1.5" : "h-1"
           )}
         >
@@ -54,6 +57,7 @@ export function ClipScrubber({
             className="block h-full rounded-full bg-white"
             style={{ width: `${scrub.progress * 100}%` }}
           />
+          {buffering ? <BufferPulse /> : null}
         </span>
       </ScrubZone>
     </div>
