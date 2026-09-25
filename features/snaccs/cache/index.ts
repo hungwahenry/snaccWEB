@@ -35,6 +35,18 @@ const inLists = {
 
 const hasMedia = (snacc: Snacc) => snacc.images.length > 0 || Boolean(snacc.gif)
 
+const onceOnly =
+  (
+    add: (data: SnaccPages | undefined, snacc: Snacc) => SnaccPages | undefined
+  ) =>
+  (data: SnaccPages | undefined, snacc: Snacc): SnaccPages | undefined =>
+    allItems(data).some((item) => item.id === snacc.id)
+      ? data
+      : add(data, snacc)
+
+const prependSnacc = onceOnly(prependItem)
+const appendSnacc = onceOnly(appendItem)
+
 function changeLists(
   change: (data: SnaccPages | undefined) => SnaccPages | undefined
 ): void {
@@ -107,20 +119,20 @@ export function insertSnacc(
     })) {
       client().setQueryData<SnaccPages>(key, (data) =>
         commentSortOf(key) === "oldest"
-          ? appendItem(data, snacc)
-          : prependItem(data, snacc)
+          ? appendSnacc(data, snacc)
+          : prependSnacc(data, snacc)
       )
     }
     return
   }
 
   client().setQueriesData<SnaccPages>({ queryKey: snaccKeys.feeds() }, (data) =>
-    prependItem(data, snacc)
+    prependSnacc(data, snacc)
   )
   if (snacc.hangout_tag) {
     client().setQueryData<SnaccPages>(
       snaccKeys.hangout(snacc.hangout_tag.snacc_id),
-      (data) => prependItem(data, snacc)
+      (data) => prependSnacc(data, snacc)
     )
   }
 
@@ -131,7 +143,7 @@ export function insertSnacc(
     : (["snaccs"] as const)
   client().setQueriesData<SnaccPages>(
     { predicate: (query) => isUserList(query.queryKey, username, tabs) },
-    (data) => prependItem(data, snacc)
+    (data) => prependSnacc(data, snacc)
   )
 }
 

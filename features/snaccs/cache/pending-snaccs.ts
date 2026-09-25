@@ -58,8 +58,9 @@ function shiftAncestors(parentId: string, by: number): void {
 
 function showUploadProgress(id: string, fraction: number): void {
   const step = progressStep(fraction)
-  if (findSnacc(id)?.upload_progress === step) return
-  patchSnacc(id, (snacc) => ({ ...snacc, upload_progress: step }))
+  patchSnacc(id, (snacc) =>
+    snacc.upload_progress === step ? snacc : { ...snacc, upload_progress: step }
+  )
 }
 
 function track(entry: OutboxEntry, draft: SnaccDraft): void {
@@ -133,7 +134,7 @@ export function clearPendingSnaccs(): void {
 
 function show(id: string): void {
   const item = pending.get(id)
-  if (!item || findSnacc(id)) return
+  if (!item) return
 
   insertSnacc(buildOptimisticSnacc(id, item.draft, item.entry.author), {
     counted: false,
