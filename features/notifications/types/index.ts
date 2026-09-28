@@ -29,8 +29,16 @@ export interface Notification {
 export interface NotificationPreference {
   category: string
   label: string
+  section: string
+  section_label: string
   push: boolean
   email: boolean
   emailable: boolean
   locked: boolean
+}
+
+export interface PreferenceSection {
+  key: string
+  label: string
+  preferences: NotificationPreference[]
 }

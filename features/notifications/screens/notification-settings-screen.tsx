@@ -10,7 +10,7 @@ import { SECURITY_ALERTS_NOTE } from "../utils/preferences-copy"
 
 export function NotificationSettingsScreen() {
   const back = useBack("/settings")
-  const { preferences, loading, failed, retry, toggle } =
+  const { sections, loading, failed, retry, toggle } =
     useNotificationPreferences()
 
   return (
@@ -27,16 +27,20 @@ export function NotificationSettingsScreen() {
           />
         </div>
       ) : (
-        <div className="px-6 py-6">
-          <PreferenceHeader />
-          {preferences.map((preference) => (
-            <PreferenceRow
-              key={preference.category}
-              preference={preference}
-              onToggle={toggle}
-            />
+        <div className="flex flex-col gap-6 px-6 py-6">
+          {sections.map((section) => (
+            <div key={section.key}>
+              <PreferenceHeader label={section.label} />
+              {section.preferences.map((preference) => (
+                <PreferenceRow
+                  key={preference.category}
+                  preference={preference}
+                  onToggle={toggle}
+                />
+              ))}
+            </div>
           ))}
-          <p className="pt-4 text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             {SECURITY_ALERTS_NOTE}
           </p>
         </div>

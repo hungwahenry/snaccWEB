@@ -1,11 +1,13 @@
 "use client"
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMemo } from "react"
 import {
   getNotificationPreferences,
   updateNotificationPreference,
 } from "../api"
 import type { NotificationPreference } from "../types"
+import { sectionsOf } from "../utils/preferences"
 import { showError } from "@/lib/feedback"
 
 const PREFERENCES_KEY = ["notifications", "preferences"]
@@ -55,8 +57,10 @@ export function useNotificationPreferences() {
     })
   }
 
+  const sections = useMemo(() => sectionsOf(query.data ?? []), [query.data])
+
   return {
-    preferences: query.data ?? [],
+    sections,
     loading: query.isLoading,
     failed: query.isError,
     retry: () => void query.refetch(),

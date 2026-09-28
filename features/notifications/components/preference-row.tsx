@@ -1,10 +1,12 @@
 import { Switch } from "@/components/ui/switch"
 import type { NotificationPreference } from "../types"
 
-export function PreferenceHeader() {
+export function PreferenceHeader({ label }: { label?: string }) {
   return (
     <div className="flex items-center gap-3 pb-2">
-      <span className="flex-1" />
+      <span className="flex-1 text-xs font-bold text-muted-foreground uppercase">
+        {label}
+      </span>
       <span className="w-12 text-center text-xs font-bold text-muted-foreground uppercase">
         Push
       </span>
