@@ -14,7 +14,6 @@ const preference = (
   push: true,
   email: false,
   emailable: true,
-  locked: false,
 })
 
 describe("sectionsOf", () => {

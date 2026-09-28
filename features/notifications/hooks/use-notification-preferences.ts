@@ -48,8 +48,6 @@ export function useNotificationPreferences() {
     channel: "push" | "email",
     value: boolean
   ) {
-    if (preference.locked) return
-
     update.mutate({
       category: preference.category,
       push: channel === "push" ? value : preference.push,

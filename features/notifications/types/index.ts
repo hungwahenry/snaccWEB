@@ -22,7 +22,6 @@ export interface Notification {
   target: NotificationTarget | null
   read_at: string | null
   seen_at: string | null
-  created_at: string
   last_activity_at: string
 }
 
@@ -34,7 +33,6 @@ export interface NotificationPreference {
   push: boolean
   email: boolean
   emailable: boolean
-  locked: boolean
 }
 
 export interface PreferenceSection {

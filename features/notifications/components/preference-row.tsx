@@ -37,7 +37,6 @@ export function PreferenceRow({
       <span className="flex w-12 justify-center">
         <Switch
           checked={preference.push}
-          disabled={preference.locked}
           onCheckedChange={(value) => onToggle(preference, "push", value)}
           aria-label={`${preference.label} push notifications`}
         />
@@ -46,7 +45,6 @@ export function PreferenceRow({
         {preference.emailable ? (
           <Switch
             checked={preference.email}
-            disabled={preference.locked}
             onCheckedChange={(value) => onToggle(preference, "email", value)}
             aria-label={`${preference.label} emails`}
           />
