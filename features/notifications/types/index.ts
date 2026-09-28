@@ -23,6 +23,7 @@ export interface Notification {
   read_at: string | null
   seen_at: string | null
   created_at: string
+  last_activity_at: string
 }
 
 export interface NotificationPreference {

@@ -39,7 +39,7 @@ export function NotificationRow({
           </span>
         ) : null}
         <span className="text-xs text-muted-foreground">
-          {timeAgo(notification.created_at)}
+          {timeAgo(notification.last_activity_at)}
         </span>
       </span>
 
