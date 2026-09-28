@@ -1,5 +1,9 @@
 import type { Gif } from "@/features/giphy/types"
-import type { MessageGif, MessageStatus } from "@/features/messages/types"
+import type {
+  MessageGif,
+  MessageStatus,
+  ThreadLine,
+} from "@/features/messages/types"
 import type { SnaccReactor } from "@/features/snaccs/types"
 import type { DraftSticker, StickerAttachment } from "@/features/stickers/types"
 import type { Author } from "@/features/users/types"
@@ -66,8 +70,6 @@ export interface ChatReplyPreview {
   has_voice: boolean
 }
 
-export type ChatEvent = "joined" | "left" | "removed" | "changed" | "cancelled"
-
 export interface ChatMessage {
   id: string
   room_id: string
@@ -80,7 +82,7 @@ export interface ChatMessage {
   deleted: boolean
   deleted_by_sender: boolean
   held: boolean
-  event: ChatEvent | null
+  line: ThreadLine | null
   sender: Author
   subject: Author | null
   images: ChatImage[]

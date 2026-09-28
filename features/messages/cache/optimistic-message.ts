@@ -33,6 +33,7 @@ export function buildOptimisticMessage(
     edited: false,
     mine: true,
     created_at: new Date().toISOString(),
+    line: null,
     reply_to: draft.replyingTo ? toReplyPreview(draft.replyingTo) : null,
     reactions: [],
     voice: draft.voice

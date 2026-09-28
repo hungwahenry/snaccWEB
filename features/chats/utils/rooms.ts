@@ -4,12 +4,11 @@ import type {
   MessageGlimpse,
   ReplyGlimpse,
 } from "@/features/messages/types"
-import { handleOf, usernameOf, type Named } from "@/features/users/utils/names"
+import { handleOf } from "@/features/users/utils/names"
 import type { VoiceSource } from "@/features/voice/types"
 import { voiceSource } from "@/features/voice/utils/source"
 import { dateAtTime, editWindowClosesAt } from "@/lib/format"
 import type {
-  ChatEvent,
   ChatMessage,
   ChatReplyPreview,
   ChatRoom,
@@ -57,25 +56,6 @@ export function roomClosure(
     return "This hangout is over, so its chat is closed."
   }
   return null
-}
-
-const LINES: Record<ChatEvent, (actor: string, subject: string) => string> = {
-  joined: (actor) => `${actor} joined`,
-  left: (actor) => `${actor} left`,
-  removed: (actor, subject) => `${actor} removed ${subject}`,
-  changed: (actor) => `${actor} changed the plan`,
-  cancelled: (actor) => `${actor} called it off`,
-}
-
-export function lineText(
-  event: ChatEvent,
-  actor: Named,
-  subject: Named | null
-): string {
-  return LINES[event](
-    usernameOf(actor),
-    subject ? usernameOf(subject) : "someone"
-  )
 }
 
 /** Rooms with something new, the way the DM count is conversations rather than messages. */
@@ -152,7 +132,7 @@ export function chatStickerSource(
 }
 
 export const sameSender = (a: ChatMessage, b: ChatMessage) =>
-  a.event === null && b.event === null && a.sender.id === b.sender.id
+  a.sender.id === b.sender.id
 
 /** Your message once withdrawn: the gap everyone else sees. */
 export function withdrawn(message: ChatMessage): ChatMessage {

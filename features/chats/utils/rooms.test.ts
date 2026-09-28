@@ -5,7 +5,6 @@ import {
   canEditChatMessage,
   chatComposerContext,
   chatVoiceSource,
-  lineText,
   removedLabel,
   roomClosure,
   roomSubtitle,
@@ -28,7 +27,7 @@ const message = (patch: Partial<ChatMessage> = {}): ChatMessage =>
     deleted: false,
     deleted_by_sender: false,
     held: false,
-    event: null,
+    line: null,
     sender: { id: "u1", username: "ada" },
     subject: null,
     images: [],
@@ -98,18 +97,13 @@ describe("rooms", () => {
     ).toMatch(/is over/)
   })
 
-  it("writes a line for what happened, naming who by username", () => {
-    const ada = { display_name: "Ada", username: "ada" }
-    const bola = { display_name: "Bola", username: "bola" }
-    expect(lineText("joined", ada, null)).toBe("ada joined")
-    expect(lineText("removed", ada, bola)).toBe("ada removed bola")
-    expect(lineText("cancelled", ada, null)).toBe("ada called it off")
-  })
-
-  it("never runs a line into the messages around it", () => {
-    const line = message({ event: "joined" })
+  it("groups room messages by who sent them", () => {
+    const bola = message({
+      id: "m2",
+      sender: { id: "u2", username: "bola" } as ChatMessage["sender"],
+    })
     expect(sameSender(message(), message({ id: "m2" }))).toBe(true)
-    expect(sameSender(line, message())).toBe(false)
+    expect(sameSender(message(), bola)).toBe(false)
   })
 
   it("counts rooms with something new, leaving muted ones out", () => {

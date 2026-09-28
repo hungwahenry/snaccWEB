@@ -20,7 +20,6 @@ import { ReactionBreakdownSheet } from "@/features/snaccs/components/card/reacti
 import { StickerCreator } from "@/features/stickers/components/sticker-creator"
 import { StickerTraySheet } from "@/features/stickers/containers/sticker-tray-sheet"
 import { useBack } from "@/hooks/use-back"
-import { ChatLineRow } from "../components/chat-line-row"
 import { ChatMessageActionsSheet } from "../components/chat-message-actions-sheet"
 import { ChatMessageRow } from "../components/chat-message-row"
 import { RoomIcon } from "../components/room-icon"
@@ -74,22 +73,13 @@ export function ChatRoomScreen({ roomId }: { roomId: string }) {
             description="Be the first to say something."
           />
         }
-        renderRow={(item) =>
-          item.message.event ? (
-            <ChatLineRow
-              key={item.message.id}
-              message={item.message}
-              dayBreak={item.dayBreak}
-              event={item.message.event}
-            />
-          ) : (
-            <ChatMessageRow
-              key={item.message.id}
-              {...item}
-              handlers={screen.handlers}
-            />
-          )
-        }
+        renderRow={(item) => (
+          <ChatMessageRow
+            key={item.message.id}
+            {...item}
+            handlers={screen.handlers}
+          />
+        )}
       />
 
       {screen.closure ? (

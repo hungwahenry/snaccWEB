@@ -81,6 +81,7 @@ export interface Message {
   edited: boolean
   mine: boolean
   created_at: string
+  line: ThreadLine | null
   reply_to: ReplyPreview | null
   reactions: MessageReaction[]
   images: MessageImage[]
@@ -128,12 +129,18 @@ export interface MessageDraft {
 
 export type DeliveryState = "sent" | "seen"
 
+export interface ThreadLine {
+  kind: string
+  text: string
+}
+
 /** What a thread needs from a message, in a DM or a room. */
 export interface ThreadMessage {
   id: string
   mine: boolean
   created_at: string
   status?: MessageStatus
+  line?: ThreadLine | null
 }
 
 export interface ThreadItem<T extends ThreadMessage = Message> {

@@ -58,6 +58,30 @@ describe("decorateThread", () => {
     expect(items[0].delivery).toBe("sent")
   })
 
+  it("lets a line stand alone, breaking the run around it", () => {
+    const line = { kind: "screenshot", text: "They took a screenshot" }
+    const [before, standing, after] = decorateThread(
+      [message("3", 2), message("2", 1, { line }), message("1", 0)],
+      false
+    )
+
+    expect(before.lastInBurst).toBe(true)
+    expect(standing).toMatchObject({ firstInBurst: true, lastInBurst: true })
+    expect(after.firstInBurst).toBe(true)
+  })
+
+  it("marks your newest message even when a line came after it", () => {
+    const line = { kind: "screenshot", text: "You took a screenshot" }
+    const [message1, newest] = decorateThread(
+      [message("2", 1, { mine: true, line }), message("1", 0, { mine: true })],
+      false,
+      { peerReadAt: at(2) }
+    )
+
+    expect(message1.delivery).toBe("seen")
+    expect(newest.delivery).toBeNull()
+  })
+
   it("splits a room's run when the sender changes", () => {
     const items = decorateThread(
       [message("2", 1, { sender: "b" }), message("1", 0)],

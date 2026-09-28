@@ -4,6 +4,7 @@ import { LoadFailed } from "@/components/ui/load-failed"
 import { LoadMore } from "@/components/ui/load-more"
 import type { ThreadItem, ThreadMessage } from "../../types"
 import { MessageThreadSkeleton } from "./message-thread-skeleton"
+import { ThreadLineRow } from "./thread-line-row"
 import { TypingIndicator } from "./typing-indicator"
 
 /** A thread, newest at the bottom, in a DM or a room: only the rows and the empty words differ. */
@@ -59,7 +60,18 @@ export function ThreadView<T extends ThreadMessage>({
             />
             <ListFooter loading={list.loadingMore} />
             <div className="flex-1" />
-            {items.map(renderRow)}
+            {items.map((item) =>
+              item.message.line ? (
+                <ThreadLineRow
+                  key={item.message.id}
+                  line={item.message.line}
+                  time={item.time}
+                  dayBreak={item.dayBreak}
+                />
+              ) : (
+                renderRow(item)
+              )
+            )}
             {typing ? (
               <TypingIndicator
                 label={typeof typing === "string" ? typing : undefined}

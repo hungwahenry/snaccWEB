@@ -19,9 +19,9 @@ export function onChatMessage({
   if (message.held && !message.mine) return
 
   upsertChatMessage(room_id, message)
-  if (message.event === "changed" || message.event === "cancelled") {
+  if (message.line?.kind === "changed" || message.line?.kind === "cancelled") {
     roomsChanged()
-  } else if (!message.mine && message.event === null) {
+  } else if (!message.mine && !message.line) {
     bumpRoom(room_id, message.created_at)
   }
 }

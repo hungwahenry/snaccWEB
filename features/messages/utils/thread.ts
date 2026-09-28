@@ -29,11 +29,16 @@ export function decorateThread<T extends ThreadMessage>(
   hasOlder: boolean,
   { peerReadAt, sameSide = bySide }: ThreadOptions<T> = {}
 ): ThreadItem<T>[] {
+  const newestSpoken = newestFirst.findIndex((message) => !message.line)
   const delivery =
-    peerReadAt === undefined ? null : deliveryOf(newestFirst[0], peerReadAt)
+    peerReadAt === undefined
+      ? null
+      : deliveryOf(newestFirst[newestSpoken], peerReadAt)
 
   const continuesBurst = (message: T, newer: T | undefined): boolean => {
-    if (!newer || !sameSide(message, newer)) return false
+    if (!newer || message.line || newer.line || !sameSide(message, newer)) {
+      return false
+    }
     if (!sameDay(message.created_at, newer.created_at)) return false
     return (
       Date.parse(newer.created_at) - Date.parse(message.created_at) < BURST_MS
@@ -61,7 +66,7 @@ export function decorateThread<T extends ThreadMessage>(
           : null,
       firstInBurst: !older || !continuesBurst(older, message),
       lastInBurst,
-      delivery: index === 0 ? delivery : null,
+      delivery: index === newestSpoken ? delivery : null,
     }
   })
 
