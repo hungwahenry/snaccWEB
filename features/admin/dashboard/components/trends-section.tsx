@@ -1,6 +1,6 @@
 "use client"
 
-import { Area, AreaChart } from "recharts"
+import { Area, AreaChart, XAxis } from "recharts"
 import {
   ChartContainer,
   ChartTooltip,
@@ -9,8 +9,9 @@ import {
 } from "@/components/ui/chart"
 import { Section } from "@/features/admin/shell/components/detail"
 import { formatNumber } from "@/lib/format"
-import type { DashboardSeriesPoint, SeriesMetric } from "../types"
-import { trendTotals } from "../utils/dashboard"
+import type { DashboardSeriesPoint, PeriodTotals, SeriesMetric } from "../types"
+import { dateLabel } from "../utils/charts"
+import { periodLabel } from "../utils/dashboard"
 
 function Trend({
   label,
@@ -40,9 +41,10 @@ function Trend({
           data={series}
           margin={{ top: 4, right: 0, bottom: 0, left: 0 }}
         >
+          <XAxis dataKey="date" hide />
           <ChartTooltip
             cursor={false}
-            content={<ChartTooltipContent hideLabel />}
+            content={<ChartTooltipContent labelFormatter={dateLabel} />}
           />
           <Area
             dataKey={metric}
@@ -59,11 +61,17 @@ function Trend({
   )
 }
 
-export function TrendsSection({ series }: { series: DashboardSeriesPoint[] }) {
-  const totals = trendTotals(series)
-
+export function TrendsSection({
+  days,
+  series,
+  totals,
+}: {
+  days: number
+  series: DashboardSeriesPoint[]
+  totals: PeriodTotals
+}) {
   return (
-    <Section title="Last 14 days">
+    <Section title={periodLabel(days)}>
       <div className="grid gap-3 sm:grid-cols-3">
         <Trend
           label="Signups"
@@ -72,14 +80,14 @@ export function TrendsSection({ series }: { series: DashboardSeriesPoint[] }) {
           metric="signups"
         />
         <Trend
-          label="Snaccs posted"
-          value={totals.snaccs}
+          label="Posts"
+          value={totals.posts}
           series={series}
-          metric="snaccs"
+          metric="posts"
         />
         <Trend
-          label="Active today"
-          value={totals.activeToday}
+          label="Active people"
+          value={totals.active}
           series={series}
           metric="active"
         />

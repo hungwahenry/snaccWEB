@@ -1,64 +1,120 @@
 "use client"
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { OptionSelect } from "@/features/admin/shell/components/option-select"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
 import { QueryView } from "@/features/admin/shell/components/query-view"
-import {
-  ContentSection,
-  ModerationSection,
-} from "../components/activity-sections"
-import { HeadlineStats } from "../components/headline-stats"
-import {
-  EarningsSection,
-  WithdrawalsSection,
-} from "../components/money-sections"
-import {
-  TopCampusesSection,
-  TopReactionsSection,
-} from "../components/top-sections"
-import { TrendsSection } from "../components/trends-section"
+import { AudienceTab } from "../components/audience-tab"
+import { CampusesTab } from "../components/campuses-tab"
+import { ContentTab } from "../components/content-tab"
+import { MoneyTab } from "../components/money-tab"
+import { NotificationsTab } from "../components/notifications-tab"
+import { OverviewTab } from "../components/overview-tab"
+import { SafetyTab } from "../components/safety-tab"
 import { useDashboardScreen } from "../hooks/use-dashboard-screen"
+import { PERIOD_OPTIONS } from "../utils/dashboard"
 
 export function DashboardScreen() {
-  const { query } = useDashboardScreen()
+  const screen = useDashboardScreen()
+  const { list, campuses } = screen
 
   return (
     <>
-      <PageHeader title="Dashboard" description="Your platform at a glance." />
-      <QueryView query={query} what="metrics">
+      <PageHeader
+        title="Dashboard"
+        description="Your platform at a glance."
+        action={
+          <div className="flex flex-wrap items-center gap-2">
+            {campuses.length > 1 ? (
+              <OptionSelect
+                label="Campus"
+                allLabel="All campuses"
+                value={list.values.campus}
+                onChange={(campus) => list.setFilter({ campus })}
+                options={campuses}
+                className="w-56"
+              />
+            ) : null}
+            <OptionSelect
+              label="Period"
+              value={list.values.period}
+              onChange={(period) => list.setFilter({ period })}
+              options={PERIOD_OPTIONS}
+            />
+          </div>
+        }
+      />
+      <QueryView query={screen.query} what="metrics">
         {(metrics) => (
-          <div className="flex flex-col gap-6">
-            {metrics.platform ? null : (
+          <div className="flex flex-col gap-4">
+            {screen.note ? (
               <p className="text-sm text-pretty text-muted-foreground">
-                These numbers cover your campuses. Platform money is not
-                included.
+                {screen.note}
               </p>
-            )}
-
-            <HeadlineStats metrics={metrics} />
-            <TrendsSection series={metrics.series} />
-
-            {metrics.money ? (
-              <div className="grid gap-6 lg:grid-cols-2">
-                <WithdrawalsSection money={metrics.money} />
-                <EarningsSection money={metrics.money} />
-              </div>
             ) : null}
 
-            <div className="grid gap-6 lg:grid-cols-2">
-              <ContentSection content={metrics.content} />
-              <ModerationSection
-                moderation={metrics.moderation}
-                follows={metrics.engagement.follows}
-              />
-            </div>
+            <Tabs value={screen.tab} onValueChange={screen.setTab}>
+              <div className="-mx-1 overflow-x-auto px-1 pb-1">
+                <TabsList>
+                  {screen.tabs.map((tab) => (
+                    <TabsTrigger key={tab.value} value={tab.value}>
+                      {tab.label}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </div>
 
-            <div className="grid gap-6 lg:grid-cols-2">
-              <TopCampusesSection
-                campuses={metrics.campuses}
-                top={metrics.top_campuses}
-              />
-              <TopReactionsSection reactions={metrics.top_reactions} />
-            </div>
+              <TabsContent value="overview" className="pt-4">
+                <OverviewTab metrics={metrics} growth={screen.growth} />
+              </TabsContent>
+
+              <TabsContent value="audience" className="pt-4">
+                <QueryView query={screen.audience} what="the audience">
+                  {(audience) => <AudienceTab audience={audience} />}
+                </QueryView>
+              </TabsContent>
+
+              <TabsContent value="content" className="pt-4">
+                <QueryView query={screen.content} what="content">
+                  {(content) => (
+                    <ContentTab content={content} metrics={metrics} />
+                  )}
+                </QueryView>
+              </TabsContent>
+
+              <TabsContent value="money" className="pt-4">
+                <QueryView query={screen.money} what="money">
+                  {(money) => (
+                    <MoneyTab
+                      money={money}
+                      campusPicked={list.values.campus !== null}
+                    />
+                  )}
+                </QueryView>
+              </TabsContent>
+
+              <TabsContent value="notifications" className="pt-4">
+                <QueryView query={screen.notifications} what="notifications">
+                  {(notifications) => (
+                    <NotificationsTab notifications={notifications} />
+                  )}
+                </QueryView>
+              </TabsContent>
+
+              <TabsContent value="safety" className="pt-4">
+                <QueryView query={screen.safety} what="safety">
+                  {(safety) => <SafetyTab safety={safety} metrics={metrics} />}
+                </QueryView>
+              </TabsContent>
+
+              <TabsContent value="campuses" className="pt-4">
+                <QueryView query={screen.campusStats} what="campuses">
+                  {(stats) => (
+                    <CampusesTab campuses={stats.items} days={screen.days} />
+                  )}
+                </QueryView>
+              </TabsContent>
+            </Tabs>
           </div>
         )}
       </QueryView>

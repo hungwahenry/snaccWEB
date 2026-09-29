@@ -5,7 +5,7 @@ import {
 import { Fact, Facts, Section } from "@/features/admin/shell/components/detail"
 import { TableFrame } from "@/features/admin/shell/components/table-frame"
 import { formatNaira, formatNumber } from "@/lib/format"
-import type { DashboardMoney, WithdrawalStatusCount } from "../types"
+import type { MoneyMetrics, WithdrawalStatusCount } from "../types"
 
 const WITHDRAWAL_COLUMNS: Column<WithdrawalStatusCount>[] = [
   {
@@ -30,9 +30,9 @@ const WITHDRAWAL_COLUMNS: Column<WithdrawalStatusCount>[] = [
   },
 ]
 
-export function WithdrawalsSection({ money }: { money: DashboardMoney }) {
+export function WithdrawalsSection({ money }: { money: MoneyMetrics }) {
   return (
-    <Section title="Withdrawals">
+    <Section title="All-time withdrawals">
       <TableFrame>
         <DataTable
           columns={WITHDRAWAL_COLUMNS}
@@ -45,9 +45,9 @@ export function WithdrawalsSection({ money }: { money: DashboardMoney }) {
   )
 }
 
-export function EarningsSection({ money }: { money: DashboardMoney }) {
+export function EarningsSection({ money }: { money: MoneyMetrics }) {
   return (
-    <Section title="Earnings">
+    <Section title="All-time earnings">
       <Facts>
         <Fact
           label="Total distributed"
@@ -56,7 +56,7 @@ export function EarningsSection({ money }: { money: DashboardMoney }) {
         {money.earnings_by_type.map((row) => (
           <Fact
             key={row.type}
-            label={<span className="capitalize">From {row.type}s</span>}
+            label={row.label}
             value={formatNaira(row.amount)}
           />
         ))}

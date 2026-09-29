@@ -4,11 +4,13 @@ import type { DashboardMetrics } from "../types"
 
 export function ContentSection({
   content,
+  follows,
 }: {
   content: DashboardMetrics["content"]
+  follows: number
 }) {
   return (
-    <Section title="Content">
+    <Section title="All-time content">
       <Facts>
         <Fact label="Posts" value={formatNumber(content.snaccs)} />
         <Fact label="Comments" value={formatNumber(content.comments)} />
@@ -16,6 +18,7 @@ export function ContentSection({
         <Fact label="With image" value={formatNumber(content.with_image)} />
         <Fact label="With GIF" value={formatNumber(content.with_gif)} />
         <Fact label="Removed" value={formatNumber(content.deleted_snaccs)} />
+        <Fact label="Follows" value={formatNumber(follows)} />
       </Facts>
     </Section>
   )
@@ -23,13 +26,11 @@ export function ContentSection({
 
 export function ModerationSection({
   moderation,
-  follows,
 }: {
   moderation: DashboardMetrics["moderation"]
-  follows: number
 }) {
   return (
-    <Section title="Moderation">
+    <Section title="All-time reports">
       <Facts>
         <Fact
           label="Open reports"
@@ -41,7 +42,6 @@ export function ModerationSection({
           label="Filed in last 7 days"
           value={formatNumber(moderation.reports_7d)}
         />
-        <Fact label="Follows" value={formatNumber(follows)} />
       </Facts>
     </Section>
   )

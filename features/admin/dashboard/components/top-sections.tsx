@@ -1,65 +1,7 @@
 import { Badge } from "@/components/ui/badge"
-import {
-  DataTable,
-  type Column,
-} from "@/features/admin/shell/components/data-table"
 import { EmptyNote, Section } from "@/features/admin/shell/components/detail"
-import { TableFrame } from "@/features/admin/shell/components/table-frame"
 import { formatNumber } from "@/lib/format"
-import type { DashboardMetrics, TopCampus, TopReaction } from "../types"
-
-const CAMPUS_COLUMNS: Column<TopCampus>[] = [
-  {
-    id: "campus",
-    header: "Campus",
-    cell: (campus) => (
-      <>
-        <span className="font-medium">{campus.acronym}</span>
-        <span className="ml-2 text-xs text-muted-foreground">
-          {campus.name}
-        </span>
-      </>
-    ),
-  },
-  {
-    id: "members",
-    header: "Members",
-    align: "end",
-    className: "tabular-nums",
-    cell: (campus) => formatNumber(campus.members),
-  },
-  {
-    id: "snaccs",
-    header: "Snaccs",
-    align: "end",
-    className: "tabular-nums",
-    cell: (campus) => formatNumber(campus.snaccs),
-  },
-]
-
-export function TopCampusesSection({
-  campuses,
-  top,
-}: {
-  campuses: DashboardMetrics["campuses"]
-  top: TopCampus[]
-}) {
-  return (
-    <Section
-      title="Top campuses"
-      description={`${formatNumber(campuses.funded)} of ${formatNumber(campuses.total)} funded`}
-    >
-      <TableFrame>
-        <DataTable
-          columns={CAMPUS_COLUMNS}
-          rows={top}
-          rowKey={(campus) => campus.id}
-          empty="No campuses with members yet."
-        />
-      </TableFrame>
-    </Section>
-  )
-}
+import type { TopReaction } from "../types"
 
 export function TopReactionsSection({
   reactions,
