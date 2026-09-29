@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest"
+import { shortDay } from "@/lib/format"
 import type { Breakdown } from "../types"
 import {
   breakdownConfig,
   breakdownTotals,
   CHART_COLORS,
+  dateLabel,
   inNaira,
 } from "./charts"
 
@@ -42,5 +44,11 @@ describe("inNaira", () => {
       { date: "2026-09-28", deposit: 50, transfer: 2.5 },
       { date: "2026-09-29", deposit: 10, transfer: 0 },
     ])
+  })
+})
+
+describe("dateLabel", () => {
+  it("reads a chart's day the way the rest of the panel does", () => {
+    expect(dateLabel("2026-09-29")).toBe(shortDay("2026-09-29"))
   })
 })

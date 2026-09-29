@@ -103,6 +103,21 @@ export interface PlatformMix {
   versions: PlatformVersion[]
 }
 
+export interface VersionRow {
+  version: string
+  label: string
+  users: number
+  fraction: number
+}
+
+export interface PlatformRow {
+  platform: AudiencePlatform
+  label: string
+  users: number
+  fraction: number
+  versions: VersionRow[]
+}
+
 export interface PushReach {
   platform: Exclude<AudiencePlatform, "unknown">
   users: number

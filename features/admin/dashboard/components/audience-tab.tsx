@@ -1,7 +1,10 @@
 import type { AudienceMetrics } from "../types"
-import { AudienceSection } from "./audience-section"
-import { PlatformsSection, PushReachSection } from "./device-sections"
-import { RetentionSection } from "./retention-section"
+import {
+  AudienceSection,
+  PlatformsSection,
+  PushReachSection,
+  RetentionSection,
+} from "./audience-sections"
 
 export function AudienceTab({ audience }: { audience: AudienceMetrics }) {
   return (

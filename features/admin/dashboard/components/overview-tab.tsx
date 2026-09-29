@@ -1,9 +1,11 @@
 import type { UseQueryResult } from "@tanstack/react-query"
 import { QueryView } from "@/features/admin/shell/components/query-view"
 import type { DashboardMetrics, GrowthMetrics } from "../types"
-import { GrowthSection } from "./growth-section"
-import { HeadlineStats } from "./headline-stats"
-import { TrendsSection } from "./trends-section"
+import {
+  GrowthSection,
+  HeadlineStats,
+  TrendsSection,
+} from "./overview-sections"
 
 export function OverviewTab({
   metrics,

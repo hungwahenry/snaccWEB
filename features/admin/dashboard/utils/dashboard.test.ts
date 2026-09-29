@@ -4,16 +4,16 @@ import {
   dashboardTabs,
   funnelSteps,
   hoursLabel,
-  knownVersions,
   mostActiveCampuses,
   PERIOD_OPTIONS,
+  platformRows,
   reachableCampuses,
   retentionRows,
   scopeNote,
   seesMoney,
   share,
   shownTab,
-  versionLabel,
+  withBarFractions,
 } from "./dashboard"
 
 describe("PERIOD_OPTIONS", () => {
@@ -33,33 +33,56 @@ describe("share", () => {
   })
 })
 
-describe("knownVersions", () => {
-  it("lists the versions a platform reported", () => {
-    const versions = [
-      { version: "1.4.0", users: 3 },
-      { version: "unknown", users: 1 },
-    ]
-
-    expect(knownVersions({ platform: "android", users: 4, versions })).toEqual(
-      versions
-    )
-  })
-
-  it("lists nothing for a platform that never reports one", () => {
-    expect(
-      knownVersions({
+describe("platformRows", () => {
+  it("names each platform, gives its share of everyone, and each version's share of the platform", () => {
+    const [android, web] = platformRows([
+      {
+        platform: "android",
+        users: 3,
+        versions: [
+          { version: "1.4.0", users: 2 },
+          { version: "unknown", users: 1 },
+        ],
+      },
+      {
         platform: "web",
-        users: 2,
-        versions: [{ version: "unknown", users: 2 }],
-      })
-    ).toEqual([])
+        users: 1,
+        versions: [{ version: "unknown", users: 1 }],
+      },
+    ])
+
+    expect(android).toMatchObject({
+      label: "Android",
+      users: 3,
+      fraction: 0.75,
+    })
+    expect(android.versions).toEqual([
+      { version: "1.4.0", label: "v1.4.0", users: 2, fraction: 2 / 3 },
+      { version: "unknown", label: "Unknown", users: 1, fraction: 1 / 3 },
+    ])
+    expect(web.label).toBe("Web")
+    expect(web.versions).toEqual([])
   })
 })
 
-describe("versionLabel", () => {
-  it("prefixes a version and spells out a missing one", () => {
-    expect(versionLabel("1.4.0")).toBe("v1.4.0")
-    expect(versionLabel("unknown")).toBe("Unknown")
+describe("withBarFractions", () => {
+  it("measures every row against the biggest one", () => {
+    expect(
+      withBarFractions(
+        [
+          { tag: "a", uses: 4 },
+          { tag: "b", uses: 1 },
+        ],
+        (row) => row.uses
+      )
+    ).toEqual([
+      { tag: "a", uses: 4, fraction: 1 },
+      { tag: "b", uses: 1, fraction: 0.25 },
+    ])
+  })
+
+  it("is empty for no rows", () => {
+    expect(withBarFractions([], () => 0)).toEqual([])
   })
 })
 
@@ -204,6 +227,9 @@ describe("mostActiveCampuses", () => {
       campus("c", 9),
     ])
 
-    expect(ranked.map((row) => row.id)).toEqual(["c", "a"])
+    expect(ranked.map((row) => [row.id, row.fraction])).toEqual([
+      ["c", 1],
+      ["a", 3 / 9],
+    ])
   })
 })

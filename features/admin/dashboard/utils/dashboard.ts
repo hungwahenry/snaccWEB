@@ -9,6 +9,7 @@ import type {
   FunnelStep,
   GrowthMetrics,
   PlatformMix,
+  PlatformRow,
   PlatformVersion,
   RetentionRow,
 } from "../types"
@@ -42,14 +43,39 @@ export function share(part: number, whole: number): number {
   return whole > 0 ? part / whole : 0
 }
 
-export function knownVersions(platform: PlatformMix): PlatformVersion[] {
+function knownVersions(platform: PlatformMix): PlatformVersion[] {
   return platform.versions.every((row) => row.version === "unknown")
     ? []
     : platform.versions
 }
 
-export function versionLabel(version: string): string {
+function versionLabel(version: string): string {
   return version === "unknown" ? "Unknown" : `v${version}`
+}
+
+export function platformRows(platforms: PlatformMix[]): PlatformRow[] {
+  const total = platforms.reduce((sum, row) => sum + row.users, 0)
+
+  return platforms.map((platform) => ({
+    platform: platform.platform,
+    label: platformLabel(platform.platform),
+    users: platform.users,
+    fraction: share(platform.users, total),
+    versions: knownVersions(platform).map((row) => ({
+      version: row.version,
+      label: versionLabel(row.version),
+      users: row.users,
+      fraction: share(row.users, platform.users),
+    })),
+  }))
+}
+
+export function withBarFractions<T>(
+  rows: T[],
+  value: (row: T) => number
+): (T & { fraction: number })[] {
+  const most = Math.max(0, ...rows.map(value))
+  return rows.map((row) => ({ ...row, fraction: share(value(row), most) }))
 }
 
 const FUNNEL: { key: keyof GrowthMetrics; label: string }[] = [
@@ -127,11 +153,16 @@ export function shownTab(
 
 const MOST_ACTIVE = 10
 
-export function mostActiveCampuses(campuses: CampusRow[]): CampusRow[] {
-  return campuses
-    .filter((campus) => campus.weekly_active > 0)
-    .sort((a, b) => b.weekly_active - a.weekly_active)
-    .slice(0, MOST_ACTIVE)
+export function mostActiveCampuses(
+  campuses: CampusRow[]
+): (CampusRow & { fraction: number })[] {
+  return withBarFractions(
+    campuses
+      .filter((campus) => campus.weekly_active > 0)
+      .sort((a, b) => b.weekly_active - a.weekly_active)
+      .slice(0, MOST_ACTIVE),
+    (campus) => campus.weekly_active
+  )
 }
 
 export const RETENTION_WEEKS = 9
