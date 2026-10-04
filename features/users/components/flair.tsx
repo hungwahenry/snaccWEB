@@ -14,6 +14,7 @@ export function TierName({
   name,
   className,
   iconSize = 16,
+  showTierIcon = false,
 }: {
   score?: UserScore | null
   official?: boolean
@@ -21,6 +22,7 @@ export function TierName({
   name: string | null
   className?: string
   iconSize?: number
+  showTierIcon?: boolean
 }) {
   const tier = useTier(score?.tier)
 
@@ -32,7 +34,7 @@ export function TierName({
       >
         {name}
       </span>
-      {tier?.icon ? (
+      {showTierIcon && tier?.icon ? (
         <NamedIcon
           name={tier.icon}
           color={tier.color}

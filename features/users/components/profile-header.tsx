@@ -78,6 +78,7 @@ export function ProfileHeader({
                   birthday={profile.is_birthday}
                   name={nameOf(profile)}
                   iconSize={22}
+                  showTierIcon
                 />
               </h1>
               {profile.is_private ? (
