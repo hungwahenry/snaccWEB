@@ -13,6 +13,7 @@ import { allItems, firstPageOnly, uniqueById } from "@/lib/query/pages"
 interface InfiniteListOptions {
   enabled?: boolean
   keepPrevious?: boolean
+  onRefresh?: () => void
 }
 
 export function useInfiniteList<T>(
@@ -35,6 +36,7 @@ export function useInfiniteList<T>(
 
   async function refresh() {
     setRefreshing(true)
+    options.onRefresh?.()
     queryClient.setQueryData<PaginatedPages<T>>(queryKey, firstPageOnly)
     try {
       await query.refetch()
