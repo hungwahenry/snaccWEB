@@ -5,7 +5,7 @@ type FeedTabsProps = {
   tabs: PillTab<FeedScope>[]
   value: FeedScope
   onChange: (scope: FeedScope) => void
-  onReselect?: (scope: FeedScope, anchor: HTMLElement) => void
+  onReselect?: (scope: FeedScope) => void
 }
 
 export function FeedTabs({ tabs, value, onChange, onReselect }: FeedTabsProps) {

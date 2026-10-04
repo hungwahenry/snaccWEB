@@ -7,9 +7,9 @@ import {
 } from "lucide-react"
 import type { PillTab } from "@/components/ui/pill-tabs"
 import { realtimeRooms } from "@/providers/realtime-rooms"
-import type { FeedScope, FeedScopesEnabled, FeedSort } from "../types"
+import type { FeedScope, FeedScopesEnabled } from "../types"
 
-export const DEFAULT_FEED_SCOPE: FeedScope = "campus"
+export const DEFAULT_FEED_SCOPE: FeedScope = "global"
 
 const CAMPUS: PillTab<FeedScope> = {
   value: "campus",
@@ -29,9 +29,9 @@ const GLOBAL: PillTab<FeedScope> = {
 
 export function feedTabs(enabled: FeedScopesEnabled): PillTab<FeedScope>[] {
   return [
+    ...(enabled.global ? [GLOBAL] : []),
     CAMPUS,
     ...(enabled.following ? [FOLLOWING] : []),
-    ...(enabled.global ? [GLOBAL] : []),
   ]
 }
 
@@ -42,16 +42,17 @@ export function scopeAllowed(
   return scope === "campus" || enabled[scope]
 }
 
-/**
- * The room that tells us someone just posted to the feed on screen. Only a newest-first feed
- * can take a "new snaccs" pill: a ranked one would not put the new snacc on top.
- */
+export function resolveScope(
+  picked: FeedScope,
+  enabled: FeedScopesEnabled
+): FeedScope {
+  return scopeAllowed(picked, enabled) ? picked : "campus"
+}
+
 export function liveFeedRoom(
   scope: FeedScope,
-  sort: FeedSort,
   campusSlug: string | null
 ): string | null {
-  if (sort !== "latest") return null
   if (scope === "global") return realtimeRooms.feedGlobal
   if (scope === "campus" && campusSlug)
     return realtimeRooms.feedCampus(campusSlug)
@@ -75,8 +76,7 @@ export const FEED_EMPTY: Record<
   following: {
     icon: UsersRoundIcon,
     title: "You follow nobody yet",
-    description:
-      "Follow a few people and their snaccs land here, newest first.",
+    description: "Follow a few people and their best snaccs land here.",
   },
 }
 

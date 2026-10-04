@@ -3,12 +3,11 @@
 import { snaccKeys } from "@/features/snaccs/utils/keys"
 import { useInfiniteList } from "@/hooks/use-infinite-list"
 import { listFeed } from "../api"
-import type { FeedScope, FeedSort } from "../types"
+import type { FeedScope } from "../types"
 
-export function useFeed(scope: FeedScope, sort: FeedSort) {
-  const { items, ...list } = useInfiniteList(
-    snaccKeys.feed(scope, sort),
-    (page) => listFeed(scope, page, sort)
+export function useFeed(scope: FeedScope) {
+  const { items, ...list } = useInfiniteList(snaccKeys.feed(scope), (page) =>
+    listFeed(scope, page)
   )
   return { snaccs: items, ...list }
 }
