@@ -11,6 +11,7 @@ import type { MomentMode } from "../types"
 import { DEFAULT_BACKGROUND } from "../utils/backgrounds"
 import { authorMomentsKey, MOMENTS_TRAY_KEY } from "../utils/keys"
 import { showError, showHeld } from "@/lib/feedback"
+import { useMomentLength } from "./use-moment-length"
 
 const COUNTER_APPEARS_AT = 80
 
@@ -21,6 +22,7 @@ export function useMomentComposer(onPosted: () => void) {
   const [background, setBackground] = useState<string>(DEFAULT_BACKGROUND)
 
   const maxLength = useConfigValue("moments.caption_max_length")
+  const length = useMomentLength()
   const me = useMe()
   const queryClient = useQueryClient()
 
@@ -53,9 +55,19 @@ export function useMomentComposer(onPosted: () => void) {
     mutate({
       id: newId(),
       body: trimmed || undefined,
+      hours: length.picked ?? undefined,
       ...(mode === "text" ? { background } : { image: image ?? undefined }),
     })
-  }, [ready, isPending, mutate, trimmed, mode, background, image])
+  }, [
+    ready,
+    isPending,
+    mutate,
+    trimmed,
+    length.picked,
+    mode,
+    background,
+    image,
+  ])
 
   return {
     mode,
@@ -67,6 +79,7 @@ export function useMomentComposer(onPosted: () => void) {
     image,
     setImage,
     clearImage: useCallback(() => setImage(null), []),
+    length: length.chip,
     avatarUrl: me.data?.profile?.avatar_url ?? null,
     username: me.data?.profile?.username ?? null,
     remaining,

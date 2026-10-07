@@ -126,7 +126,8 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly 'avatar.base': string;
   readonly 'avatar.style': string;
   readonly 'avatar.format': string;
-  readonly 'moments.ttl_hours': number;
+  readonly 'moments.default_hours': number;
+  readonly 'moments.durations_hours': readonly string[];
   readonly 'moments.max_per_day': number;
   readonly 'moments.caption_max_length': number;
   readonly 'hangouts.title_max_length': number;
@@ -212,7 +213,8 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   'avatar.base': "https://api.dicebear.com/9.x",
   'avatar.style': "adventurer",
   'avatar.format': "png",
-  'moments.ttl_hours': 24,
+  'moments.default_hours': 24,
+  'moments.durations_hours': [],
   'moments.max_per_day': 20,
   'moments.caption_max_length': 200,
   'hangouts.title_max_length': 80,

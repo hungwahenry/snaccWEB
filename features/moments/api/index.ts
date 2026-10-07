@@ -39,6 +39,7 @@ export interface CreateMomentInput {
   body?: string
   background?: string
   image?: PickedImage
+  hours?: number
 }
 
 export function createMoment(input: CreateMomentInput): Promise<Moment> {
@@ -47,12 +48,14 @@ export function createMoment(input: CreateMomentInput): Promise<Moment> {
       id: input.id,
       body: input.body,
       background: input.background,
+      hours: input.hours,
     })
   }
 
   const form = new FormData()
   form.append("id", input.id)
   if (input.body) form.append("body", input.body)
+  if (input.hours) form.append("hours", String(input.hours))
   appendImage(form, "image", input.image, "moment")
   return api.upload<Moment>("/moments", form)
 }

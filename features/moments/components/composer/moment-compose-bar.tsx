@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import type { PickedImage } from "@/lib/media"
 import type { MomentMode } from "../../types"
+import type { MomentLengthChip } from "../../hooks/use-moment-length"
 import { MomentAttachment } from "./moment-attachment"
 import { MomentBackgroundRow } from "./moment-background-row"
 import { MomentToolbar } from "./moment-toolbar"
@@ -14,6 +15,7 @@ type MomentComposeBarProps = {
   onRemoveImage: () => void
   remaining: number
   showCounter: boolean
+  length: MomentLengthChip | null
   action: ReactNode
 }
 
@@ -26,6 +28,7 @@ export function MomentComposeBar({
   onRemoveImage,
   remaining,
   showCounter,
+  length,
   action,
 }: MomentComposeBarProps) {
   return (
@@ -41,6 +44,7 @@ export function MomentComposeBar({
         onModeChange={onModeChange}
         remaining={remaining}
         showCounter={showCounter}
+        length={length}
         right={action}
       />
     </>

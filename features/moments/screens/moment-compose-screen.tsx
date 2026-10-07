@@ -24,6 +24,7 @@ export function MomentComposeScreen() {
       onRemoveImage={composer.clearImage}
       remaining={composer.remaining}
       showCounter={composer.showCounter}
+      length={composer.length}
       action={
         <MomentPostButton
           disabled={!composer.canPost}
