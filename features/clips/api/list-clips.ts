@@ -5,7 +5,8 @@ import type { Paginated } from "@/lib/api/types"
 
 export function listClips(
   scope: FeedScope,
-  page: number
+  page: number,
+  snapshot?: string
 ): Promise<Paginated<Snacc>> {
-  return api.get<Paginated<Snacc>>("/feed/clips", { scope, page })
+  return api.get<Paginated<Snacc>>("/feed/clips", { scope, page, snapshot })
 }

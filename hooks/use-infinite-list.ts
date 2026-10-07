@@ -8,35 +8,38 @@ import {
 } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
 import type { Paginated, PaginatedPages } from "@/lib/api/types"
-import { allItems, firstPageOnly, uniqueById } from "@/lib/query/pages"
+import {
+  allItems,
+  FIRST_PAGE,
+  firstPageOnly,
+  nextPage,
+  uniqueById,
+} from "@/lib/query/pages"
 
 interface InfiniteListOptions {
   enabled?: boolean
   keepPrevious?: boolean
-  onRefresh?: () => void
 }
 
 export function useInfiniteList<T>(
   queryKey: QueryKey,
-  fetchPage: (page: number) => Promise<Paginated<T>>,
+  fetchPage: (page: number, snapshot?: string) => Promise<Paginated<T>>,
   options: InfiniteListOptions = {}
 ) {
   const queryClient = useQueryClient()
   const [refreshing, setRefreshing] = useState(false)
   const query = useInfiniteQuery({
     queryKey,
-    queryFn: ({ pageParam }) => fetchPage(pageParam),
-    initialPageParam: 1,
+    queryFn: ({ pageParam }) => fetchPage(pageParam.page, pageParam.snapshot),
+    initialPageParam: FIRST_PAGE,
     enabled: options.enabled,
     placeholderData:
       options.keepPrevious === false ? undefined : keepPreviousData,
-    getNextPageParam: (last) =>
-      last.page < last.last_page ? last.page + 1 : undefined,
+    getNextPageParam: nextPage,
   })
 
   async function refresh() {
     setRefreshing(true)
-    options.onRefresh?.()
     queryClient.setQueryData<PaginatedPages<T>>(queryKey, firstPageOnly)
     try {
       await query.refetch()

@@ -13,10 +13,13 @@ export type Paginated<T> = {
   last_page: number
   per_page: number
   total: number
+  snapshot?: string
 }
 
+export type PageParam = { page: number; snapshot?: string }
+
 /** A paged list as an infinite query holds it. */
-export type PaginatedPages<T> = InfiniteData<Paginated<T>, number>
+export type PaginatedPages<T> = InfiniteData<Paginated<T>, PageParam>
 
 export interface UniversityBadge {
   id: string

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef } from "react"
 import { recordViews } from "@/features/views/api"
+import { trackViewFlush } from "@/features/views/utils/flush"
 
 const FLUSH_INTERVAL_MS = 5000
 const MAX_PER_FLUSH = 50
@@ -52,7 +53,7 @@ export function useViewTracker({
   }, [])
 
   const flush = useCallback(
-    (final = false) => {
+    async (final = false) => {
       if (final) {
         const now = Date.now()
         for (const id of [...since.current.keys()]) bank(id, now)
@@ -74,7 +75,9 @@ export function useViewTracker({
         sent.current.set(id, (sent.current.get(id) ?? 0) + dwellMs[id])
       }
 
-      void recordViews(list, { source: "feed", dwellMs }).catch(() => undefined)
+      await recordViews(list, { source: "feed", dwellMs }).catch(
+        () => undefined
+      )
     },
     [bank]
   )
@@ -103,10 +106,11 @@ export function useViewTracker({
     )
     for (const node of ids.current.keys()) observer.current.observe(node)
 
-    const interval = setInterval(() => flush(), FLUSH_INTERVAL_MS)
+    const untrack = trackViewFlush(() => flush())
+    const interval = setInterval(() => void flush(), FLUSH_INTERVAL_MS)
     const onVisibility = () => {
       if (document.visibilityState !== "visible") {
-        flush(true)
+        void flush(true)
         return
       }
       const now = Date.now()
@@ -115,11 +119,12 @@ export function useViewTracker({
     document.addEventListener("visibilitychange", onVisibility)
 
     return () => {
+      untrack()
       clearInterval(interval)
       document.removeEventListener("visibilitychange", onVisibility)
       observer.current?.disconnect()
       observer.current = null
-      flush(true)
+      void flush(true)
     }
   }, [announce, bank, flush])
 

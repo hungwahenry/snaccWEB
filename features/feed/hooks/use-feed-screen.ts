@@ -6,7 +6,6 @@ import { onNavReselect } from "@/features/navigation/reselect"
 import { signal } from "@/features/signals/utils/queue"
 import { useRealtimeEvent } from "@/hooks/use-realtime-event"
 import { useRealtimeRoom } from "@/hooks/use-realtime-room"
-import { rememberFeedScope } from "../scope-memory"
 import type { FeedScope, FeedSnaccEvent, NewPoster } from "../types"
 import { withNewPoster } from "../utils/new-posters"
 import {
@@ -37,8 +36,6 @@ export function useFeedScreen() {
       withNewPoster(current ?? [], payload as FeedSnaccEvent)
     )
   })
-
-  useEffect(() => rememberFeedScope(scope), [scope])
 
   const pickScope = useCallback(
     (next: FeedScope) => {

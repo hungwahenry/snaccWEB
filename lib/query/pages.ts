@@ -1,5 +1,13 @@
 import type { InfiniteData } from "@tanstack/react-query"
-import type { Paginated } from "../api/types"
+import type { PageParam, Paginated } from "../api/types"
+
+export const FIRST_PAGE: PageParam = { page: 1 }
+
+export function nextPage(last: Paginated<unknown>): PageParam | undefined {
+  return last.page < last.last_page
+    ? { page: last.page + 1, snapshot: last.snapshot }
+    : undefined
+}
 
 type Pages<T, P> = InfiniteData<Paginated<T>, P> | undefined
 

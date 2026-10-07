@@ -27,7 +27,7 @@ const library = (): PaginatedPages<Sticker> => ({
       total: 2,
     },
   ],
-  pageParams: [1],
+  pageParams: [{ page: 1 }],
 })
 
 beforeEach(() => {

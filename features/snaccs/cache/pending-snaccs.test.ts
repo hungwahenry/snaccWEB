@@ -30,7 +30,7 @@ const FEED = [...snaccKeys.feeds(), "campus"]
 const me = { id: "me", username: "me" } as SnaccAuthor
 const EMPTY = {
   pages: [{ items: [], total: 0, page: 1, last_page: 1 }],
-  pageParams: [1],
+  pageParams: [{ page: 1 }],
 }
 
 const draft = (body: string): SnaccDraft => ({

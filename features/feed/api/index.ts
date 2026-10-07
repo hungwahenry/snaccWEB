@@ -6,7 +6,7 @@ import type { FeedScope } from "../types"
 export function listFeed(
   scope: FeedScope,
   page: number,
-  seed?: string
+  snapshot?: string
 ): Promise<Paginated<Snacc>> {
-  return api.get<Paginated<Snacc>>("/feed", { scope, page, seed })
+  return api.get<Paginated<Snacc>>("/feed", { scope, page, snapshot })
 }

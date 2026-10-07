@@ -10,7 +10,7 @@ export function useClipStream(enabled: boolean) {
 
   return useInfiniteList(
     snaccKeys.clips(scope),
-    (page) => listClips(scope, page),
+    (page, snapshot) => listClips(scope, page, snapshot),
     { enabled, keepPrevious: false }
   )
 }

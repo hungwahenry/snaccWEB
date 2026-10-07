@@ -8,6 +8,7 @@ import {
   findItem,
   firstPageOnly,
   mapItems,
+  nextPage,
   prependItem,
   uniqueById,
 } from "./pages"
@@ -79,6 +80,16 @@ describe("page helpers", () => {
   it("keeps only the first page for a refresh", () => {
     expect(firstPageOnly(pages)?.pages).toHaveLength(1)
     expect(firstPageOnly(pages)?.pageParams).toEqual([1])
+  })
+
+  it("asks for the next page with the snapshot the list was cut from", () => {
+    const [first, last] = pages.pages
+    expect(nextPage({ ...first, snapshot: "mg1-ab" })).toEqual({
+      page: 2,
+      snapshot: "mg1-ab",
+    })
+    expect(nextPage(first)).toEqual({ page: 2, snapshot: undefined })
+    expect(nextPage(last)).toBeUndefined()
   })
 
   it("drops repeats that paging can produce", () => {
