@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { cn } from "@/lib/utils"
-import { BubbleTail, TAIL_DROP, TAIL_REACH } from "./bubble-tail"
+import { BubbleTail, TAIL_REACH } from "./bubble-tail"
 
 /** The shape every thread message takes, in a DM or a room: loose media on top, then the bubble
  * with its tail on the last of a run. What goes inside is the caller's. */
@@ -31,10 +31,7 @@ export function BubbleFrame({
   return (
     <div
       className={cn("flex flex-col", mine ? "items-end" : "items-start")}
-      style={{
-        [mine ? "paddingRight" : "paddingLeft"]: TAIL_REACH,
-        paddingBottom: tail ? TAIL_DROP : undefined,
-      }}
+      style={{ [mine ? "paddingRight" : "paddingLeft"]: TAIL_REACH }}
     >
       <div
         className={cn(
@@ -51,7 +48,7 @@ export function BubbleFrame({
 
             <div
               className={cn(
-                "overflow-hidden rounded-2xl",
+                "relative overflow-hidden rounded-2xl",
                 corners,
                 mine ? "bg-primary" : "bg-muted"
               )}
