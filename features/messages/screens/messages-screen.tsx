@@ -4,9 +4,9 @@ import {
   GhostIcon,
   MessageCircleIcon,
   MessagesSquareIcon,
+  SearchIcon,
   SearchXIcon,
 } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { IconButton } from "@/components/ui/icon-button"
 import { ListFooter } from "@/components/ui/list-footer"
@@ -16,34 +16,39 @@ import { PillTabs } from "@/components/ui/pill-tabs"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
 import { ChatRoomsList } from "@/features/chats/components/chat-rooms-list"
 import { TabHeader } from "@/features/navigation/components/tab-header"
-import { cn } from "@/lib/utils"
 import { ConversationRow } from "../components/conversations/conversation-row"
 import { ConversationRowSkeleton } from "../components/conversations/conversation-row-skeleton"
 import { ConversationSearch } from "../components/conversations/conversation-search"
 import { MessageHitRow } from "../components/conversations/message-hit-row"
-import { ShareAnonLinkSheet } from "../components/conversations/share-anon-link-sheet"
 import { StreakIntroSheet } from "../components/conversations/streak-intro-sheet"
 import { useMessagesScreen } from "../hooks/use-messages-screen"
 
 export function MessagesScreen() {
   const screen = useMessagesScreen()
-  const { feed, anonLink } = screen
+  const { feed, search } = screen
 
   return (
     <>
-      <TabHeader
-        title={screen.title}
-        right={
-          screen.showShare ? (
-            <IconButton
-              icon={GhostIcon}
-              label="Get anonymous messages"
-              onClick={anonLink.onOpen}
-              className={cn(anonLink.nudge && "motion-safe:animate-pulse")}
-            />
-          ) : null
-        }
-      />
+      {search?.active ? (
+        <ConversationSearch
+          value={screen.query}
+          onChange={screen.setQuery}
+          onCancel={search.close}
+        />
+      ) : (
+        <TabHeader
+          title={screen.title}
+          right={
+            search ? (
+              <IconButton
+                icon={SearchIcon}
+                label="Search messages"
+                onClick={search.open}
+              />
+            ) : null
+          }
+        />
+      )}
 
       {screen.tabs ? (
         <PillTabs
@@ -64,10 +69,7 @@ export function MessagesScreen() {
       {screen.showRooms ? (
         <ChatRoomsList {...screen.rooms} />
       ) : screen.dmsEnabled === null ? (
-        <>
-          <ConversationSearch value={screen.query} onChange={screen.setQuery} />
-          <SkeletonRows count={8} item={ConversationRowSkeleton} />
-        </>
+        <SkeletonRows count={8} item={ConversationRowSkeleton} />
       ) : !screen.dmsEnabled ? (
         <EmptyState
           icon={GhostIcon}
@@ -77,8 +79,6 @@ export function MessagesScreen() {
         />
       ) : (
         <>
-          <ConversationSearch value={screen.query} onChange={screen.setQuery} />
-
           {feed.loading ? (
             <SkeletonRows count={8} item={ConversationRowSkeleton} />
           ) : feed.failed && feed.conversations.length === 0 ? (
@@ -90,6 +90,12 @@ export function MessagesScreen() {
             </div>
           ) : (
             <>
+              {screen.showPeople ? (
+                <p className="px-4 pt-2 pb-1 text-xs font-bold tracking-wide text-muted-foreground uppercase sm:px-6">
+                  People
+                </p>
+              ) : null}
+
               {feed.conversations.map((conversation) => (
                 <ConversationRow
                   key={conversation.id}
@@ -99,25 +105,13 @@ export function MessagesScreen() {
 
               {feed.conversations.length === 0 && !screen.searching ? (
                 <EmptyState
-                  icon={GhostIcon}
+                  icon={MessageCircleIcon}
                   title="No messages yet"
-                  description={
-                    screen.showShare
-                      ? "Start a chat from someone’s profile, or share your link for anonymous messages."
-                      : "Start a chat from someone’s profile."
-                  }
+                  description="Start a chat from someone’s profile."
                   className="py-24"
-                  action={
-                    screen.showShare ? (
-                      <Button size="sm" onClick={anonLink.onOpen}>
-                        <GhostIcon /> Share your link
-                      </Button>
-                    ) : undefined
-                  }
                 />
               ) : null}
 
-              {/* Threads are matched by person; this section is the text inside them. */}
               {screen.matches.length > 0 ? (
                 <div className="pt-2">
                   <p className="px-4 pb-1 text-xs font-bold tracking-wide text-muted-foreground uppercase sm:px-6">
@@ -147,7 +141,6 @@ export function MessagesScreen() {
         </>
       )}
 
-      {screen.showShare ? <ShareAnonLinkSheet {...anonLink.sheet} /> : null}
       <StreakIntroSheet {...screen.streakIntro} />
     </>
   )
