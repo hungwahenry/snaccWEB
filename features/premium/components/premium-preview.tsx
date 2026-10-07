@@ -2,8 +2,7 @@ import { UserAvatar } from "@/components/ui/user-avatar"
 import type { UserScore } from "@/features/score/types"
 import { AuthorMeta } from "@/features/snaccs/components/card/author-meta"
 import type { UniversityBadge } from "@/features/universities/types"
-import { TierName } from "@/features/users/components/flair"
-import { AuthorBadges } from "@/features/users/components/public/author-badges"
+import { PremiumBadge, TierName } from "@/features/users/components/flair"
 import { cn } from "@/lib/utils"
 import type { PremiumBenefit } from "../types"
 import { benefitIcon } from "../utils/icons"
@@ -47,7 +46,7 @@ export function PremiumPreview({
                   name={username}
                   className="font-extrabold text-foreground"
                 />
-                <AuthorBadges official={false} premium />
+                <PremiumBadge premium />
                 <AuthorMeta
                   university={university}
                   createdAt={postedAt}

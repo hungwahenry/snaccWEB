@@ -1,6 +1,6 @@
 "use client"
 
-import { BadgeCheckIcon } from "lucide-react"
+import { BadgeCheckIcon, BadgeIcon, CheckIcon } from "lucide-react"
 import { useTier } from "@/features/score/hooks/use-tier"
 import type { UserScore } from "@/features/score/types"
 import { NamedIcon } from "@/lib/icons/named-icon"
@@ -60,6 +60,35 @@ export function TierName({
         </span>
       ) : null}
     </>
+  )
+}
+
+export const PREMIUM_COLOR = "#E8A33D"
+
+export function PremiumBadge({
+  premium,
+  size = 16,
+}: {
+  premium?: boolean
+  size?: number
+}) {
+  if (!premium) return null
+
+  return (
+    <span
+      role="img"
+      aria-label="Premium"
+      className="relative inline-flex shrink-0"
+      style={{ width: size, height: size }}
+    >
+      <BadgeIcon size={size} color={PREMIUM_COLOR} fill={PREMIUM_COLOR} />
+      <CheckIcon
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        size={size * 0.5}
+        color="#FFFFFF"
+        strokeWidth={3.5}
+      />
+    </span>
   )
 }
 

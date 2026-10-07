@@ -1,5 +1,9 @@
 import { CornerDownRightIcon, EllipsisIcon } from "lucide-react"
-import { OgBadge, TierName } from "@/features/users/components/flair"
+import {
+  OgBadge,
+  PremiumBadge,
+  TierName,
+} from "@/features/users/components/flair"
 import { ProfileLink } from "@/features/users/components/profile-link"
 import type { Snacc, SnaccReplyTo } from "../../types"
 import { AuthorMeta } from "./author-meta"
@@ -32,6 +36,8 @@ export function AuthorRow({
       </ProfileLink>
 
       <OgBadge score={author.score} />
+
+      <PremiumBadge premium={author.premium} />
 
       <AuthorMeta
         university={author.university}

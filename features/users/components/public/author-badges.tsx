@@ -1,6 +1,5 @@
-import { BadgeCheckIcon, BadgeIcon, CheckIcon } from "lucide-react"
-
-const PREMIUM_COLOR = "#E8A33D"
+import { BadgeCheckIcon } from "lucide-react"
+import { PremiumBadge } from "../flair"
 
 export function AuthorBadges({
   official,
@@ -21,22 +20,7 @@ export function AuthorBadges({
           size={size}
         />
       ) : null}
-      {premium ? (
-        <span
-          role="img"
-          aria-label="Premium"
-          className="relative inline-flex shrink-0"
-          style={{ width: size, height: size }}
-        >
-          <BadgeIcon size={size} color={PREMIUM_COLOR} fill={PREMIUM_COLOR} />
-          <CheckIcon
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-            size={size * 0.5}
-            color="#FFFFFF"
-            strokeWidth={3.5}
-          />
-        </span>
-      ) : null}
+      <PremiumBadge premium={premium} size={size} />
     </>
   )
 }

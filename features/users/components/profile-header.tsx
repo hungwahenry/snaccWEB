@@ -7,7 +7,7 @@ import { richText } from "@/lib/rich-text"
 import type { MomentRing, PublicProfile } from "../types"
 import { nameOf } from "../utils/names"
 import type { ProfileStat } from "../utils/profile"
-import { OgBadge, TierName } from "./flair"
+import { OgBadge, PremiumBadge, TierName } from "./flair"
 import { PersonAvatar } from "./person-avatar"
 import { ProfileCover } from "./profile-cover"
 import { ProfileStats } from "./profile-stats"
@@ -93,6 +93,7 @@ export function ProfileHeader({
                   Follows you
                 </span>
               ) : null}
+              <PremiumBadge premium={profile.premium} size={22} />
               <OgBadge score={profile.score} />
             </div>
             {profile.username ? (

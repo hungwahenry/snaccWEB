@@ -1,5 +1,5 @@
 import { UserAvatar } from "@/components/ui/user-avatar"
-import { AuthorBadges } from "@/features/users/components/public/author-badges"
+import { PremiumBadge } from "@/features/users/components/flair"
 import { cn } from "@/lib/utils"
 
 const LINE =
@@ -31,7 +31,7 @@ export function PremiumHeadline({
             className="size-8 border-2 border-background"
             textClassName="text-[10px]"
           />
-          <AuthorBadges official={false} premium size={22} />
+          <PremiumBadge premium size={22} />
         </span>
       </span>
       <span className={cn("block", LINE)}>PREMIUM</span>
