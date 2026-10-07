@@ -40,6 +40,7 @@ import {
 } from "@/features/wallet/routes"
 import type {
   Notification,
+  NotificationAction,
   NotificationTarget,
 } from "@/features/notifications/types"
 
@@ -74,8 +75,7 @@ export function notificationIcon(notification: Notification): LucideIcon {
   return ICON_BY_NAME[notification.icon_name] ?? BellIcon
 }
 
-function routeFromTarget(target: NotificationTarget | null): string | null {
-  if (!target) return null
+function routeFromTarget(target: NotificationTarget): string | null {
   switch (target.kind) {
     case "snacc":
       return target.ref ? snaccPath(target.ref) : null
@@ -104,7 +104,14 @@ function routeFromTarget(target: NotificationTarget | null): string | null {
   }
 }
 
-export function notificationRoute(notification: Notification): string | null {
-  if (notification.target?.kind === "notifications") return null
-  return routeFromTarget(notification.target)
+export function notificationAction(
+  notification: Notification
+): NotificationAction | null {
+  const { target } = notification
+  if (!target) return null
+  if (target.kind === "announcement")
+    return target.ref ? { kind: "announcement", id: target.ref } : null
+
+  const href = routeFromTarget(target)
+  return href ? { kind: "route", href } : null
 }

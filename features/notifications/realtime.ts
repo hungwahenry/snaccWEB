@@ -1,3 +1,4 @@
+import { announcementsChanged } from "@/features/announcements/cache"
 import { requestsChanged } from "@/features/follows/cache"
 import { getQueryClient } from "@/lib/query/client"
 import { NOTIFICATIONS_KEY } from "./hooks/use-notifications"
@@ -11,6 +12,11 @@ function notificationsChanged(): void {
   void queryClient.invalidateQueries({ queryKey: UNREAD_KEY })
 }
 
+function inboxChanged(): void {
+  notificationsChanged()
+  announcementsChanged()
+}
+
 export function onNotification(): void {
   notificationsChanged()
   requestsChanged()
@@ -19,6 +25,6 @@ export function onNotification(): void {
 /** An announcement reaches everyone at once, so each page waits a random moment before asking. */
 export function onNotificationsChanged(payload?: { spread?: boolean }): void {
   if (payload?.spread)
-    window.setTimeout(notificationsChanged, Math.random() * SPREAD_MS)
-  else notificationsChanged()
+    window.setTimeout(inboxChanged, Math.random() * SPREAD_MS)
+  else inboxChanged()
 }

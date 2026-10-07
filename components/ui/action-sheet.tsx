@@ -21,6 +21,7 @@ type ActionSheetProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   title?: string
+  label?: string
   hint?: string
   children: ReactNode
   footer?: ReactNode
@@ -32,6 +33,7 @@ export function ActionSheet({
   open,
   onOpenChange,
   title,
+  label = "Options",
   hint,
   children,
   footer,
@@ -52,7 +54,7 @@ export function ActionSheet({
               {hint ? <DrawerDescription>{hint}</DrawerDescription> : null}
             </div>
           ) : (
-            <DrawerTitle className="sr-only">Options</DrawerTitle>
+            <DrawerTitle className="sr-only">{label}</DrawerTitle>
           )}
           <div className={cn("min-h-0 flex-1 overflow-y-auto pb-3", className)}>
             {children}
@@ -84,7 +86,7 @@ export function ActionSheet({
             {hint ? <DialogDescription>{hint}</DialogDescription> : null}
           </div>
         ) : (
-          <DialogTitle className="sr-only">Options</DialogTitle>
+          <DialogTitle className="sr-only">{label}</DialogTitle>
         )}
         <div
           className={cn(

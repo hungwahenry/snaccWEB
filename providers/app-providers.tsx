@@ -3,6 +3,7 @@
 import type { ReactNode } from "react"
 import { ConfirmHost } from "@/components/ui/confirm"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { AnnouncementHost } from "@/features/announcements/containers/announcement-host"
 import { AccentStyle } from "@/features/appearance/components/accent-style"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { LightboxProvider } from "@/providers/lightbox-provider"
@@ -27,6 +28,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
                   <LightboxProvider>
                     <AccentStyle />
                     {children}
+                    <AnnouncementHost />
                     <ConfirmHost />
                   </LightboxProvider>
                 </StickerStudioProvider>

@@ -12,7 +12,7 @@ import { TabHeader } from "@/features/navigation/components/tab-header"
 import { NotificationRow } from "../components/notification-row"
 import { NotificationRowSkeleton } from "../components/notification-row-skeleton"
 import { useNotificationsScreen } from "../hooks/use-notifications-screen"
-import { notificationRoute } from "../utils/notification-display"
+import { notificationAction } from "../utils/notification-display"
 
 export function NotificationsScreen() {
   const { list, anyUnread, markAllRead, onPress, requests } =
@@ -58,7 +58,7 @@ export function NotificationsScreen() {
               key={notification.id}
               notification={notification}
               actionable={
-                Boolean(notificationRoute(notification)) ||
+                notificationAction(notification) !== null ||
                 !notification.read_at
               }
               onPress={onPress}

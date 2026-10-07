@@ -2,10 +2,11 @@
 
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
+import { openAnnouncement } from "@/features/announcements/hooks/use-announcement-sheet"
 import { useFollowRequestsCount } from "@/features/follows/hooks/use-follow-requests-count"
 import { FOLLOW_REQUESTS_PATH } from "@/features/follows/routes"
 import type { Notification } from "../types"
-import { notificationRoute } from "../utils/notification-display"
+import { notificationAction } from "../utils/notification-display"
 import {
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
@@ -33,8 +34,9 @@ export function useNotificationsScreen() {
       router.push(FOLLOW_REQUESTS_PATH)
       return
     }
-    const route = notificationRoute(notification)
-    if (route) router.push(route)
+    const action = notificationAction(notification)
+    if (action?.kind === "route") router.push(action.href)
+    else if (action?.kind === "announcement") openAnnouncement(action.id)
   }
 
   return {

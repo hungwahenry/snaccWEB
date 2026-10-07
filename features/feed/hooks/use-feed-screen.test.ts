@@ -8,6 +8,7 @@ const joined: (string | null | undefined)[] = []
 let emit: ((payload: unknown) => void) | null = null
 const refresh = vi.fn()
 const signal = vi.fn()
+const announcementsChanged = vi.fn()
 
 vi.mock("@/features/config/hooks/use-flag", () => ({
   useFlag: (key: string) => flags[key] ?? false,
@@ -17,6 +18,9 @@ vi.mock("@/features/auth/hooks/use-me", () => ({
 }))
 vi.mock("@/features/signals/utils/queue", () => ({
   signal: (...args: unknown[]) => signal(...args),
+}))
+vi.mock("@/features/announcements/cache", () => ({
+  announcementsChanged: () => announcementsChanged(),
 }))
 vi.mock("@/hooks/use-realtime-room", () => ({
   useRealtimeRoom: (room: string | null | undefined) => joined.push(room),
@@ -47,6 +51,7 @@ describe("useFeedScreen", () => {
     emit = null
     refresh.mockClear()
     signal.mockClear()
+    announcementsChanged.mockClear()
     window.scrollTo = vi.fn()
   })
 
@@ -75,6 +80,7 @@ describe("useFeedScreen", () => {
 
     act(() => result.current.tabs.onReselect?.())
     expect(refresh).toHaveBeenCalledOnce()
+    expect(announcementsChanged).toHaveBeenCalledOnce()
   })
 
   it("collects new posters and clears them when you look", () => {

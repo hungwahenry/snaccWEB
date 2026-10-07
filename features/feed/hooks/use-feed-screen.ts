@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useEffectEvent, useState } from "react"
+import { announcementsChanged } from "@/features/announcements/cache"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { onNavReselect } from "@/features/navigation/reselect"
 import { signal } from "@/features/signals/utils/queue"
@@ -51,6 +52,7 @@ export function useFeedScreen() {
     setNewPosters(null)
     window.scrollTo({ top: 0, behavior: "smooth" })
     feed.refresh()
+    announcementsChanged()
   }
 
   const refresh = useEffectEvent(showNew)

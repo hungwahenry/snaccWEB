@@ -35,6 +35,7 @@ export const PROMPTS_PATH = "/admin/prompts"
 export const PAGES_PATH = "/admin/pages"
 export const NEW_PAGE_PATH = "/admin/pages/new"
 export const ANNOUNCEMENTS_PATH = "/admin/announcements"
+export const NEW_ANNOUNCEMENT_PATH = "/admin/announcements/new"
 
 export const OPS_PATH = "/admin/ops"
 export const AUDIT_PATH = "/admin/audit"
@@ -46,3 +47,4 @@ export const userPath = (id: string) => `${USERS_PATH}/${id}`
 export const walletPath = (userId: string) => `${WALLETS_PATH}/${userId}`
 export const withdrawalPath = (id: string) => `${WITHDRAWALS_PATH}/${id}`
 export const pagePath = (id: string) => `${PAGES_PATH}/${id}`
+export const announcementPath = (id: string) => `${ANNOUNCEMENTS_PATH}/${id}`

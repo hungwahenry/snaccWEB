@@ -1,86 +1,90 @@
 "use client"
 
 import type { UseQueryResult } from "@tanstack/react-query"
+import Link from "next/link"
 import { useMemo, type ReactNode } from "react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { CanAct } from "@/features/admin/auth/containers/can-act"
-import { ConfirmAction } from "@/features/admin/shell/components/confirm-action"
-import {
-  HiddenHeader,
-  type Column,
-} from "@/features/admin/shell/components/data-table"
+import type { Column } from "@/features/admin/shell/components/data-table"
 import { QueryTable } from "@/features/admin/shell/components/query-table"
+import { announcementPath } from "@/features/admin/shell/routes"
+import { userHandle } from "@/features/admin/shell/utils/user"
 import type { Paginated } from "@/lib/api/types"
-import { formatDate } from "@/lib/format"
 import type { AdminAnnouncement } from "../types"
-import { audienceLabel } from "../utils/announcement"
+import { countOrDash, openedLabel, whenLabel } from "../utils/announcement"
+import { audienceSummary } from "../utils/audience"
+import { AnnouncementBadges } from "./announcement-badges"
 
 export function AnnouncementsTable({
   query,
   acronyms,
+  filtered,
   toolbar,
   onPageChange,
-  onDelete,
 }: {
   query: UseQueryResult<Paginated<AdminAnnouncement>>
   acronyms: ReadonlyMap<string, string>
+  filtered: boolean
   toolbar: ReactNode
   onPageChange: (page: number) => void
-  onDelete: (id: string) => Promise<unknown>
 }) {
   const columns = useMemo<Column<AdminAnnouncement>[]>(
     () => [
       {
         id: "announcement",
         header: "Announcement",
-        className: "max-w-md whitespace-normal",
+        className: "min-w-64 max-w-md whitespace-normal",
         cell: (announcement) => (
-          <div className="min-w-0">
-            <p className="font-medium">{announcement.title}</p>
-            <p className="line-clamp-2 text-xs text-muted-foreground">
-              {announcement.message}
-            </p>
+          <div className="flex min-w-0 flex-col gap-1.5">
+            <div className="min-w-0">
+              <Link
+                href={announcementPath(announcement.id)}
+                className="font-medium underline-offset-4 hover:underline"
+              >
+                {announcement.title}
+              </Link>
+              <p className="line-clamp-2 text-xs text-muted-foreground">
+                {announcement.message}
+              </p>
+            </div>
+            <AnnouncementBadges announcement={announcement} />
           </div>
         ),
       },
       {
-        id: "audience",
-        header: "Sent to",
-        cell: (announcement) => (
-          <Badge variant={announcement.university_id ? "secondary" : "outline"}>
-            {audienceLabel(announcement.university_id, acronyms)}
-          </Badge>
-        ),
+        id: "who",
+        header: "Who",
+        className: "max-w-56 text-xs whitespace-normal",
+        cell: (announcement) =>
+          audienceSummary(announcement.audience, acronyms),
       },
       {
-        id: "sent",
-        header: "Sent",
+        id: "when",
+        header: "When",
         className: "text-muted-foreground",
-        cell: (announcement) => formatDate(announcement.created_at),
+        cell: whenLabel,
       },
       {
-        id: "actions",
-        header: <HiddenHeader>Actions</HiddenHeader>,
+        id: "reached",
+        header: "Reached",
         align: "end",
-        cell: (announcement) => (
-          <CanAct permission="announcements.delete">
-            <ConfirmAction
-              trigger={
-                <Button variant="ghost" size="sm">
-                  Delete
-                </Button>
-              }
-              title="Delete this announcement?"
-              description="It disappears from everyone's notifications. Pushes already sent cannot be taken back."
-              confirmLabel="Delete announcement"
-              onConfirm={() => onDelete(announcement.id)}
-            />
-          </CanAct>
-        ),
+        className: "tabular-nums",
+        cell: (announcement) => countOrDash(announcement.recipients_count),
+      },
+      {
+        id: "opened",
+        header: "Opened",
+        align: "end",
+        className: "tabular-nums",
+        cell: openedLabel,
+      },
+      {
+        id: "by",
+        header: "Sent by",
+        className: "text-muted-foreground",
+        cell: (announcement) =>
+          announcement.created_by ? userHandle(announcement.created_by) : "—",
       },
     ],
-    [acronyms, onDelete]
+    [acronyms]
   )
 
   return (
@@ -89,7 +93,11 @@ export function AnnouncementsTable({
       what="announcements"
       columns={columns}
       rowKey={(announcement) => announcement.id}
-      empty="No announcements yet."
+      empty={
+        filtered
+          ? "No announcements match these filters."
+          : "No announcements yet."
+      }
       toolbar={toolbar}
       onPageChange={onPageChange}
     />

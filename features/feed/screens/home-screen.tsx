@@ -3,6 +3,7 @@
 import { CompassIcon, UsersRoundIcon } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { FeedAnnouncement } from "@/features/announcements/containers/feed-announcement"
 import { BirthdayFab } from "@/features/birthdays/components/birthday-fab"
 import { BirthdayNudgeSheet } from "@/features/birthdays/components/birthday-nudge-sheet"
 import { BirthdayWishDialog } from "@/features/birthdays/components/birthday-wish-dialog"
@@ -61,6 +62,7 @@ export function HomeScreen() {
         itemRef={tracker.ref}
         header={
           <>
+            <FeedAnnouncement />
             {moments.show ? (
               moments.loading ? (
                 <MomentTraySkeleton />

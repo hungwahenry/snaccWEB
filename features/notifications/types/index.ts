@@ -10,6 +10,9 @@ export interface NotificationTarget {
   ref: string | null
 }
 
+export type NotificationAction =
+  { kind: "route"; href: string } | { kind: "announcement"; id: string }
+
 export interface Notification {
   id: string
   type: string
