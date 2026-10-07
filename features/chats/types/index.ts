@@ -37,6 +37,7 @@ export interface ChatRoom {
   muted: boolean
   unread: number
   last_message_at: string | null
+  active_at: string | null
 }
 
 export interface ChatImage {
