@@ -5,6 +5,7 @@ import type {
   AdminSubscriber,
   BenefitDraft,
   PremiumStats,
+  PremiumStore,
   UpdateBenefitInput,
 } from "../types"
 
@@ -16,6 +17,7 @@ const STORES: Record<string, string> = {
   app_store: "App Store",
   play_store: "Play Store",
   promotional: "Granted",
+  wallet: "Snacc wallet",
 }
 
 export function storeLabel(store: string): string {
@@ -26,7 +28,9 @@ export function subscriberStore(row: {
   store: string
   sandbox: boolean
 }): string {
-  return row.sandbox ? `${storeLabel(row.store)} · sandbox` : storeLabel(row.store)
+  return row.sandbox
+    ? `${storeLabel(row.store)} · sandbox`
+    : storeLabel(row.store)
 }
 
 const STANDING = {
@@ -36,12 +40,14 @@ const STANDING = {
   lapsed: { label: "Lapsed", variant: "outline" },
 } as const satisfies Record<string, StatusMeta>
 
-/** Lifetime is checked before renewal: a purchase outright never renews, yet never lapses. */
+const RENEWING_STORES: readonly PremiumStore[] = ["app_store", "play_store"]
+
 export function subscriberStanding(
-  row: Pick<AdminSubscriber, "active" | "lifetime" | "will_renew">
+  row: Pick<AdminSubscriber, "active" | "lifetime" | "will_renew" | "store">
 ): StatusMeta {
   if (!row.active) return STANDING.lapsed
   if (row.lifetime) return STANDING.lifetime
+  if (!RENEWING_STORES.includes(row.store)) return STANDING.active
 
   return row.will_renew ? STANDING.active : STANDING.cancelling
 }

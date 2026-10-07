@@ -14,31 +14,39 @@ import {
 } from "./premium"
 
 describe("subscriberStanding", () => {
-  it("calls a live subscription active or cancelling by whether it renews", () => {
-    expect(
-      subscriberStanding({ active: true, lifetime: false, will_renew: true })
-        .label
-    ).toBe("Active")
-    expect(
-      subscriberStanding({ active: true, lifetime: false, will_renew: false })
-        .label
-    ).toBe("Cancelling")
+  const live = {
+    active: true,
+    lifetime: false,
+    will_renew: true,
+    store: "app_store",
+  } as const
+
+  it("calls a store subscription active or cancelling by whether it renews", () => {
+    expect(subscriberStanding(live).label).toBe("Active")
+    expect(subscriberStanding({ ...live, will_renew: false }).label).toBe(
+      "Cancelling"
+    )
+  })
+
+  it("calls a wallet purchase or a grant active, since neither ever renews", () => {
+    for (const store of ["wallet", "promotional"] as const) {
+      expect(
+        subscriberStanding({ ...live, store, will_renew: false }).label
+      ).toBe("Active")
+    }
   })
 
   it("never calls a lifetime purchase cancelling, though it does not renew", () => {
     expect(
-      subscriberStanding({ active: true, lifetime: true, will_renew: false })
-        .label
+      subscriberStanding({ ...live, lifetime: true, will_renew: false }).label
     ).toBe("Lifetime")
   })
 
   it("calls anything no longer live lapsed", () => {
-    const lapsed = subscriberStanding({
-      active: false,
-      lifetime: false,
-      will_renew: true,
+    expect(subscriberStanding({ ...live, active: false })).toEqual({
+      label: "Lapsed",
+      variant: "outline",
     })
-    expect(lapsed).toEqual({ label: "Lapsed", variant: "outline" })
   })
 })
 

@@ -1,4 +1,4 @@
-export type PremiumStore = "app_store" | "play_store" | "promotional"
+export type PremiumStore = "app_store" | "play_store" | "promotional" | "wallet"
 
 export interface AdminSubscriber {
   id: string
