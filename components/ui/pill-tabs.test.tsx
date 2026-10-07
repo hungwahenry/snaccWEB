@@ -30,7 +30,7 @@ describe("PillTabs", () => {
     expect(onChange).toHaveBeenLastCalledWith("b")
   })
 
-  it("offers the reselect menu on the tab already chosen", () => {
+  it("reports a tap on the tab already chosen", () => {
     const onReselect = vi.fn()
     render(
       <PillTabs
@@ -41,6 +41,6 @@ describe("PillTabs", () => {
       />
     )
     fireEvent.click(screen.getByRole("tab", { name: "Alpha" }))
-    expect(onReselect).toHaveBeenCalledWith("a", expect.any(HTMLElement))
+    expect(onReselect).toHaveBeenCalledWith("a")
   })
 })
