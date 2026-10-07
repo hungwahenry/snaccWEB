@@ -96,7 +96,6 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly 'profile.username.max_length': number;
   readonly 'profile.display_name.max_length': number;
   readonly 'profile.bio.max_length': number;
-  readonly 'feed.clips.preview_seconds': number;
   readonly 'discovery.popular_hashtags.limit': number;
   readonly 'views.record.max_batch': number;
   readonly 'earn.withdrawal.balance': number;
@@ -124,7 +123,6 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly 'premium.rc_ios_key': string;
   readonly 'premium.rc_android_key': string;
   readonly 'premium.offering_id': string;
-  readonly 'premium.trial_days': number;
   readonly 'avatar.base': string;
   readonly 'avatar.style': string;
   readonly 'avatar.format': string;
@@ -184,7 +182,6 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   'profile.username.max_length': 30,
   'profile.display_name.max_length': 50,
   'profile.bio.max_length': 160,
-  'feed.clips.preview_seconds': 6,
   'discovery.popular_hashtags.limit': 15,
   'views.record.max_batch': 50,
   'earn.withdrawal.balance': 100000,
@@ -212,7 +209,6 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   'premium.rc_ios_key': "",
   'premium.rc_android_key': "",
   'premium.offering_id': "",
-  'premium.trial_days': 0,
   'avatar.base': "https://api.dicebear.com/9.x",
   'avatar.style': "adventurer",
   'avatar.format': "png",
