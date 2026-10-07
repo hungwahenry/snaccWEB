@@ -14,7 +14,7 @@ export function DownloadButton({
     <Link
       href={DOWNLOAD_PATH}
       className={cn(
-        "inline-flex items-center gap-2 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background transition-transform hover:scale-[1.02]",
+        "inline-flex shrink-0 items-center gap-2 rounded-full bg-foreground px-4 py-2 text-sm font-semibold whitespace-nowrap text-background transition-transform hover:scale-[1.02]",
         className
       )}
     >

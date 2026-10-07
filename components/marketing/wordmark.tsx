@@ -23,13 +23,13 @@ export function Wordmark({
         src="/1.png"
         alt="Snacc"
         style={{ height }}
-        className="w-auto dark:hidden"
+        className="w-auto min-w-0 object-contain object-left dark:hidden"
       />
       <img
         src="/2.png"
         alt="Snacc"
         style={{ height }}
-        className="hidden w-auto dark:block"
+        className="hidden w-auto min-w-0 object-contain object-left dark:block"
       />
     </Link>
   )
