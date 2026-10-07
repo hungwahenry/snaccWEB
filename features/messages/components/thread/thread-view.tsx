@@ -72,11 +72,7 @@ export function ThreadView<T extends ThreadMessage>({
                 renderRow(item)
               )
             )}
-            {typing ? (
-              <TypingIndicator
-                label={typeof typing === "string" ? typing : undefined}
-              />
-            ) : null}
+            <TypingIndicator typing={typing} />
           </>
         )}
       </div>
