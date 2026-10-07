@@ -234,6 +234,48 @@
     url("/hero-clouds.jpg") center / cover no-repeat;
 }
 
+.premium-sky {
+  background:
+    linear-gradient(
+      225deg,
+      oklch(0.76 0.14 70 / 0.45) 0%,
+      oklch(0.76 0.14 70 / 0) 60%
+    ),
+    linear-gradient(
+      160deg,
+      oklch(0.92 0.08 85 / 0.3) 0%,
+      oklch(0.86 0.09 60 / 0.55) 50%,
+      oklch(0.8 0.1 40 / 0.72) 100%
+    ),
+    linear-gradient(oklch(0.99 0.01 85 / 0.35), oklch(0.99 0.01 85 / 0.35)),
+    url("/hero-clouds.jpg") center / cover no-repeat;
+}
+.dark .premium-sky {
+  background:
+    linear-gradient(
+      225deg,
+      oklch(0.76 0.14 70 / 0.3) 0%,
+      oklch(0.76 0.14 70 / 0) 60%
+    ),
+    linear-gradient(
+      160deg,
+      oklch(0.17 0.03 70 / 0.8) 0%,
+      oklch(0.2 0.05 55 / 0.88) 50%,
+      oklch(0.21 0.06 35 / 0.92) 100%
+    ),
+    url("/hero-clouds.jpg") center / cover no-repeat;
+}
+
+@keyframes premium-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -6px;
+  }
+}
+
 @keyframes confetti-fall {
   0% {
     transform: translateY(-10vh) rotate(0deg);
