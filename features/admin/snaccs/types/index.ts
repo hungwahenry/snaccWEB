@@ -42,7 +42,7 @@ export interface SnaccContent {
 export interface AdminSnacc extends SnaccContent {
   parent_id: string | null
   resnacc_of: SnaccContent | null
-  reactions_count: number
+  likes_count: number
   comments_count: number
   resnaccs_count: number
   views_count: number

@@ -7,10 +7,7 @@ const LIST = "snacc-list"
 
 export const snaccKeys = {
   detail: (id: string) => ["snaccs", "detail", id] as const,
-  reactionSummary: (id: string) => ["snaccs", "reaction-summary", id] as const,
-  reactorLists: (id: string) => ["snaccs", "reactors", id] as const,
-  reactors: (id: string, emoji: string | null) =>
-    ["snaccs", "reactors", id, emoji] as const,
+  likers: (id: string) => ["snaccs", "likers", id] as const,
   resnaccSummary: (id: string) => ["snaccs", "resnacc-summary", id] as const,
   resnaccers: (id: string) => ["snaccs", "resnaccers", id] as const,
   drafts: () => ["snaccs", "drafts"] as const,

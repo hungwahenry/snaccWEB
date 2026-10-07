@@ -48,7 +48,7 @@ export function NotificationsScreen() {
         <EmptyState
           icon={HeartIcon}
           title="No notifications yet"
-          description="When people follow you or react to your snaccs, you'll see it here."
+          description="When people follow you or like your snaccs, you'll see it here."
           className="py-24"
         />
       ) : (

@@ -5,7 +5,7 @@ export interface SnaccInsight {
   opens: number
   open_rate: number
   dwell_seconds: number
-  reactions: number
+  likes: number
   comments: number
   resnaccs: number
   quotes: number

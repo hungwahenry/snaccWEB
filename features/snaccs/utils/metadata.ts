@@ -117,7 +117,7 @@ export function snaccJsonLd(snacc: Snacc): JsonLd {
           }
         : undefined,
     interactionStatistic: [
-      counter("LikeAction", snacc.reactions_count),
+      counter("LikeAction", snacc.likes_count),
       counter("CommentAction", snacc.comments_count),
       counter("ShareAction", snacc.resnaccs_count),
     ],

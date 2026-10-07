@@ -25,8 +25,8 @@ import { SnaccPendingBar } from "./snacc-pending-bar"
 import { nameOf } from "@/features/users/utils/names"
 
 export type SnaccActionHandlers = {
-  onReact?: (snacc: Snacc, emoji: string) => void
-  onOpenBreakdown?: (snacc: Snacc) => void
+  onSetLike: (snacc: Snacc, liked: boolean) => Promise<void>
+  onOpenLikers: (snacc: Snacc) => void
   onOpenResnaccs?: (snacc: Snacc) => void
   onComment: (snacc: Snacc) => void
   onResnacc?: (snacc: Snacc) => void
@@ -56,8 +56,8 @@ export type SnaccCardProps = SnaccActionHandlers & {
 function SnaccCardComponent(props: SnaccCardProps) {
   const {
     snacc,
-    onReact,
-    onOpenBreakdown,
+    onSetLike,
+    onOpenLikers,
     onOpenResnaccs,
     onComment,
     onResnacc,
@@ -133,16 +133,14 @@ function SnaccCardComponent(props: SnaccCardProps) {
     />
   ) : (
     <SnaccActions
-      reactions={snacc.reactions}
-      reactionsCount={snacc.reactions_count}
-      myReaction={snacc.my_reaction}
+      key={snacc.id}
+      likesCount={snacc.likes_count}
+      liked={snacc.liked}
       commentsCount={snacc.comments_count}
       resnaccsCount={snacc.resnaccs_count}
       myResnacc={snacc.my_resnacc}
-      onReact={onReact ? (emoji) => onReact(snacc, emoji) : undefined}
-      onOpenBreakdown={
-        onOpenBreakdown ? () => onOpenBreakdown(snacc) : undefined
-      }
+      onSetLike={(liked) => onSetLike(snacc, liked)}
+      onOpenLikers={() => onOpenLikers(snacc)}
       onOpenResnaccs={onOpenResnaccs ? () => onOpenResnaccs(snacc) : undefined}
       onComment={() => onComment(snacc)}
       onResnacc={onResnacc ? () => onResnacc(snacc) : undefined}

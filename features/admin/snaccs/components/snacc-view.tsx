@@ -55,7 +55,7 @@ export function SnaccView({ snacc }: { snacc: AdminSnacc }) {
       ) : null}
 
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-        <span>{formatNumber(snacc.reactions_count)} reactions</span>
+        <span>{formatNumber(snacc.likes_count)} likes</span>
         <span>{formatNumber(snacc.comments_count)} replies</span>
         <span>{formatNumber(snacc.resnaccs_count)} resnaccs</span>
         <span>{formatNumber(snacc.views_count)} views</span>

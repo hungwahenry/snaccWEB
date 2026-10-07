@@ -3,12 +3,12 @@ import {
   MoreHorizontalIcon,
   RepeatIcon,
   Share2Icon,
-  SmilePlusIcon,
   type LucideIcon,
 } from "lucide-react"
 import Link from "next/link"
 import { PublicClip } from "@/features/clips/components/public-clip"
 import { PublicHangout } from "@/features/hangouts/components/public/public-hangout"
+import { LikeGlyph } from "@/features/likes/components/like-glyph"
 import { compactCount, timeAgo } from "@/lib/format"
 import { richText } from "@/lib/rich-text"
 import { AuthorBadges } from "@/features/users/components/public/author-badges"
@@ -224,22 +224,17 @@ function SnaccActions({ snacc }: { snacc: Snacc }) {
   return (
     <div className="flex items-center gap-2">
       <div className="flex min-w-0 flex-1 items-center gap-1.5">
-        {snacc.reactions_count > 0 ? (
-          <div className="flex h-9 items-center gap-1.5">
-            <div className="flex">
-              {snacc.reactions.slice(0, 3).map((r) => (
-                <span key={r.emoji} className="text-base">
-                  {r.emoji}
-                </span>
-              ))}
-            </div>
+        <div className="flex h-9 items-center gap-1.5">
+          <LikeGlyph
+            liked={false}
+            size={24}
+            className="text-muted-foreground"
+          />
+          {snacc.likes_count > 0 ? (
             <span className="text-sm font-bold text-muted-foreground">
-              {compactCount(snacc.reactions_count)}
+              {compactCount(snacc.likes_count)}
             </span>
-          </div>
-        ) : null}
-        <div className="flex h-9 items-center justify-center">
-          <SmilePlusIcon className="text-muted-foreground" size={22} />
+          ) : null}
         </div>
       </div>
 
@@ -247,7 +242,7 @@ function SnaccActions({ snacc }: { snacc: Snacc }) {
         <Action icon={MessageCircleIcon} count={snacc.comments_count} />
         <Action icon={RepeatIcon} count={snacc.resnaccs_count} />
         <div className="flex h-9 items-center justify-center">
-          <Share2Icon className="text-muted-foreground" size={22} />
+          <Share2Icon className="text-muted-foreground" size={24} />
         </div>
       </div>
     </div>
@@ -257,7 +252,7 @@ function SnaccActions({ snacc }: { snacc: Snacc }) {
 function Action({ icon: Icon, count }: { icon: LucideIcon; count: number }) {
   return (
     <div className="flex h-9 items-center gap-1.5">
-      <Icon className="text-muted-foreground" size={22} />
+      <Icon className="text-muted-foreground" size={24} />
       {count > 0 ? (
         <span className="text-sm font-bold text-muted-foreground">
           {compactCount(count)}

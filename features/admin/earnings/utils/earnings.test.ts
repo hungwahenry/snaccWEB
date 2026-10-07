@@ -24,7 +24,7 @@ const party = (patch: Partial<EarningParty> = {}): EarningParty => ({
 const earning = (patch: Partial<AdminEarning> = {}): AdminEarning => ({
   id: "e1",
   movement: "credit",
-  type: "reaction",
+  type: "like",
   amount: 500,
   note: null,
   snacc_id: "s1",
@@ -82,7 +82,7 @@ describe("earningCause", () => {
 
 describe("earningLabel", () => {
   it("names a credit by its type and the rest by their movement", () => {
-    expect(earningLabel(earning())).toBe("reaction")
+    expect(earningLabel(earning())).toBe("like")
     expect(earningLabel(earning({ movement: "claim", type: null }))).toBe(
       "claim"
     )
@@ -91,8 +91,8 @@ describe("earningLabel", () => {
 
 describe("options", () => {
   it("offers every engagement kind as a type", () => {
-    expect(kindOptions([{ key: "reaction", label: "Reaction" }])).toEqual([
-      { value: "reaction", label: "Reaction" },
+    expect(kindOptions([{ key: "like", label: "Like" }])).toEqual([
+      { value: "like", label: "Like" },
     ])
   })
 

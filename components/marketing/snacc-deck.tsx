@@ -1,5 +1,6 @@
 import { MessageCircle, Repeat2, type LucideIcon } from "lucide-react"
 import type { CSSProperties, ReactNode } from "react"
+import { LikeGlyph } from "@/features/likes/components/like-glyph"
 import { cn } from "@/lib/utils"
 
 export function avatar(seed: string) {
@@ -18,8 +19,7 @@ export function SnaccDeck() {
           seed="ada"
           body="the jollof at the caf is criminal today 😭 and the ATM's been down since monday. i've been on garri and pure water for three days straight, campus please fix your life 🙏 who do we even complain to at this point fr"
           lines={12}
-          reactions={["😭", "❤️", "🔥"]}
-          total={24}
+          likes={24}
           comments={6}
           resnaccs={2}
         />
@@ -34,8 +34,8 @@ export function SnaccDeck() {
           seed="tunde"
           body="sunset from the hostel roof 🌇"
           media="/welcome-photo.png"
-          reactions={["❤️", "😍"]}
-          total={41}
+          likes={41}
+          liked
           comments={3}
           resnaccs={1}
         />
@@ -50,8 +50,7 @@ export function SnaccDeck() {
           seed="zainab"
           body="me walking into that 8am 💀"
           media="/welcome-gif.gif"
-          reactions={["💀", "😂"]}
-          total={58}
+          likes={58}
           comments={12}
           resnaccs={4}
         />
@@ -69,8 +68,8 @@ type SnaccMockProps = {
   body: string
   lines?: number
   media?: string
-  reactions: string[]
-  total: number
+  likes: number
+  liked?: boolean
   comments: number
   resnaccs: number
 }
@@ -84,8 +83,8 @@ function SnaccMock({
   body,
   lines = 2,
   media,
-  reactions,
-  total,
+  likes,
+  liked = false,
   comments,
   resnaccs,
 }: SnaccMockProps) {
@@ -137,16 +136,19 @@ function SnaccMock({
       ) : null}
 
       <div className="flex items-center">
-        <div className="flex h-8 items-center gap-1.5 rounded-full bg-muted px-2.5">
-          <div className="flex items-center gap-0.5">
-            {reactions.map((emoji) => (
-              <span key={emoji} className="text-sm">
-                {emoji}
-              </span>
-            ))}
-          </div>
-          <span className="text-xs font-extrabold text-muted-foreground">
-            {total}
+        <div className="flex items-center gap-1">
+          <LikeGlyph
+            liked={liked}
+            size={16}
+            className="text-muted-foreground"
+          />
+          <span
+            className={cn(
+              "text-xs font-bold",
+              liked ? "text-like" : "text-muted-foreground"
+            )}
+          >
+            {likes}
           </span>
         </div>
 

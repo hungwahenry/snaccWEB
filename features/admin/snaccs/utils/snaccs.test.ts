@@ -120,10 +120,10 @@ describe("isBlank", () => {
 })
 
 describe("engagementLine", () => {
-  it("shows reactions, replies and views", () => {
+  it("shows likes, replies and views", () => {
     expect(
-      engagementLine({ reactions_count: 3, comments_count: 2, views_count: 40 })
-    ).toBe("3 rx · 2 co · 40 vw")
+      engagementLine({ likes_count: 3, comments_count: 2, views_count: 40 })
+    ).toBe("3 lk · 2 co · 40 vw")
   })
 })
 

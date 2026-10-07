@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
-import { useReactionBursts } from "@/hooks/use-reaction-bursts"
+import { useBursts } from "@/features/likes/hooks/use-bursts"
+import { useOptimisticLike } from "@/features/likes/hooks/use-optimistic-like"
 import { driveVideo, FAST_RATE } from "../../playback"
 import type { ClipPageHandlers, ClipPlayback } from "../../types"
 import type { PlayableClip } from "../../utils/viewer"
@@ -28,7 +29,14 @@ export function useClipPage(
     onFail: () => setFailedFor(id),
   })
   const video = stream.ref
-  const bursts = useReactionBursts(id ?? "")
+  const bursts = useBursts(id ?? "")
+  const like = useOptimisticLike({
+    liked: snacc?.liked ?? false,
+    likesCount: snacc?.likes_count ?? 0,
+    onSet: async (liked) => {
+      if (snacc) await handlers.onSetLike(snacc, liked)
+    },
+  })
 
   const framed = id !== null && framedFor === id
   const failed = id !== null && failedFor === id
@@ -68,14 +76,13 @@ export function useClipPage(
     },
     onDoubleTap: (x, y) => {
       if (!snacc || veiled) return
-      const emoji = handlers.onQuickReact(snacc)
-      if (emoji) bursts.add(emoji, x, y)
+      like.like()
+      bursts.add(x, y)
     },
     onHold: (held) => {
       if (!veiled || !held) handlers.onHold(held)
     },
   })
-  const react = handlers.onReact
   const resnacc = handlers.onResnacc
 
   return {
@@ -126,7 +133,9 @@ export function useClipPage(
     rail: snacc
       ? {
           snacc,
-          onReact: react ? (emoji: string) => react(snacc, emoji) : undefined,
+          liked: like.liked,
+          likesCount: like.likesCount,
+          onToggleLike: like.toggle,
           onComment: () => handlers.onComment(snacc),
           onResnacc: resnacc ? () => resnacc(snacc) : undefined,
           onShare: () => handlers.onShare(snacc),

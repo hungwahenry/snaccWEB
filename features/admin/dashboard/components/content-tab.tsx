@@ -5,7 +5,6 @@ import {
   AllTimeContentSection,
   HashtagsSection,
   TopPostsSection,
-  TopReactionsSection,
 } from "./content-sections"
 
 export function ContentTab({
@@ -33,14 +32,13 @@ export function ContentTab({
       </div>
       <div className="grid gap-6 lg:grid-cols-2">
         <TopPostsSection posts={content.top_posts} />
-        <HashtagsSection hashtags={content.hashtags} />
-      </div>
-      <div className="grid gap-6 lg:grid-cols-2">
-        <AllTimeContentSection
-          content={metrics.content}
-          follows={metrics.engagement.follows}
-        />
-        <TopReactionsSection reactions={metrics.top_reactions} />
+        <div className="flex flex-col gap-6">
+          <HashtagsSection hashtags={content.hashtags} />
+          <AllTimeContentSection
+            content={metrics.content}
+            follows={metrics.engagement.follows}
+          />
+        </div>
       </div>
     </div>
   )

@@ -89,14 +89,8 @@ export interface SnaccGif {
   height: number
 }
 
-export interface SnaccReaction {
-  emoji: string
-  count: number
-}
-
-export interface SnaccReactor {
-  emoji: string
-  reacted_at: string
+export interface SnaccLiker {
+  liked_at: string
   user: SnaccAuthor
 }
 
@@ -146,9 +140,8 @@ export interface Snacc {
   gif: SnaccGif | null
   match: SnaccMatch | null
   sticker: StickerAttachment | null
-  reactions: SnaccReaction[]
-  reactions_count: number
-  my_reaction: string | null
+  likes_count: number
+  liked: boolean
   saved: boolean
   pinned: boolean
   held: boolean
@@ -203,11 +196,6 @@ export interface EditSnaccInput {
   giphyId?: string
   stickerId?: string
   spoiler?: boolean
-}
-
-export interface ReactToSnaccInput {
-  snaccId: string
-  emoji: string | null
 }
 
 export interface PollPayload {

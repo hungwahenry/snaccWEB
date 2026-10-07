@@ -29,7 +29,7 @@ export function useConfirmBlock() {
 
     confirm({
       title: `Block ${who}?`,
-      message: "You won't see each other's snaccs, comments, or reactions.",
+      message: "You won't see each other's snaccs, comments, or likes.",
       actions: [
         {
           label: "Block",

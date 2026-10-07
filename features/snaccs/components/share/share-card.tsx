@@ -6,6 +6,7 @@ import {
 } from "lucide-react"
 import { Mark } from "@/components/marketing/mark"
 import { goingLine, whenLineFor } from "@/features/hangouts/utils/hangouts"
+import { LikeGlyph } from "@/features/likes/components/like-glyph"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { TierName } from "@/features/users/components/flair"
 import { VoiceBars } from "@/features/voice/components/voice-bars"
@@ -15,7 +16,6 @@ import { barCount } from "@/features/voice/utils/wave"
 import { compactCount, timeAgo } from "@/lib/format"
 import { sameOriginMedia } from "@/lib/media-url"
 import type { Snacc } from "../../types"
-import { TOP_REACTIONS_SHOWN } from "../../utils/constants"
 import { pollFooter } from "../../utils/polls"
 import { nameOf } from "@/features/users/utils/names"
 
@@ -184,24 +184,14 @@ export function ShareCard({ snacc }: { snacc: Snacc }) {
         )
       ) : null}
 
-      {snacc.reactions_count > 0 ||
+      {snacc.likes_count > 0 ||
       snacc.comments_count > 0 ||
       snacc.resnaccs_count > 0 ? (
         <div className="flex items-center gap-4">
-          {snacc.reactions_count > 0 ? (
-            <span className="flex items-center gap-1.5">
-              <span className="flex items-center gap-0.5">
-                {snacc.reactions
-                  .slice(0, TOP_REACTIONS_SHOWN)
-                  .map((reaction) => (
-                    <span key={reaction.emoji} className="text-base">
-                      {reaction.emoji}
-                    </span>
-                  ))}
-              </span>
-              <span className="text-sm font-bold text-muted-foreground">
-                {compactCount(snacc.reactions_count)}
-              </span>
+          {snacc.likes_count > 0 ? (
+            <span className="flex items-center gap-1 text-sm font-bold text-muted-foreground">
+              <LikeGlyph liked={false} size={16} />{" "}
+              {compactCount(snacc.likes_count)}
             </span>
           ) : null}
           {snacc.comments_count > 0 ? (

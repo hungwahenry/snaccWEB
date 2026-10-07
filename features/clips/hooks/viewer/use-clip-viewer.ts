@@ -39,8 +39,6 @@ import {
 import { useClipStream } from "./use-clip-stream"
 import { useClipWatch } from "./use-clip-watch"
 
-const QUICK_REACTION = "❤️"
-
 export function useClipViewer(startId: string, startRevealed: boolean) {
   const back = useBack()
   const queryClient = useQueryClient()
@@ -169,17 +167,11 @@ export function useClipViewer(startId: string, startRevealed: boolean) {
         setPaused((value) => !value)
       },
       onHold: setFast,
-      onQuickReact: (snacc) => {
-        if (!actions.onReact) return null
-        if (snacc.my_reaction) return snacc.my_reaction
-        actions.onReact(snacc, QUICK_REACTION)
-        return QUICK_REACTION
-      },
       onReveal: (snacc) => {
         signal("spoiler_reveal", { subjectId: snacc.id })
         setRevealed((shown) => new Set(shown).add(snacc.id))
       },
-      onReact: actions.onReact,
+      onSetLike: actions.onSetLike,
       onComment: actions.onComment,
       onResnacc: actions.onResnacc,
       onShare: actions.onShare,

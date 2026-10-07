@@ -27,7 +27,6 @@ interface MomentPlayerProps {
   ready: boolean
   removing: boolean
   replying: boolean
-  reactions: { quick: string[]; overflow: string | null }
   onRetry: () => void
   onMediaReady: (id: string) => void
   onPause: () => void
@@ -42,7 +41,7 @@ interface MomentPlayerProps {
   onViewers: () => void
   onDelete: () => void
   onReport: () => void
-  onReact: (emoji: string) => void
+  onSetLike: (liked: boolean) => Promise<void>
   onReply: (body: string) => void
   onOpenAuthor: (username: string | null) => void
 }
@@ -59,7 +58,6 @@ export function MomentPlayer({
   ready,
   removing,
   replying,
-  reactions,
   onRetry,
   onMediaReady,
   onPause,
@@ -74,7 +72,7 @@ export function MomentPlayer({
   onViewers,
   onDelete,
   onReport,
-  onReact,
+  onSetLike,
   onReply,
   onOpenAuthor,
 }: MomentPlayerProps) {
@@ -226,10 +224,9 @@ export function MomentPlayer({
           )}
         >
           <MomentReplyBar
-            reaction={current.my_reaction}
-            quick={reactions.quick}
-            overflow={reactions.overflow}
-            onReact={onReact}
+            momentId={current.id}
+            liked={current.liked}
+            onSetLike={onSetLike}
             onReply={onReply}
             replying={replying}
             onFocus={onPause}

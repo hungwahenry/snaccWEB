@@ -2,6 +2,7 @@ import { EyeIcon } from "lucide-react"
 import { ActionSheet } from "@/components/ui/action-sheet"
 import { EmptyState } from "@/components/ui/empty-state"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
+import { LikeGlyph } from "@/features/likes/components/like-glyph"
 import { UserRow } from "@/features/users/components/user-row"
 import { timeAgo } from "@/lib/format"
 import type { MomentViewer } from "../types"
@@ -42,9 +43,7 @@ export function MomentViewersSheet({
             user={viewer}
             trailing={
               <span className="flex items-center gap-2">
-                {viewer.reaction ? (
-                  <span className="text-base">{viewer.reaction}</span>
-                ) : null}
+                {viewer.liked ? <LikeGlyph liked size={16} /> : null}
                 <span className="text-xs text-muted-foreground">
                   {timeAgo(viewer.viewed_at)}
                 </span>

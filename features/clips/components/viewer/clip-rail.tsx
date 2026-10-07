@@ -6,12 +6,11 @@ import {
   Repeat1Icon,
   RepeatIcon,
   SendIcon,
-  SmilePlusIcon,
   type LucideIcon,
 } from "lucide-react"
 import Link from "next/link"
 import { UserAvatar } from "@/components/ui/user-avatar"
-import { ReactionPicker } from "@/features/reactions/components/reaction-picker"
+import { LikeIcon } from "@/features/likes/components/like-icon"
 import { profilePath } from "@/features/users/routes"
 import { compactCount } from "@/lib/format"
 import { cn } from "@/lib/utils"
@@ -19,7 +18,9 @@ import type { PlayableClip } from "../../utils/viewer"
 
 export type ClipRailProps = {
   snacc: PlayableClip
-  onReact?: (emoji: string) => void
+  liked: boolean
+  likesCount: number
+  onToggleLike: () => void
   onComment: () => void
   onResnacc?: () => void
   onShare: () => void
@@ -27,6 +28,7 @@ export type ClipRailProps = {
 }
 
 const SHADOW = "drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
+const RAIL_LIKE_SIZE = 28
 
 function Count({ value }: { value: number }) {
   if (value <= 0) return null
@@ -74,7 +76,9 @@ function RailButton({
 
 export function ClipRail({
   snacc,
-  onReact,
+  liked,
+  likesCount,
+  onToggleLike,
   onComment,
   onResnacc,
   onShare,
@@ -96,27 +100,22 @@ export function ClipRail({
         />
       </Link>
 
-      {onReact ? (
-        <div className="flex flex-col items-center gap-1">
-          <ReactionPicker
-            mine={snacc.my_reaction}
-            onSelect={onReact}
-            align="end"
-            trigger={
-              <span className="flex size-11 cursor-pointer items-center justify-center">
-                {snacc.my_reaction ? (
-                  <span className="text-[28px] leading-9">
-                    {snacc.my_reaction}
-                  </span>
-                ) : (
-                  <SmilePlusIcon className={cn("size-7 text-white", SHADOW)} />
-                )}
-              </span>
-            }
-          />
-          <Count value={snacc.reactions_count} />
-        </div>
-      ) : null}
+      <div className="flex flex-col items-center gap-1">
+        <button
+          type="button"
+          aria-label={liked ? "Unlike" : "Like"}
+          aria-pressed={liked}
+          title={liked ? "Unlike" : "Like"}
+          onClick={onToggleLike}
+          className={cn(
+            "flex size-11 cursor-pointer items-center justify-center rounded-full text-white transition active:scale-90",
+            SHADOW
+          )}
+        >
+          <LikeIcon key={snacc.id} liked={liked} size={RAIL_LIKE_SIZE} />
+        </button>
+        <Count value={likesCount} />
+      </div>
 
       <RailButton
         icon={MessageCircleIcon}

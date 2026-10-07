@@ -6,24 +6,24 @@ import { LoadMore } from "@/components/ui/load-more"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
 import { UserRow } from "@/features/users/components/user-row"
 import { UserRowSkeleton } from "@/features/users/components/user-row-skeleton"
-import type { SnaccReaction, SnaccReactor } from "../../../types"
+import type { ChatReaction, ChatReactor } from "../types"
 import { ReactionPill } from "./reaction-pill"
 import { ReactorRowSkeleton } from "./reactor-row-skeleton"
 
-export type ReactionBreakdownSheetProps = {
+export type ChatReactionsSheetProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   total: number
   filter: string | null
-  tallies: SnaccReaction[]
-  reactors: SnaccReactor[]
+  tallies: ChatReaction[]
+  reactors: ChatReactor[]
   loading: boolean
   loadingMore: boolean
   loadMore: () => void
   filterBy: (emoji: string | null) => void
 }
 
-export function ReactionBreakdownSheet({
+export function ChatReactionsSheet({
   open,
   onOpenChange,
   total,
@@ -34,7 +34,7 @@ export function ReactionBreakdownSheet({
   loadingMore,
   loadMore,
   filterBy,
-}: ReactionBreakdownSheetProps) {
+}: ChatReactionsSheetProps) {
   return (
     <ActionSheet open={open} onOpenChange={onOpenChange} title="Reactions" tall>
       <div className="flex [scrollbar-width:none] gap-2 overflow-x-auto px-5 pb-2 [&::-webkit-scrollbar]:hidden">

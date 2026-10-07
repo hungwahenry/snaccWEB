@@ -21,12 +21,12 @@ export interface Moment {
   created_at: string
   expires_at: string
   held: boolean
-  my_reaction: string | null
+  liked: boolean
 }
 
 export interface MomentViewer extends SnaccAuthor {
   viewed_at: string
-  reaction: string | null
+  liked: boolean
 }
 
 export interface TrayEntry {

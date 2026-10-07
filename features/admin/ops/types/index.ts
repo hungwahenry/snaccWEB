@@ -34,7 +34,7 @@ export interface ProfileCounterDrift {
 }
 
 export interface SnaccCounterDrift {
-  reactions_count: number
+  likes_count: number
   resnaccs_count: number
   views_count: number
   comments_count: number

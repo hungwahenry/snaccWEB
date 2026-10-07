@@ -1,25 +1,19 @@
 "use client"
 
 import { MessageCircleIcon, SendIcon, type LucideIcon } from "lucide-react"
-import { useRef } from "react"
 import { Bump } from "@/components/motion/bump"
-import { ReactionBursts } from "@/components/motion/reaction-bursts"
-import { ReactionPicker } from "@/features/reactions/components/reaction-picker"
-import { useReactionBursts } from "@/hooks/use-reaction-bursts"
 import { compactCount } from "@/lib/format"
-import type { SnaccReaction } from "../../types"
-import { ReactionSummary } from "./reactions/reaction-summary"
+import { LikeButton } from "./like-button"
 import { ResnaccButton } from "./resnacc-button"
 
 type SnaccActionsProps = {
-  reactions: SnaccReaction[]
-  reactionsCount: number
-  myReaction: string | null
+  likesCount: number
+  liked: boolean
   commentsCount: number
   resnaccsCount: number
   myResnacc: boolean
-  onReact?: (emoji: string) => void
-  onOpenBreakdown?: () => void
+  onSetLike: (liked: boolean) => Promise<void>
+  onOpenLikers: () => void
   onOpenResnaccs?: () => void
   onComment: () => void
   onResnacc?: () => void
@@ -27,50 +21,30 @@ type SnaccActionsProps = {
 }
 
 export function SnaccActions({
-  reactions,
-  reactionsCount,
-  myReaction,
+  likesCount,
+  liked,
   commentsCount,
   resnaccsCount,
   myResnacc,
-  onReact,
-  onOpenBreakdown,
+  onSetLike,
+  onOpenLikers,
   onOpenResnaccs,
   onComment,
   onResnacc,
   onShare,
 }: SnaccActionsProps) {
-  const bursts = useReactionBursts()
-  const trigger = useRef<HTMLDivElement>(null)
-
-  function react(emoji: string) {
-    if (!onReact) return
-    const box = trigger.current?.getBoundingClientRect()
-    if (box && emoji !== myReaction) {
-      bursts.add(emoji, box.width / 2, box.height / 2)
-    }
-    onReact(emoji)
-  }
-
   return (
     <div
       className="flex items-center gap-2"
       onClick={(event) => event.stopPropagation()}
     >
-      <div className="flex min-w-0 flex-1 items-center gap-1.5">
-        <div className="min-w-0 shrink overflow-hidden">
-          <ReactionSummary
-            reactions={reactions}
-            total={reactionsCount}
-            onPress={onOpenBreakdown}
-          />
-        </div>
-        {onReact ? (
-          <div ref={trigger} className="relative shrink-0">
-            <ReactionPicker mine={myReaction} onSelect={react} />
-            <ReactionBursts bursts={bursts.bursts} onDone={bursts.remove} />
-          </div>
-        ) : null}
+      <div className="flex min-w-0 flex-1 items-center">
+        <LikeButton
+          count={likesCount}
+          liked={liked}
+          onSet={onSetLike}
+          onOpenLikers={onOpenLikers}
+        />
       </div>
 
       <div className="flex shrink-0 items-center gap-3">
@@ -112,7 +86,7 @@ function Action({
       aria-label={label}
       className="flex h-9 items-center gap-1.5 rounded-full px-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground active:scale-95"
     >
-      <Icon className="size-[22px]" />
+      <Icon className="size-6" />
       {count > 0 ? (
         <Bump value={count}>
           <span className="text-sm font-bold">{compactCount(count)}</span>

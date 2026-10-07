@@ -92,7 +92,7 @@ describe("funnelSteps", () => {
       signed_up: 200,
       onboarded: 150,
       posted: 50,
-      reacted: 100,
+      liked: 100,
       followed: 80,
       returned: 120,
     })
@@ -101,7 +101,7 @@ describe("funnelSteps", () => {
       ["signed_up", 200, 1],
       ["onboarded", 150, 0.75],
       ["posted", 50, 0.25],
-      ["reacted", 100, 0.5],
+      ["liked", 100, 0.5],
       ["followed", 80, 0.4],
       ["returned", 120, 0.6],
     ])
@@ -112,7 +112,7 @@ describe("funnelSteps", () => {
       signed_up: 0,
       onboarded: 0,
       posted: 0,
-      reacted: 0,
+      liked: 0,
       followed: 0,
       returned: 0,
     })

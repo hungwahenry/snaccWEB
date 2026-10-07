@@ -120,9 +120,8 @@ export function buildOptimisticSnacc(
           height: draft.sticker.height,
         }
       : null,
-    reactions: [],
-    reactions_count: 0,
-    my_reaction: null,
+    likes_count: 0,
+    liked: false,
     saved: false,
     pinned: false,
     held: false,

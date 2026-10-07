@@ -8,15 +8,13 @@ import type {
   CreateSnaccInput,
   EditSnaccInput,
   PollPayload,
-  ReactToSnaccInput,
   ResnaccSummary,
   ScheduledSnacc,
   ScheduleSnaccInput,
   Snacc,
   SnaccContentInput,
+  SnaccLiker,
   SnaccPoll,
-  SnaccReaction,
-  SnaccReactor,
   SnaccResnaccer,
 } from "../types"
 
@@ -194,28 +192,19 @@ export async function undoResnacc(snaccId: string): Promise<void> {
   await api.del(`${snaccUrl(snaccId)}/resnacc`)
 }
 
-export async function reactToSnacc({
-  snaccId,
-  emoji,
-}: ReactToSnaccInput): Promise<void> {
-  if (emoji === null) {
-    await api.del(`${snaccUrl(snaccId)}/reactions`)
-    return
-  }
-  await api.put(`${snaccUrl(snaccId)}/reactions`, { emoji })
+export async function likeSnacc(snaccId: string): Promise<void> {
+  await api.put(`${snaccUrl(snaccId)}/likes`)
 }
 
-export function getReactionSummary(snaccId: string): Promise<SnaccReaction[]> {
-  return api.get<SnaccReaction[]>(`${snaccUrl(snaccId)}/reactions/summary`)
+export async function unlikeSnacc(snaccId: string): Promise<void> {
+  await api.del(`${snaccUrl(snaccId)}/likes`)
 }
 
-export function listReactions(
+export function listLikers(
   snaccId: string,
-  emoji: string | undefined,
   page: number
-): Promise<Paginated<SnaccReactor>> {
-  return api.get<Paginated<SnaccReactor>>(`${snaccUrl(snaccId)}/reactions`, {
-    emoji,
+): Promise<Paginated<SnaccLiker>> {
+  return api.get<Paginated<SnaccLiker>>(`${snaccUrl(snaccId)}/likes`, {
     page,
   })
 }

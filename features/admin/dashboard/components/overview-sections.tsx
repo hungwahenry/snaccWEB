@@ -38,10 +38,7 @@ export function HeadlineStats({ metrics }: { metrics: DashboardMetrics }) {
           value={formatNumber(metrics.content.snaccs)}
           hint={`${formatNumber(metrics.content.comments)} comments · ${formatNumber(metrics.content.resnaccs)} resnaccs`}
         />
-        <Stat
-          label="Reactions"
-          value={formatNumber(metrics.engagement.reactions)}
-        />
+        <Stat label="Likes" value={formatNumber(metrics.engagement.likes)} />
         <Stat label="Views" value={formatNumber(metrics.engagement.views)} />
         <Stat
           label="Campuses"

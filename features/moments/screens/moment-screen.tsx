@@ -3,13 +3,11 @@
 import { ReportSheet } from "@/features/reports/components/report-sheet"
 import { MomentPlayer } from "../components/moment-player"
 import { MomentViewersSheet } from "../components/moment-viewers-sheet"
-import { useMomentReactions } from "../hooks/use-moment-reactions"
 import { useMomentScreen } from "../hooks/use-moment-screen"
 
 export function MomentScreen({ authorId }: { authorId: string }) {
   const screen = useMomentScreen(authorId)
   const { player } = screen
-  const reactions = useMomentReactions(player.current?.my_reaction ?? null)
 
   return (
     <div
@@ -31,7 +29,6 @@ export function MomentScreen({ authorId }: { authorId: string }) {
           ready={player.ready}
           removing={player.removing}
           replying={player.replying}
-          reactions={reactions}
           onRetry={player.retry}
           onMediaReady={player.markReady}
           onPause={player.pause}
@@ -46,7 +43,7 @@ export function MomentScreen({ authorId }: { authorId: string }) {
           onViewers={player.openViewers}
           onDelete={player.deleteCurrent}
           onReport={screen.reportCurrent}
-          onReact={player.toggleReaction}
+          onSetLike={player.setLike}
           onReply={player.reply}
           onOpenAuthor={screen.openProfile}
         />

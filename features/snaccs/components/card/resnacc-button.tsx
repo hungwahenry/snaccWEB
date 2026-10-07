@@ -47,7 +47,7 @@ export function ResnaccButton({
       )}
     >
       <Bump value={mine}>
-        <Icon className="size-[22px]" />
+        <Icon className="size-6" />
       </Bump>
       {count > 0 ? (
         <Bump value={count}>

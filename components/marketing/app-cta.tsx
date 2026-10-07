@@ -11,7 +11,7 @@ export function AppCTA({ title, next }: { title: string; next: string }) {
           {title}
         </h2>
         <p className="max-w-xs text-pretty text-muted-foreground">
-          Log in to react, reply, and see everything happening on your campus.
+          Log in to like, reply, and see everything happening on your campus.
         </p>
 
         <Link

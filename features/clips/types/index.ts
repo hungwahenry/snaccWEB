@@ -31,9 +31,8 @@ export interface ClipPageHandlers {
   onSoundBlocked: () => void
   onTogglePause: () => void
   onHold: (held: boolean) => void
-  onQuickReact: (snacc: PlayableClip) => string | null
   onReveal: (snacc: PlayableClip) => void
-  onReact?: (snacc: PlayableClip, emoji: string) => void
+  onSetLike: (snacc: PlayableClip, liked: boolean) => Promise<void>
   onComment: (snacc: PlayableClip) => void
   onResnacc?: (snacc: PlayableClip) => void
   onShare: (snacc: PlayableClip) => void

@@ -8,7 +8,7 @@ import {
 
 const INCLUDED = [
   "Your profile and account details",
-  "Every snacc, reply and reaction you posted",
+  "Every snacc, reply and like you posted",
   "Follows, saved snaccs, blocks and reports",
   "Earnings, withdrawals and payout details",
   "Notification preferences and devices",

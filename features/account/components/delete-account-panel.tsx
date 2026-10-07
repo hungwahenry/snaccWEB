@@ -8,7 +8,7 @@ import {
 
 const REMOVED = [
   "Your profile, username and photo",
-  "Every snacc, reply and reaction you posted",
+  "Every snacc, reply and like you posted",
   "Your followers and who you follow",
   "Saved snaccs, blocks and reports",
   "Your wallet balance and earnings history",

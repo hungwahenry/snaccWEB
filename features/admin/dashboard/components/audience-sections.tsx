@@ -113,7 +113,7 @@ export function AudienceSection({ audience }: { audience: AudienceMetrics }) {
   return (
     <Section
       title="Audience"
-      description="Anyone who viewed, posted, reacted, shared or sent a message, counted per Lagos day."
+      description="Anyone who viewed, posted, liked, shared or sent a message, counted per Lagos day."
     >
       <StatGrid columns={4}>
         <Stat

@@ -20,11 +20,11 @@ export async function getMomentViewers(
 export const markMomentSeen = (momentId: string) =>
   api.post<void>(`/moments/${momentId}/view`)
 
-export const reactToMoment = (momentId: string, emoji: string) =>
-  api.put<void>(`/moments/${momentId}/reactions`, { emoji })
+export const likeMoment = (momentId: string) =>
+  api.put<void>(`/moments/${momentId}/likes`)
 
-export const unreactToMoment = (momentId: string) =>
-  api.del<void>(`/moments/${momentId}/reactions`)
+export const unlikeMoment = (momentId: string) =>
+  api.del<void>(`/moments/${momentId}/likes`)
 
 export interface MomentReplyResult {
   conversationId: string

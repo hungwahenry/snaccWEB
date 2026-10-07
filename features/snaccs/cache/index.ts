@@ -12,7 +12,7 @@ import {
   prependItem,
 } from "@/lib/query/pages"
 import { getSnacc } from "../api"
-import type { QuotedGone, Snacc, SnaccReaction } from "../types"
+import type { QuotedGone, Snacc } from "../types"
 import {
   commentSortOf,
   isCommentList,
@@ -21,7 +21,6 @@ import {
   isUserList,
   snaccKeys,
 } from "../utils/keys"
-import { withSummary } from "../utils/reactions"
 import { asSnacc, isPlainResnacc, toEmbedded } from "../utils/resnaccs"
 
 type SnaccPages = PaginatedPages<Snacc>
@@ -218,17 +217,6 @@ export function setAuthorTier(authorId: string, tier: string | null): void {
   )
 }
 
-export function patchSummary(
-  id: string,
-  previous: string | null,
-  next: string | null
-): void {
-  client().setQueryData<SnaccReaction[]>(
-    snaccKeys.reactionSummary(id),
-    (tallies) => tallies && withSummary(tallies, previous, next)
-  )
-}
-
 export function findSnacc(id: string): Snacc | undefined {
   const single = client().getQueryData<Snacc>(snaccKeys.detail(id))
   if (single) return single
@@ -274,9 +262,8 @@ export function resnaccsChanged(id: string): void {
   void client().invalidateQueries({ queryKey: snaccKeys.quotes(id) })
 }
 
-export function reactionsChanged(id: string): void {
-  void client().invalidateQueries({ queryKey: snaccKeys.reactionSummary(id) })
-  void client().invalidateQueries({ queryKey: snaccKeys.reactorLists(id) })
+export function likesChanged(id: string): void {
+  void client().invalidateQueries({ queryKey: snaccKeys.likers(id) })
 }
 
 export function feedsChanged(id: string): void {

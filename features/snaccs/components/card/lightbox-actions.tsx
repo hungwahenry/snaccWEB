@@ -1,34 +1,39 @@
 import { MessageCircleIcon, RepeatIcon } from "lucide-react"
+import { LikeGlyph } from "@/features/likes/components/like-glyph"
 import { compactCount } from "@/lib/format"
-import type { SnaccReaction } from "../../types"
-import { ReactionSummary } from "./reactions/reaction-summary"
 
 type LightboxActionsProps = {
-  reactions: SnaccReaction[]
-  reactionsCount: number
+  likesCount: number
+  liked: boolean
   commentsCount: number
   resnaccsCount: number
-  onOpenBreakdown?: () => void
+  onOpenLikers: () => void
   onComment: () => void
   onResnacc?: () => void
 }
 
 export function LightboxActions({
-  reactions,
-  reactionsCount,
+  likesCount,
+  liked,
   commentsCount,
   resnaccsCount,
-  onOpenBreakdown,
+  onOpenLikers,
   onComment,
   onResnacc,
 }: LightboxActionsProps) {
   return (
     <div className="flex items-center text-white">
-      <ReactionSummary
-        reactions={reactions}
-        total={reactionsCount}
-        onPress={onOpenBreakdown}
-      />
+      {likesCount > 0 ? (
+        <button
+          type="button"
+          onClick={onOpenLikers}
+          aria-label="See who liked this"
+          className="flex h-9 items-center gap-1.5 active:scale-95"
+        >
+          <LikeGlyph liked={liked} size={24} />
+          <span className="text-sm font-bold">{compactCount(likesCount)}</span>
+        </button>
+      ) : null}
 
       <div className="flex-1" />
 

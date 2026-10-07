@@ -6,8 +6,6 @@ import { listChatReactors } from "../api"
 import type { ChatMessage } from "../types"
 import { chatKeys } from "../utils/keys"
 
-/** The snacc reactions sheet, fed by a room message. The counts come from the message in the
- * thread, so they move with it; only the names are fetched. */
 export function useChatReactionsSheet(messages: ChatMessage[]) {
   const [viewingId, setViewingId] = useState<string | null>(null)
   const [open, setOpen] = useState(false)

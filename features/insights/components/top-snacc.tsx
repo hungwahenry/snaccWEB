@@ -28,7 +28,7 @@ export function TopSnacc({
           <Figure label="views" value={compactCount(snacc.views)} />
           <Figure label="engaged" value={percent(snacc.engagement_rate)} />
           <Figure label="read" value={formatDuration(snacc.dwell_seconds)} />
-          <Figure label="reactions" value={compactCount(snacc.reactions)} />
+          <Figure label="likes" value={compactCount(snacc.likes)} />
           <Figure label="comments" value={compactCount(snacc.comments)} />
           <Figure label="resnaccs" value={compactCount(snacc.resnaccs)} />
           <Figure label="saves" value={compactCount(snacc.bookmarks)} />

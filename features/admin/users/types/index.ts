@@ -88,7 +88,7 @@ export interface AdminUserDetail extends AdminUserRow {
   linked_accounts: LinkedAccount[]
   counts: {
     snaccs: number
-    reactions: number
+    likes: number
     reports_filed: number
     reports_against: number
     withdrawals: number

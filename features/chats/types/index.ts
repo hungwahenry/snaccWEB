@@ -4,7 +4,6 @@ import type {
   MessageStatus,
   ThreadLine,
 } from "@/features/messages/types"
-import type { SnaccReactor } from "@/features/snaccs/types"
 import type { DraftSticker, StickerAttachment } from "@/features/stickers/types"
 import type { Author } from "@/features/users/types"
 import type { VoiceDraft, VoiceNote } from "@/features/voice/types"
@@ -49,8 +48,11 @@ export interface ChatImage {
   position: number
 }
 
-/** One person's reaction, the same shape a snacc lists. */
-export type ChatReactor = SnaccReactor
+export interface ChatReactor {
+  emoji: string
+  reacted_at: string
+  user: Author
+}
 
 /** One emoji, how many chose it, and whether you are among them. */
 export interface ChatReaction {

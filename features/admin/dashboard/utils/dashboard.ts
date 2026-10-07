@@ -82,7 +82,7 @@ const FUNNEL: { key: keyof GrowthMetrics; label: string }[] = [
   { key: "signed_up", label: "Signed up" },
   { key: "onboarded", label: "Finished their profile" },
   { key: "posted", label: "Posted" },
-  { key: "reacted", label: "Reacted to a post" },
+  { key: "liked", label: "Liked a post" },
   { key: "followed", label: "Followed someone" },
   { key: "returned", label: "Came back another day" },
 ]

@@ -12,8 +12,8 @@ import { LightboxActions } from "../components/card/lightbox-actions"
 import type { SnaccActionHandlers } from "../components/card/snacc-card"
 import { resnaccsPath, snaccPath } from "../routes"
 import type { EmbeddedSnacc, Snacc, SnaccPollOption } from "../types"
-import { useBreakdownSheet } from "./reactions/use-breakdown-sheet"
-import { useReactToSnacc } from "./reactions/use-react-to-snacc"
+import { useLikeSnacc } from "./likes/use-like-snacc"
+import { useLikersSheet } from "./likes/use-likers-sheet"
 import { useResnaccSheet } from "./resnaccs/use-resnacc-sheet"
 import { useSnaccMenu } from "./use-snacc-menu"
 import { useVotePoll } from "./use-vote-poll"
@@ -25,10 +25,9 @@ type Overrides = {
 
 export function useSnaccActions(overrides: Overrides = {}) {
   const router = useRouter()
-  const canReact = useFlag("reactions")
   const canResnacc = useFlag("resnacc")
-  const react = useReactToSnacc()
-  const breakdown = useBreakdownSheet()
+  const setLike = useLikeSnacc()
+  const likers = useLikersSheet()
   const resnacc = useResnaccSheet()
   const menu = useSnaccMenu()
   const poll = useVotePoll()
@@ -37,8 +36,8 @@ export function useSnaccActions(overrides: Overrides = {}) {
   const keepSticker = useKeepSnaccSticker()
 
   const latest = useRef({
-    react,
-    breakdown,
+    setLike,
+    likers,
     resnacc,
     menu,
     poll,
@@ -51,8 +50,8 @@ export function useSnaccActions(overrides: Overrides = {}) {
 
   useEffect(() => {
     latest.current = {
-      react,
-      breakdown,
+      setLike,
+      likers,
       resnacc,
       menu,
       poll,
@@ -71,19 +70,12 @@ export function useSnaccActions(overrides: Overrides = {}) {
       else latest.current.router.push(snaccPath(snacc.id))
     }
 
-    const openBreakdown = (snacc: Snacc) =>
-      latest.current.breakdown.onOpen(snacc)
+    const openLikers = (snacc: Snacc) => latest.current.likers.onOpen(snacc)
     const openResnacc = (snacc: Snacc) => latest.current.resnacc.onOpen(snacc)
 
     return {
-      onReact: canReact
-        ? (snacc, emoji) =>
-            latest.current.react.mutate({
-              snaccId: snacc.id,
-              emoji: snacc.my_reaction === emoji ? null : emoji,
-            })
-        : undefined,
-      onOpenBreakdown: canReact ? openBreakdown : undefined,
+      onSetLike: (snacc, liked) => latest.current.setLike(snacc, liked),
+      onOpenLikers: openLikers,
       onOpenResnaccs: canResnacc
         ? (snacc) => latest.current.router.push(resnaccsPath(snacc.id))
         : undefined,
@@ -106,16 +98,14 @@ export function useSnaccActions(overrides: Overrides = {}) {
         const footer =
           "resnacc_of" in snacc
             ? createElement(LightboxActions, {
-                reactions: snacc.reactions,
-                reactionsCount: snacc.reactions_count,
+                likesCount: snacc.likes_count,
+                liked: snacc.liked,
                 commentsCount: snacc.comments_count,
                 resnaccsCount: snacc.resnaccs_count,
-                onOpenBreakdown: canReact
-                  ? () => {
-                      lightbox.close()
-                      openBreakdown(snacc)
-                    }
-                  : undefined,
+                onOpenLikers: () => {
+                  lightbox.close()
+                  openLikers(snacc)
+                },
                 onComment: () => {
                   lightbox.close()
                   onComment(snacc)
@@ -154,13 +144,13 @@ export function useSnaccActions(overrides: Overrides = {}) {
       },
       onKeepSticker: (snacc) => latest.current.keepSticker?.(snacc.id),
     }
-  }, [canReact, canResnacc])
+  }, [canResnacc])
 
   return {
     handlers,
     votingPollFor: poll.votingFor,
     sheets: {
-      breakdown: breakdown.sheet,
+      likers: likers.sheet,
       resnacc: resnacc.sheet,
       actions: menu.sheet,
       report: menu.report,

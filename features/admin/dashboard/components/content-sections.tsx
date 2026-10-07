@@ -1,5 +1,4 @@
 import Link from "next/link"
-import { Badge } from "@/components/ui/badge"
 import { BarRow } from "@/features/admin/shell/components/bar-row"
 import {
   EmptyNote,
@@ -9,17 +8,12 @@ import {
 } from "@/features/admin/shell/components/detail"
 import { snaccPath } from "@/features/admin/shell/routes"
 import { formatNumber } from "@/lib/format"
-import type {
-  DashboardMetrics,
-  HashtagUse,
-  TopPost,
-  TopReaction,
-} from "../types"
+import type { DashboardMetrics, HashtagUse, TopPost } from "../types"
 import { withBarFractions } from "../utils/dashboard"
 
 export function TopPostsSection({ posts }: { posts: TopPost[] }) {
   return (
-    <Section title="Top posts" description="The most reacted-to this period.">
+    <Section title="Top posts" description="The most liked this period.">
       {posts.length === 0 ? (
         <EmptyNote>No posts this period.</EmptyNote>
       ) : (
@@ -34,9 +28,8 @@ export function TopPostsSection({ posts }: { posts: TopPost[] }) {
               </Link>
               <p className="text-xs text-muted-foreground tabular-nums">
                 {post.username ? `@${post.username} · ` : null}
-                {formatNumber(post.reactions)} reactions ·{" "}
-                {formatNumber(post.comments)} comments ·{" "}
-                {formatNumber(post.views)} views
+                {formatNumber(post.likes)} likes · {formatNumber(post.comments)}{" "}
+                comments · {formatNumber(post.views)} views
               </p>
             </li>
           ))}
@@ -85,35 +78,6 @@ export function AllTimeContentSection({
         <Fact label="Removed" value={formatNumber(content.deleted_snaccs)} />
         <Fact label="Follows" value={formatNumber(follows)} />
       </Facts>
-    </Section>
-  )
-}
-
-export function TopReactionsSection({
-  reactions,
-}: {
-  reactions: TopReaction[]
-}) {
-  return (
-    <Section title="Top reactions">
-      {reactions.length === 0 ? (
-        <EmptyNote>No reactions yet.</EmptyNote>
-      ) : (
-        <div className="flex flex-wrap gap-2 rounded-lg border p-4">
-          {reactions.map((reaction) => (
-            <Badge
-              key={reaction.emoji}
-              variant="secondary"
-              className="gap-1.5 text-sm"
-            >
-              <span>{reaction.emoji}</span>
-              <span className="tabular-nums">
-                {formatNumber(reaction.count)}
-              </span>
-            </Badge>
-          ))}
-        </div>
-      )}
     </Section>
   )
 }

@@ -11,7 +11,6 @@ export const FLAG_KEYS = [
   'search',
   'earnings',
   'referrals',
-  'reactions',
   'resnacc',
   'post_pinning',
   'post_editing',
@@ -89,7 +88,6 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly 'content.poll.option_max_length': number;
   readonly 'content.poll.min_minutes': number;
   readonly 'content.poll.max_minutes': number;
-  readonly 'moments.reactions': readonly string[];
   readonly 'content.snacc.max_cashtags': number;
   readonly 'cashtags.refresh_minutes': number;
   readonly 'media.clip_short_side': number;
@@ -178,7 +176,6 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   'content.poll.option_max_length': 50,
   'content.poll.min_minutes': 5,
   'content.poll.max_minutes': 10080,
-  'moments.reactions': ["❤️","😂","🔥","😮","😢","👏"],
   'content.snacc.max_cashtags': 3,
   'cashtags.refresh_minutes': 5,
   'media.clip_short_side': 720,

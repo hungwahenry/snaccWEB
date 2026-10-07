@@ -1,12 +1,12 @@
 import { ReportSheet } from "@/features/reports/components/report-sheet"
 import { ShareSheet } from "@/features/share/components/share-sheet"
 import type { SnaccSheets as Sheets } from "../../hooks/use-snacc-actions"
-import { ReactionBreakdownSheet } from "../card/reactions/reaction-breakdown-sheet"
+import { LikersSheet } from "./likers-sheet"
 import { ResnaccSheet } from "./resnacc-sheet"
 import { SnaccActionsSheet } from "./snacc-actions-sheet"
 
 export function SnaccSheets({
-  breakdown,
+  likers,
   resnacc,
   actions,
   report,
@@ -14,7 +14,7 @@ export function SnaccSheets({
 }: Sheets) {
   return (
     <>
-      <ReactionBreakdownSheet {...breakdown} />
+      <LikersSheet {...likers} />
       <ResnaccSheet {...resnacc} />
       <SnaccActionsSheet {...actions} />
       <ReportSheet {...report} />

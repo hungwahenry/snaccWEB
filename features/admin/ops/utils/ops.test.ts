@@ -18,7 +18,7 @@ const clean: OpsDrift = {
     unread_notifications_count: 0,
   },
   snaccs: {
-    reactions_count: 0,
+    likes_count: 0,
     resnaccs_count: 0,
     views_count: 0,
     comments_count: 0,

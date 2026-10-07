@@ -50,7 +50,7 @@ import {
   onSnaccEdited,
   onSnaccPoll,
   onSnaccProcessed,
-  onSnaccReaction,
+  onSnaccLike,
   onSnaccResnacc,
 } from "@/features/snaccs/realtime"
 
@@ -70,7 +70,7 @@ export const REALTIME_HANDLERS = {
   "match.snacc": onMatchSnacc,
   "score.changed": onScoreChanged,
   "premium.changed": onPremiumChanged,
-  "snacc.reaction": onSnaccReaction,
+  "snacc.like": onSnaccLike,
   "snacc.comment": onSnaccComment,
   "snacc.poll": onSnaccPoll,
   "snacc.hangout": onSnaccHangout,

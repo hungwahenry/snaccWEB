@@ -19,7 +19,7 @@ const post = (over: Partial<Snacc> = {}) =>
     voice: null,
     poll: null,
     clip: null,
-    reactions_count: 4,
+    likes_count: 4,
     comments_count: 2,
     resnaccs_count: 1,
     ...over,

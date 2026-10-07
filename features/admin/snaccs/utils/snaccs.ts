@@ -86,9 +86,9 @@ export function hangoutGoing(
 }
 
 export function engagementLine(
-  snacc: Pick<AdminSnacc, "reactions_count" | "comments_count" | "views_count">
+  snacc: Pick<AdminSnacc, "likes_count" | "comments_count" | "views_count">
 ): string {
-  return `${formatNumber(snacc.reactions_count)} rx · ${formatNumber(snacc.comments_count)} co · ${formatNumber(snacc.views_count)} vw`
+  return `${formatNumber(snacc.likes_count)} lk · ${formatNumber(snacc.comments_count)} co · ${formatNumber(snacc.views_count)} vw`
 }
 
 /** "3 reports · 1 open": how often a snacc was flagged, and how much is still waiting. */

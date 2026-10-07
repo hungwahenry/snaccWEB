@@ -76,7 +76,7 @@ const DRIFT_LABELS: Record<string, string> = {
   "profiles.following_count": "Following",
   "profiles.total_views_received": "Views received",
   "profiles.unread_notifications_count": "Unread notifications",
-  "snaccs.reactions_count": "Reactions per snacc",
+  "snaccs.likes_count": "Likes per snacc",
   "snaccs.resnaccs_count": "Resnaccs per snacc",
   "snaccs.views_count": "Views per snacc",
   "snaccs.comments_count": "Comments per snacc",

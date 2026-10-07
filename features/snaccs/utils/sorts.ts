@@ -10,7 +10,7 @@ export const COMMENT_SORTS: {
     label: "Relevant",
     hint: "What the thread actually engaged with",
   },
-  { value: "top", label: "Most reactions", hint: "The loudest first" },
+  { value: "top", label: "Most liked", hint: "The loudest first" },
   { value: "newest", label: "Newest", hint: "Latest first" },
   { value: "oldest", label: "Oldest", hint: "Read it as a conversation" },
 ]

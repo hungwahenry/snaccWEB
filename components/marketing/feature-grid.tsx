@@ -48,7 +48,7 @@ const FEATURES: Feature[] = [
   {
     icon: SparklesIcon,
     name: "Moments",
-    line: "Photos and thoughts that don't stick around. See who watched, and react before it's gone.",
+    line: "Photos and thoughts that don't stick around. See who watched, and like it before it's gone.",
     color: FEATURE_COLORS.moments,
   },
   {

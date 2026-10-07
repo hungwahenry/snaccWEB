@@ -13,7 +13,7 @@ import {
   ZapIcon,
   type LucideIcon,
 } from "lucide-react"
-import { useState, type ReactElement, type ReactNode } from "react"
+import { useState, type ReactNode } from "react"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Input } from "@/components/ui/input"
 import {
@@ -56,7 +56,6 @@ type EmojiPickerProps = {
   label: string
   children: ReactNode
   triggerClassName?: string
-  triggerRender?: ReactElement
   align?: "start" | "center" | "end"
 }
 
@@ -66,7 +65,6 @@ export function EmojiPicker({
   label,
   children,
   triggerClassName,
-  triggerRender,
   align = "start",
 }: EmojiPickerProps) {
   const [open, setOpen] = useState(false)
@@ -78,11 +76,7 @@ export function EmojiPicker({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger
-        aria-label={label}
-        className={triggerClassName}
-        render={triggerRender}
-      >
+      <PopoverTrigger aria-label={label} className={triggerClassName}>
         {children}
       </PopoverTrigger>
 

@@ -29,11 +29,6 @@ export interface PeriodTotals {
   active: number
 }
 
-export interface TopReaction {
-  emoji: string
-  count: number
-}
-
 export interface DashboardMetrics {
   platform: boolean
   days: number
@@ -52,7 +47,7 @@ export interface DashboardMetrics {
     with_image: number
     with_gif: number
   }
-  engagement: { reactions: number; views: number; follows: number }
+  engagement: { likes: number; views: number; follows: number }
   moderation: {
     open_reports: number
     actioned: number
@@ -60,7 +55,6 @@ export interface DashboardMetrics {
     reports_7d: number
   }
   campuses: { total: number; funded: number }
-  top_reactions: TopReaction[]
   series: DashboardSeriesPoint[]
   totals: PeriodTotals
 }
@@ -157,7 +151,7 @@ export interface GrowthMetrics {
   signed_up: number
   onboarded: number
   posted: number
-  reacted: number
+  liked: number
   followed: number
   returned: number
 }
@@ -178,7 +172,7 @@ export interface TopPost {
   id: string
   body: string | null
   username: string | null
-  reactions: number
+  likes: number
   comments: number
   resnaccs: number
   views: number

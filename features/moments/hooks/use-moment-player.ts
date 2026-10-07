@@ -5,10 +5,10 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { confirm } from "@/components/ui/confirm"
 import {
   deleteMoment,
+  likeMoment,
   markMomentSeen,
-  reactToMoment,
   replyToMoment,
-  unreactToMoment,
+  unlikeMoment,
 } from "../api"
 import type { Moment } from "../types"
 import { MOMENT_DURATION_MS } from "../utils/constants"
@@ -144,50 +144,34 @@ export function useMomentPlayer(
     onDone: next,
   })
 
-  const patchReaction = useCallback(
-    (momentId: string, emoji: string | null) => {
+  const patchLiked = useCallback(
+    (momentId: string, liked: boolean) => {
       queryClient.setQueryData<Moment[]>(authorMomentsKey(authorId), (rows) =>
         rows?.map((moment) =>
-          moment.id === momentId ? { ...moment, my_reaction: emoji } : moment
+          moment.id === momentId ? { ...moment, liked } : moment
         )
       )
     },
     [queryClient, authorId]
   )
 
-  const { mutate: react } = useMutation({
-    mutationFn: ({
-      momentId,
-      emoji,
-    }: {
-      momentId: string
-      emoji: string | null
-    }) =>
-      emoji === null
-        ? unreactToMoment(momentId)
-        : reactToMoment(momentId, emoji),
-    onMutate: ({ momentId, emoji }) => {
-      const before =
-        list.find((moment) => moment.id === momentId)?.my_reaction ?? null
-      patchReaction(momentId, emoji)
-      return { before }
-    },
-    onError: (_error, { momentId }, context) => {
-      patchReaction(momentId, context?.before ?? null)
+  const { mutateAsync: like } = useMutation({
+    mutationFn: ({ momentId, liked }: { momentId: string; liked: boolean }) =>
+      liked ? likeMoment(momentId) : unlikeMoment(momentId),
+    onMutate: ({ momentId, liked }) => patchLiked(momentId, liked),
+    onError: (_error, { momentId, liked }) => {
+      patchLiked(momentId, !liked)
       showErrorMessage("Could not send that. Try again.")
     },
   })
 
-  const toggleReaction = useCallback(
-    (emoji: string) => {
+  const setLike = useCallback(
+    async (liked: boolean) => {
       if (!current || current.mine) return
 
-      react({
-        momentId: current.id,
-        emoji: current.my_reaction === emoji ? null : emoji,
-      })
+      await like({ momentId: current.id, liked }).catch(() => undefined)
     },
-    [current, react]
+    [current, like]
   )
 
   const { mutate: sendReply, isPending: replying } = useMutation({
@@ -252,7 +236,7 @@ export function useMomentPlayer(
     resume: useCallback(() => setPaused(false), []),
     tapForward: next,
     tapBack: previous,
-    toggleReaction,
+    setLike,
     reply,
   }
 }

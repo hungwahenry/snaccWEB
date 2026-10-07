@@ -77,7 +77,7 @@ export function EarningsSummary({
         <EmptyState
           icon={SparklesIcon}
           title="No earning snaccs yet"
-          description="Post snaccs people love — every reaction pays."
+          description="Post snaccs people love — every like pays."
           className="py-10"
         />
       )}

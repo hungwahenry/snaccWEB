@@ -1,29 +1,27 @@
 import {
   commentsChanged,
+  likesChanged,
   patchSnacc,
-  reactionsChanged,
   refreshSnacc,
   removeSnacc,
   resnaccsChanged,
 } from "./cache"
 import { scheduledChanged } from "./cache/scheduled"
-import type { ClipStatus, SnaccReaction } from "./types"
+import type { ClipStatus } from "./types"
 
 export function onScheduledChanged(): void {
   scheduledChanged()
 }
 
-export function onSnaccReaction(payload: {
+export function onSnaccLike(payload: {
   snacc_id: string
-  reactions: SnaccReaction[]
-  reactions_count: number
+  likes_count: number
 }): void {
   patchSnacc(payload.snacc_id, (snacc) => ({
     ...snacc,
-    reactions: payload.reactions,
-    reactions_count: payload.reactions_count,
+    likes_count: payload.likes_count,
   }))
-  reactionsChanged(payload.snacc_id)
+  likesChanged(payload.snacc_id)
 }
 
 export function onSnaccComment(payload: {

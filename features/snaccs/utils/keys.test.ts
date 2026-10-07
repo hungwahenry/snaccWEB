@@ -33,7 +33,7 @@ describe("snaccKeys", () => {
   it("keeps a snacc apart from its comments and summaries", () => {
     const detail = snaccKeys.detail("s1")
     const others = [
-      snaccKeys.reactionSummary("s1"),
+      snaccKeys.likers("s1"),
       snaccKeys.resnaccSummary("s1"),
       snaccKeys.comments("s1", "top"),
     ]

@@ -60,10 +60,7 @@ export function UserOverviewTab({ user }: { user: AdminUserDetail }) {
               value={user.completed_at ? formatDate(user.completed_at) : "No"}
             />
             <Fact label="Joined" value={formatDate(user.created_at)} />
-            <Fact
-              label="Reactions given"
-              value={formatNumber(user.counts.reactions)}
-            />
+            <Fact label="Likes given" value={formatNumber(user.counts.likes)} />
             <Fact
               label="Reports they filed"
               value={formatNumber(user.counts.reports_filed)}

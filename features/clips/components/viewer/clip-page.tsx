@@ -1,8 +1,8 @@
 "use client"
 
 import { PlayIcon } from "lucide-react"
-import { ReactionBursts } from "@/components/motion/reaction-bursts"
 import { Button } from "@/components/ui/button"
+import { LikeTapBursts } from "@/features/likes/components/like-tap-bursts"
 import { SpoilerVeil } from "@/features/snaccs/components/card/media/spoiler-veil"
 import { cn } from "@/lib/utils"
 import { useClipPage } from "../../hooks/viewer/use-clip-page"
@@ -11,6 +11,8 @@ import type { PlayableClip } from "../../utils/viewer"
 import { ClipScrubber } from "../clip-scrubber"
 import { ClipCaption } from "./clip-caption"
 import { ClipRail } from "./clip-rail"
+
+const TAP_LIKE_SIZE = 88
 
 type ClipPageProps = {
   snacc: PlayableClip | null
@@ -69,7 +71,11 @@ export function ClipPage({
           </span>
         ) : null}
 
-        <ReactionBursts bursts={page.bursts} onDone={page.clearBurst} />
+        <LikeTapBursts
+          bursts={page.bursts}
+          size={TAP_LIKE_SIZE}
+          onDone={page.clearBurst}
+        />
       </div>
 
       <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-linear-to-b from-black/40 to-transparent" />

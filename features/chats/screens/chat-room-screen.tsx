@@ -16,12 +16,12 @@ import { ThreadView } from "@/features/messages/components/thread/thread-view"
 import { MESSAGES_PATH } from "@/features/messages/routes"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { ReportSheet } from "@/features/reports/components/report-sheet"
-import { ReactionBreakdownSheet } from "@/features/snaccs/components/card/reactions/reaction-breakdown-sheet"
 import { StickerCreator } from "@/features/stickers/components/sticker-creator"
 import { StickerTraySheet } from "@/features/stickers/containers/sticker-tray-sheet"
 import { useBack } from "@/hooks/use-back"
 import { ChatMessageActionsSheet } from "../components/chat-message-actions-sheet"
 import { ChatMessageRow } from "../components/chat-message-row"
+import { ChatReactionsSheet } from "../components/chat-reactions-sheet"
 import { RoomIcon } from "../components/room-icon"
 import { useChatRoomScreen } from "../hooks/use-chat-room-screen"
 
@@ -92,7 +92,7 @@ export function ChatRoomScreen({ roomId }: { roomId: string }) {
       )}
 
       <ChatMessageActionsSheet {...screen.actions} />
-      <ReactionBreakdownSheet {...screen.reactions} />
+      <ChatReactionsSheet {...screen.reactions} />
       {screen.stickerTray ? <StickerTraySheet {...screen.stickerTray} /> : null}
       <StickerCreator {...screen.stickerCreator} />
       <ReportSheet {...screen.report} />
