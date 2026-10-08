@@ -1,7 +1,9 @@
+import type { WornTheme } from "@/features/chat-themes/types"
 import {
   conversationChanged,
   markConversationSeen,
   markPhotoOpened,
+  patchConversation,
   prependMessage,
   replaceMessage,
   setPeerRead,
@@ -28,6 +30,16 @@ export function onConversationRevealed(payload: {
   conversation_id: string
 }): void {
   conversationChanged(payload.conversation_id)
+}
+
+export function onConversationTheme(payload: {
+  conversation_id: string
+  theme: WornTheme | null
+}): void {
+  patchConversation(payload.conversation_id, (conversation) => ({
+    ...conversation,
+    theme: payload.theme,
+  }))
 }
 
 export function onConversationRead(payload: {

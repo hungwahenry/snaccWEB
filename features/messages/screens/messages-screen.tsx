@@ -16,6 +16,7 @@ import { ChatRoomRow } from "@/features/chats/components/chat-room-row"
 import { TabHeader } from "@/features/navigation/components/tab-header"
 import { ConversationRow } from "../components/conversations/conversation-row"
 import { ConversationRowSkeleton } from "../components/conversations/conversation-row-skeleton"
+import { MessageHitRowSkeleton } from "../components/conversations/message-hit-row-skeleton"
 import { ConversationSearch } from "../components/conversations/conversation-search"
 import { MessageHitRow } from "../components/conversations/message-hit-row"
 import { StreakIntroSheet } from "../components/conversations/streak-intro-sheet"
@@ -132,7 +133,10 @@ export function MessagesScreen() {
           {roomsOnly ? null : (
             <LoadMore onReach={feed.loadMore} disabled={feed.loadingMore} />
           )}
-          <ListFooter loading={feed.loadingMore || screen.searchingMessages} />
+          {screen.searchingMessages ? (
+            <SkeletonRows count={3} item={MessageHitRowSkeleton} />
+          ) : null}
+          <ListFooter loading={feed.loadingMore} />
         </>
       )}
 

@@ -13,6 +13,7 @@ import {
   Medal,
   Megaphone,
   MessageSquare,
+  MessageSquareHeart,
   Palette,
   Scale,
   ScanEye,
@@ -39,6 +40,7 @@ import {
   ADMINS_PATH,
   ANNOUNCEMENTS_PATH,
   APP_ICONS_PATH,
+  CHAT_THEMES_PATH,
   AUDIT_PATH,
   CONFIG_PATH,
   EARNINGS_PATH,
@@ -262,6 +264,12 @@ export const NAV: NavSection[] = [
         label: "App icons",
         icon: Palette,
         permission: "app_icons.read",
+      },
+      {
+        href: CHAT_THEMES_PATH,
+        label: "Chat themes",
+        icon: MessageSquareHeart,
+        permission: "chat_themes.read",
       },
       {
         href: STICKER_PACKS_PATH,

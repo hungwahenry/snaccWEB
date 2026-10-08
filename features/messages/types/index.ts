@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react"
+import type { WornTheme } from "@/features/chat-themes/types"
 import type { Gif } from "@/features/giphy/types"
 import type { SnaccAuthor } from "@/features/snaccs/types"
 import type { StickerAttachment, StickerPick } from "@/features/stickers/types"
@@ -101,10 +102,26 @@ export interface Conversation {
   blocked: boolean
   has_unread: boolean
   peer_read_at: string | null
+  muted: boolean
+  theme: WornTheme | null
   last_message: Message | null
   streak: number
   last_message_at: string
   created_at: string
+}
+
+export interface ConversationPhoto {
+  id: string
+  image: {
+    id: string
+    url: string
+    thumb_url: string
+    width: number
+    height: number
+  }
+  message_id: string
+  mine: boolean
+  sent_at: string
 }
 
 export interface MessageHit {

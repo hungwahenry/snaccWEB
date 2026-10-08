@@ -1,3 +1,4 @@
+import { BellOffIcon } from "lucide-react"
 import Link from "next/link"
 import { memo } from "react"
 import { PersonAvatar } from "@/features/users/components/person-avatar"
@@ -49,6 +50,12 @@ function ConversationRowComponent({
           >
             {conversationPreview(conversation)}
           </span>
+          {conversation.muted ? (
+            <BellOffIcon
+              aria-label="Muted"
+              className="size-3.5 shrink-0 text-muted-foreground"
+            />
+          ) : null}
           {unread ? (
             <span
               aria-label="Unread"

@@ -29,6 +29,7 @@ export const FLAG_KEYS = [
   'message_images',
   'message_view_once',
   'message_editing',
+  'chat_themes',
   'voice_notes',
   'voice_snaccs',
   'campus_chat',

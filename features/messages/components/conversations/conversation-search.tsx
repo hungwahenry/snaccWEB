@@ -3,10 +3,12 @@ import { Input } from "@/components/ui/input"
 
 export function ConversationSearch({
   value,
+  placeholder = "Search messages and people",
   onChange,
   onCancel,
 }: {
   value: string
+  placeholder?: string
   onChange: (value: string) => void
   onCancel: () => void
 }) {
@@ -21,8 +23,8 @@ export function ConversationSearch({
           onKeyDown={(event) => {
             if (event.key === "Escape") onCancel()
           }}
-          placeholder="Search messages and people"
-          aria-label="Search messages and people"
+          placeholder={placeholder}
+          aria-label={placeholder}
           autoFocus
           className="h-10 rounded-full pr-9 pl-10 [&::-webkit-search-cancel-button]:hidden"
         />

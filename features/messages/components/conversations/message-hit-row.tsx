@@ -2,16 +2,23 @@ import Link from "next/link"
 import { memo } from "react"
 import { PersonAvatar } from "@/features/users/components/person-avatar"
 import { timeAgo } from "@/lib/format"
-import { conversationPath } from "../../routes"
+import { messageInConversationPath } from "../../routes"
 import type { MessageHit } from "../../types"
 import { hitTitle, messagePreview } from "../../utils/preview"
 
-function MessageHitRowComponent({ hit }: { hit: MessageHit }) {
+function MessageHitRowComponent({
+  hit,
+  replace = false,
+}: {
+  hit: MessageHit
+  replace?: boolean
+}) {
   const { conversation, message } = hit
 
   return (
     <Link
-      href={conversationPath(conversation.id)}
+      href={messageInConversationPath(conversation.id, message.id)}
+      replace={replace}
       className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-accent/40 sm:px-6"
     >
       <PersonAvatar person={conversation.other} className="size-9" />

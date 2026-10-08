@@ -61,6 +61,7 @@ describe("permissionForPath", () => {
     expect(permissionForPath("/admin/pages/new")).toBe("pages.read")
     expect(permissionForPath("/admin/sticker-packs/k1")).toBe("stickers.read")
     expect(permissionForPath("/admin/held-stickers")).toBe("stickers.read")
+    expect(permissionForPath("/admin/chat-themes")).toBe("chat_themes.read")
   })
 
   it("prefers the most specific section", () => {

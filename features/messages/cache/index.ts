@@ -128,6 +128,20 @@ export function setConversation(conversation: Conversation): void {
   inboxChanged()
 }
 
+export function patchConversation(
+  id: string,
+  change: (current: Conversation) => Conversation
+): void {
+  client().setQueryData<Conversation>(
+    messageKeys.conversation(id),
+    (current) => current && change(current)
+  )
+  client().setQueriesData<ConversationPages>(
+    { queryKey: messageKeys.conversationLists() },
+    (data) => mapItems(data, (each) => (each.id === id ? change(each) : each))
+  )
+}
+
 export function conversationChanged(id: string): void {
   void client().invalidateQueries({ queryKey: messageKeys.conversation(id) })
   inboxChanged()

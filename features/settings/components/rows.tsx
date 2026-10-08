@@ -3,6 +3,7 @@ import Link from "next/link"
 import type { ReactNode } from "react"
 import { Eyebrow } from "@/components/ui/eyebrow"
 import { Switch } from "@/components/ui/switch"
+import { cn } from "@/lib/utils"
 
 export function Section({
   title,
@@ -116,5 +117,36 @@ export function ToggleRow({
         aria-label={label}
       />
     </div>
+  )
+}
+
+export function ActionRow({
+  icon: Icon,
+  label,
+  destructive = false,
+  onPress,
+}: {
+  icon: LucideIcon
+  label: string
+  destructive?: boolean
+  onPress: () => void
+}) {
+  return (
+    <button type="button" onClick={onPress} className={ROW}>
+      <Icon
+        className={cn(
+          "size-5",
+          destructive ? "text-destructive" : "text-muted-foreground"
+        )}
+      />
+      <span
+        className={cn(
+          "flex-1 text-base",
+          destructive ? "text-destructive" : "text-foreground"
+        )}
+      >
+        {label}
+      </span>
+    </button>
   )
 }

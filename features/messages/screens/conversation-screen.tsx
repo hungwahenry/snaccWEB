@@ -1,24 +1,21 @@
 "use client"
 
-import { EllipsisIcon, MessageCircleDashedIcon } from "lucide-react"
+import { MessageCircleDashedIcon } from "lucide-react"
 import Link from "next/link"
 import { useRef } from "react"
 import { ComposerScreen } from "@/components/ui/composer-screen"
 import { EmptyState } from "@/components/ui/empty-state"
-import { IconButton } from "@/components/ui/icon-button"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { ReportSheet } from "@/features/reports/components/report-sheet"
 import { StickerPickerSheet } from "@/features/stickers/containers/sticker-picker-sheet"
 import { PersonAvatar } from "@/features/users/components/person-avatar"
-import { profilePath } from "@/features/users/routes"
 import { handleOf } from "@/features/users/utils/names"
 import { TransactionDetailSheet } from "@/features/wallet/components/home/transaction-detail-sheet"
 import { useBack } from "@/hooks/use-back"
 import { MessageComposer } from "../components/composer/message-composer"
 import { StreakFlame } from "../components/conversations/streak-flame"
 import { MessageActionsSheet } from "../components/sheets/message-actions-sheet"
-import { ThreadMenuSheet } from "../components/sheets/thread-menu-sheet"
 import { GhostBanner } from "../components/thread/ghost-banner"
 import { MessageRow } from "../components/thread/message-row"
 import { ThreadView } from "../components/thread/thread-view"
@@ -26,11 +23,17 @@ import { ViewOnceViewer } from "../components/thread/view-once-viewer"
 import { useConversationScreen } from "../hooks/use-conversation-screen"
 import { MESSAGES_PATH } from "../routes"
 
-export function ConversationScreen({ id }: { id: string }) {
+export function ConversationScreen({
+  id,
+  focusId,
+}: {
+  id: string
+  focusId: string | null
+}) {
   const back = useBack(MESSAGES_PATH)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
-  const screen = useConversationScreen(id, { scrollRef, inputRef })
+  const screen = useConversationScreen(id, focusId, { scrollRef, inputRef })
   const { conversation, messages, other } = screen
 
   return (
@@ -39,26 +42,18 @@ export function ConversationScreen({ id }: { id: string }) {
         title={screen.title}
         subtitle={other ? (handleOf(other) ?? undefined) : undefined}
         onBack={back}
+        titleHref={screen.detailsHref}
         right={
-          conversation ? (
+          conversation && other && screen.detailsHref ? (
             <>
               <StreakFlame days={conversation.streak} />
-              {other?.username ? (
-                <Link
-                  href={profilePath(other.username)}
-                  aria-label={`${screen.title}'s profile`}
-                  className="ml-1"
-                >
-                  <PersonAvatar person={other} className="size-8" />
-                </Link>
-              ) : other ? (
-                <PersonAvatar person={other} className="ml-1 size-8" />
-              ) : null}
-              <IconButton
-                icon={EllipsisIcon}
-                label="Conversation options"
-                onClick={screen.menu.onOpenMenu}
-              />
+              <Link
+                href={screen.detailsHref}
+                aria-label="Chat details"
+                className="ml-1"
+              >
+                <PersonAvatar person={other} className="size-8" />
+              </Link>
             </>
           ) : undefined
         }
@@ -82,7 +77,7 @@ export function ConversationScreen({ id }: { id: string }) {
       ) : (
         <>
           {conversation?.you_are_ghost && !conversation.revealed ? (
-            <GhostBanner onReveal={screen.menu.confirmReveal} />
+            <GhostBanner onReveal={screen.confirmReveal} />
           ) : null}
 
           <ThreadView
@@ -91,6 +86,9 @@ export function ConversationScreen({ id }: { id: string }) {
             list={messages}
             items={screen.thread}
             typing={screen.typing}
+            paint={screen.paint}
+            photoUrl={screen.photoUrl}
+            seeking={screen.seeking}
             failedTitle="Could not load these messages"
             empty={
               <EmptyState
@@ -108,6 +106,7 @@ export function ConversationScreen({ id }: { id: string }) {
                 openingPhotoId={screen.openingPhotoId}
                 payingRequestIds={screen.payingRequestIds}
                 requestExpiryDays={screen.requestExpiryDays}
+                highlighted={item.message.id === screen.highlightId}
               />
             )}
           />
@@ -116,17 +115,6 @@ export function ConversationScreen({ id }: { id: string }) {
         </>
       )}
 
-      {conversation ? (
-        <ThreadMenuSheet
-          open={screen.menu.menuOpen}
-          onOpenChange={screen.menu.setMenuOpen}
-          conversation={conversation}
-          onReveal={screen.menu.confirmReveal}
-          onBlock={screen.menu.confirmBlock}
-          onUnblock={screen.menu.onUnblock}
-          onReport={screen.menu.onReportOther}
-        />
-      ) : null}
       <MessageActionsSheet {...screen.actions} />
       <ViewOnceViewer {...screen.viewOnce} />
       {screen.stickerTray ? (

@@ -2,19 +2,23 @@
 
 import { useEffect, useMemo, useRef, type RefObject } from "react"
 import { useMe } from "@/features/auth/hooks/use-me"
+import { useColorMode } from "@/features/chat-themes/hooks/use-color-mode"
+import { paintOf } from "@/features/chat-themes/utils/paint"
 import { useReportSheet } from "@/features/reports/hooks/use-report-sheet"
 import { isNotFound } from "@/lib/api/errors"
 import { useLightbox } from "@/providers/lightbox-provider"
 import type { MessageRowHandlers } from "../components/thread/message-row"
 import { discardMessage, retryMessage } from "../cache/pending-messages"
+import { conversationDetailsPath } from "../routes"
 import { shownImagesOf } from "../utils/images"
 import { partyName } from "../utils/preview"
 import { decorateThread } from "../utils/thread"
 import { conversationVoiceSources } from "../utils/voice"
 import { useConversation } from "./use-conversation"
 import { useConversationComposer } from "./use-conversation-composer"
-import { useConversationMenu } from "./use-conversation-menu"
+import { useConfirmReveal } from "./use-confirm-reveal"
 import { useConversationMoney } from "./use-conversation-money"
+import { useJumpToMessage } from "./use-jump-to-message"
 import { useMarkRead } from "./use-mark-read"
 import { useReactToMessage } from "./use-message-actions"
 import { useMessageSheet } from "./use-message-sheet"
@@ -30,6 +34,7 @@ type Elements = {
 
 export function useConversationScreen(
   id: string,
+  focusId: string | null,
   { scrollRef, inputRef }: Elements
 ) {
   const conversation = useConversation(id)
@@ -46,7 +51,9 @@ export function useConversationScreen(
     () => conversationVoiceSources(id, me, other),
     [id, me, other]
   )
-  const menu = useConversationMenu(id, other, report)
+  const confirmReveal = useConfirmReveal(id)
+  const mode = useColorMode()
+  const theme = data?.theme ?? null
   const money = useConversationMoney(id, other?.username ?? null)
 
   const newest = messages.messages[0]
@@ -66,6 +73,7 @@ export function useConversationScreen(
     oldestId: oldest?.id,
     ready: !messages.loading,
   })
+  const jump = useJumpToMessage(id, focusId, messages, scrollRef)
 
   const composer = useConversationComposer(id, {
     conversation: data,
@@ -111,6 +119,12 @@ export function useConversationScreen(
     failed: conversation.isError && !isNotFound(conversation.error),
     retry: () => void conversation.refetch(),
     other,
+    detailsHref: data ? conversationDetailsPath(id) : undefined,
+    paint: theme ? paintOf(theme.look, mode) : null,
+    photoUrl: theme?.photo_url ?? null,
+    highlightId: jump.highlightId,
+    seeking: jump.seeking,
+    confirmReveal,
     title: data ? partyName(data) : "",
     otherUsername: other?.username ?? null,
     messages,
@@ -126,7 +140,6 @@ export function useConversationScreen(
     composer: composer.field,
     stickerTray: composer.stickerTray,
     actions: sheet.sheet,
-    menu,
     report: report.sheet,
     moneyDetail: money.detailSheet,
   }

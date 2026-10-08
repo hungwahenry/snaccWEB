@@ -5,6 +5,7 @@ import { voiceFileName } from "@/features/voice/utils/recording"
 import { appendImage, type PickedImage } from "@/lib/media"
 import type {
   Conversation,
+  ConversationPhoto,
   Message,
   MessageHit,
   MessageSettings,
@@ -173,12 +174,54 @@ export function startConversation(
 
 export function searchMessages(
   q: string,
-  page: number
+  page: number,
+  conversationId?: string
 ): Promise<Paginated<MessageHit>> {
   return api.get<Paginated<MessageHit>>("/conversations/messages/search", {
     q,
     page,
+    conversationId,
   })
+}
+
+export function wearChatTheme(
+  conversationId: string,
+  themeId: string | null
+): Promise<Conversation> {
+  return api.put<Conversation>(`${conversationPath(conversationId)}/theme`, {
+    themeId,
+  })
+}
+
+export function wearChatThemePhoto(
+  conversationId: string,
+  input: { themeId: string; image: PickedImage }
+): Promise<Conversation> {
+  const form = new FormData()
+  form.append("themeId", input.themeId)
+  appendImage(form, "image", input.image, "chat-theme")
+  return api.upload<Conversation>(
+    `${conversationPath(conversationId)}/theme/photo`,
+    form
+  )
+}
+
+export async function muteConversation(id: string): Promise<void> {
+  await api.put(`${conversationPath(id)}/mute`)
+}
+
+export async function unmuteConversation(id: string): Promise<void> {
+  await api.del(`${conversationPath(id)}/mute`)
+}
+
+export function listConversationPhotos(
+  id: string,
+  page: number
+): Promise<Paginated<ConversationPhoto>> {
+  return api.get<Paginated<ConversationPhoto>>(
+    `${conversationPath(id)}/photos`,
+    { page }
+  )
 }
 
 export async function getUnreadMessageCount(): Promise<number> {

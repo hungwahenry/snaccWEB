@@ -26,6 +26,7 @@ import { onProfileCounts } from "@/features/users/realtime"
 import {
   onConversationRead,
   onConversationRevealed,
+  onConversationTheme,
   onConversationSeen,
   onMessageNew,
   onMessageUpdated,
@@ -96,6 +97,7 @@ export const REALTIME_HANDLERS = {
   "message.new": onMessageNew,
   "message.updated": onMessageUpdated,
   "conversation.revealed": onConversationRevealed,
+  "conversation.theme": onConversationTheme,
   "conversation.read": onConversationRead,
   "conversation.seen": onConversationSeen,
   "message.photo.opened": onPhotoOpened,

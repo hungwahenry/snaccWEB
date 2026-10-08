@@ -1,8 +1,9 @@
 "use client"
 
-import { ClockIcon, LockIcon } from "lucide-react"
+import { ClockIcon } from "lucide-react"
 import { useState } from "react"
 import { LazyImage } from "@/components/ui/lazy-image"
+import { PremiumBadge } from "@/features/premium/components/premium-badge"
 import { useHoldAction } from "@/hooks/use-hold-action"
 import { cn } from "@/lib/utils"
 import type { StickerState, StickerTile as Tile, TileActionId } from "../types"
@@ -44,9 +45,7 @@ export function StickerTile({
         )}
       />
       {state === "locked" ? (
-        <span className="absolute right-1 bottom-1 flex size-5 items-center justify-center rounded-full bg-premium">
-          <LockIcon className="size-3 text-white" aria-hidden />
-        </span>
+        <PremiumBadge className="absolute right-1 bottom-1" />
       ) : null}
       {state === "held" ? (
         <span className="absolute inset-x-1 bottom-1 flex items-center justify-center gap-1 rounded-full bg-background/90 py-0.5 text-[10px] font-bold text-muted-foreground">

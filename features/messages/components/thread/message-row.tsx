@@ -1,11 +1,6 @@
 "use client"
 
-import {
-  CheckCheckIcon,
-  CheckIcon,
-  EllipsisIcon,
-  ReplyIcon,
-} from "lucide-react"
+import { EllipsisIcon, ReplyIcon } from "lucide-react"
 import { memo } from "react"
 import { IconButton } from "@/components/ui/icon-button"
 import { ReactionPicker } from "@/features/reactions/components/reaction-picker"
@@ -23,11 +18,7 @@ import { myReaction } from "../../utils/reactions"
 import { voiceSourceOf } from "../../utils/voice"
 import { DayBreak } from "./day-break"
 import { MessageBubble } from "./message-bubble"
-
-const DELIVERY = {
-  sent: { label: "Sent", icon: CheckIcon, tint: "text-muted-foreground" },
-  seen: { label: "Seen", icon: CheckCheckIcon, tint: "text-foreground" },
-} as const
+import { MessageMeta } from "./message-meta"
 
 const TOOL =
   "size-8 text-muted-foreground hover:bg-accent hover:text-foreground"
@@ -59,6 +50,7 @@ export type MessageRowProps = {
   /** Requests being paid right now; two can be at once. */
   payingRequestIds: readonly string[]
   requestExpiryDays: number
+  highlighted?: boolean
 }
 
 function MessageRowComponent({
@@ -73,6 +65,7 @@ function MessageRowComponent({
   openingPhotoId,
   payingRequestIds,
   requestExpiryDays,
+  highlighted = false,
 }: MessageRowProps) {
   const settled = canActOnMessage(message)
   const mine = message.mine
@@ -110,7 +103,6 @@ function MessageRowComponent({
     </span>
   ) : null
 
-  const Delivery = delivery ? DELIVERY[delivery] : null
   const onOpenMoney = handlers.onOpenMoney
   const onPayRequest = handlers.onPayRequest
 
@@ -119,8 +111,19 @@ function MessageRowComponent({
       {dayBreak ? <DayBreak label={dayBreak} /> : null}
 
       <div
-        className={cn("group flex flex-col", firstInBurst ? "mt-2" : "mt-0.5")}
+        data-message-id={message.id}
+        className={cn(
+          "group relative isolate flex flex-col",
+          firstInBurst ? "mt-2" : "mt-0.5"
+        )}
       >
+        <span
+          aria-hidden
+          className={cn(
+            "pointer-events-none absolute -inset-x-3 inset-y-0 -z-10 bg-primary/10 transition-opacity duration-700",
+            highlighted ? "opacity-100" : "opacity-0"
+          )}
+        />
         <div
           className={cn(
             "flex items-center gap-1",
@@ -168,21 +171,7 @@ function MessageRowComponent({
           {mine ? null : tools}
         </div>
 
-        {time || Delivery ? (
-          <div
-            className={cn(
-              "mt-0.5 flex items-center gap-1 text-[11px] text-muted-foreground",
-              mine ? "justify-end pr-1" : "justify-start pl-1"
-            )}
-          >
-            {Delivery ? (
-              <Delivery.icon className={cn("size-3.5", Delivery.tint)} />
-            ) : null}
-            <span>
-              {[Delivery?.label ?? null, time].filter(Boolean).join(" · ")}
-            </span>
-          </div>
-        ) : null}
+        <MessageMeta mine={mine} time={time} delivery={delivery} />
       </div>
     </>
   )
