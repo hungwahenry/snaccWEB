@@ -1,4 +1,9 @@
-import type { Option } from "@/features/admin/shell/types"
+import type {
+  MediaGif,
+  MediaImage,
+  MediaSticker,
+  Option,
+} from "@/features/admin/shell/types"
 import {
   EMPTY_SUSPENSION,
   toSuspendInput,
@@ -7,6 +12,7 @@ import { formatDate, handleOf } from "@/lib/format"
 import type {
   AdminReport,
   ReportAct,
+  ReportAuthor,
   ReportScan,
   ReportTarget,
   ReportTargetType,
@@ -20,6 +26,8 @@ const TARGET_ARTICLE: Record<ReportTargetType, string> = {
   message: "a ghost message",
   moment: "a moment",
   chat_message: "a room message",
+  sticker: "a sticker",
+  sticker_pack: "a sticker pack",
 }
 
 const TARGET_NOUN: Record<ReportTargetType, string> = {
@@ -28,6 +36,8 @@ const TARGET_NOUN: Record<ReportTargetType, string> = {
   message: "message",
   moment: "moment",
   chat_message: "room message",
+  sticker: "sticker",
+  sticker_pack: "sticker pack",
 }
 
 const PREVIEW_LENGTH = 60
@@ -40,6 +50,10 @@ export function targetSummary(target: ReportTarget): string {
 
 export function targetNoun(target: ReportTarget): string {
   return target ? TARGET_NOUN[target.type] : "target"
+}
+
+function ownerName(owner: ReportAuthor | null): string {
+  return owner ? handleOf(owner) : "Snacc"
 }
 
 /** What a reports row shows for its target: a line of its text, and whose it is. */
@@ -73,29 +87,59 @@ export function describeTarget(target: ReportTarget): {
         title: target.message.body?.slice(0, PREVIEW_LENGTH) || "Ghost message",
         who: handleOf(target.message.sender),
       }
+    case "sticker":
+      return {
+        title: `A sticker in “${target.sticker.pack.title}”`,
+        who: ownerName(target.sticker.owner),
+      }
+    case "sticker_pack":
+      return {
+        title: target.sticker_pack.title,
+        who: ownerName(target.sticker_pack.owner),
+      }
   }
 }
 
-/** The first picture attached to the target, for a thumbnail. */
-export function targetThumb(target: ReportTarget): string | null {
-  if (!target || target.type === "user") return null
+export function reportedStickerSrc(sticker: {
+  url: string
+  removed: boolean
+}): string | null {
+  return sticker.removed ? null : sticker.url
+}
 
-  const content =
-    target.type === "snacc"
-      ? target.snacc
-      : target.type === "moment"
-        ? target.moment
-        : target.type === "chat_message"
-          ? target.chat_message
-          : target.message
-
+function attachedThumb(content: {
+  images: MediaImage[]
+  gif: MediaGif | null
+  sticker: MediaSticker | null
+}): string | null {
   return (
-    content.images[0]?.url ??
-    content.gif?.url ??
-    content.sticker?.url ??
-    (target.type === "snacc" ? target.snacc.clip?.poster_thumb_url : null) ??
-    null
+    content.images[0]?.url ?? content.gif?.url ?? content.sticker?.url ?? null
   )
+}
+
+export function targetThumb(target: ReportTarget): string | null {
+  if (!target) return null
+
+  switch (target.type) {
+    case "user":
+      return null
+    case "snacc":
+      return (
+        attachedThumb(target.snacc) ??
+        target.snacc.clip?.poster_thumb_url ??
+        null
+      )
+    case "moment":
+      return attachedThumb(target.moment)
+    case "message":
+      return attachedThumb(target.message)
+    case "chat_message":
+      return attachedThumb(target.chat_message)
+    case "sticker":
+      return reportedStickerSrc(target.sticker)
+    case "sticker_pack":
+      return target.sticker_pack.stickers[0]?.url ?? null
+  }
 }
 
 /** Who filed it: their handle, or Snacc itself for the automatic check. */
@@ -142,10 +186,41 @@ const ACT_CHOICES: Record<ReportTargetType, Option<ReportAct>[]> = {
     { value: "delete_moment", label: "Remove the moment" },
     { value: "suspend_moment_author", label: "Suspend whoever posted it" },
   ],
+  sticker: [
+    {
+      value: "remove_sticker",
+      label: "Remove the sticker everywhere, sent copies too",
+    },
+    { value: "suspend_sticker_owner", label: "Suspend whoever made it" },
+  ],
+  sticker_pack: [
+    {
+      value: "take_down_sticker_pack",
+      label: "Take the pack down, with everything sent from it",
+    },
+    { value: "suspend_pack_owner", label: "Suspend whoever made it" },
+  ],
+}
+
+const OWNER_ACTS: ReadonlySet<ReportAct> = new Set<ReportAct>([
+  "suspend_sticker_owner",
+  "suspend_pack_owner",
+  "take_down_sticker_pack",
+])
+
+function hasOwner(target: NonNullable<ReportTarget>): boolean {
+  if (target.type === "sticker") return target.sticker.owner !== null
+  if (target.type === "sticker_pack") return target.sticker_pack.owner !== null
+  return true
 }
 
 export function actChoices(target: ReportTarget): Option<ReportAct>[] {
-  return target ? ACT_CHOICES[target.type] : []
+  if (!target) return []
+
+  const owned = hasOwner(target)
+  return ACT_CHOICES[target.type].filter(
+    (choice) => owned || !OWNER_ACTS.has(choice.value)
+  )
 }
 
 const SUSPEND_ACTS: ReadonlySet<ReportAct> = new Set<ReportAct>([
@@ -153,6 +228,8 @@ const SUSPEND_ACTS: ReadonlySet<ReportAct> = new Set<ReportAct>([
   "suspend_author",
   "suspend_sender",
   "suspend_moment_author",
+  "suspend_sticker_owner",
+  "suspend_pack_owner",
 ])
 
 export function suspends(acts: readonly ReportAct[]): boolean {
@@ -189,6 +266,10 @@ function targetIds(target: ReportTarget): Partial<ResolveReportInput> {
       return { momentId: target.moment.id }
     case "chat_message":
       return { chatMessageId: target.chat_message.id }
+    case "sticker":
+      return { stickerId: target.sticker.id }
+    case "sticker_pack":
+      return { stickerPackId: target.sticker_pack.id }
   }
 }
 

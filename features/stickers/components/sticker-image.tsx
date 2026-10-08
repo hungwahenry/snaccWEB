@@ -1,0 +1,34 @@
+"use client"
+
+import { LazyImage } from "@/components/ui/lazy-image"
+import { useHoldAction } from "@/hooks/use-hold-action"
+import { cn } from "@/lib/utils"
+import { stickerBox } from "../utils/size"
+
+export function StickerImage({
+  sticker,
+  size,
+  className,
+  onHold,
+}: {
+  sticker: { url: string; width: number; height: number }
+  size: number
+  className?: string
+  onHold?: () => void
+}) {
+  const hold = useHoldAction(onHold)
+
+  return (
+    <LazyImage
+      {...hold}
+      src={sticker.url}
+      alt="Sticker"
+      draggable={false}
+      style={stickerBox(sticker, size)}
+      className={cn(
+        "self-start object-contain [@media(pointer:coarse)]:select-none",
+        className
+      )}
+    />
+  )
+}

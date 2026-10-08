@@ -9,7 +9,6 @@ import { liveMatchCard } from "@/features/football/utils/card"
 import { HangoutEditor } from "@/features/hangouts/components/hosting/hangout-editor"
 import { HangoutTimeSheet } from "@/features/hangouts/components/hosting/hangout-time-sheet"
 import { ImageEditorSheet } from "@/features/image-editor/components/image-editor-sheet"
-import { StickerCreator } from "@/features/stickers/components/sticker-creator"
 import { StickerTraySheet } from "@/features/stickers/containers/sticker-tray-sheet"
 import { useBack } from "@/hooks/use-back"
 import { QuoteCurve } from "../components/card/quote/quote-connector"
@@ -238,7 +237,6 @@ function ComposeBody(params: ComposeParams) {
       </ComposerBar>
 
       <StickerTraySheet {...screen.stickerTray} />
-      <StickerCreator {...screen.stickerCreator} />
       <ImageEditorSheet {...composer.imageEditor} />
       <DraftsSheet {...screen.draftsSheet} />
       <ScheduledSheet {...screen.scheduledSheet} />

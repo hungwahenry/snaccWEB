@@ -125,7 +125,6 @@ export function useConversationScreen(
     viewOnce: { url: photo.url, onClose: photo.close },
     composer: composer.field,
     stickerTray: composer.stickerTray,
-    stickerCreator: composer.stickerCreator,
     actions: sheet.sheet,
     menu,
     report: report.sheet,

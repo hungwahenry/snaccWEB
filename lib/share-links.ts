@@ -1,5 +1,6 @@
 import { campusPath } from "@/features/campus/routes"
 import { snaccPath } from "@/features/snaccs/routes"
+import { stickerPackPath } from "@/features/stickers/routes"
 import { profilePath } from "@/features/users/routes"
 import { showErrorMessage, showSuccess } from "./feedback"
 import { isShareCancel } from "./share-file"
@@ -11,6 +12,7 @@ export const shareLink = {
   snacc: (id: string) => SITE_URL + snaccPath(id),
   campus: (slug: string) => SITE_URL + campusPath(slug),
   pay: (username: string) => `${SITE_URL}/pay/${encodeURIComponent(username)}`,
+  stickerPack: (id: string) => SITE_URL + stickerPackPath(id),
 }
 
 export function bareLink(url: string): string {

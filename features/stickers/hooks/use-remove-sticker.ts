@@ -4,32 +4,38 @@ import { useMutation } from "@tanstack/react-query"
 import { confirm } from "@/components/ui/confirm"
 import { showError } from "@/lib/feedback"
 import { getQueryClient } from "@/lib/query/client"
-import { deleteSticker } from "../api"
-import { dropFromLibrary, restoreLibrary } from "../cache"
+import { removePackSticker } from "../api"
+import { dropPackSticker, refreshStickerPacks, restorePack } from "../cache"
 import { stickerKeys } from "../utils/keys"
 
-export function useRemoveSticker(): (id: string) => void {
+export function useRemovePackSticker(): (
+  packId: string,
+  stickerId: string
+) => void {
   const remove = useMutation({
-    mutationFn: deleteSticker,
-    onMutate: async (id) => {
-      await getQueryClient().cancelQueries({ queryKey: stickerKeys.library() })
-      return dropFromLibrary(id)
+    mutationFn: removePackSticker,
+    onMutate: async ({ packId, stickerId }) => {
+      await getQueryClient().cancelQueries({
+        queryKey: stickerKeys.pack(packId),
+      })
+      return dropPackSticker(packId, stickerId)
     },
-    onError: (error, _id, previous) => {
-      restoreLibrary(previous)
+    onSuccess: refreshStickerPacks,
+    onError: (error, { packId }, previous) => {
+      restorePack(packId, previous)
       showError(error)
     },
   })
 
-  return (id) =>
+  return (packId, stickerId) =>
     confirm({
       title: "Remove this sticker?",
-      message: "It leaves your library; anywhere you sent it stays.",
+      message: "It leaves this pack. Anywhere you already sent it stays.",
       actions: [
         {
           label: "Remove",
           destructive: true,
-          onPress: () => remove.mutate(id),
+          onPress: () => remove.mutate({ packId, stickerId }),
         },
       ],
     })

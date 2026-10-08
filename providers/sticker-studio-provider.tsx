@@ -11,7 +11,6 @@ const StickerStudioContext = createContext<
   ((source: StickerSource) => void) | null
 >(null)
 
-/** Cut a sticker from any picture on screen; undefined while stickers are switched off. */
 export function useStickerStudio():
   ((source: StickerSource) => void) | undefined {
   const enabled = useFlag("stickers")
@@ -21,12 +20,12 @@ export function useStickerStudio():
   return createFrom
 }
 
-function stickerSaved() {
-  showSuccess("Saved to your stickers.")
+function stickerAdded() {
+  showSuccess("Added to your Favourites.")
 }
 
 export function StickerStudioProvider({ children }: { children: ReactNode }) {
-  const creator = useStickerCreator(stickerSaved)
+  const creator = useStickerCreator(stickerAdded)
 
   return (
     <StickerStudioContext.Provider value={creator.beginWith}>

@@ -3,7 +3,6 @@
 import { useCallback, useRef, useState } from "react"
 import type { CropRect } from "@/lib/media"
 
-/** The square the photo is framed in, sized to the room below the header, and the frame chosen. */
 export function useCreatorStage({
   busy,
   onCreate,

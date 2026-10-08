@@ -66,8 +66,8 @@ export function scheduledThumb(
   if (image) return { url: image.thumb_url || image.url, sticker: false }
   if (item.gif)
     return { url: item.gif.preview_url ?? item.gif.url, sticker: false }
-  if (item.sticker)
-    return { url: item.sticker.preview_url ?? item.sticker.url, sticker: true }
+  const sticker = item.sticker?.preview_url ?? item.sticker?.url
+  if (sticker) return { url: sticker, sticker: true }
   return null
 }
 

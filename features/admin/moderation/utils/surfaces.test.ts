@@ -16,6 +16,7 @@ describe("surfaces", () => {
       "Ghost messages",
       "Anonymous messages",
       "Profiles",
+      "Stickers",
     ])
   })
 

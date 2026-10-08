@@ -7,7 +7,7 @@ import { useFlag } from "@/features/config/hooks/use-flag"
 import type { Gif } from "@/features/giphy/types"
 import { usePremiumNudge } from "@/features/premium/hooks/use-premium-limit"
 import { useHangoutDraft } from "@/features/hangouts/hooks/hosting/use-hangout-draft"
-import type { DraftSticker } from "@/features/stickers/types"
+import type { StickerPick } from "@/features/stickers/types"
 import type { DraftSeed } from "../../types"
 import { draftRules, type ComposerContent } from "../../utils/composer"
 import { tagLimitProblem } from "../../utils/entities"
@@ -30,7 +30,7 @@ export function useSnaccDraft(
   const [body, setBody] = useState(seed.body)
   const [cursor, setCursor] = useState(seed.body.length)
   const [gif, setGif] = useState<Gif | null>(seed.gif)
-  const [sticker, setSticker] = useState<DraftSticker | null>(
+  const [sticker, setSticker] = useState<StickerPick | null>(
     seed.sticker ?? null
   )
   const [spoiler, setSpoiler] = useState(seed.spoiler)
@@ -126,7 +126,7 @@ export function useSnaccDraft(
       setGif(next)
     },
     removeGif: () => setGif(null),
-    selectSticker: (next: DraftSticker) => {
+    selectSticker: (next: StickerPick) => {
       setGif(null)
       setSticker(next)
     },

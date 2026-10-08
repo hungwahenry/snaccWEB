@@ -8,6 +8,7 @@ export const SURFACES: readonly ModerationSurface[] = [
   "message",
   "anon_message",
   "profile",
+  "sticker",
 ]
 
 export const SURFACE_LABELS: Record<ModerationSurface, string> = {
@@ -17,6 +18,7 @@ export const SURFACE_LABELS: Record<ModerationSurface, string> = {
   message: "Ghost messages",
   anon_message: "Anonymous messages",
   profile: "Profiles",
+  sticker: "Stickers",
 }
 
 export const SURFACE_OPTIONS: Option<ModerationSurface>[] = SURFACES.map(

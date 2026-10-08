@@ -1,3 +1,4 @@
+import { attachmentOfPick, stickerFields } from "@/features/stickers/utils/pick"
 import type { SendMessageInput } from "../api"
 import type { Message, MessageDraft } from "../types"
 import { toReplyPreview } from "../utils/preview"
@@ -13,7 +14,7 @@ export function draftToInput(
     images: draft.images.length > 0 ? draft.images : undefined,
     viewOnce: draft.viewOnce === true ? true : undefined,
     giphyId: draft.gif?.id,
-    stickerId: draft.sticker?.id,
+    ...stickerFields(draft.sticker ?? null),
     voice: draft.voice ?? undefined,
   }
 }
@@ -54,15 +55,7 @@ export function buildOptimisticMessage(
       opened: false,
       available: true,
     })),
-    sticker: draft.sticker
-      ? {
-          sticker_id: draft.sticker.id,
-          url: draft.sticker.url,
-          preview_url: draft.sticker.preview_url,
-          width: draft.sticker.width,
-          height: draft.sticker.height,
-        }
-      : null,
+    sticker: draft.sticker ? attachmentOfPick(draft.sticker) : null,
     gif: draft.gif
       ? {
           giphy_id: draft.gif.id,

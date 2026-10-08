@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation"
 import { useState, type KeyboardEvent } from "react"
 import { confirm } from "@/components/ui/confirm"
-import { useStickerCreator } from "@/features/stickers/hooks/use-sticker-creator"
 import { composePath } from "../../routes"
 import type {
   ComposeParams,
@@ -30,7 +29,6 @@ export function useComposeScreen(params: ComposeParams) {
     enabled: composer.schedule.available,
   })
   const typeahead = useComposerTypeahead(composer.body, composer.cursor)
-  const stickerCreator = useStickerCreator(composer.selectSticker)
   const parent = useSnacc(params.parentId ?? "")
   const quoting = useSnacc(params.resnaccOfId ?? "")
   const [trayOpen, setTrayOpen] = useState(false)
@@ -98,14 +96,8 @@ export function useComposeScreen(params: ComposeParams) {
       onOpenChange: setTrayOpen,
       onPickSticker: composer.showSticker ? composer.selectSticker : undefined,
       onPickGif: composer.showGif ? composer.selectGif : undefined,
-      onCreateSticker: composer.showSticker
-        ? () => {
-            setTrayOpen(false)
-            stickerCreator.begin()
-          }
-        : undefined,
+      beforeLeaving: composer.beforeLeaving,
     },
-    stickerCreator,
     scheduledCount: composer.schedule.available ? scheduled.count : 0,
     openScheduled: () => {
       scheduled.reset()

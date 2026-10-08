@@ -8,7 +8,7 @@ import type {
   HangoutTag,
   SnaccHangout,
 } from "@/features/hangouts/types"
-import type { DraftSticker, StickerAttachment } from "@/features/stickers/types"
+import type { StickerAttachment, StickerPick } from "@/features/stickers/types"
 import type { UniversityBadge } from "@/features/universities/types"
 import type { Author } from "@/features/users/types"
 import type { VoiceDraft } from "@/features/voice/types"
@@ -176,6 +176,7 @@ export interface CreateSnaccInput {
   images?: PickedImage[]
   giphyId?: string
   stickerId?: string
+  giphyStickerId?: string
   matchId?: string
   parentId?: string
   resnaccOfId?: string
@@ -195,6 +196,7 @@ export interface EditSnaccInput {
   images: PickedImage[]
   giphyId?: string
   stickerId?: string
+  giphyStickerId?: string
   spoiler?: boolean
 }
 
@@ -209,7 +211,7 @@ export interface SnaccDraft {
   body: string | null
   images: PickedImage[]
   gif: Gif | null
-  sticker: DraftSticker | null
+  sticker: StickerPick | null
   /** The fixture the composer was opened for; sent even before its card has loaded. */
   matchId?: string
   match: LiveMatch | null
@@ -260,7 +262,7 @@ export interface DraftSeed {
   images: DraftImage[]
   gif: Gif | null
   spoiler: boolean
-  sticker?: DraftSticker | null
+  sticker?: StickerPick | null
   voice?: VoiceDraft | null
   poll?: PollDraft | null
   hangout?: HangoutDraft | null
@@ -314,7 +316,7 @@ export interface StoredDraft {
   images: StoredDraftImage[]
   voice: StoredVoice | null
   gif: Gif | null
-  sticker: DraftSticker | null
+  sticker: StickerPick | null
   poll: StoredPollDraft | null
   hangout?: HangoutDraft | null
 }

@@ -96,7 +96,6 @@ export function useChatRoomScreen(
     handlers,
     composer: composer.field,
     stickerTray: composer.stickerTray,
-    stickerCreator: composer.stickerCreator,
     actions: sheet.sheet,
     reactions: reactions.sheet,
     report: report.sheet,

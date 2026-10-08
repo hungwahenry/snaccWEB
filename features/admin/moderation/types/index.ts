@@ -1,5 +1,11 @@
 export type ModerationSurface =
-  "snacc" | "comment" | "moment" | "message" | "anon_message" | "profile"
+  | "snacc"
+  | "comment"
+  | "moment"
+  | "message"
+  | "anon_message"
+  | "profile"
+  | "sticker"
 
 export type ModerationAction = "allow" | "flag" | "hold" | "block"
 
@@ -65,6 +71,8 @@ export interface ModerationScan {
     moment_id: string | null
     message_id: string | null
     user_id: string | null
+    chat_message_id: string | null
+    sticker_id: string | null
   }
   model: string
   flagged: boolean

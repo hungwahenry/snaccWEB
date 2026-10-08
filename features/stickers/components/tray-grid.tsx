@@ -1,15 +1,14 @@
 "use client"
 
 import { memo } from "react"
-import { LazyImage } from "@/components/ui/lazy-image"
 import { EmptyState } from "@/components/ui/empty-state"
+import { LazyImage } from "@/components/ui/lazy-image"
 import { LoadFailed } from "@/components/ui/load-failed"
-import { LoadMore } from "@/components/ui/load-more"
-import { Spinner } from "@/components/ui/spinner"
 import { useHoldAction } from "@/hooks/use-hold-action"
 import { aspectRatio } from "@/lib/aspect"
 import type { TrayGridState, TrayTile } from "../types"
 import { columnsOf } from "../utils/tray"
+import { TileActionButton } from "./tile-action-button"
 import { TrayGridSkeleton } from "./tray-grid-skeleton"
 
 const COLUMNS = 2
@@ -28,31 +27,21 @@ export function TrayGrid({ grid }: { grid: TrayGridState }) {
   }
 
   return (
-    <>
-      <div className="grid grid-cols-2 gap-1.5 px-4">
-        {columnsOf(grid.items, COLUMNS).map((column, index) => (
-          <div key={index} className="flex flex-col gap-1.5">
-            {column.map((tile) => (
-              <Tile
-                key={tile.id}
-                tile={tile}
-                label={tile.title || grid.itemLabel}
-                onPick={grid.onPick}
-                onHold={grid.onHold}
-              />
-            ))}
-          </div>
-        ))}
-      </div>
-      {grid.onEndReached ? (
-        <LoadMore onReach={grid.onEndReached} disabled={grid.loadingMore} />
-      ) : null}
-      {grid.loadingMore ? (
-        <div className="flex justify-center py-4">
-          <Spinner className="text-muted-foreground" />
+    <div className="grid grid-cols-2 gap-1.5 px-4">
+      {columnsOf(grid.items, COLUMNS).map((column, index) => (
+        <div key={index} className="flex flex-col gap-1.5">
+          {column.map((tile) => (
+            <Tile
+              key={tile.id}
+              tile={tile}
+              label={tile.title || grid.itemLabel}
+              onPick={grid.onPick}
+              onKeep={grid.onKeep}
+            />
+          ))}
         </div>
-      ) : null}
-    </>
+      ))}
+    </div>
   )
 }
 
@@ -60,30 +49,35 @@ const Tile = memo(function Tile({
   tile,
   label,
   onPick,
-  onHold,
+  onKeep,
 }: {
   tile: TrayTile
   label: string
   onPick: (id: string) => void
-  onHold?: (id: string) => void
+  onKeep?: (id: string) => void
 }) {
-  const hold = useHoldAction(onHold ? () => onHold(tile.id) : undefined)
+  const hold = useHoldAction(onKeep ? () => onKeep(tile.id) : undefined)
 
   return (
-    <button
-      type="button"
-      {...hold}
-      onClick={() => onPick(tile.id)}
-      aria-label={label}
-      className="w-full overflow-hidden rounded-2xl bg-muted transition-opacity outline-none hover:opacity-80 focus-visible:ring-2 focus-visible:ring-ring [@media(pointer:coarse)]:select-none"
-      style={{ aspectRatio: aspectRatio(tile) }}
-    >
-      <LazyImage
-        src={tile.preview_url ?? tile.url}
-        alt=""
-        draggable={false}
-        className="size-full object-contain"
-      />
-    </button>
+    <div className="group relative">
+      <button
+        type="button"
+        {...hold}
+        onClick={() => onPick(tile.id)}
+        aria-label={label}
+        className="w-full overflow-hidden rounded-2xl bg-muted transition-opacity outline-none hover:opacity-80 focus-visible:ring-2 focus-visible:ring-ring [@media(pointer:coarse)]:select-none"
+        style={{ aspectRatio: aspectRatio(tile) }}
+      >
+        <LazyImage
+          src={tile.preview_url ?? tile.url}
+          alt=""
+          draggable={false}
+          className="size-full object-contain"
+        />
+      </button>
+      {onKeep ? (
+        <TileActionButton action="keep" onPress={() => onKeep(tile.id)} />
+      ) : null}
+    </div>
   )
 })

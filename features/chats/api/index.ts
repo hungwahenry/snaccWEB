@@ -45,6 +45,7 @@ export interface SendChatMessageInput {
   images?: PickedImage[]
   voice?: VoiceDraft
   stickerId?: string
+  giphyStickerId?: string
   giphyId?: string
 }
 
@@ -61,6 +62,7 @@ export async function sendChatMessage(
         body: input.body,
         replyToId: input.replyToId,
         stickerId: input.stickerId,
+        giphyStickerId: input.giphyStickerId,
         giphyId: input.giphyId,
       })
     )

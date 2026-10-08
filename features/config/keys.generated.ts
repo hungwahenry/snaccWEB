@@ -78,7 +78,10 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly 'content.message.max_images': number;
   readonly 'content.message.voice_max_seconds': number;
   readonly 'content.sticker.max_edge': number;
-  readonly 'content.sticker.library_max': number;
+  readonly 'content.sticker.favourites_max': number;
+  readonly 'content.sticker.pack_size_max': number;
+  readonly 'content.sticker.packs_max': number;
+  readonly 'content.sticker.saved_packs_max': number;
   readonly 'messages.streak_grace_days': number;
   readonly 'messages.streak_min_days': number;
   readonly 'messages.streak_milestones': readonly string[];
@@ -165,7 +168,10 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   'content.message.max_images': 4,
   'content.message.voice_max_seconds': 120,
   'content.sticker.max_edge': 512,
-  'content.sticker.library_max': 200,
+  'content.sticker.favourites_max': 200,
+  'content.sticker.pack_size_max': 60,
+  'content.sticker.packs_max': 3,
+  'content.sticker.saved_packs_max': 30,
   'messages.streak_grace_days': 1,
   'messages.streak_min_days': 2,
   'messages.streak_milestones': ["3","7","14","30","50","100"],

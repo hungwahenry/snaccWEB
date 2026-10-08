@@ -63,6 +63,7 @@ function sendContent<T>(
       body: input.body,
       giphyId: input.giphyId,
       stickerId: input.stickerId,
+      giphyStickerId: input.giphyStickerId,
       spoiler: input.spoiler,
       poll: pollField(input.poll),
       hangout: hangoutField(input.hangout),
@@ -76,6 +77,7 @@ function sendContent<T>(
     ["body", input.body],
     ["giphyId", input.giphyId],
     ["stickerId", input.stickerId],
+    ["giphyStickerId", input.giphyStickerId],
     ["spoiler", input.spoiler ? "true" : undefined],
     ["poll", pollField(input.poll)],
     ["hangout", hangoutField(input.hangout)],
@@ -152,6 +154,7 @@ export function editSnacc(input: EditSnaccInput): Promise<Snacc> {
   if (input.body) form.append("body", input.body)
   if (input.giphyId) form.append("giphyId", input.giphyId)
   if (input.stickerId) form.append("stickerId", input.stickerId)
+  if (input.giphyStickerId) form.append("giphyStickerId", input.giphyStickerId)
   if (input.spoiler) form.append("spoiler", "true")
   input.keepImageIds.forEach((id) => form.append("keepImageIds", id))
   input.images.forEach((image, index) =>

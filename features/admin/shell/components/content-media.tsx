@@ -9,6 +9,7 @@ import type {
   MediaVoice,
 } from "../types"
 import { clock } from "../utils/format"
+import { StickerImage } from "./sticker-image"
 
 function Frame({
   url,
@@ -71,12 +72,19 @@ export function ContentMedia({
             />
           ))}
           {gif ? <Frame url={gif.url} alt="Attached GIF" /> : null}
-          {sticker ? (
+          {sticker?.url ? (
             <Frame
               url={sticker.url}
               alt="Attached sticker"
               className="max-h-40"
             />
+          ) : sticker ? (
+            <div className="flex flex-col items-center gap-1">
+              <StickerImage src={null} alt="" className="size-24" />
+              <span className="text-xs text-muted-foreground">
+                Sticker removed
+              </span>
+            </div>
           ) : null}
         </div>
       ) : null}

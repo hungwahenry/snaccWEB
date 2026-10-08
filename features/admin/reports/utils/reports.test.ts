@@ -56,6 +56,36 @@ const snacc = (body: string | null, media = nothing): ReportTarget => ({
   },
 })
 
+const sticker = (removed = false): ReportTarget => ({
+  type: "sticker",
+  sticker: {
+    id: "k1",
+    pack_id: "p1",
+    source: "upload",
+    format: "static",
+    url: "k1.webp",
+    preview_url: null,
+    width: 512,
+    height: 512,
+    premium: false,
+    held: true,
+    removed,
+    pack: { id: "p1", title: "Exam season", status: "published" },
+    owner: person("ada"),
+  },
+})
+
+const stickerPack = (owner: ReportAuthor | null): ReportTarget => ({
+  type: "sticker_pack",
+  sticker_pack: {
+    id: "p1",
+    title: "Exam season",
+    status: "published",
+    owner,
+    stickers: [],
+  },
+})
+
 const ghostMessage: ReportTarget = {
   type: "message",
   message: {
@@ -99,6 +129,17 @@ describe("describeTarget", () => {
   it("says when the target is gone", () => {
     expect(describeTarget(null)).toEqual({ title: "Target is gone", who: "—" })
   })
+
+  it("names a sticker by its pack, and a pack by its title", () => {
+    expect(describeTarget(sticker())).toEqual({
+      title: "A sticker in “Exam season”",
+      who: "@ada",
+    })
+    expect(describeTarget(stickerPack(null))).toEqual({
+      title: "Exam season",
+      who: "Snacc",
+    })
+  })
 })
 
 describe("targetThumb", () => {
@@ -126,6 +167,12 @@ describe("targetThumb", () => {
         } as never)
       )
     ).toBe("poster.jpg")
+  })
+
+  it("shows a sticker until it is removed, and a pack by its first sticker", () => {
+    expect(targetThumb(sticker())).toBe("k1.webp")
+    expect(targetThumb(sticker(true))).toBeNull()
+    expect(targetThumb(stickerPack(null))).toBeNull()
   })
 
   it("has nothing for an account or a missing target", () => {
@@ -161,6 +208,9 @@ describe("names", () => {
     expect(targetSummary(null)).toBe("The reported thing no longer exists.")
     expect(targetNoun(roomMessage)).toBe("room message")
     expect(targetNoun(null)).toBe("target")
+    expect(targetSummary(stickerPack(null))).toBe(
+      "Filed against a sticker pack."
+    )
   })
 
   it("finds the thread only for a ghost message", () => {
@@ -178,9 +228,26 @@ describe("acts", () => {
     expect(actChoices(null)).toEqual([])
   })
 
+  it("offers the sticker acts for stickers and packs", () => {
+    expect(actChoices(sticker()).map((choice) => choice.value)).toEqual([
+      "remove_sticker",
+      "suspend_sticker_owner",
+    ])
+    expect(
+      actChoices(stickerPack(person("ada"))).map((choice) => choice.value)
+    ).toEqual(["take_down_sticker_pack", "suspend_pack_owner"])
+  })
+
+  it("offers nothing but dismissing on a pack Snacc made", () => {
+    expect(actChoices(stickerPack(null))).toEqual([])
+  })
+
   it("knows which acts suspend someone", () => {
     expect(suspends(["delete_snacc"])).toBe(false)
     expect(suspends(["delete_snacc", "suspend_author"])).toBe(true)
+    expect(suspends(["remove_sticker"])).toBe(false)
+    expect(suspends(["suspend_sticker_owner"])).toBe(true)
+    expect(suspends(["suspend_pack_owner"])).toBe(true)
   })
 
   it("toggles an act on and off", () => {
@@ -224,6 +291,19 @@ describe("toResolveInput", () => {
         until: new Date(now + 3 * DAY_MS).toISOString(),
       },
     })
+  })
+
+  it("names the sticker or the pack it resolves", () => {
+    expect(
+      toResolveInput(
+        sticker(),
+        { ...EMPTY_RESOLVE, acts: ["remove_sticker"] },
+        now
+      )
+    ).toEqual({ stickerId: "k1", status: "actioned", acts: ["remove_sticker"] })
+    expect(
+      toResolveInput(stickerPack(person("ada")), EMPTY_RESOLVE, now)
+    ).toEqual({ stickerPackId: "p1", status: "actioned" })
   })
 
   it("leaves the suspension out unless an act suspends", () => {

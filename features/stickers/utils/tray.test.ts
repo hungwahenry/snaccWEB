@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest"
 import {
   columnsOf,
+  giphyEmpty,
   shownTab,
-  trayEmpty,
   trayItemLabel,
   traySearchPlaceholder,
   trayTabs,
@@ -12,11 +12,11 @@ import {
 const values = (tabs: { value: string }[]) => tabs.map((tab) => tab.value)
 
 describe("trayTabs", () => {
-  it("offers stickers, GIFs and saved stickers when both are on", () => {
+  it("offers packs, Giphy stickers and GIFs when both are on", () => {
     expect(values(trayTabs({ stickers: true, gifs: true }))).toEqual([
       "stickers",
+      "giphy",
       "gifs",
-      "mine",
     ])
   })
 
@@ -24,10 +24,10 @@ describe("trayTabs", () => {
     expect(values(trayTabs({ stickers: false, gifs: true }))).toEqual(["gifs"])
   })
 
-  it("offers only stickers and saved ones when GIFs are off", () => {
+  it("offers only stickers when GIFs are off", () => {
     expect(values(trayTabs({ stickers: true, gifs: false }))).toEqual([
       "stickers",
-      "mine",
+      "giphy",
     ])
   })
 })
@@ -49,44 +49,36 @@ describe("shownTab", () => {
   })
 
   it("keeps the picked tab", () => {
-    expect(shownTab(both, "mine")).toBe("mine")
+    expect(shownTab(both, "giphy")).toBe("giphy")
   })
 
   it("moves off a tab that is no longer on offer", () => {
-    expect(shownTab(gifsOnly, "mine")).toBe("gifs")
+    expect(shownTab(gifsOnly, "giphy")).toBe("gifs")
   })
 })
 
-describe("trayEmpty", () => {
-  it("says nothing matched for a search on a Giphy tab", () => {
-    expect(trayEmpty("stickers", true).title).toBe("Nothing matched")
-    expect(trayEmpty("gifs", true).title).toBe("Nothing matched")
+describe("giphyEmpty", () => {
+  it("says nothing matched for a search", () => {
+    expect(giphyEmpty("giphy", true).title).toBe("Nothing matched")
+    expect(giphyEmpty("gifs", true).title).toBe("Nothing matched")
   })
 
   it("names what's missing when there's no search", () => {
-    expect(trayEmpty("stickers", false).title).toBe("No stickers right now")
-    expect(trayEmpty("gifs", false).title).toBe("No GIFs right now")
-  })
-
-  it("explains how to fill the saved tab", () => {
-    expect(trayEmpty("mine", true)).toMatchObject({
-      title: "Nothing saved yet",
-      description: "Hold any sticker to keep it here.",
-    })
+    expect(giphyEmpty("giphy", false).title).toBe("No stickers right now")
+    expect(giphyEmpty("gifs", false).title).toBe("No GIFs right now")
   })
 })
 
 describe("tray copy", () => {
   it("has a search box only on the Giphy tabs", () => {
-    expect(traySearchPlaceholder("stickers")).toBe("Search stickers")
+    expect(traySearchPlaceholder("giphy")).toBe("Search Giphy stickers")
     expect(traySearchPlaceholder("gifs")).toBe("Search GIFs")
-    expect(traySearchPlaceholder("mine")).toBeNull()
+    expect(traySearchPlaceholder("stickers")).toBeNull()
   })
 
   it("labels tiles by what they are", () => {
     expect(trayItemLabel("gifs")).toBe("GIF")
-    expect(trayItemLabel("stickers")).toBe("Sticker")
-    expect(trayItemLabel("mine")).toBe("Sticker")
+    expect(trayItemLabel("giphy")).toBe("Sticker")
   })
 })
 

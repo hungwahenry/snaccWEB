@@ -49,6 +49,7 @@ export interface SendMessageInput {
   viewOnce?: boolean
   giphyId?: string
   stickerId?: string
+  giphyStickerId?: string
   voice?: VoiceDraft
 }
 
@@ -64,6 +65,7 @@ export function messageUploadForm(
     ["replyToId", input.replyToId],
     ["viewOnce", input.viewOnce ? "true" : undefined],
     ["stickerId", input.stickerId],
+    ["giphyStickerId", input.giphyStickerId],
     [
       "voiceDurationMs",
       input.voice ? String(Math.round(input.voice.durationMs)) : undefined,
@@ -93,6 +95,7 @@ export function sendMessage(
       replyToId: input.replyToId,
       giphyId: input.giphyId,
       stickerId: input.stickerId,
+      giphyStickerId: input.giphyStickerId,
     })
   }
 

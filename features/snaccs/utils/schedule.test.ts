@@ -30,10 +30,13 @@ const gif = {
 }
 const sticker = {
   sticker_id: "k1",
+  pack_id: null,
+  giphy_id: null,
   url: "sticker.webp",
   preview_url: null,
   width: 1,
   height: 1,
+  removed: false,
 }
 
 const at = (day: number, hour: number, minute: number, second = 0) =>

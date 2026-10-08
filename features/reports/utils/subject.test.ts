@@ -44,6 +44,17 @@ describe("reportSubject", () => {
     expect(
       reportSubject({ type: "moment", moment: { id: "mo1" }, user: bola }).what
     ).toBe("A moment by @bola")
+    expect(
+      reportSubject({
+        type: "sticker_pack",
+        sticker_pack: { id: "p1", title: "Exam season" },
+        user: null,
+      })
+    ).toEqual({
+      person: null,
+      what: "The sticker pack “Exam season”",
+      href: "/stickers/p1",
+    })
   })
 })
 
@@ -55,6 +66,9 @@ describe("reportTitle", () => {
     )
     expect(reportTitle({ type: "chat_message", id: "m1" })).toBe(
       "Report this message"
+    )
+    expect(reportTitle({ type: "sticker_pack", id: "p1" })).toBe(
+      "Report this sticker pack"
     )
   })
 })

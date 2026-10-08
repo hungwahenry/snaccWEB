@@ -31,6 +31,9 @@ export async function createReport({
     case "chat_message":
       await api.post(`/chats/messages/${id(target.id)}/report`, body)
       return
+    case "sticker_pack":
+      await api.post(`/sticker-packs/${id(target.id)}/report`, body)
+      return
     case "snacc":
       await api.post("/reports", { ...body, snaccId: target.id })
       return

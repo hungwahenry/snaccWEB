@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react"
 import type { Gif } from "@/features/giphy/types"
 import type { SnaccAuthor } from "@/features/snaccs/types"
-import type { DraftSticker, StickerAttachment } from "@/features/stickers/types"
+import type { StickerAttachment, StickerPick } from "@/features/stickers/types"
 import type { VoiceDraft, VoiceNote, VoiceSource } from "@/features/voice/types"
 import type { PickedImage } from "@/lib/media"
 
@@ -123,7 +123,7 @@ export interface MessageDraft {
   replyingTo: Message | null
   viewOnce?: boolean
   gif?: Gif | null
-  sticker?: DraftSticker | null
+  sticker?: StickerPick | null
   voice?: VoiceDraft | null
 }
 

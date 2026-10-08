@@ -8,6 +8,10 @@ import type {
 } from "@/features/admin/shell/types"
 import type { AdminSnacc } from "@/features/admin/snaccs/types"
 import type {
+  AdminSticker,
+  StickerPackStatus,
+} from "@/features/admin/stickers/types"
+import type {
   SuspendInput,
   SuspensionDraft,
   SuspensionReason,
@@ -88,6 +92,24 @@ export type ReportTarget =
         }
       }
     }
+  | {
+      type: "sticker"
+      sticker: AdminSticker & {
+        removed: boolean
+        pack: { id: string; title: string; status: StickerPackStatus }
+        owner: ReportAuthor | null
+      }
+    }
+  | {
+      type: "sticker_pack"
+      sticker_pack: {
+        id: string
+        title: string
+        status: StickerPackStatus
+        owner: ReportAuthor | null
+        stickers: AdminSticker[]
+      }
+    }
   | null
 
 export type ReportTargetType = NonNullable<ReportTarget>["type"]
@@ -144,6 +166,10 @@ export type ReportAct =
   | "suspend_sender"
   | "delete_moment"
   | "suspend_moment_author"
+  | "remove_sticker"
+  | "suspend_sticker_owner"
+  | "take_down_sticker_pack"
+  | "suspend_pack_owner"
 
 export interface ResolveReportInput {
   snaccId?: string
@@ -151,6 +177,8 @@ export interface ResolveReportInput {
   messageId?: string
   momentId?: string
   chatMessageId?: string
+  stickerId?: string
+  stickerPackId?: string
   status: ReportOutcome
   note?: string
   acts?: ReportAct[]

@@ -1,3 +1,4 @@
+import { StickerIcon } from "lucide-react"
 import Link from "next/link"
 import { PersonAvatar } from "@/features/users/components/person-avatar"
 import { timeAgo } from "@/lib/format"
@@ -15,7 +16,13 @@ export function ReportRow({
       href={subject.href}
       className="flex items-start gap-3 px-4 py-3.5 transition-colors hover:bg-accent/40"
     >
-      <PersonAvatar person={subject.person} />
+      {subject.person ? (
+        <PersonAvatar person={subject.person} />
+      ) : (
+        <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
+          <StickerIcon className="size-5" aria-hidden />
+        </span>
+      )}
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="text-sm font-bold text-foreground">
           {report.reason}

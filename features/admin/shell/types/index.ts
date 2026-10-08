@@ -12,8 +12,9 @@ export interface MediaGif {
 }
 
 export interface MediaSticker {
-  url: string
+  url: string | null
   preview_url?: string | null
+  removed: boolean
 }
 
 export interface MediaVoice {

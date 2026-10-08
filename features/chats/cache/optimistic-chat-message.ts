@@ -1,3 +1,4 @@
+import { attachmentOfPick, stickerFields } from "@/features/stickers/utils/pick"
 import type { Author } from "@/features/users/types"
 import type { SendChatMessageInput } from "../api"
 import type { ChatDraft, ChatMessage } from "../types"
@@ -13,7 +14,7 @@ export function draftToInput(
     replyToId: draft.replyingTo?.id,
     images: draft.images.length > 0 ? draft.images : undefined,
     voice: draft.voice ?? undefined,
-    stickerId: draft.sticker?.id,
+    ...stickerFields(draft.sticker ?? null),
     giphyId: draft.gif?.id,
   }
 }
@@ -50,15 +51,7 @@ export function buildOptimisticChatMessage(
     voice: draft.voice
       ? { id, url: draft.voice.uri, duration_ms: draft.voice.durationMs }
       : null,
-    sticker: draft.sticker
-      ? {
-          sticker_id: draft.sticker.id,
-          url: draft.sticker.url,
-          preview_url: draft.sticker.preview_url,
-          width: draft.sticker.width,
-          height: draft.sticker.height,
-        }
-      : null,
+    sticker: draft.sticker ? attachmentOfPick(draft.sticker) : null,
     gif: draft.gif
       ? {
           giphy_id: draft.gif.id,

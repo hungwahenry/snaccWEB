@@ -31,6 +31,11 @@ import { useComposerSchedule } from "./use-composer-schedule"
 import { useDrafts } from "./use-drafts"
 import { useSnaccDraft } from "./use-snacc-draft"
 
+const KEEP_COPY = {
+  title: "Keep this snacc?",
+  message: "Save it as a draft and pick it up later.",
+}
+
 /** Writing a new snacc, reply or quote: posting it, keeping it as a draft, or letting it go. */
 export function useComposer(params: ComposeParams) {
   const router = useRouter()
@@ -187,11 +192,12 @@ export function useComposer(params: ComposeParams) {
     schedule,
     canPost: draft.withinLimits && schedule.ready,
     post,
-    close: () =>
-      settleFirst(leave, {
-        title: "Keep this snacc?",
-        message: "Save it as a draft and pick it up later.",
-      }),
+    close: () => settleFirst(leave, KEEP_COPY),
+    beforeLeaving: (then: () => void) =>
+      settleFirst(() => {
+        done.current = true
+        then()
+      }, KEEP_COPY),
     /** Runs `then` once whatever is being written has been saved or let go. */
     beforeSwitching: (then: () => void) =>
       settleFirst(

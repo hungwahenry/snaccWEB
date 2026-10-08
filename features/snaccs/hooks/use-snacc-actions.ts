@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { createElement, useEffect, useMemo, useRef } from "react"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { signal } from "@/features/signals/utils/queue"
-import { useKeepSnaccSticker } from "@/features/stickers/hooks/use-keep-sticker"
+import { useConfirmKeepSticker } from "@/features/stickers/hooks/use-keep-sticker"
 import { useStickerStudio } from "@/providers/sticker-studio-provider"
 import { useLightbox } from "@/providers/lightbox-provider"
 import { discardSnacc, retrySnacc } from "../cache/pending-snaccs"
@@ -33,7 +33,7 @@ export function useSnaccActions(overrides: Overrides = {}) {
   const poll = useVotePoll()
   const lightbox = useLightbox()
   const stickerStudio = useStickerStudio()
-  const keepSticker = useKeepSnaccSticker()
+  const keepSticker = useConfirmKeepSticker()
 
   const latest = useRef({
     setLike,
@@ -142,7 +142,8 @@ export function useSnaccActions(overrides: Overrides = {}) {
         const image = snacc.images[index]
         if (image) latest.current.stickerStudio?.(image)
       },
-      onKeepSticker: (snacc) => latest.current.keepSticker?.(snacc.id),
+      onKeepSticker: (snacc) =>
+        latest.current.keepSticker?.({ snaccId: snacc.id }),
     }
   }, [canResnacc])
 

@@ -1,6 +1,7 @@
 "use client"
 
 import { useMutation } from "@tanstack/react-query"
+import { pickOfAttachment, stickerFields } from "@/features/stickers/utils/pick"
 import { useBack } from "@/hooks/use-back"
 import { editSnacc } from "../../api"
 import { patchSnacc } from "../../cache"
@@ -57,7 +58,7 @@ export function useSnaccEditor(snacc: Snacc) {
         keepImageIds: keptImageIds(draft.images),
         images: pickedAssets(draft.images),
         giphyId: draft.gif?.id,
-        stickerId: snacc.sticker?.sticker_id ?? undefined,
+        ...stickerFields(pickOfAttachment(snacc.sticker)),
         spoiler: draft.hasMedia && draft.spoiler,
       },
       {

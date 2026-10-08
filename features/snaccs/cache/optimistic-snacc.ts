@@ -8,6 +8,7 @@ import type {
   SnaccReplyTo,
 } from "../types"
 import { liveMatchCard } from "@/features/football/utils/card"
+import { attachmentOfPick, stickerFields } from "@/features/stickers/utils/pick"
 import { optimisticHangout } from "@/features/hangouts/utils/optimistic-hangout"
 import { toEmbedded } from "../utils/resnaccs"
 import { findSnacc } from "."
@@ -18,7 +19,7 @@ export function draftToInput(id: string, draft: SnaccDraft): CreateSnaccInput {
     body: draft.body ?? undefined,
     images: draft.images.length > 0 ? draft.images : undefined,
     giphyId: draft.gif?.id,
-    stickerId: draft.sticker?.id,
+    ...stickerFields(draft.sticker),
     matchId: draft.matchId,
     hangoutId: draft.hangoutId,
     voice: draft.voice ?? undefined,
@@ -111,15 +112,7 @@ export function buildOptimisticSnacc(
           height: draft.gif.height,
         }
       : null,
-    sticker: draft.sticker
-      ? {
-          sticker_id: draft.sticker.id,
-          url: draft.sticker.url,
-          preview_url: draft.sticker.preview_url,
-          width: draft.sticker.width,
-          height: draft.sticker.height,
-        }
-      : null,
+    sticker: draft.sticker ? attachmentOfPick(draft.sticker) : null,
     likes_count: 0,
     liked: false,
     saved: false,

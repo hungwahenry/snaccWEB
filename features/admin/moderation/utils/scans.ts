@@ -1,10 +1,10 @@
-import { snaccPath, userPath } from "@/features/admin/shell/routes"
+import { reportPath, snaccPath, userPath } from "@/features/admin/shell/routes"
 import type { ModerationScan } from "../types"
 
-/** Where a review's content can be looked at: the snacc, else the person. */
 export function scanTarget(scan: ModerationScan): string | null {
   if (scan.target.snacc_id) return snaccPath(scan.target.snacc_id)
   if (scan.target.user_id) return userPath(scan.target.user_id)
+  if (scan.report_id) return reportPath(scan.report_id)
   return null
 }
 

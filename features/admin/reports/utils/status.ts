@@ -50,6 +50,8 @@ export const TARGET_TYPES = [
   "message",
   "moment",
   "chat_message",
+  "sticker",
+  "sticker_pack",
 ] as const satisfies readonly ReportTargetType[]
 
 export const TARGET_OPTIONS: Option<ReportTargetType>[] = [
@@ -58,6 +60,8 @@ export const TARGET_OPTIONS: Option<ReportTargetType>[] = [
   { value: "message", label: "Messages" },
   { value: "moment", label: "Moments" },
   { value: "chat_message", label: "Room messages" },
+  { value: "sticker", label: "Stickers" },
+  { value: "sticker_pack", label: "Sticker packs" },
 ]
 
 export function countOpen(

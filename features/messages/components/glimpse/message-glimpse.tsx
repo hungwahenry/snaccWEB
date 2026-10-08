@@ -69,6 +69,12 @@ function GlimpseMediaView({
     case "gif":
       return <ThumbStrip urls={[media.url]} size={THUMB} />
     case "sticker":
-      return <StickerAttachmentView sticker={media.sticker} size={THUMB} />
+      return (
+        <StickerAttachmentView
+          sticker={media.sticker}
+          size={THUMB}
+          openable={false}
+        />
+      )
   }
 }

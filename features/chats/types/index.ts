@@ -4,7 +4,7 @@ import type {
   MessageStatus,
   ThreadLine,
 } from "@/features/messages/types"
-import type { DraftSticker, StickerAttachment } from "@/features/stickers/types"
+import type { StickerAttachment, StickerPick } from "@/features/stickers/types"
 import type { Author } from "@/features/users/types"
 import type { VoiceDraft, VoiceNote } from "@/features/voice/types"
 import type { PickedImage } from "@/lib/media"
@@ -116,6 +116,6 @@ export interface ChatDraft {
   images: PickedImage[]
   replyingTo: ChatMessage | null
   voice?: VoiceDraft | null
-  sticker?: DraftSticker | null
+  sticker?: StickerPick | null
   gif?: Gif | null
 }

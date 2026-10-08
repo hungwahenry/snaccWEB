@@ -8,7 +8,8 @@
           { "/": "/campus/*", "comment": "Campus feeds" },
           { "/": "/@*", "comment": "Profiles" },
           { "/": "/pay/*", "comment": "Pay links" },
-          { "/": "/join/*", "comment": "Invite links" }
+          { "/": "/join/*", "comment": "Invite links" },
+          { "/": "/stickers/*", "comment": "Sticker packs" }
         ]
       }
     ]

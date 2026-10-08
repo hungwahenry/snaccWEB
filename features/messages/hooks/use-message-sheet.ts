@@ -5,7 +5,7 @@ import { confirm } from "@/components/ui/confirm"
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import type { ReportTarget } from "@/features/reports/types"
-import { useKeepMessageSticker } from "@/features/stickers/hooks/use-keep-sticker"
+import { useKeepSticker } from "@/features/stickers/hooks/use-keep-sticker"
 import { useStickerStudio } from "@/providers/sticker-studio-provider"
 import type { Message } from "../types"
 import { canDeleteMessage, canEditMessage } from "../utils/editing"
@@ -26,7 +26,7 @@ export function useMessageSheet(
   const [message, setMessage] = useState<Message | null>(null)
   const [open, setOpen] = useState(false)
   const remove = useDeleteMessage(conversationId)
-  const keepSticker = useKeepMessageSticker()
+  const keepSticker = useKeepSticker()
   const stickerStudio = useStickerStudio()
   const editingEnabled = useFlag("message_editing")
   const editWindowMinutes = useConfigValue(
@@ -77,8 +77,11 @@ export function useMessageSheet(
         onReport({ type: "message", id: target.id, conversationId })
       ),
       onKeepSticker:
-        keepSticker && message?.sticker && !message.removed
-          ? closeThen((target) => keepSticker(target.id))
+        keepSticker &&
+        message?.sticker &&
+        !message.sticker.removed &&
+        !message.removed
+          ? closeThen((target) => keepSticker({ messageId: target.id }))
           : undefined,
       onMakeSticker:
         stickerStudio && source

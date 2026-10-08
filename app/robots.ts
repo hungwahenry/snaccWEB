@@ -23,6 +23,7 @@ const SIGNED_IN_ONLY = [
   "/follow-requests",
   "/resnaccs",
   "/eggs",
+  "/stickers",
   "/avatar-editor",
   "/edit-profile",
   "/edit-birthday",

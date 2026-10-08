@@ -1,4 +1,3 @@
-/** How a sticker sits in a square of `size`: the long side fills it. */
 export function stickerBox(
   sticker: { width: number; height: number },
   size: number

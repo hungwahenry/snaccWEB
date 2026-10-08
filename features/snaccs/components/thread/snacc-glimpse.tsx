@@ -91,7 +91,11 @@ export function SnaccGlimpse({
       ) : null}
 
       {glimpse.sticker ? (
-        <StickerAttachmentView sticker={glimpse.sticker} size={THUMB} />
+        <StickerAttachmentView
+          sticker={glimpse.sticker}
+          size={THUMB}
+          openable={false}
+        />
       ) : null}
 
       {glimpse.chips.map((chip) => {

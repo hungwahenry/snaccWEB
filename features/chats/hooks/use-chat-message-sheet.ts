@@ -5,7 +5,7 @@ import { confirm } from "@/components/ui/confirm"
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import type { ReportTarget } from "@/features/reports/types"
-import { useKeepChatMessageSticker } from "@/features/stickers/hooks/use-keep-sticker"
+import { useKeepSticker } from "@/features/stickers/hooks/use-keep-sticker"
 import { useStickerStudio } from "@/providers/sticker-studio-provider"
 import type { ChatMessage } from "../types"
 import { canEditChatMessage, chatStickerSource } from "../utils/rooms"
@@ -26,7 +26,7 @@ export function useChatMessageSheet(
   const [message, setMessage] = useState<ChatMessage | null>(null)
   const [open, setOpen] = useState(false)
   const withdraw = useWithdrawChatMessage(roomId)
-  const keepSticker = useKeepChatMessageSticker()
+  const keepSticker = useKeepSticker()
   const stickerStudio = useStickerStudio()
   const editingEnabled = useFlag("message_editing")
   const editWindowMinutes = useConfigValue(
@@ -80,8 +80,8 @@ export function useChatMessageSheet(
         onReport({ type: "chat_message", id: target.id })
       ),
       onKeepSticker:
-        keepSticker && message?.sticker
-          ? closeThen((target) => keepSticker(target.id))
+        keepSticker && message?.sticker && !message.sticker.removed
+          ? closeThen((target) => keepSticker({ chatMessageId: target.id }))
           : undefined,
       onMakeSticker:
         stickerStudio && source

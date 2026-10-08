@@ -3,12 +3,21 @@ import type { ReactNode } from "react"
 import { Badge } from "@/components/ui/badge"
 import { ContentMedia } from "@/features/admin/shell/components/content-media"
 import { EmptyNote, Section } from "@/features/admin/shell/components/detail"
+import { StatusBadge } from "@/features/admin/shell/components/status-badge"
+import { StickerImage } from "@/features/admin/shell/components/sticker-image"
 import { UserCell } from "@/features/admin/shell/components/user-cell"
-import { snaccPath, threadPath, userPath } from "@/features/admin/shell/routes"
+import {
+  snaccPath,
+  stickerPackPath,
+  threadPath,
+  userPath,
+} from "@/features/admin/shell/routes"
 import { SnaccView } from "@/features/admin/snaccs/components/snacc-view"
+import { PACK_STATUS } from "@/features/admin/stickers/utils/packs"
 import type { UserRef } from "@/lib/api/types"
 import { formatDate, handleOf } from "@/lib/format"
 import type { AdminReportDetail, ReportTarget } from "../types"
+import { reportedStickerSrc } from "../utils/reports"
 
 type TargetOf<K extends NonNullable<ReportTarget>["type"]> = Extract<
   NonNullable<ReportTarget>,
@@ -37,7 +46,7 @@ function Framed({
   link,
   children,
 }: {
-  author: UserRef
+  author: UserRef | null
   note: string
   badges?: ReactNode
   link?: { href: string; label: string }
@@ -46,7 +55,14 @@ function Framed({
   return (
     <div className="flex flex-col gap-3 rounded-lg border p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <UserCell user={author} note={note} />
+        {author ? (
+          <UserCell user={author} note={note} />
+        ) : (
+          <div className="min-w-0">
+            <p className="text-sm font-medium">Snacc</p>
+            <p className="truncate text-xs text-muted-foreground">{note}</p>
+          </div>
+        )}
         <div className="flex flex-wrap gap-2 empty:hidden">{badges}</div>
       </div>
       {children}
@@ -163,6 +179,74 @@ function ReportedMoment({ moment }: { moment: TargetOf<"moment">["moment"] }) {
   )
 }
 
+function ReportedSticker({
+  sticker,
+}: {
+  sticker: TargetOf<"sticker">["sticker"]
+}) {
+  return (
+    <Framed
+      author={sticker.owner}
+      note={`Sticker in “${sticker.pack.title}”`}
+      badges={
+        <>
+          {sticker.held ? (
+            <Badge variant="secondary">Held for review</Badge>
+          ) : null}
+          {sticker.removed ? (
+            <Badge variant="destructive">Removed everywhere</Badge>
+          ) : null}
+        </>
+      }
+    >
+      <StickerImage
+        src={reportedStickerSrc(sticker)}
+        alt="The reported sticker"
+        className="size-40 p-2"
+      />
+      <p className="text-xs text-muted-foreground">
+        Removing it pulls every copy, including ones already sent in posts and
+        messages.
+      </p>
+    </Framed>
+  )
+}
+
+function ReportedStickerPack({
+  pack,
+}: {
+  pack: TargetOf<"sticker_pack">["sticker_pack"]
+}) {
+  return (
+    <Framed
+      author={pack.owner}
+      note={`Sticker pack “${pack.title}”`}
+      badges={<StatusBadge status={PACK_STATUS[pack.status]} />}
+      link={{ href: stickerPackPath(pack.id), label: "Open the pack" }}
+    >
+      {pack.stickers.length > 0 ? (
+        <div className="flex flex-wrap gap-2">
+          {pack.stickers.map((sticker) => (
+            <StickerImage
+              key={sticker.id}
+              src={sticker.url}
+              alt="A sticker in the pack"
+              className="size-20 p-1"
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          There are no stickers left in it.
+        </p>
+      )}
+      <p className="text-xs text-muted-foreground">
+        Taking it down hides the pack and every sticker anyone has sent from it.
+      </p>
+    </Framed>
+  )
+}
+
 export function ReportedContent({ report }: { report: AdminReportDetail }) {
   const target = report.target
 
@@ -183,6 +267,10 @@ export function ReportedContent({ report }: { report: AdminReportDetail }) {
         <ReportedMoment moment={target.moment} />
       ) : target.type === "chat_message" ? (
         <ReportedChatMessage message={target.chat_message} />
+      ) : target.type === "sticker" ? (
+        <ReportedSticker sticker={target.sticker} />
+      ) : target.type === "sticker_pack" ? (
+        <ReportedStickerPack pack={target.sticker_pack} />
       ) : (
         <Framed
           author={target.user}

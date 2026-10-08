@@ -4,6 +4,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
 import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
 import { adminSnaccKeys } from "@/features/admin/snaccs/utils/keys"
+import { adminStickerKeys } from "@/features/admin/stickers/utils/keys"
 import { adminUserKeys } from "@/features/admin/users/utils/keys"
 import { getReport, listReports, resolveReport } from "../api"
 import type { ReportListQuery, ReportTarget, ResolveDraft } from "../types"
@@ -38,6 +39,7 @@ export function useReportActions() {
     invalidates: [
       adminReportKeys.all(),
       adminSnaccKeys.all(),
+      adminStickerKeys.all(),
       adminUserKeys.all(),
     ],
   })

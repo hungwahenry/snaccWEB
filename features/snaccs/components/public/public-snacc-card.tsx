@@ -8,6 +8,7 @@ import {
 import Link from "next/link"
 import { PublicClip } from "@/features/clips/components/public-clip"
 import { PublicHangout } from "@/features/hangouts/components/public/public-hangout"
+import { StickerAttachmentView } from "@/features/stickers/components/sticker-attachment-view"
 import { LikeGlyph } from "@/features/likes/components/like-glyph"
 import { compactCount, timeAgo } from "@/lib/format"
 import { richText } from "@/lib/rich-text"
@@ -105,13 +106,11 @@ export function PublicSnaccCard({
           style={{ aspectRatio: `${media.width} / ${media.height}` }}
         />
       ) : snacc.sticker ? (
-        <img
-          src={snacc.sticker.url}
-          alt=""
-          className="ml-14 max-h-40 self-start object-contain"
-          style={{
-            aspectRatio: `${snacc.sticker.width} / ${snacc.sticker.height}`,
-          }}
+        <StickerAttachmentView
+          sticker={snacc.sticker}
+          size={160}
+          openable={false}
+          className="ml-14"
         />
       ) : snacc.voice ? (
         <div className="ml-14 rounded-2xl border border-border px-3 py-2">

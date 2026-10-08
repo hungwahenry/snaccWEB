@@ -1,35 +1,46 @@
 "use client"
 
-import { PlusIcon, SearchIcon, XIcon } from "lucide-react"
+import { SearchIcon, XIcon } from "lucide-react"
 import { IconButton } from "@/components/ui/icon-button"
 import { Input } from "@/components/ui/input"
+import { LoadFailed } from "@/components/ui/load-failed"
 import { PillTabs, type PillTab } from "@/components/ui/pill-tabs"
 import { GiphyAttribution } from "@/features/giphy/components/giphy-attribution"
-import type { TrayGridState, TrayTab } from "../types"
+import type {
+  PackPanelState,
+  PackShelfState,
+  TrayGridState,
+  TrayTab,
+} from "../types"
+import { PackPanel } from "./pack-panel"
+import { PackShelf } from "./pack-shelf"
+import { StickerGridSkeleton } from "./sticker-grid-skeleton"
 import { TrayGrid } from "./tray-grid"
 
 export type StickerTrayProps = {
   tabs: PillTab<TrayTab>[]
   tab: TrayTab
   onTabChange: (tab: TrayTab) => void
-  query: string
-  onQueryChange: (query: string) => void
-  searchPlaceholder: string | null
+  shelf: PackShelfState | null
+  panel: PackPanelState | null
+  search: {
+    query: string
+    onQueryChange: (query: string) => void
+    placeholder: string
+  } | null
+  grid: TrayGridState | null
   showAttribution: boolean
-  grid: TrayGridState
-  onCreateSticker?: () => void
 }
 
 export function StickerTray({
   tabs,
   tab,
   onTabChange,
-  query,
-  onQueryChange,
-  searchPlaceholder,
-  showAttribution,
+  shelf,
+  panel,
+  search,
   grid,
-  onCreateSticker,
+  showAttribution,
 }: StickerTrayProps) {
   return (
     <div className="flex flex-col">
@@ -37,7 +48,20 @@ export function StickerTray({
         <PillTabs tabs={tabs} value={tab} onChange={onTabChange} />
       ) : null}
 
-      {searchPlaceholder ? (
+      {shelf ? <PackShelf {...shelf} /> : null}
+
+      {shelf?.failed ? (
+        <LoadFailed
+          title="Could not load your stickers"
+          onRetry={shelf.onRetry}
+        />
+      ) : shelf?.loading ? (
+        <StickerGridSkeleton />
+      ) : panel ? (
+        <PackPanel {...panel} />
+      ) : null}
+
+      {search ? (
         <div className="px-4 py-2">
           <div className="relative">
             <SearchIcon
@@ -46,20 +70,20 @@ export function StickerTray({
             />
             <Input
               type="search"
-              value={query}
-              onChange={(event) => onQueryChange(event.target.value)}
-              placeholder={searchPlaceholder}
-              aria-label={searchPlaceholder}
+              value={search.query}
+              onChange={(event) => search.onQueryChange(event.target.value)}
+              placeholder={search.placeholder}
+              aria-label={search.placeholder}
               autoCapitalize="none"
               autoCorrect="off"
               enterKeyHint="search"
               className="h-14 rounded-full pr-12 pl-11 text-base md:text-base [&::-webkit-search-cancel-button]:hidden"
             />
-            {query ? (
+            {search.query ? (
               <IconButton
                 icon={XIcon}
                 label="Clear search"
-                onClick={() => onQueryChange("")}
+                onClick={() => search.onQueryChange("")}
                 className="absolute top-1/2 right-2.5 -translate-y-1/2 text-muted-foreground"
                 iconClassName="size-4"
               />
@@ -68,19 +92,7 @@ export function StickerTray({
         </div>
       ) : null}
 
-      {tab === "mine" && onCreateSticker ? (
-        <div className="px-4 py-2">
-          <button
-            type="button"
-            onClick={onCreateSticker}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-border py-3 font-bold text-foreground transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-ring active:opacity-70"
-          >
-            <PlusIcon className="size-5" aria-hidden /> Create a sticker
-          </button>
-        </div>
-      ) : null}
-
-      <TrayGrid grid={grid} />
+      {grid ? <TrayGrid grid={grid} /> : null}
 
       {showAttribution ? <GiphyAttribution /> : null}
     </div>

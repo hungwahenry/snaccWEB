@@ -1,7 +1,7 @@
 import type { ClipDraft } from "@/features/clips/types"
 import type { Gif } from "@/features/giphy/types"
 import type { HangoutDraft } from "@/features/hangouts/types"
-import type { DraftSticker } from "@/features/stickers/types"
+import type { StickerPick } from "@/features/stickers/types"
 import type { VoiceDraft } from "@/features/voice/types"
 import type {
   ComposeParams,
@@ -49,7 +49,7 @@ export interface ComposerContent {
   body: string
   images: DraftImage[]
   gif: Gif | null
-  sticker: DraftSticker | null
+  sticker: StickerPick | null
   voice: VoiceDraft | null
   clip: ClipDraft | null
   poll: PollDraft | null

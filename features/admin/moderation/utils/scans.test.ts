@@ -10,6 +10,8 @@ const scan = (overrides: Partial<ModerationScan> = {}): ModerationScan => ({
     moment_id: null,
     message_id: null,
     user_id: null,
+    chat_message_id: null,
+    sticker_id: null,
   },
   model: "omni-moderation",
   flagged: true,
@@ -27,7 +29,7 @@ const scan = (overrides: Partial<ModerationScan> = {}): ModerationScan => ({
 })
 
 describe("scanTarget", () => {
-  it("links the snacc first, then the person, else nothing", () => {
+  it("links the snacc first, then the person, then the report, else nothing", () => {
     const target = scan().target
     expect(
       scanTarget(scan({ target: { ...target, snacc_id: "p1", user_id: "u1" } }))
@@ -35,6 +37,14 @@ describe("scanTarget", () => {
     expect(scanTarget(scan({ target: { ...target, user_id: "u1" } }))).toBe(
       "/admin/users/u1"
     )
+    expect(
+      scanTarget(
+        scan({ target: { ...target, sticker_id: "k1" }, report_id: "r1" })
+      )
+    ).toBe("/admin/reports/r1")
+    expect(
+      scanTarget(scan({ target: { ...target, sticker_id: "k1" } }))
+    ).toBeNull()
     expect(scanTarget(scan())).toBeNull()
   })
 })

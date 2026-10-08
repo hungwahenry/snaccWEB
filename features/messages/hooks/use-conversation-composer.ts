@@ -4,8 +4,7 @@ import { ImageIcon, StickerIcon } from "lucide-react"
 import { useCallback, useMemo, useState, type RefObject } from "react"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import type { Gif } from "@/features/giphy/types"
-import { useStickerCreator } from "@/features/stickers/hooks/use-sticker-creator"
-import type { Sticker } from "@/features/stickers/types"
+import type { StickerPick } from "@/features/stickers/types"
 import type { VoiceDraft } from "@/features/voice/types"
 import { submitMessage } from "../cache/pending-messages"
 import type {
@@ -62,12 +61,11 @@ export function useConversationComposer(
     [conversationId, replyingTo, onSent]
   )
 
-  const sendSticker = (sticker: Sticker) =>
+  const sendSticker = (sticker: StickerPick) =>
     send({ body: null, images: [], sticker })
   const sendGif = (gif: Gif) => send({ body: null, images: [], gif })
   const sendVoice = (voice: VoiceDraft) =>
     send({ body: null, images: [], voice })
-  const stickerCreator = useStickerCreator(sendSticker)
 
   function submit(body: string) {
     if (editing) {
@@ -180,14 +178,7 @@ export function useConversationComposer(
           onOpenChange: setTrayOpen,
           onPickSticker: stickersEnabled ? sendSticker : undefined,
           onPickGif: gifsEnabled ? sendGif : undefined,
-          onCreateSticker: stickersEnabled
-            ? () => {
-                setTrayOpen(false)
-                stickerCreator.begin()
-              }
-            : undefined,
         }
       : null,
-    stickerCreator,
   }
 }

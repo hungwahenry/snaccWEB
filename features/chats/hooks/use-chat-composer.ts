@@ -7,8 +7,7 @@ import { useFlag } from "@/features/config/hooks/use-flag"
 import type { Gif } from "@/features/giphy/types"
 import { useMessageComposer } from "@/features/messages/hooks/use-message-composer"
 import type { ComposerAction } from "@/features/messages/types"
-import { useStickerCreator } from "@/features/stickers/hooks/use-sticker-creator"
-import type { Sticker } from "@/features/stickers/types"
+import type { StickerPick } from "@/features/stickers/types"
 import type { VoiceDraft } from "@/features/voice/types"
 import { useDraftImages } from "@/hooks/use-draft-images"
 import { submitChatMessage } from "../cache/pending-chat-messages"
@@ -48,12 +47,11 @@ export function useChatComposer(
     [roomId, replyingTo, onSent]
   )
 
-  const sendSticker = (sticker: Sticker) =>
+  const sendSticker = (sticker: StickerPick) =>
     send({ body: null, images: [], sticker })
   const sendGif = (gif: Gif) => send({ body: null, images: [], gif })
   const sendVoice = (voice: VoiceDraft) =>
     send({ body: null, images: [], voice })
-  const stickerCreator = useStickerCreator(sendSticker)
 
   function submit(body: string) {
     if (editing) {
@@ -153,14 +151,7 @@ export function useChatComposer(
           onOpenChange: setTrayOpen,
           onPickSticker: stickersEnabled ? sendSticker : undefined,
           onPickGif: gifsEnabled ? sendGif : undefined,
-          onCreateSticker: stickersEnabled
-            ? () => {
-                setTrayOpen(false)
-                stickerCreator.begin()
-              }
-            : undefined,
         }
       : null,
-    stickerCreator,
   }
 }

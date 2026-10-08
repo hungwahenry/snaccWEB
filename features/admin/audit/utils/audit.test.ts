@@ -86,6 +86,9 @@ describe("targetHref", () => {
     expect(targetHref(log({ target_type: "page", target_id: "p1" }))).toBe(
       "/admin/pages/p1"
     )
+    expect(
+      targetHref(log({ target_type: "sticker_pack", target_id: "k1" }))
+    ).toBe("/admin/sticker-packs/k1")
   })
 
   it("leaves the rest unlinked", () => {

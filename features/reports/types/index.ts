@@ -1,7 +1,7 @@
 import type { SnaccAuthor } from "@/features/snaccs/types"
 
 export type ReportableType =
-  "snacc" | "user" | "message" | "moment" | "chat_message"
+  "snacc" | "user" | "message" | "moment" | "chat_message" | "sticker_pack"
 
 export interface ReportReason {
   id: string
@@ -17,6 +17,7 @@ export type ReportTarget =
   | { type: "user"; id: string; username: string | null }
   | { type: "message"; id: string; conversationId: string }
   | { type: "chat_message"; id: string }
+  | { type: "sticker_pack"; id: string }
 
 export type MyReportTarget =
   | {
@@ -35,6 +36,11 @@ export type MyReportTarget =
       chat_message: { id: string; room_id: string }
       user: SnaccAuthor
     }
+  | {
+      type: "sticker_pack"
+      sticker_pack: { id: string; title: string }
+      user: SnaccAuthor | null
+    }
 
 export interface MyReport {
   id: string
@@ -46,7 +52,7 @@ export interface MyReport {
 
 /** A filed report in one line: who it was about, what, and where to go to see it. */
 export interface ReportSubject {
-  person: SnaccAuthor
+  person: SnaccAuthor | null
   what: string
   href: string
 }

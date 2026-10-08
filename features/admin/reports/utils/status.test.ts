@@ -35,14 +35,15 @@ describe("options", () => {
     ])
   })
 
-  it("names every target, room messages included", () => {
+  it("names every target, room messages and stickers included", () => {
     expect(TARGET_OPTIONS.map((option) => option.value)).toEqual([
       ...TARGET_TYPES,
     ])
-    expect(TARGET_OPTIONS.at(-1)).toEqual({
-      value: "chat_message",
-      label: "Room messages",
-    })
+    expect(TARGET_OPTIONS.slice(-3)).toEqual([
+      { value: "chat_message", label: "Room messages" },
+      { value: "sticker", label: "Stickers" },
+      { value: "sticker_pack", label: "Sticker packs" },
+    ])
   })
 
   it("gives each status a badge", () => {

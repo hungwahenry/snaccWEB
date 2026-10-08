@@ -1,7 +1,9 @@
 import {
   MessageSquare,
   MessagesSquare,
+  Package,
   Sparkles,
+  Sticker,
   UserRound,
 } from "lucide-react"
 import Link from "next/link"
@@ -17,6 +19,8 @@ const FALLBACK_ICON: Record<ReportTargetType, ReactNode> = {
   message: <MessageSquare className="size-4" />,
   chat_message: <MessagesSquare className="size-4" />,
   user: <UserRound className="size-4" />,
+  sticker: <Sticker className="size-4" />,
+  sticker_pack: <Package className="size-4" />,
 }
 
 export function ReportTargetCell({ report }: { report: AdminReport }) {

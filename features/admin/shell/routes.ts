@@ -4,6 +4,7 @@ export const ADMIN_PROFILE_PATH = "/admin/profile"
 export const REPORTS_PATH = "/admin/reports"
 export const SNACCS_PATH = "/admin/snaccs"
 export const MOMENTS_PATH = "/admin/moments"
+export const HELD_STICKERS_PATH = "/admin/held-stickers"
 export const MESSAGES_PATH = "/admin/messages"
 export const MODERATION_PATH = "/admin/moderation"
 export const REPORT_REASONS_PATH = "/admin/report-reasons"
@@ -28,6 +29,7 @@ export const ENGAGEMENT_PATH = "/admin/engagement"
 export const SCORE_TIERS_PATH = "/admin/score-tiers"
 export const EGGS_PATH = "/admin/eggs"
 export const APP_ICONS_PATH = "/admin/app-icons"
+export const STICKER_PACKS_PATH = "/admin/sticker-packs"
 export const UNIVERSITIES_PATH = "/admin/universities"
 export const NOTIFICATION_TYPES_PATH = "/admin/notification-types"
 export const PROMPTS_PATH = "/admin/prompts"
@@ -48,3 +50,4 @@ export const walletPath = (userId: string) => `${WALLETS_PATH}/${userId}`
 export const withdrawalPath = (id: string) => `${WITHDRAWALS_PATH}/${id}`
 export const pagePath = (id: string) => `${PAGES_PATH}/${id}`
 export const announcementPath = (id: string) => `${ANNOUNCEMENTS_PATH}/${id}`
+export const stickerPackPath = (id: string) => `${STICKER_PACKS_PATH}/${id}`

@@ -56,8 +56,8 @@ export function ChatMessageActionsSheet({
       {onKeepSticker ? (
         <ActionSheetChoice
           icon={HeartIcon}
-          label="Save sticker"
-          hint="Keep it in your tray"
+          label="Keep in Favourites"
+          hint="Send it again from your tray"
           onPress={onKeepSticker}
         />
       ) : null}

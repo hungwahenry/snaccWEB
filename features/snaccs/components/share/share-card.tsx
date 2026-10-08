@@ -67,12 +67,12 @@ export function ShareCard({ snacc }: { snacc: Snacc }) {
   const media =
     image ??
     (gif ? { url: gif.url } : null) ??
-    (sticker ? { url: sticker.url } : null)
+    (sticker?.url ? { url: sticker.url } : null)
   const ratio = image
     ? image.width / image.height
     : gif
       ? gif.width / gif.height
-      : sticker
+      : sticker?.url
         ? sticker.width / sticker.height
         : 16 / 10
 

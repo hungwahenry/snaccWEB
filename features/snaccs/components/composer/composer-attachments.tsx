@@ -5,8 +5,8 @@ import { MatchAttachment } from "@/features/football/components/match-attachment
 import type { SnaccMatch } from "@/features/football/types"
 import { HangoutTagChip } from "@/features/hangouts/components/tagging/hangout-tag-chip"
 import type { HangoutTag } from "@/features/hangouts/types"
-import { StickerAttachmentView } from "@/features/stickers/components/sticker-attachment-view"
-import type { DraftSticker } from "@/features/stickers/types"
+import { StickerImage } from "@/features/stickers/components/sticker-image"
+import type { StickerPick } from "@/features/stickers/types"
 import { VoiceComposerPanel } from "@/features/voice/components/voice-composer-panel"
 import type { VoiceDraft } from "@/features/voice/types"
 import { clock } from "@/features/voice/utils/clock"
@@ -78,7 +78,7 @@ export function ComposerAttachments({
 }: {
   images: DraftImage[]
   gif: Gif | null
-  sticker?: DraftSticker | null
+  sticker?: StickerPick | null
   storedVoice: SnaccVoiceNote | null
   voice?: ComposerVoice | null
   clip?: ClipDraft | null
@@ -199,7 +199,7 @@ export function ComposerAttachments({
         <div className="flex flex-col gap-3 px-4 pt-3">
           {sticker ? (
             <div className="relative self-start">
-              <StickerAttachmentView sticker={sticker} size={STICKER_PREVIEW} />
+              <StickerImage sticker={sticker} size={STICKER_PREVIEW} />
               {onRemoveSticker ? (
                 <CornerButton
                   onPress={onRemoveSticker}

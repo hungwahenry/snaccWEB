@@ -1,68 +1,115 @@
 import { act, renderHook } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import type { Gif } from "@/features/giphy/types"
-import type { Sticker } from "../types"
+import type { Sticker, StickerPack, StickerPackDetail } from "../types"
 import { useStickerTray, type StickerTrayOptions } from "./use-sticker-tray"
 
 const flags: Record<string, boolean> = {}
-const feedCalls: { kind: string; query: string; enabled: boolean }[] = []
-const libraryCalls: boolean[] = []
-const sendGiphy = vi.fn()
-const keepGiphy = vi.fn()
-const remove = vi.fn()
+const feedCalls: { kind: string; enabled: boolean }[] = []
+const push = vi.fn()
+const keep = vi.fn()
+const actOn = vi.fn()
+const begin = vi.fn()
+const notice = vi.fn()
+let premium = false
 
 const gif: Gif = {
   id: "g1",
   url: "https://giphy.test/g1.gif",
   preview_url: null,
   width: 200,
-  height: 200,
-  title: "Dancing cat",
+  height: 100,
+  title: "Wave",
 }
-const sticker: Sticker = {
+
+const sticker = (over: Partial<Sticker> = {}): Sticker => ({
   id: "s1",
-  kind: "custom",
+  pack_id: "p1",
+  source: "upload",
+  format: "static",
   url: "https://media.test/s1.png",
   preview_url: null,
   width: 512,
   height: 512,
+  premium: false,
+  held: false,
+  ...over,
+})
+
+const pack = (over: Partial<StickerPack> = {}): StickerPack => ({
+  id: "p1",
+  kind: "pack",
+  title: "Exam season",
+  owner: null,
+  status: "published",
+  premium: false,
+  cover: null,
+  stickers_count: 3,
+  mine: false,
+  saved: true,
+  ...over,
+})
+
+const tray = {
+  favourites: pack({
+    id: "fav",
+    kind: "favourites",
+    title: "Favourites",
+    mine: true,
+    stickers_count: 0,
+  }),
+  packs: [pack()],
 }
 
+const detail: StickerPackDetail = {
+  ...pack(),
+  stickers: [
+    sticker(),
+    sticker({ id: "s2", premium: true }),
+    sticker({ id: "s3", held: true }),
+  ],
+}
+
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }))
 vi.mock("@/features/config/hooks/use-flag", () => ({
   useFlag: (key: string) => flags[key] ?? false,
 }))
+vi.mock("@/features/premium/hooks/use-premium-limit", () => ({
+  useIsPremium: () => premium,
+}))
+vi.mock("@/lib/feedback", () => ({
+  showNotice: (text: string) => notice(text),
+}))
 vi.mock("@/features/giphy/hooks/use-giphy-feed", () => ({
-  useGiphyFeed: (kind: string, query: string, enabled: boolean) => {
-    feedCalls.push({ kind, query, enabled })
+  useGiphyFeed: (kind: string, _query: string, enabled: boolean) => {
+    feedCalls.push({ kind, enabled })
     return {
       items: [gif],
-      searching: query.trim().length > 0,
+      searching: false,
       loading: false,
       failed: false,
       retry: vi.fn(),
     }
   },
 }))
-vi.mock("./use-sticker-library", () => ({
-  useStickerLibrary: (enabled: boolean) => {
-    libraryCalls.push(enabled)
-    return {
-      stickers: [sticker],
-      loading: false,
-      loadingMore: false,
-      failed: false,
-      hasMore: false,
-      retry: vi.fn(),
-      loadMore: vi.fn(),
-    }
-  },
+vi.mock("./use-sticker-packs", () => ({
+  useStickerTrayPacks: () => ({
+    data: tray,
+    isPending: false,
+    isError: false,
+    refetch: vi.fn(),
+  }),
+  useStickerPack: (id: string | null) => ({
+    data: id === "p1" ? detail : undefined,
+    isPending: id !== "p1",
+    isError: false,
+    refetch: vi.fn(),
+  }),
 }))
-vi.mock("./use-keep-sticker", () => ({
-  useKeepGiphySticker: () => keepGiphy,
-}))
-vi.mock("./use-remove-sticker", () => ({ useRemoveSticker: () => remove }))
-vi.mock("./use-send-giphy-sticker", () => ({
-  useSendGiphySticker: () => sendGiphy,
+vi.mock("./use-keep-sticker", () => ({ useKeepSticker: () => keep }))
+vi.mock("./use-tile-action", () => ({ useTileAction: () => actOn }))
+vi.mock("./use-sticker-creator", () => ({
+  useStickerCreator: () => ({ begin }),
 }))
 
 function setup(overrides: Partial<StickerTrayOptions> = {}) {
@@ -73,103 +120,108 @@ function setup(overrides: Partial<StickerTrayOptions> = {}) {
     onPickGif: vi.fn(),
     ...overrides,
   }
-  const hook = renderHook(
-    (props: StickerTrayOptions) => useStickerTray(props),
-    {
-      initialProps: options,
-    }
-  )
+  const hook = renderHook(() => useStickerTray(options))
   return { ...hook, options }
 }
 
 beforeEach(() => {
   flags.stickers = true
   flags.giphy = true
+  premium = false
   feedCalls.length = 0
-  libraryCalls.length = 0
   vi.clearAllMocks()
 })
 
 describe("useStickerTray", () => {
-  it("starts on Giphy stickers when stickers are on", () => {
+  it("opens on the first pack when Favourites is empty", () => {
     const { result } = setup()
 
-    expect(result.current.tabs.map((tab) => tab.value)).toEqual([
-      "stickers",
-      "gifs",
-      "mine",
-    ])
     expect(result.current.tab).toBe("stickers")
-    expect(result.current.title).toBe("Stickers")
-    expect(feedCalls.at(-1)).toMatchObject({ kind: "stickers", enabled: true })
+    expect(result.current.shelf?.selectedId).toBe("p1")
+    expect(result.current.panel?.title).toBe("Exam season")
+    expect(result.current.panel?.onCreate).toBeUndefined()
+    expect(feedCalls.at(-1)?.enabled).toBe(false)
   })
 
-  it("is a GIF picker when the screen takes only GIFs", () => {
-    const { result } = setup({ onPickSticker: undefined })
-
-    expect(result.current.tabs.map((tab) => tab.value)).toEqual(["gifs"])
-    expect(result.current.title).toBe("GIFs")
-    expect(feedCalls.at(-1)).toMatchObject({ kind: "gifs" })
-  })
-
-  it("saves a Giphy sticker and closes when one is picked", () => {
+  it("sends a pack sticker by its id and closes", () => {
     const { result, options } = setup()
 
-    act(() => result.current.grid.onPick("g1"))
+    act(() => result.current.panel?.onPick(result.current.panel.tiles[0]))
 
     expect(options.onOpenChange).toHaveBeenCalledWith(false)
-    expect(sendGiphy).toHaveBeenCalledWith("g1")
+    expect(options.onPickSticker).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: "pack", stickerId: "s1" })
+    )
+  })
+
+  it("sends a Premium sticker's tap to the Premium page instead", () => {
+    const { result, options } = setup()
+
+    act(() => result.current.panel?.onPick(result.current.panel.tiles[1]))
+
+    expect(options.onPickSticker).not.toHaveBeenCalled()
+    expect(push).toHaveBeenCalledWith("/premium")
+  })
+
+  it("lets the screen settle first before leaving for another page", () => {
+    const beforeLeaving = vi.fn()
+    const { result } = setup({ beforeLeaving })
+
+    act(() => result.current.shelf?.onBrowse())
+
+    expect(push).not.toHaveBeenCalled()
+    act(() => beforeLeaving.mock.calls[0][0]())
+    expect(push).toHaveBeenCalledWith("/stickers")
+  })
+
+  it("never sends a sticker under review", () => {
+    const { result, options } = setup()
+
+    act(() => result.current.panel?.onPick(result.current.panel.tiles[2]))
+
+    expect(options.onPickSticker).not.toHaveBeenCalled()
+    expect(notice).toHaveBeenCalled()
+  })
+
+  it("offers to create a sticker in Favourites", () => {
+    const { result } = setup()
+
+    act(() => result.current.shelf?.onSelect("fav"))
+    act(() => result.current.panel?.onCreate?.())
+
+    expect(begin).toHaveBeenCalledWith("fav")
+  })
+
+  it("sends a Giphy sticker straight, saving nothing", () => {
+    const { result, options } = setup()
+
+    act(() => result.current.onTabChange("giphy"))
+    expect(feedCalls.at(-1)).toEqual({ kind: "stickers", enabled: true })
+
+    act(() => result.current.grid?.onPick("g1"))
+    expect(options.onPickSticker).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: "giphy", giphyId: "g1" })
+    )
+    expect(keep).not.toHaveBeenCalled()
+
+    act(() => result.current.grid?.onKeep?.("g1"))
+    expect(keep).toHaveBeenCalledWith({ giphyId: "g1" })
   })
 
   it("hands over the GIF itself on the GIFs tab", () => {
     const { result, options } = setup()
 
     act(() => result.current.onTabChange("gifs"))
-    act(() => result.current.grid.onPick("g1"))
+    act(() => result.current.grid?.onPick("g1"))
 
     expect(options.onPickGif).toHaveBeenCalledWith(gif)
-    expect(result.current.grid.onHold).toBeUndefined()
+    expect(result.current.grid?.onKeep).toBeUndefined()
   })
 
-  it("sends a saved sticker from Mine, and holding one offers to remove it", () => {
-    const { result, options } = setup()
+  it("is a GIF picker when the screen takes only GIFs", () => {
+    const { result } = setup({ onPickSticker: undefined })
 
-    act(() => result.current.onTabChange("mine"))
-    expect(libraryCalls.at(-1)).toBe(true)
-    expect(result.current.searchPlaceholder).toBeNull()
-    expect(result.current.showAttribution).toBe(false)
-
-    act(() => result.current.grid.onPick("s1"))
-    expect(options.onPickSticker).toHaveBeenCalledWith(sticker)
-
-    act(() => result.current.grid.onHold?.("s1"))
-    expect(remove).toHaveBeenCalledWith("s1")
-  })
-
-  it("offers to keep a Giphy sticker on hold", () => {
-    const { result } = setup()
-
-    act(() => result.current.grid.onHold?.("g1"))
-
-    expect(keepGiphy).toHaveBeenCalledWith("g1")
-  })
-
-  it("clears the search when the tab changes or the tray closes", () => {
-    const { result, rerender, options } = setup()
-
-    act(() => result.current.onQueryChange("cat"))
-    act(() => result.current.onTabChange("gifs"))
-    expect(result.current.query).toBe("")
-
-    act(() => result.current.onQueryChange("dog"))
-    rerender({ ...options, open: false })
-    expect(result.current.query).toBe("")
-  })
-
-  it("fetches nothing while closed", () => {
-    setup({ open: false })
-
-    expect(feedCalls.at(-1)?.enabled).toBe(false)
-    expect(libraryCalls.at(-1)).toBe(false)
+    expect(result.current.tabs.map((tab) => tab.value)).toEqual(["gifs"])
+    expect(result.current.shelf).toBeNull()
   })
 })

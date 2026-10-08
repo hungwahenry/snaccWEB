@@ -1,6 +1,7 @@
 import { chatRoomPath } from "@/features/chats/routes"
 import { conversationPath } from "@/features/messages/routes"
 import { snaccPath } from "@/features/snaccs/routes"
+import { stickerPackPath } from "@/features/stickers/routes"
 import { profilePath } from "@/features/users/routes"
 import { handleOf } from "@/features/users/utils/names"
 import type { MyReportTarget, ReportSubject, ReportTarget } from "../types"
@@ -37,6 +38,12 @@ export function reportSubject(target: MyReportTarget): ReportSubject {
         what: handleOf(target.user) ?? "An account",
         href: profilePath(target.user.username),
       }
+    case "sticker_pack":
+      return {
+        person: target.user,
+        what: `The sticker pack “${target.sticker_pack.title}”`,
+        href: stickerPackPath(target.sticker_pack.id),
+      }
   }
 }
 
@@ -54,5 +61,7 @@ export function reportTitle(target: ReportTarget | null): string {
       return "Report this message"
     case "snacc":
       return "Report this snacc"
+    case "sticker_pack":
+      return "Report this sticker pack"
   }
 }

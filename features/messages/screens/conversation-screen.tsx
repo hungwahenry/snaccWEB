@@ -9,7 +9,6 @@ import { IconButton } from "@/components/ui/icon-button"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { ReportSheet } from "@/features/reports/components/report-sheet"
-import { StickerCreator } from "@/features/stickers/components/sticker-creator"
 import { StickerTraySheet } from "@/features/stickers/containers/sticker-tray-sheet"
 import { PersonAvatar } from "@/features/users/components/person-avatar"
 import { profilePath } from "@/features/users/routes"
@@ -131,7 +130,6 @@ export function ConversationScreen({ id }: { id: string }) {
       <MessageActionsSheet {...screen.actions} />
       <ViewOnceViewer {...screen.viewOnce} />
       {screen.stickerTray ? <StickerTraySheet {...screen.stickerTray} /> : null}
-      <StickerCreator {...screen.stickerCreator} />
       <ReportSheet {...screen.report} />
       <TransactionDetailSheet {...screen.moneyDetail} />
     </ComposerScreen>
