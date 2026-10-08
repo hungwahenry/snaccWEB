@@ -4,6 +4,7 @@ import {
   draftFrom,
   isDraftReady,
   reasonStatus,
+  scopeLabel,
   toCreateInput,
   toUpdateInput,
 } from "./report-reasons"
@@ -34,7 +35,7 @@ describe("drafts", () => {
   it("starts from the saved reason, or blank for a new one", () => {
     expect(draftFrom()).toMatchObject({
       slug: "",
-      appliesTo: "snacc",
+      appliesTo: "any",
       position: "0",
     })
     expect(draftFrom(reason({ hint: "Ads" }))).toMatchObject({
@@ -72,10 +73,26 @@ describe("drafts", () => {
       slug: "spam",
       label: "Spam",
       hint: undefined,
-      appliesTo: "snacc",
+      appliesTo: null,
       requiresDetail: false,
       position: 3,
     })
     expect(toUpdateInput(draft)).not.toHaveProperty("slug")
+  })
+
+  it("keeps a reason for anything open to anything when it is edited", () => {
+    const general = draftFrom(reason({ applies_to: null }))
+    expect(general.appliesTo).toBe("any")
+    expect(toUpdateInput(general).appliesTo).toBeNull()
+
+    const packs = draftFrom(reason({ applies_to: "sticker_pack" }))
+    expect(toUpdateInput(packs).appliesTo).toBe("sticker_pack")
+  })
+})
+
+describe("scopeLabel", () => {
+  it("names what a reason can be filed against", () => {
+    expect(scopeLabel(null)).toBe("Anything")
+    expect(scopeLabel("sticker_pack")).toBe("Sticker packs")
   })
 })

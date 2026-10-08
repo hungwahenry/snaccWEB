@@ -92,7 +92,7 @@ export function HeldStickersTable({
         align: "end",
         cell: (sticker) => (
           <div className="flex justify-end gap-1">
-            <CanAct permission="stickers.moderate">
+            <CanAct permission="stickers.read">
               <ConfirmAction
                 trigger={
                   <Button variant="ghost" size="sm">

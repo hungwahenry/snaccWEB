@@ -16,7 +16,7 @@ import {
   draftFrom,
   isDraftReady,
   REPORT_REASON_LIMITS,
-  TARGET_OPTIONS,
+  SCOPE_OPTIONS,
 } from "../utils/report-reasons"
 
 function ReportReasonForm({
@@ -59,7 +59,7 @@ function ReportReasonForm({
           label="Applies to"
           value={draft.appliesTo}
           onChange={(appliesTo) => set("appliesTo", appliesTo)}
-          options={TARGET_OPTIONS}
+          options={SCOPE_OPTIONS}
         />
         <TextField label="Position" inputMode="numeric" {...text("position")} />
       </div>

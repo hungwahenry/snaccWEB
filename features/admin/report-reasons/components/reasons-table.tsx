@@ -13,7 +13,7 @@ import {
 import { QueryTable } from "@/features/admin/shell/components/query-table"
 import { StatusBadge } from "@/features/admin/shell/components/status-badge"
 import type { AdminReportReason, ReasonDraft } from "../types"
-import { reasonStatus } from "../utils/report-reasons"
+import { reasonStatus, scopeLabel } from "../utils/report-reasons"
 import { ReportReasonDialog } from "./report-reason-dialog"
 
 export function ReasonsTable({
@@ -44,8 +44,8 @@ export function ReasonsTable({
       {
         id: "applies",
         header: "Applies to",
-        className: "text-sm capitalize",
-        cell: (reason) => reason.applies_to,
+        className: "text-sm",
+        cell: (reason) => scopeLabel(reason.applies_to),
       },
       {
         id: "detail",
