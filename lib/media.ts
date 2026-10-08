@@ -296,6 +296,32 @@ export async function cropImage(
   return fromCanvas(canvas, "image/jpeg", asset.fileName || "image.jpg")
 }
 
+export async function fitAsPng(
+  file: Blob,
+  maxEdge: number,
+  fileName: string
+): Promise<PickedImage> {
+  const uri = URL.createObjectURL(file)
+  try {
+    const image = await loadFromUrl(uri)
+    const scale = Math.min(
+      1,
+      maxEdge / Math.max(image.naturalWidth, image.naturalHeight)
+    )
+    const canvas = document.createElement("canvas")
+    canvas.width = Math.max(1, Math.round(image.naturalWidth * scale))
+    canvas.height = Math.max(1, Math.round(image.naturalHeight * scale))
+    const context = canvas.getContext("2d")
+    if (context) {
+      context.imageSmoothingQuality = "high"
+      context.drawImage(image, 0, 0, canvas.width, canvas.height)
+    }
+    return await fromCanvas(canvas, "image/png", fileName)
+  } finally {
+    URL.revokeObjectURL(uri)
+  }
+}
+
 export async function rotateImage(
   asset: PickedImage,
   degrees: number

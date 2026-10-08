@@ -9,7 +9,6 @@ import {
   isFeatured,
   LISTED_FILTERS,
   LISTED_OPTIONS,
-  moveSticker,
   OWNER_FILTERS,
   OWNER_OPTIONS,
   ownerLabel,
@@ -17,6 +16,7 @@ import {
   packBadges,
   packListQuery,
   packSavedMessage,
+  pngName,
   progressLabel,
   progressValue,
   splitStickers,
@@ -279,21 +279,6 @@ describe("stickers", () => {
   })
 })
 
-describe("moveSticker", () => {
-  const ids = ["a", "b", "c"]
-
-  it("swaps a sticker with its neighbour", () => {
-    expect(moveSticker(ids, "b", "earlier")).toEqual(["b", "a", "c"])
-    expect(moveSticker(ids, "b", "later")).toEqual(["a", "c", "b"])
-  })
-
-  it("goes nowhere past either end, or for a sticker it cannot find", () => {
-    expect(moveSticker(ids, "a", "earlier")).toBeNull()
-    expect(moveSticker(ids, "c", "later")).toBeNull()
-    expect(moveSticker(ids, "z", "later")).toBeNull()
-  })
-})
-
 describe("toTitle", () => {
   it("trims the name and refuses a blank or overlong one", () => {
     expect(toTitle({ title: "  Exam season " })).toBe("Exam season")
@@ -326,5 +311,14 @@ describe("uploads", () => {
     expect(progressLabel({ done: 0, total: 4 })).toBe("Adding 1 of 4…")
     expect(progressValue({ done: 1, total: 4 })).toBe(25)
     expect(progressValue({ done: 0, total: 0 })).toBe(0)
+  })
+})
+
+describe("pngName", () => {
+  it("names the fitted file as a PNG, whatever it was", () => {
+    expect(pngName("party.jpg")).toBe("party.png")
+    expect(pngName("cat.photo.webp")).toBe("cat.photo.png")
+    expect(pngName("no-extension")).toBe("no-extension.png")
+    expect(pngName(".jpg")).toBe("sticker.png")
   })
 })

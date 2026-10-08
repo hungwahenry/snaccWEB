@@ -2,16 +2,19 @@
 
 import { useQueryClient } from "@tanstack/react-query"
 import { useCallback, useState } from "react"
+import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { getErrorMessage } from "@/lib/api/errors"
 import { showErrorMessage, showSuccess } from "@/lib/feedback"
+import { fitAsPng } from "@/lib/media"
 import { uploadPackSticker } from "../api"
 import type { UploadProgress } from "../types"
 import { adminStickerKeys } from "../utils/keys"
-import { addedMessage, failedMessage } from "../utils/packs"
+import { addedMessage, failedMessage, pngName } from "../utils/packs"
 
 export function useStickerUploads(packId: string) {
   const queryClient = useQueryClient()
   const [progress, setProgress] = useState<UploadProgress | null>(null)
+  const maxEdge = useConfigValue("content.sticker.max_edge")
 
   const upload = useCallback(
     async (files: File[]) => {
@@ -21,7 +24,8 @@ export function useStickerUploads(packId: string) {
       for (const [done, file] of files.entries()) {
         setProgress({ done, total: files.length })
         try {
-          await uploadPackSticker(packId, file)
+          const sticker = await fitAsPng(file, maxEdge, pngName(file.name))
+          await uploadPackSticker(packId, sticker)
           void queryClient.invalidateQueries({
             queryKey: adminStickerKeys.pack(packId),
           })
@@ -45,7 +49,7 @@ export function useStickerUploads(packId: string) {
       const failed = failedMessage(failures)
       if (failed) showErrorMessage(failed)
     },
-    [packId, queryClient]
+    [packId, queryClient, maxEdge]
   )
 
   return { progress, upload }

@@ -58,7 +58,6 @@ export function StickerPackDetail({
           curate={can.curate}
           progress={editor.uploads.progress}
           onUpload={editor.uploads.upload}
-          onMove={editor.move}
           onRemove={editor.removeSticker}
         />
         <div className="min-w-0 lg:sticky lg:top-6">

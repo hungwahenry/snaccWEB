@@ -1,5 +1,6 @@
 import { api } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
+import { appendImage, type PickedImage } from "@/lib/media"
 import type {
   AdminSticker,
   AdminStickerPack,
@@ -53,17 +54,11 @@ export function deleteStickerPack(id: string) {
   return api.del<null>(`/admin/sticker-packs/${id}`)
 }
 
-export function uploadPackSticker(id: string, file: File) {
+export function uploadPackSticker(id: string, image: PickedImage) {
   const form = new FormData()
-  form.append("image", file)
+  appendImage(form, "image", image, "sticker")
 
   return api.upload<AdminSticker>(`/admin/sticker-packs/${id}/stickers`, form)
-}
-
-export function orderPackStickers(id: string, stickerIds: string[]) {
-  return api.put<null>(`/admin/sticker-packs/${id}/stickers/order`, {
-    stickerIds,
-  })
 }
 
 export function removePackSticker(id: string, stickerId: string) {

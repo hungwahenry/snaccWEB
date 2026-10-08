@@ -5,7 +5,6 @@ import { userHandle } from "@/features/admin/shell/utils/user"
 import { formatDate } from "@/lib/format"
 import type {
   AdminStickerPack,
-  MoveDirection,
   PackAbilities,
   PackFilters,
   PackListed,
@@ -21,7 +20,11 @@ import type {
 
 export const TITLE_MAX = 60
 
-export const STICKER_FILE_TYPES = "image/png,image/webp"
+export const STICKER_FILE_TYPES = "image/*"
+
+export function pngName(fileName: string): string {
+  return `${fileName.replace(/\.[^./]+$/, "") || "sticker"}.png`
+}
 
 export const OWNER_FILTERS = [
   "snacc",
@@ -220,22 +223,6 @@ export function stickerSrc(
   sticker: Pick<PackSticker, "url" | "removed_at">
 ): string | null {
   return sticker.removed_at ? null : sticker.url
-}
-
-export function moveSticker(
-  ids: readonly string[],
-  id: string,
-  direction: MoveDirection
-): string[] | null {
-  const index = ids.indexOf(id)
-  const target = direction === "earlier" ? index - 1 : index + 1
-  if (index === -1 || target < 0 || target >= ids.length) return null
-
-  const next = [...ids]
-  next[index] = ids[target]
-  next[target] = id
-
-  return next
 }
 
 export function toTitle(draft: TitleDraft): string | null {

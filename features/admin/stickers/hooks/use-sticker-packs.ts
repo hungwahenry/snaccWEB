@@ -8,7 +8,6 @@ import {
   deleteStickerPack,
   getStickerPack,
   listStickerPacks,
-  orderPackStickers,
   publishStickerPack,
   removePackSticker,
   setPackDefault,
@@ -87,12 +86,6 @@ export function useStickerPackActions() {
     success: "Sticker taken out of the pack.",
     invalidates: (_result, { id }) => touched(id),
   })
-  const { run: order } = useAdminMutation({
-    mutationFn: ({ id, stickerIds }: { id: string; stickerIds: string[] }) =>
-      orderPackStickers(id, stickerIds),
-    success: "Order saved.",
-    invalidates: (_result, { id }) => touched(id),
-  })
 
   return useMemo(
     () => ({
@@ -105,7 +98,6 @@ export function useStickerPackActions() {
       remove,
       removeSticker: (id: string, stickerId: string) =>
         removeSticker({ id, stickerId }),
-      order: (id: string, stickerIds: string[]) => order({ id, stickerIds }),
     }),
     [
       create,
@@ -116,7 +108,6 @@ export function useStickerPackActions() {
       setFeatured,
       remove,
       removeSticker,
-      order,
     ]
   )
 }

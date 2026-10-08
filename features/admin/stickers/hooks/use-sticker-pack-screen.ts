@@ -3,8 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useMemo } from "react"
 import { STICKER_PACKS_PATH } from "@/features/admin/shell/routes"
-import type { MoveDirection } from "../types"
-import { moveSticker, splitStickers } from "../utils/packs"
+import { splitStickers } from "../utils/packs"
 import { useStickerModerationActions } from "./use-sticker-moderation"
 import { useStickerPack, useStickerPackActions } from "./use-sticker-packs"
 import { useStickerUploads } from "./use-sticker-uploads"
@@ -18,10 +17,6 @@ export function useStickerPackScreen(id: string) {
 
   const stickers = query.data?.stickers
   const groups = useMemo(() => splitStickers(stickers ?? []), [stickers])
-  const order = useMemo(
-    () => groups.live.map((sticker) => sticker.id),
-    [groups.live]
-  )
 
   return {
     query,
@@ -35,10 +30,6 @@ export function useStickerPackScreen(id: string) {
     setFeatured: (on: boolean) => actions.setFeatured(id, on),
     takeDown: (note?: string) => moderation.takeDown(id, note),
     removeSticker: (stickerId: string) => actions.removeSticker(id, stickerId),
-    move: (stickerId: string, direction: MoveDirection) => {
-      const next = moveSticker(order, stickerId, direction)
-      return next ? actions.order(id, next) : undefined
-    },
     remove: async () => {
       await actions.remove(id)
       router.replace(STICKER_PACKS_PATH)

@@ -84,8 +84,6 @@ export interface UpdatePackInput {
   premium?: boolean
 }
 
-export type MoveDirection = "earlier" | "later"
-
 export interface PackAbilities {
   curate: boolean
   publish: boolean
