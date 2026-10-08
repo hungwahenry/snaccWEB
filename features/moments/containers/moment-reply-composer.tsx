@@ -5,16 +5,14 @@ import { useMessageComposer } from "@/features/messages/hooks/use-message-compos
 
 export function MomentReplyComposer({
   onReply,
-  replying,
   onFocus,
   onBlur,
 }: {
   onReply: (body: string) => void
-  replying: boolean
   onFocus: () => void
   onBlur: () => void
 }) {
-  const composer = useMessageComposer({ onSend: onReply, sending: replying })
+  const composer = useMessageComposer({ onSend: onReply })
 
   return (
     <MessageComposer

@@ -11,21 +11,48 @@ import {
 } from "../api"
 import { findMessage, patchMessage, replaceMessage } from "../cache"
 import type { Message } from "../types"
+import { deletedBySender, withEditedBody } from "../utils/editing"
 import { nextReaction, withMyReaction } from "../utils/reactions"
 
-export function useEditMessage(conversationId: string) {
+function useLocalChange<Input extends { messageId: string }>(
+  conversationId: string,
+  send: (input: Input) => Promise<Message>,
+  change: (message: Message, input: Input) => Message
+) {
   return useMutation({
-    mutationFn: (input: { messageId: string; body: string }) =>
-      editMessage(conversationId, input.messageId, input.body),
+    mutationFn: send,
+    onMutate: (input) => {
+      const before = findMessage(conversationId, input.messageId)
+      patchMessage(conversationId, input.messageId, (message) =>
+        change(message, input)
+      )
+      return { before }
+    },
     onSuccess: (message) => replaceMessage(conversationId, message),
+    onError: (error, { messageId }, context) => {
+      const before = context?.before
+      if (before) patchMessage(conversationId, messageId, () => before)
+      showError(error)
+    },
   })
 }
 
+export function useEditMessage(conversationId: string) {
+  return useLocalChange(
+    conversationId,
+    (input: { messageId: string; body: string }) =>
+      editMessage(conversationId, input.messageId, input.body),
+    (message, { body }) => withEditedBody(message, body)
+  )
+}
+
 export function useDeleteMessage(conversationId: string) {
-  return useMutation({
-    mutationFn: (messageId: string) => deleteMessage(conversationId, messageId),
-    onSuccess: (message) => replaceMessage(conversationId, message),
-  })
+  return useLocalChange(
+    conversationId,
+    ({ messageId }: { messageId: string }) =>
+      deleteMessage(conversationId, messageId),
+    deletedBySender
+  )
 }
 
 export function useReactToMessage(conversationId: string) {

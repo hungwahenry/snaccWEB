@@ -1,25 +1,23 @@
 "use client"
 
 import { EllipsisIcon, PlusIcon, StickerIcon } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
-import { IconButton } from "@/components/ui/icon-button"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { PremiumNudge } from "@/features/premium/components/premium-nudge"
 import { ReportSheet } from "@/features/reports/components/report-sheet"
+import { GiphyAdder } from "../components/giphy-adder"
 import { PackHero } from "../components/pack-hero"
-import { PackMenuSheet } from "../components/pack-menu-sheet"
-import { PackTakenDown } from "../components/pack-taken-down"
-import { PackTitleSheet } from "../components/pack-title-sheet"
 import { StickerCreator } from "../components/sticker-creator"
 import { StickerGrid } from "../components/sticker-grid"
+import { StickerMenu } from "../components/sticker-menu"
 import { StickerPackSkeleton } from "../components/sticker-pack-skeleton"
 import { useStickerPackScreen } from "../hooks/use-sticker-pack-screen"
 
 export function StickerPackScreen({ id }: { id: string }) {
   const screen = useStickerPackScreen(id)
-  const { pack, empty } = screen
+  const { pack } = screen
 
   return (
     <>
@@ -27,12 +25,15 @@ export function StickerPackScreen({ id }: { id: string }) {
         title={pack?.title ?? "Sticker pack"}
         onBack={screen.onBack}
         right={
-          screen.onOpenMenu ? (
-            <IconButton
-              icon={EllipsisIcon}
+          screen.menu.length > 0 ? (
+            <StickerMenu
+              items={screen.menu}
               label="Pack options"
-              onClick={screen.onOpenMenu}
-            />
+              onSelect={screen.onMenu}
+              className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground transition-colors outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <EllipsisIcon className="size-6" />
+            </StickerMenu>
           ) : undefined
         }
       />
@@ -50,53 +51,65 @@ export function StickerPackScreen({ id }: { id: string }) {
         </div>
       ) : !pack ? (
         <StickerPackSkeleton />
+      ) : screen.giphy ? (
+        <GiphyAdder {...screen.giphy} />
       ) : (
         <div className="flex flex-col pb-8">
-          <PackHero pack={pack}>
-            {screen.onAddSticker ? (
-              <Button onClick={screen.onAddSticker}>
-                <PlusIcon />
-                Add a sticker
-              </Button>
-            ) : null}
-            {screen.onToggleSave ? (
-              <Button
-                variant={
-                  pack.saved || screen.onAddSticker ? "outline" : "default"
-                }
-                disabled={screen.saving}
-                onClick={screen.onToggleSave}
-              >
-                {pack.saved ? "Remove from stickers" : "Add to stickers"}
-              </Button>
+          <PackHero
+            pack={pack}
+            details={screen.details}
+            renaming={screen.renaming}
+            locked={screen.locked}
+          >
+            {screen.save || screen.make ? (
+              <div className="flex flex-col items-start gap-2">
+                {screen.save ? (
+                  <Button
+                    variant={screen.save.saved ? "outline" : "default"}
+                    disabled={screen.save.busy}
+                    onClick={screen.save.onToggle}
+                    className="self-stretch"
+                  >
+                    {screen.save.saved
+                      ? "In your stickers"
+                      : "Add to your stickers"}
+                  </Button>
+                ) : null}
+                {screen.make ? (
+                  <StickerMenu
+                    items={screen.make.items}
+                    label={screen.make.label}
+                    onSelect={screen.make.onSelect}
+                    className={buttonVariants()}
+                  >
+                    <PlusIcon />
+                    {screen.make.label}
+                  </StickerMenu>
+                ) : null}
+                {screen.full?.show ? (
+                  <PremiumNudge show label={screen.full.label} />
+                ) : null}
+              </div>
             ) : null}
           </PackHero>
 
-          {screen.takenDown ? <PackTakenDown /> : null}
-
-          {screen.lockedForMe ? (
-            <div className="flex justify-center px-4 pb-4">
-              <PremiumNudge
-                show
-                label="Stickers in this pack come with Premium"
-              />
-            </div>
-          ) : null}
-
           {screen.tiles.length > 0 ? (
-            <StickerGrid tiles={screen.tiles} onAction={screen.onAction} />
-          ) : empty ? (
-            <EmptyState
-              icon={empty.icon}
-              title={empty.title}
-              description={empty.description}
+            <StickerGrid
+              tiles={screen.tiles}
+              onPick={screen.onPick}
+              onAction={screen.onAction}
             />
-          ) : null}
+          ) : (
+            <EmptyState
+              icon={StickerIcon}
+              title="No stickers yet"
+              description={screen.emptyHint}
+              compact
+            />
+          )}
         </div>
       )}
 
-      {screen.menuSheet ? <PackMenuSheet {...screen.menuSheet} /> : null}
-      <PackTitleSheet {...screen.renameSheet} />
       <ReportSheet {...screen.report} />
       <StickerCreator {...screen.creator} />
     </>

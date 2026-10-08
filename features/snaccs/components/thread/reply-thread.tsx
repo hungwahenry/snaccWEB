@@ -1,4 +1,5 @@
 import type { SnaccWithParent } from "../../types"
+import { pollChoice } from "../../utils/polls"
 import { asSnacc } from "../../utils/resnaccs"
 import { SnaccCard, type SnaccCardProps } from "../card/snacc-card"
 import { ReplyContext } from "./reply-context"
@@ -25,7 +26,7 @@ export function ReplyThread({
             cardProps.onOpenImages(asSnacc(parent), index)
           }
           poll={{
-            voting: cardProps.votingPollFor === parent.id,
+            choice: pollChoice(cardProps.votingPollFor, parent.id),
             onVote: (optionId) => cardProps.onVote(asSnacc(parent), optionId),
             onOpenImage: (option) =>
               cardProps.onOpenPollImage(asSnacc(parent), option),

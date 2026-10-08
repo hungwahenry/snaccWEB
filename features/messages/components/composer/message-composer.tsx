@@ -30,7 +30,7 @@ export type MessageComposerProps = {
   onChange: (text: string) => void
   onSend: () => void
   canSend: boolean
-  sending: boolean
+  sending?: boolean
   editing: boolean
   context: ComposerContext | null
   onCancelContext?: () => void
@@ -59,7 +59,7 @@ export function MessageComposer({
   onChange,
   onSend,
   canSend,
-  sending,
+  sending = false,
   editing,
   context,
   onCancelContext,

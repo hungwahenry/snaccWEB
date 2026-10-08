@@ -7,11 +7,13 @@ import { ProfileLink } from "@/features/users/components/profile-link"
 import { cn } from "@/lib/utils"
 import type {
   EmbeddedSnacc,
+  PollVote,
   Snacc,
   SnaccPollOption,
   SnaccReplyTo,
 } from "../../types"
 import { snaccPath } from "../../routes"
+import { pollChoice } from "../../utils/polls"
 import { asSnacc, isPlainResnacc } from "../../utils/resnaccs"
 import { AddresseeLine, AuthorRow } from "./author-row"
 import { ResnaccHeader } from "./card-labels"
@@ -49,7 +51,7 @@ export type SnaccCardProps = SnaccActionHandlers & {
   inset?: number
   flushTop?: boolean
   header?: ReactNode
-  votingPollFor?: string | null
+  votingPollFor?: PollVote | null
   itemRef?: Ref<HTMLElement>
 }
 
@@ -117,7 +119,7 @@ function SnaccCardComponent(props: SnaccCardProps) {
       }
       onHoldSticker={onKeepSticker ? () => onKeepSticker(snacc) : undefined}
       poll={{
-        voting: votingPollFor === snacc.id,
+        choice: pollChoice(votingPollFor, snacc.id),
         onVote: (optionId) => onVote(snacc, optionId),
         onOpenImage: (option) => onOpenPollImage(snacc, option),
       }}

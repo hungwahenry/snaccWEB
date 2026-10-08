@@ -18,3 +18,23 @@ export function canDeleteMessage(message: Message): boolean {
 export function canActOnMessage(message: Message): boolean {
   return message.status === undefined && !message.removed
 }
+
+export function withEditedBody<
+  T extends { body: string | null; edited: boolean },
+>(message: T, body: string): T {
+  return { ...message, body, edited: true }
+}
+
+export function deletedBySender(message: Message): Message {
+  return {
+    ...message,
+    removed: true,
+    deleted_by_sender: true,
+    body: null,
+    images: [],
+    voice: null,
+    sticker: null,
+    gif: null,
+    reactions: [],
+  }
+}

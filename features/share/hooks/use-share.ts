@@ -1,17 +1,15 @@
 "use client"
 
-import { useMutation } from "@tanstack/react-query"
 import { useState } from "react"
 import { useFlag } from "@/features/config/hooks/use-flag"
-import { sendMessage } from "@/features/messages/api"
+import { submitMessage } from "@/features/messages/cache/pending-messages"
 import { useConversations } from "@/features/messages/hooks/use-conversations"
 import { signal } from "@/features/signals/utils/queue"
 import { useShareCapture } from "@/hooks/use-share-capture"
-import { newId } from "@/lib/ids"
 import { copyLink, shareOrCopy } from "@/lib/share-links"
 import type { ShareSubject } from "../types"
 import { labelFor, linkFor, shareable, textFor } from "../utils/subject"
-import { showNotice, showSuccess } from "@/lib/feedback"
+import { showSuccess } from "@/lib/feedback"
 
 export function useShare() {
   const [subject, setSubject] = useState<ShareSubject | null>(null)
@@ -27,34 +25,20 @@ export function useShare() {
       signal("share", { subjectId: subject.snacc.id, detail })
   }
 
-  const sending = useMutation({
-    mutationFn: async () => {
-      if (!subject) return { sent: 0, failed: 0 }
-      const link = linkFor(subject)
-      const trimmed = note.trim()
+  function send() {
+    if (!subject || picked.length === 0) return
+    const link = linkFor(subject)
+    const trimmed = note.trim()
+    const message = (body: string) => ({ body, images: [], replyingTo: null })
 
-      const results = await Promise.allSettled(
-        picked.map(async (conversationId) => {
-          if (trimmed)
-            await sendMessage(conversationId, { id: newId(), body: trimmed })
-          await sendMessage(conversationId, { id: newId(), body: link })
-        })
-      )
-      const failures = results.filter((result) => result.status === "rejected")
-      if (failures.length > 0 && failures.length === results.length)
-        throw failures[0].reason
-      return { sent: results.length - failures.length, failed: failures.length }
-    },
-    onSuccess: ({ sent, failed }) => {
-      if (sent > 0) noteShare("dm")
-      if (failed === 0) showSuccess("Sent")
-      else
-        showNotice(
-          `Sent to ${sent}. Couldn't reach ${failed === 1 ? "1 person" : `${failed} people`}`
-        )
-      setOpen(false)
-    },
-  })
+    for (const conversationId of picked) {
+      if (trimmed) submitMessage(conversationId, message(trimmed))
+      submitMessage(conversationId, message(link))
+    }
+    noteShare("dm")
+    setOpen(false)
+    showSuccess("Sent")
+  }
 
   return {
     open(next: ShareSubject) {
@@ -109,8 +93,7 @@ export function useShare() {
           ),
         note,
         onNote: setNote,
-        onSend: () => sending.mutate(),
-        sending: sending.isPending,
+        onSend: send,
       },
     },
   }

@@ -63,6 +63,13 @@ export function addPackSticker(
   return api.upload<Sticker>(`${packPath(packId)}/stickers`, form)
 }
 
+export function addGiphySticker(
+  packId: string,
+  giphyId: string
+): Promise<Sticker> {
+  return api.post<Sticker>(`${packPath(packId)}/stickers/giphy`, { giphyId })
+}
+
 export async function removePackSticker(input: {
   packId: string
   stickerId: string

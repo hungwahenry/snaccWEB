@@ -1,13 +1,13 @@
 "use client"
 
 import { useReplies } from "@/features/snaccs/hooks/thread/use-replies"
-import type { Snacc } from "@/features/snaccs/types"
+import type { PollVote, Snacc } from "@/features/snaccs/types"
 import type { SnaccActionHandlers } from "@/features/snaccs/components/card/snacc-card"
 import { CommentThread } from "@/features/snaccs/components/thread/comment-thread"
 
 type CommentThreadItemProps = SnaccActionHandlers & {
   comment: Snacc
-  votingPollFor: string | null
+  votingPollFor: PollVote | null
 }
 
 export function CommentThreadItem({

@@ -18,6 +18,7 @@ import {
   PaletteIcon,
   ShieldCheckIcon,
   ShieldIcon,
+  StickerIcon,
   UserRoundIcon,
   UserRoundPlusIcon,
   WalletIcon,
@@ -55,6 +56,7 @@ import { ADMIN_PATH, PRIVACY_PATH, TERMS_PATH } from "@/lib/routes"
 import { BLOCKED_PATH } from "@/features/blocks/routes"
 import { MY_REPORTS_PATH } from "@/features/reports/routes"
 import { NOTIFICATION_SETTINGS_PATH } from "@/features/notifications/routes"
+import { STICKERS_PATH } from "@/features/stickers/routes"
 import { ABOUT_PATH, PRIVACY_SETTINGS_PATH } from "../routes"
 
 export function SettingsScreen() {
@@ -69,6 +71,7 @@ export function SettingsScreen() {
   const premiumEnabled = useFlag("premium")
   const eggsEnabled = useFlag("easter_eggs")
   const savedEnabled = useFlag("bookmarks")
+  const stickersEnabled = useFlag("stickers")
   const inviteEnabled = useFlag("referrals")
 
   function confirmLogout() {
@@ -124,10 +127,13 @@ export function SettingsScreen() {
           </Section>
         ) : null}
 
-        {savedEnabled || eggsEnabled || accentsEnabled ? (
+        {savedEnabled || stickersEnabled || eggsEnabled || accentsEnabled ? (
           <Section title="Content">
             {savedEnabled ? (
               <Row icon={BookmarkIcon} label="Saved snaccs" href={SAVED_PATH} />
+            ) : null}
+            {stickersEnabled ? (
+              <Row icon={StickerIcon} label="Stickers" href={STICKERS_PATH} />
             ) : null}
             {eggsEnabled ? (
               <Row icon={EggIcon} label="Easter eggs" href={EGGS_PATH} />

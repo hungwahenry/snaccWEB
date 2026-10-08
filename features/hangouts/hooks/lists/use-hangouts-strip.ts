@@ -2,6 +2,7 @@
 
 import { useMemo } from "react"
 import { useFlag } from "@/features/config/hooks/use-flag"
+import { seedSnacc } from "@/features/snaccs/cache"
 import { useNow } from "@/hooks/use-now"
 import { HANGOUTS_PATH } from "../../routes"
 import { usePlanHangout } from "../hosting/use-plan-hangout"
@@ -31,6 +32,7 @@ export function useHangoutsStrip({ always }: { always: boolean }) {
       (cards.length > 0 || (always && plan !== undefined)),
     cards,
     now,
+    onOpen: seedSnacc,
     onPlan: plan,
     seeAllHref: HANGOUTS_PATH,
   }

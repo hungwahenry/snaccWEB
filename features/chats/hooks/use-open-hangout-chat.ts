@@ -3,7 +3,7 @@
 import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { getHangoutRoom } from "../api"
-import { seedRoom } from "../cache"
+import { findHangoutRoom, seedRoom } from "../cache"
 import { chatRoomPath } from "../routes"
 
 export function useOpenHangoutChat() {
@@ -19,7 +19,9 @@ export function useOpenHangoutChat() {
   return {
     pending: open.isPending,
     open: (snaccId: string) => {
-      if (!open.isPending) open.mutate(snaccId)
+      const known = findHangoutRoom(snaccId)
+      if (known) router.push(chatRoomPath(known.id))
+      else if (!open.isPending) open.mutate(snaccId)
     },
   }
 }

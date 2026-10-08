@@ -90,6 +90,12 @@ export function findRoom(roomId: string): ChatRoom | undefined {
   )
 }
 
+export function findHangoutRoom(snaccId: string): ChatRoom | undefined {
+  return client()
+    .getQueryData<ChatRoom[]>(chatKeys.rooms())
+    ?.find((room) => room.hangout?.snacc_id === snaccId)
+}
+
 export function seedRoom(room: ChatRoom): void {
   client().setQueryData(chatKeys.room(room.id), room)
 }

@@ -99,6 +99,10 @@ export function removeHiddenSnacc(id: string): void {
   dropFromLists(id, "unavailable")
 }
 
+export function dropDeletedFromLists(id: string): void {
+  dropFromLists(id, "deleted")
+}
+
 export function removeAuthorSnaccs(userId: string): void {
   changeLists((data) =>
     filterItems(data, (snacc) => snacc.author.id !== userId)
@@ -217,6 +221,11 @@ export function setAuthorTier(authorId: string, tier: string | null): void {
   )
 }
 
+export function seedSnacc(snacc: Snacc): void {
+  if (client().getQueryData(snaccKeys.detail(snacc.id))) return
+  client().setQueryData(snaccKeys.detail(snacc.id), snacc, { updatedAt: 0 })
+}
+
 export function findSnacc(id: string): Snacc | undefined {
   const single = client().getQueryData<Snacc>(snaccKeys.detail(id))
   if (single) return single
@@ -241,11 +250,8 @@ export function restoreSnaccs(snapshot: Snapshot): void {
   snapshot.forEach(([key, data]) => client().setQueryData(key, data))
 }
 
-export function cancelSnaccQueries(id: string): Promise<void> {
-  return Promise.all([
-    client().cancelQueries({ queryKey: snaccKeys.detail(id) }),
-    client().cancelQueries(inLists),
-  ]).then(() => undefined)
+export function cancelSnaccDetail(id: string): Promise<void> {
+  return client().cancelQueries({ queryKey: snaccKeys.detail(id) })
 }
 
 export function commentsChanged(parentId: string): void {

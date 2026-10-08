@@ -5,6 +5,7 @@ import { useFlagWhenKnown } from "@/features/config/hooks/use-flag"
 import { HOME_PATH } from "@/features/feed/routes"
 import { useBack } from "@/hooks/use-back"
 import type { HangoutScope } from "../../types"
+import { seedSnacc } from "@/features/snaccs/cache"
 import { usePlanHangout } from "../hosting/use-plan-hangout"
 import { useHangoutList } from "./use-hangout-list"
 import { useLiveHangouts } from "./use-live-hangouts"
@@ -27,5 +28,6 @@ export function useHangoutsScreen() {
       loading: enabled === null || list.loading || list.stale,
     },
     plan,
+    onOpen: seedSnacc,
   }
 }

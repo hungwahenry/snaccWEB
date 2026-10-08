@@ -107,6 +107,22 @@ export function markPhotoOpened(conversationId: string, photoId: string): void {
   )
 }
 
+export function findConversation(id: string): Conversation | undefined {
+  const single = client().getQueryData<Conversation>(
+    messageKeys.conversation(id)
+  )
+  if (single) return single
+
+  for (const [, data] of client().getQueriesData<PaginatedPages<Conversation>>({
+    queryKey: messageKeys.conversationLists(),
+  })) {
+    const found = findItem(data, (conversation) => conversation.id === id)
+    if (found) return found
+  }
+
+  return undefined
+}
+
 export function setConversation(conversation: Conversation): void {
   client().setQueryData(messageKeys.conversation(conversation.id), conversation)
   inboxChanged()

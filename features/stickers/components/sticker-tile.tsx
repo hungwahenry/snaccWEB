@@ -1,13 +1,14 @@
 "use client"
 
 import { ClockIcon, LockIcon } from "lucide-react"
+import { useState } from "react"
 import { LazyImage } from "@/components/ui/lazy-image"
 import { useHoldAction } from "@/hooks/use-hold-action"
 import { cn } from "@/lib/utils"
-import type { PackTile, StickerTileState } from "../types"
-import { TileActionButton } from "./tile-action-button"
+import type { StickerState, StickerTile as Tile, TileActionId } from "../types"
+import { StickerMenu } from "./sticker-menu"
 
-const LABELS: Record<StickerTileState, string> = {
+const LABELS: Record<StickerState, string> = {
   ready: "Sticker",
   locked: "Premium sticker",
   held: "Sticker under review",
@@ -21,11 +22,14 @@ export function StickerTile({
   onPick,
   onAction,
 }: {
-  tile: PackTile
-  onPick?: (tile: PackTile) => void
-  onAction: (tile: PackTile) => void
+  tile: Tile
+  onPick?: (tile: Tile) => void
+  onAction: (tile: Tile, action: TileActionId) => void
 }) {
-  const hold = useHoldAction(tile.action ? () => onAction(tile) : undefined)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const hold = useHoldAction(
+    tile.actions.length > 0 ? () => setMenuOpen(true) : undefined
+  )
   const { sticker, state } = tile
 
   const face = (
@@ -73,8 +77,20 @@ export function StickerTile({
           {face}
         </div>
       )}
-      {tile.action ? (
-        <TileActionButton action={tile.action} onPress={() => onAction(tile)} />
+      {tile.actions.length > 0 ? (
+        <StickerMenu
+          items={tile.actions}
+          label="Sticker options"
+          open={menuOpen}
+          onOpenChange={setMenuOpen}
+          onSelect={(action) => onAction(tile, action)}
+          className={cn(
+            "absolute top-1 right-1 flex size-7 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm transition-opacity outline-none hover:bg-background focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-ring",
+            menuOpen
+              ? "opacity-100"
+              : "opacity-0 group-hover:opacity-100 [@media(pointer:coarse)]:pointer-events-none"
+          )}
+        />
       ) : null}
     </div>
   )

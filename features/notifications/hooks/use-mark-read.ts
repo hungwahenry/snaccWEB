@@ -70,6 +70,6 @@ export function useMarkNotificationsSeen() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: markNotificationsSeen,
-    onSuccess: () => queryClient.setQueryData(UNREAD_KEY, 0),
+    onMutate: () => queryClient.setQueryData(UNREAD_KEY, 0),
   })
 }

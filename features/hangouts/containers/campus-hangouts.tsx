@@ -12,6 +12,7 @@ export function CampusHangouts() {
       cards={strip.cards}
       now={strip.now}
       seeAllHref={strip.seeAllHref}
+      onOpen={strip.onOpen}
       onPlan={strip.onPlan}
     />
   )

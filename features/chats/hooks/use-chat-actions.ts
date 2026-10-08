@@ -2,6 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query"
 import { useCallback } from "react"
+import { withEditedBody } from "@/features/messages/utils/editing"
 import { nextReaction } from "@/features/messages/utils/reactions"
 import { showError } from "@/lib/feedback"
 import {
@@ -18,7 +19,19 @@ export function useEditChatMessage(roomId: string) {
   return useMutation({
     mutationFn: (input: { messageId: string; body: string }) =>
       editChatMessage(input.messageId, input.body),
+    onMutate: ({ messageId, body }) => {
+      const before = findChatMessage(roomId, messageId)
+      patchChatMessage(roomId, messageId, (message) =>
+        withEditedBody(message, body)
+      )
+      return { before }
+    },
     onSuccess: (message) => upsertChatMessage(roomId, message),
+    onError: (error, { messageId }, context) => {
+      const before = context?.before
+      if (before) patchChatMessage(roomId, messageId, () => before)
+      showError(error)
+    },
   })
 }
 
@@ -26,8 +39,16 @@ export function useEditChatMessage(roomId: string) {
 export function useWithdrawChatMessage(roomId: string) {
   return useMutation({
     mutationFn: deleteChatMessage,
-    onSuccess: (_result, messageId) =>
-      patchChatMessage(roomId, messageId, withdrawn),
+    onMutate: (messageId) => {
+      const before = findChatMessage(roomId, messageId)
+      patchChatMessage(roomId, messageId, withdrawn)
+      return { before }
+    },
+    onError: (error, messageId, context) => {
+      const before = context?.before
+      if (before) patchChatMessage(roomId, messageId, () => before)
+      showError(error)
+    },
   })
 }
 

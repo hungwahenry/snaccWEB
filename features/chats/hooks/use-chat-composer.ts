@@ -88,7 +88,6 @@ export function useChatComposer(
 
   const composer = useMessageComposer({
     onSend: submit,
-    sending: edit.isPending,
     context,
     onCancelContext: () => {
       setReplyingTo(null)

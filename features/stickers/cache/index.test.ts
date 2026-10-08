@@ -1,9 +1,14 @@
 import { QueryClient } from "@tanstack/react-query"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import type { PaginatedPages } from "@/lib/api/types"
-import type { Sticker, StickerPack, StickerPackDetail } from "../types"
+import type {
+  Sticker,
+  StickerPack,
+  StickerPackDetail,
+  StickerTray,
+} from "../types"
 import { stickerKeys } from "../utils/keys"
-import { dropPackSticker, restorePack, setPackSaved } from "."
+import { dropSticker, findPack, restoreStickers, setPackSaved } from "."
 
 let client: QueryClient
 vi.mock("@/lib/query/client", () => ({ getQueryClient: () => client }))
@@ -52,24 +57,41 @@ const catalog = (): PaginatedPages<StickerPack> => ({
   pageParams: [{ page: 1 }],
 })
 
+const tray = (): StickerTray => ({
+  favourites: { ...detail(), id: "fav", kind: "favourites", stickers: [] },
+  packs: [detail()],
+})
+
 beforeEach(() => {
   client = new QueryClient()
   client.setQueryData(stickerKeys.pack("p1"), detail())
   client.setQueryData(stickerKeys.catalog(), catalog())
+  client.setQueryData(stickerKeys.tray(), tray())
 })
 
 describe("sticker pack cache", () => {
-  it("takes a sticker out of its pack and puts it back if that fails", () => {
-    const previous = dropPackSticker("p1", "a")
+  it("takes a sticker out of its pack and the tray, and puts it back if that fails", () => {
+    const previous = dropSticker("p1", "a")
 
     const dropped = client.getQueryData<StickerPackDetail>(
       stickerKeys.pack("p1")
     )
     expect(dropped?.stickers.map((item) => item.id)).toEqual(["b"])
     expect(dropped?.stickers_count).toBe(1)
+    expect(
+      client
+        .getQueryData<StickerTray>(stickerKeys.tray())
+        ?.packs[0].stickers.map((item) => item.id)
+    ).toEqual(["b"])
 
-    restorePack("p1", previous)
+    restoreStickers("p1", previous)
     expect(client.getQueryData(stickerKeys.pack("p1"))).toEqual(detail())
+    expect(client.getQueryData(stickerKeys.tray())).toEqual(tray())
+  })
+
+  it("finds a pack already in the tray", () => {
+    expect(findPack("p1")?.stickers.map((item) => item.id)).toEqual(["a", "b"])
+    expect(findPack("nope")).toBeUndefined()
   })
 
   it("marks a pack added everywhere it shows", () => {

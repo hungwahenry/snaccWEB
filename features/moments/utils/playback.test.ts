@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { isReady, upcomingImage } from "./playback"
+import { isReady, openingImage, openingIndex, upcomingImage } from "./playback"
 
 const image = { url: "a.jpg" }
 
@@ -17,5 +17,17 @@ describe("upcomingImage", () => {
     expect(upcomingImage(run, 0)).toBeNull()
     expect(upcomingImage(run, 1)).toBe("b.jpg")
     expect(upcomingImage(run, 2)).toBeNull()
+  })
+})
+
+describe("openingIndex", () => {
+  it("opens a run on the first moment not yet seen, or the start when all are", () => {
+    const run = [
+      { seen: true, image },
+      { seen: false, image: { url: "b.jpg" } },
+    ]
+    expect(openingIndex(run)).toBe(1)
+    expect(openingImage(run)).toBe("b.jpg")
+    expect(openingIndex([{ seen: true }, { seen: true }])).toBe(0)
   })
 })

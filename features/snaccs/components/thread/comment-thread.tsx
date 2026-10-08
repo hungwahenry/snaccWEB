@@ -1,7 +1,7 @@
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
 import { compactCount } from "@/lib/format"
-import type { Snacc, SnaccReplyTo } from "../../types"
+import type { PollVote, Snacc, SnaccReplyTo } from "../../types"
 import { REPLY_INSET } from "@/features/snaccs/utils/layout"
 import { SnaccCard, type SnaccActionHandlers } from "../card/snacc-card"
 
@@ -15,7 +15,7 @@ type CommentThreadProps = SnaccActionHandlers & {
   onShowReplies: () => void
   onMoreReplies: () => void
   onHideReplies: () => void
-  votingPollFor: string | null
+  votingPollFor: PollVote | null
 }
 
 export function CommentThread({

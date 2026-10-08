@@ -9,7 +9,10 @@ import { useFollowToggle } from "@/features/follows/hooks/use-follow-toggle"
 import { usePostNotifications } from "@/features/follows/hooks/use-post-notifications"
 import { followsPath } from "@/features/follows/routes"
 import { followButtonLabel } from "@/features/follows/utils/follow-state"
-import { useMessageUser } from "@/features/messages/hooks/use-message-user"
+import {
+  useConversationWith,
+  useMessageUser,
+} from "@/features/messages/hooks/use-message-user"
 import { momentsPath } from "@/features/moments/routes"
 import { useVisitorSummary } from "@/features/profile-views/hooks/use-visitor-summary"
 import { useMyScore } from "@/features/score/hooks/use-my-score"
@@ -72,6 +75,12 @@ export function useProfileScreen(username: string) {
   const scoreEnabled = useFlag("score")
   const visitorsEnabled = useFlag("profile_visitors")
   const messagesEnabled = useFlag("anon_messages")
+  const canMessage =
+    profile !== null &&
+    !isMe &&
+    messagesEnabled &&
+    profile.accepts_anonymous_messages
+  useConversationWith(canMessage ? profile.id : null)
   const walletEnabled = useFlag("wallet")
   const momentsEnabled = useFlag("moments")
   const visitors = useVisitorSummary(isMe && visitorsEnabled)
@@ -132,10 +141,7 @@ export function useProfileScreen(username: string) {
     actions: profile
       ? {
           payLabel: walletEnabled && handle ? `Send money to ${handle}` : null,
-          messageLabel:
-            messagesEnabled && profile.accepts_anonymous_messages
-              ? "Send anonymous message"
-              : null,
+          messageLabel: canMessage ? "Send anonymous message" : null,
           followState: profile.follow_state,
           notifying: profile.notifying,
           notifyLabel: notifyLabel(profile.notifying),
@@ -148,7 +154,7 @@ export function useProfileScreen(username: string) {
               payPath({ mode: "send", to: profile.username ?? undefined })
             ),
           onMessage: () =>
-            messageUser.mutate({ id: profile.id, username: profile.username }),
+            messageUser({ id: profile.id, username: profile.username }),
           onToggleNotify: () => notify.mutate(profile),
           onToggleFollow: () => toggleFollow(profile),
         }

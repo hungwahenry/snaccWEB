@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import type { SnaccAuthor } from "@/features/snaccs/types"
 import { handleOf } from "@/features/users/utils/names"
-import { showSuccess } from "@/lib/feedback"
+import { showError, showSuccess } from "@/lib/feedback"
 import { getBlockedAccounts, unblockUser } from "../api"
 import { blockKeys } from "../utils/keys"
 
@@ -15,12 +15,19 @@ export function useBlockedAccounts() {
 
   const unblock = useMutation({
     mutationFn: (user: SnaccAuthor) => unblockUser(user.id),
-    onSuccess: (_result, user) => {
+    onMutate: (user) => {
+      const previous = queryClient.getQueryData<SnaccAuthor[]>(KEY)
       queryClient.setQueryData<SnaccAuthor[]>(KEY, (list) =>
         list?.filter((entry) => entry.id !== user.id)
       )
-      showSuccess(`Unblocked ${handleOf(user) ?? "them"}.`)
+      return { previous }
     },
+    onError: (error, _user, context) => {
+      queryClient.setQueryData(KEY, context?.previous)
+      showError(error)
+    },
+    onSuccess: (_result, user) =>
+      showSuccess(`Unblocked ${handleOf(user) ?? "them"}.`),
   })
 
   return {
@@ -29,6 +36,5 @@ export function useBlockedAccounts() {
     failed: query.isError,
     retry: () => void query.refetch(),
     unblock: unblock.mutate,
-    unblocking: unblock.isPending ? (unblock.variables?.id ?? null) : null,
   }
 }

@@ -28,7 +28,6 @@ export type ShareSheetProps = {
     note: string
     onNote: (value: string) => void
     onSend: () => void
-    sending: boolean
   }
 }
 
@@ -62,19 +61,9 @@ export function ShareSheet({
               maxLength={2000}
               className="h-11 rounded-full px-4"
             />
-            <Button
-              className="h-11 w-full"
-              disabled={recipients.sending}
-              onClick={recipients.onSend}
-            >
-              {recipients.sending ? (
-                <Spinner />
-              ) : (
-                <>
-                  <SendIcon /> Send to {recipients.picked.length}{" "}
-                  {recipients.picked.length === 1 ? "person" : "people"}
-                </>
-              )}
+            <Button className="h-11 w-full" onClick={recipients.onSend}>
+              <SendIcon /> Send to {recipients.picked.length}{" "}
+              {recipients.picked.length === 1 ? "person" : "people"}
             </Button>
           </div>
         ) : subject ? (

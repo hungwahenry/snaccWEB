@@ -14,6 +14,7 @@ import {
   whenLine,
 } from "../../utils/hangouts"
 import { joinButton } from "../../utils/join"
+import { useHangoutAgreement } from "../agreement/use-agreement-gate"
 import { useHangoutJoin } from "../joining/use-hangout-join"
 
 const TICK_MS = 30_000
@@ -37,6 +38,7 @@ export function useHangoutBlock(
     now
   )
   const inside = button.kind === "hosting" || button.kind === "going"
+  useHangoutAgreement(live && !inside)
 
   return {
     live,

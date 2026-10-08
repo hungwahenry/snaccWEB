@@ -1,7 +1,7 @@
 import type { PaginatedPages } from "@/lib/api/types"
 import { getQueryClient } from "@/lib/query/client"
 import { mapItems } from "@/lib/query/pages"
-import type { StickerPack, StickerPackDetail } from "../types"
+import type { StickerPack, StickerPackDetail, StickerTray } from "../types"
 import { stickerKeys } from "../utils/keys"
 
 export function refreshStickerPacks(): void {
@@ -19,30 +19,57 @@ export function packStickersChanged(packId: string): void {
   refreshStickerPacks()
 }
 
-export function dropPackSticker(
+export interface StickersSnapshot {
+  tray: StickerTray | undefined
+  pack: StickerPackDetail | undefined
+}
+
+export function dropSticker(
   packId: string,
   stickerId: string
-): StickerPackDetail | undefined {
+): StickersSnapshot {
   const client = getQueryClient()
-  const key = stickerKeys.pack(packId)
-  const previous = client.getQueryData<StickerPackDetail>(key)
-  client.setQueryData<StickerPackDetail>(key, (pack) =>
-    pack
+  const without = (pack: StickerPackDetail): StickerPackDetail =>
+    pack.id === packId
       ? {
           ...pack,
           stickers: pack.stickers.filter((sticker) => sticker.id !== stickerId),
           stickers_count: Math.max(0, pack.stickers_count - 1),
         }
       : pack
+  const snapshot = {
+    tray: client.getQueryData<StickerTray>(stickerKeys.tray()),
+    pack: client.getQueryData<StickerPackDetail>(stickerKeys.pack(packId)),
+  }
+
+  client.setQueryData<StickerTray>(
+    stickerKeys.tray(),
+    (tray) =>
+      tray && {
+        favourites: without(tray.favourites),
+        packs: tray.packs.map(without),
+      }
   )
-  return previous
+  client.setQueryData<StickerPackDetail>(
+    stickerKeys.pack(packId),
+    (pack) => pack && without(pack)
+  )
+  return snapshot
 }
 
-export function restorePack(
+export function restoreStickers(
   packId: string,
-  previous: StickerPackDetail | undefined
+  snapshot: StickersSnapshot | undefined
 ): void {
-  getQueryClient().setQueryData(stickerKeys.pack(packId), previous)
+  const client = getQueryClient()
+  client.setQueryData(stickerKeys.tray(), snapshot?.tray)
+  client.setQueryData(stickerKeys.pack(packId), snapshot?.pack)
+}
+
+export function findPack(id: string): StickerPackDetail | undefined {
+  const tray = getQueryClient().getQueryData<StickerTray>(stickerKeys.tray())
+  if (!tray) return undefined
+  return [tray.favourites, ...tray.packs].find((pack) => pack.id === id)
 }
 
 export function setPackSaved(packId: string, saved: boolean): void {
@@ -65,4 +92,19 @@ export function setPackSaved(packId: string, saved: boolean): void {
 export function putPack(pack: StickerPackDetail): void {
   getQueryClient().setQueryData(stickerKeys.pack(pack.id), pack)
   refreshStickerPacks()
+}
+
+export function dropPack(packId: string): void {
+  const client = getQueryClient()
+  client.setQueryData<StickerTray>(
+    stickerKeys.tray(),
+    (tray) =>
+      tray && {
+        ...tray,
+        packs: tray.packs.filter((pack) => pack.id !== packId),
+      }
+  )
+  client.setQueryData<StickerPack[]>(stickerKeys.mine(), (packs) =>
+    packs?.filter((pack) => pack.id !== packId)
+  )
 }

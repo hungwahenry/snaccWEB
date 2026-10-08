@@ -5,7 +5,7 @@ import { newId } from "@/lib/ids"
 import { showError } from "@/lib/feedback"
 import { createSnacc, undoResnacc } from "../../api"
 import {
-  cancelSnaccQueries,
+  cancelSnaccDetail,
   feedsChanged,
   patchSnacc,
   resnaccsChanged,
@@ -21,7 +21,7 @@ export function useResnacc() {
       await createSnacc({ id: newId(), resnaccOfId: snacc.id })
     },
     onMutate: async (snacc: Snacc) => {
-      await cancelSnaccQueries(snacc.id)
+      await cancelSnaccDetail(snacc.id)
 
       const snapshot = snapshotSnaccs()
       const undoing = snacc.my_resnacc

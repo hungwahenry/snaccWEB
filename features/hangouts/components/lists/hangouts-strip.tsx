@@ -3,6 +3,7 @@ import Link from "next/link"
 import { Eyebrow } from "@/components/ui/eyebrow"
 import { snaccPath } from "@/features/snaccs/routes"
 import { cn } from "@/lib/utils"
+import type { Snacc } from "@/features/snaccs/types"
 import type { HangoutCard, SnaccHangout } from "../../types"
 import { goingLine, whenLine } from "../../utils/hangouts"
 
@@ -13,14 +14,17 @@ function HangoutTile({
   href,
   hangout,
   now,
+  onOpen,
 }: {
   href: string
   hangout: SnaccHangout
   now: number
+  onOpen: () => void
 }) {
   return (
     <Link
       href={href}
+      onClick={onOpen}
       className={cn(TILE, "transition-colors hover:bg-muted/50")}
     >
       <span
@@ -44,12 +48,14 @@ export function HangoutsStrip({
   cards,
   now,
   seeAllHref,
+  onOpen,
   onPlan,
   className,
 }: {
   cards: HangoutCard[]
   now: number
   seeAllHref: string
+  onOpen: (snacc: Snacc) => void
   onPlan?: () => void
   className?: string
 }) {
@@ -72,6 +78,7 @@ export function HangoutsStrip({
               href={snaccPath(card.snacc.id)}
               hangout={card.snacc.hangout}
               now={now}
+              onOpen={() => onOpen(card.snacc)}
             />
           ) : null
         )}

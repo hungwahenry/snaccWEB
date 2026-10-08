@@ -44,6 +44,11 @@ export interface SnaccPollOption {
   image: SnaccPollOptionImage | null
 }
 
+export interface PollVote {
+  snaccId: string
+  optionId: string
+}
+
 export interface SnaccPoll {
   id: string
   closes_at: string

@@ -16,7 +16,8 @@ import { useHangoutsScreen } from "../hooks/lists/use-hangouts-screen"
 import { HANGOUT_EMPTY, HANGOUT_TABS } from "../utils/tabs"
 
 export function HangoutsScreen() {
-  const { onBack, enabled, scope, setScope, list, plan } = useHangoutsScreen()
+  const { onBack, enabled, scope, setScope, list, plan, onOpen } =
+    useHangoutsScreen()
   const empty = HANGOUT_EMPTY[scope]
 
   if (enabled === false) {
@@ -69,7 +70,7 @@ export function HangoutsScreen() {
       ) : (
         <>
           {list.cards.map((card) => (
-            <HangoutCard key={card.id} card={card} />
+            <HangoutCard key={card.id} card={card} onOpen={onOpen} />
           ))}
           <LoadMore onReach={list.loadMore} disabled={list.loadingMore} />
           <ListFooter loading={list.loadingMore} />

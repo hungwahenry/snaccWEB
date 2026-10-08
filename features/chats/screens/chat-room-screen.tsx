@@ -16,7 +16,7 @@ import { ThreadView } from "@/features/messages/components/thread/thread-view"
 import { MESSAGES_PATH } from "@/features/messages/routes"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { ReportSheet } from "@/features/reports/components/report-sheet"
-import { StickerTraySheet } from "@/features/stickers/containers/sticker-tray-sheet"
+import { StickerPickerSheet } from "@/features/stickers/containers/sticker-picker-sheet"
 import { useBack } from "@/hooks/use-back"
 import { ChatMessageActionsSheet } from "../components/chat-message-actions-sheet"
 import { ChatMessageRow } from "../components/chat-message-row"
@@ -92,7 +92,9 @@ export function ChatRoomScreen({ roomId }: { roomId: string }) {
 
       <ChatMessageActionsSheet {...screen.actions} />
       <ChatReactionsSheet {...screen.reactions} />
-      {screen.stickerTray ? <StickerTraySheet {...screen.stickerTray} /> : null}
+      {screen.stickerTray ? (
+        <StickerPickerSheet {...screen.stickerTray} />
+      ) : null}
       <ReportSheet {...screen.report} />
     </ComposerScreen>
   )

@@ -22,19 +22,19 @@ export function useReportSheet() {
     queryFn: () => getReportReasons(target!.type),
     enabled: target !== null,
     staleTime: Infinity,
+    gcTime: Infinity,
   })
   const send = useMutation({
     mutationFn: createReport,
-    onSuccess: () => {
-      setOpen(false)
-      void queryClient.invalidateQueries({ queryKey: reportKeys.mine() })
-      showSuccess("Thanks. We will take a look.")
-    },
+    onSuccess: () =>
+      void queryClient.invalidateQueries({ queryKey: reportKeys.mine() }),
   })
 
   function file(reasonId: string, note?: string) {
     if (!target || send.isPending) return
     send.mutate({ target, reasonId, detail: note })
+    onOpenChange(false)
+    showSuccess("Thanks. We will take a look.")
   }
 
   function onOpenChange(next: boolean) {
@@ -62,11 +62,10 @@ export function useReportSheet() {
       loading: reasons.isLoading,
       failed: reasons.isError,
       retry: () => void reasons.refetch(),
-      sending: send.isPending,
       detailMaxLength,
       asking,
       detail,
-      canSend: detail.trim().length > 0 && !send.isPending,
+      canSend: detail.trim().length > 0,
       onDetailChange: setDetail,
       onPick(reason: ReportReason) {
         if (!reason.requires_detail) return file(reason.id)

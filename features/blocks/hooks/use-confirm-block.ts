@@ -5,7 +5,7 @@ import { confirm } from "@/components/ui/confirm"
 import { handleOf } from "@/features/users/utils/names"
 import { showSuccess } from "@/lib/feedback"
 import { blockUser } from "../api"
-import { separateFrom } from "../cache"
+import { hideEachOther, refreshSeparated } from "../cache"
 import { blockKeys } from "../utils/keys"
 
 interface Blockable {
@@ -17,10 +17,12 @@ export function useConfirmBlock() {
   const queryClient = useQueryClient()
   const block = useMutation({
     mutationFn: (user: Blockable) => blockUser(user.id),
-    onSuccess: (_result, user) => {
-      separateFrom(user.id)
+    onMutate: (user) => hideEachOther(user.id),
+    onSuccess: (_result, user) =>
+      showSuccess(`Blocked ${handleOf(user) ?? "them"}.`),
+    onSettled: () => {
+      refreshSeparated()
       void queryClient.invalidateQueries({ queryKey: blockKeys.all() })
-      showSuccess(`Blocked ${handleOf(user) ?? "them"}.`)
     },
   })
 
@@ -34,7 +36,10 @@ export function useConfirmBlock() {
         {
           label: "Block",
           destructive: true,
-          onPress: () => block.mutate(user, { onSuccess: onBlocked }),
+          onPress: () => {
+            block.mutate(user)
+            onBlocked?.()
+          },
         },
       ],
     })

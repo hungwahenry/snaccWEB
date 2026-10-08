@@ -16,13 +16,11 @@ export function MomentReplyBar({
   liked,
   onSetLike,
   onReply,
-  replying,
   onFocus,
   onBlur,
 }: MomentLikeProps & {
   momentId: string
   onReply: (body: string) => void
-  replying: boolean
   onFocus: () => void
   onBlur: () => void
 }) {
@@ -31,7 +29,6 @@ export function MomentReplyBar({
       <div className="min-w-0 flex-1">
         <MomentReplyComposer
           onReply={onReply}
-          replying={replying}
           onFocus={onFocus}
           onBlur={onBlur}
         />

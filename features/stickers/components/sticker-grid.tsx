@@ -1,4 +1,4 @@
-import type { PackTile } from "../types"
+import type { StickerTile as Tile, TileActionId } from "../types"
 import { StickerTile } from "./sticker-tile"
 
 export function StickerGrid({
@@ -6,9 +6,9 @@ export function StickerGrid({
   onPick,
   onAction,
 }: {
-  tiles: PackTile[]
-  onPick?: (tile: PackTile) => void
-  onAction: (tile: PackTile) => void
+  tiles: Tile[]
+  onPick?: (tile: Tile) => void
+  onAction: (tile: Tile, action: TileActionId) => void
 }) {
   return (
     <div className="grid grid-cols-4 gap-1.5 px-4">

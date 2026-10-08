@@ -3,10 +3,17 @@ import { UserAvatar } from "@/components/ui/user-avatar"
 import { snaccPath } from "@/features/snaccs/routes"
 import { nameOf } from "@/features/users/utils/names"
 import { SnaccHangoutBlock } from "../../containers/snacc-hangout-block"
+import type { Snacc } from "@/features/snaccs/types"
 import type { HangoutCard as Card } from "../../types"
 import { FriendsGoing } from "./friends-going"
 
-export function HangoutCard({ card }: { card: Card }) {
+export function HangoutCard({
+  card,
+  onOpen,
+}: {
+  card: Card
+  onOpen: (snacc: Snacc) => void
+}) {
   const { snacc } = card
   if (!snacc.hangout) return null
 
@@ -14,6 +21,7 @@ export function HangoutCard({ card }: { card: Card }) {
     <article className="flex flex-col gap-3 border-b border-border px-4 py-4 sm:px-6">
       <Link
         href={snaccPath(snacc.id)}
+        onClick={() => onOpen(snacc)}
         className="flex items-center gap-2 self-start hover:underline"
       >
         <UserAvatar

@@ -35,6 +35,7 @@ import { useSnacc } from "../hooks/use-snacc"
 import { useSnaccActions } from "../hooks/use-snacc-actions"
 import { composePath, snaccPath } from "../routes"
 import type { CommentSort, Snacc } from "../types"
+import { pollChoice } from "../utils/polls"
 import { DEFAULT_COMMENT_SORT, REPLY_SORT } from "../utils/sorts"
 import { viewedId } from "../utils/resnaccs"
 import { addresseeOf } from "../utils/threads"
@@ -114,7 +115,7 @@ export function SnaccDetailScreen({ id }: { id: string }) {
                 handlers.onOpenImages(parent.data!, index)
               }
               poll={{
-                voting: votingPollFor === parent.data.id,
+                choice: pollChoice(votingPollFor, parent.data.id),
                 onVote: (optionId) => handlers.onVote(parent.data!, optionId),
                 onOpenImage: (option) =>
                   handlers.onOpenPollImage(parent.data!, option),

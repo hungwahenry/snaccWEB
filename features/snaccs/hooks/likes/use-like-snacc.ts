@@ -5,7 +5,7 @@ import { withLike } from "@/features/likes/utils/likes"
 import { showError } from "@/lib/feedback"
 import { likeSnacc, unlikeSnacc } from "../../api"
 import {
-  cancelSnaccQueries,
+  cancelSnaccDetail,
   likesChanged,
   patchSnacc,
   restoreSnaccs,
@@ -23,13 +23,15 @@ export function useLikeSnacc() {
     mutationFn: ({ snaccId, liked }: SnaccLikeChange) =>
       liked ? likeSnacc(snaccId) : unlikeSnacc(snaccId),
     onMutate: async ({ snaccId, liked }: SnaccLikeChange) => {
-      await cancelSnaccQueries(snaccId)
+      await cancelSnaccDetail(snaccId)
 
       const snapshot = snapshotSnaccs()
       patchSnacc(snaccId, (snacc) => withLike(snacc, liked))
 
       return { snapshot }
     },
+    onSuccess: (_data, { snaccId, liked }) =>
+      patchSnacc(snaccId, (snacc) => withLike(snacc, liked)),
     onError: (error, _input, context) => {
       restoreSnaccs(context?.snapshot ?? [])
       showError(error)

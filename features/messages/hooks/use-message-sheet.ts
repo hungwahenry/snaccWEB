@@ -68,7 +68,7 @@ export function useMessageSheet(
             {
               label: "Delete",
               destructive: true,
-              onPress: () => remove.mutate(target.id),
+              onPress: () => remove.mutate({ messageId: target.id }),
             },
           ],
         })

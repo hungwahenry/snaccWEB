@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
-import { Spinner } from "@/components/ui/spinner"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { UserRow } from "@/features/users/components/user-row"
 import { useBack } from "@/hooks/use-back"
@@ -43,10 +42,9 @@ export function BlockedAccountsScreen() {
                 <Button
                   variant="outline"
                   size="sm"
-                  disabled={blocked.unblocking === user.id}
                   onClick={() => blocked.unblock(user)}
                 >
-                  {blocked.unblocking === user.id ? <Spinner /> : "Unblock"}
+                  Unblock
                 </Button>
               }
             />

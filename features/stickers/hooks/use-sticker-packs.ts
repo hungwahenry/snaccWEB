@@ -8,6 +8,7 @@ import {
   getStickerPack,
   getStickerTray,
 } from "../api"
+import { findPack } from "../cache"
 import { stickerKeys } from "../utils/keys"
 
 export function useStickerTrayPacks(enabled: boolean) {
@@ -23,6 +24,7 @@ export function useStickerPack(id: string | null, enabled = true) {
     queryKey: stickerKeys.pack(id ?? ""),
     queryFn: () => getStickerPack(id ?? ""),
     enabled: enabled && id !== null,
+    placeholderData: () => (id ? findPack(id) : undefined),
   })
 }
 

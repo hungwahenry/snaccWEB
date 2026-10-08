@@ -29,6 +29,7 @@ export function Discover() {
           cards={discover.hangouts.cards}
           now={discover.hangouts.now}
           seeAllHref={discover.hangouts.seeAllHref}
+          onOpen={discover.hangouts.onOpen}
           onPlan={discover.hangouts.onPlan}
           className="-mx-(--gutter)"
         />

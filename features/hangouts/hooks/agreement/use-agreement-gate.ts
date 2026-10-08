@@ -1,12 +1,22 @@
 "use client"
 
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { useCallback, useRef, useState } from "react"
 import { getQueryClient } from "@/lib/query/client"
 import { agreeToHangouts, getHangoutAgreement } from "../../api"
 import { hangoutKeys } from "../../utils/keys"
 
 export type EnsureAgreed = () => Promise<boolean>
+
+const agreement = {
+  queryKey: hangoutKeys.agreement(),
+  queryFn: getHangoutAgreement,
+  staleTime: Infinity,
+}
+
+export function useHangoutAgreement(enabled: boolean) {
+  useQuery({ ...agreement, enabled })
+}
 
 export function useAgreementGate() {
   const [open, setOpen] = useState(false)
@@ -28,11 +38,7 @@ export function useAgreementGate() {
   })
 
   const ensure = useCallback<EnsureAgreed>(async () => {
-    const agreed = await getQueryClient().fetchQuery({
-      queryKey: hangoutKeys.agreement(),
-      queryFn: getHangoutAgreement,
-      staleTime: Infinity,
-    })
+    const agreed = await getQueryClient().fetchQuery(agreement)
     if (agreed) return true
 
     return new Promise<boolean>((resolve) => {

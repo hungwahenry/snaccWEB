@@ -6,6 +6,15 @@ import { patchMessage, prependMessage, removeMessage, settleMessage } from "."
 import { buildOptimisticMessage, draftToInput } from "./optimistic-message"
 
 const inputs = new Map<string, SendMessageInput>()
+const outgoing = new Map<string, Promise<void>>()
+
+function inOrder(conversationId: string, run: () => Promise<void>): void {
+  const next = (outgoing.get(conversationId) ?? Promise.resolve()).then(run)
+  outgoing.set(conversationId, next)
+  void next.then(() => {
+    if (outgoing.get(conversationId) === next) outgoing.delete(conversationId)
+  })
+}
 
 /** Shows the message at once, then sends it; a failure leaves it in place to retry or drop. */
 export function submitMessage(
@@ -17,7 +26,7 @@ export function submitMessage(
 
   prependMessage(conversationId, buildOptimisticMessage(id, draft))
   inputs.set(id, input)
-  void send(conversationId, id, input)
+  inOrder(conversationId, () => send(conversationId, id, input))
 }
 
 export function retryMessage(conversationId: string, id: string): void {
@@ -27,7 +36,7 @@ export function retryMessage(conversationId: string, id: string): void {
     ...message,
     status: "sending",
   }))
-  void send(conversationId, id, input)
+  inOrder(conversationId, () => send(conversationId, id, input))
 }
 
 export function discardMessage(conversationId: string, id: string): void {
@@ -55,4 +64,5 @@ async function send(
 
 export function clearPendingMessages(): void {
   inputs.clear()
+  outgoing.clear()
 }

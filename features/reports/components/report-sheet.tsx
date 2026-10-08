@@ -16,7 +16,6 @@ export type ReportSheetProps = {
   loading: boolean
   failed: boolean
   retry: () => void
-  sending: boolean
   detailMaxLength: number
   asking: ReportReason | null
   detail: string
@@ -35,7 +34,6 @@ export function ReportSheet({
   loading,
   failed,
   retry,
-  sending,
   detailMaxLength,
   asking,
   detail,
@@ -53,12 +51,8 @@ export function ReportSheet({
       hint={asking ? undefined : "Only you can see that you reported this."}
       footer={
         asking ? (
-          <Button
-            className="h-12 w-full"
-            disabled={!canSend || sending}
-            onClick={onSend}
-          >
-            {sending ? <Spinner /> : "Report"}
+          <Button className="h-12 w-full" disabled={!canSend} onClick={onSend}>
+            Report
           </Button>
         ) : undefined
       }

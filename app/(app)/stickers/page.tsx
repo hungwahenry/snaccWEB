@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
 import { STICKERS_PATH } from "@/features/stickers/routes"
-import { StickerCatalogScreen } from "@/features/stickers/screens/sticker-catalog-screen"
+import { StickersScreen } from "@/features/stickers/screens/stickers-screen"
 import { requireSession } from "@/lib/auth-server"
 
-export const metadata: Metadata = { title: "Sticker packs" }
+export const metadata: Metadata = { title: "Stickers" }
 
-export default async function StickerCatalogPage() {
+export default async function StickersPage() {
   await requireSession(STICKERS_PATH)
-  return <StickerCatalogScreen />
+  return <StickersScreen />
 }

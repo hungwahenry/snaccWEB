@@ -5,8 +5,10 @@ import { PackRowSkeleton } from "@/features/stickers/components/pack-row-skeleto
 export default function Loading() {
   return (
     <>
-      <RouteBackHeader title="Sticker packs" />
-      <SkeletonRows count={8} item={PackRowSkeleton} />
+      <RouteBackHeader title="Stickers" />
+      <div className="pt-3">
+        <SkeletonRows count={3} item={PackRowSkeleton} />
+      </div>
     </>
   )
 }

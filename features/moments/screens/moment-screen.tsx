@@ -27,8 +27,6 @@ export function MomentScreen({ authorId }: { authorId: string }) {
           loading={player.loading}
           failed={player.failed}
           ready={player.ready}
-          removing={player.removing}
-          replying={player.replying}
           onRetry={player.retry}
           onMediaReady={player.markReady}
           onPause={player.pause}

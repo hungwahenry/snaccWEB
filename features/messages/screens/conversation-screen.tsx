@@ -9,7 +9,7 @@ import { IconButton } from "@/components/ui/icon-button"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { ReportSheet } from "@/features/reports/components/report-sheet"
-import { StickerTraySheet } from "@/features/stickers/containers/sticker-tray-sheet"
+import { StickerPickerSheet } from "@/features/stickers/containers/sticker-picker-sheet"
 import { PersonAvatar } from "@/features/users/components/person-avatar"
 import { profilePath } from "@/features/users/routes"
 import { handleOf } from "@/features/users/utils/names"
@@ -129,7 +129,9 @@ export function ConversationScreen({ id }: { id: string }) {
       ) : null}
       <MessageActionsSheet {...screen.actions} />
       <ViewOnceViewer {...screen.viewOnce} />
-      {screen.stickerTray ? <StickerTraySheet {...screen.stickerTray} /> : null}
+      {screen.stickerTray ? (
+        <StickerPickerSheet {...screen.stickerTray} />
+      ) : null}
       <ReportSheet {...screen.report} />
       <TransactionDetailSheet {...screen.moneyDetail} />
     </ComposerScreen>

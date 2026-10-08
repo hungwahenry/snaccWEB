@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react"
+import type { Gif } from "@/features/giphy/types"
 import type { Author } from "@/features/users/types"
 
 export type StickerPackKind = "favourites" | "pack"
@@ -39,8 +40,8 @@ export interface StickerPackDetail extends StickerPack {
 }
 
 export interface StickerTray {
-  favourites: StickerPack
-  packs: StickerPack[]
+  favourites: StickerPackDetail
+  packs: StickerPackDetail[]
 }
 
 export interface StickerAttachment {
@@ -76,77 +77,73 @@ export interface StickerSource {
   height: number
 }
 
-export type StickerTileState = "ready" | "locked" | "held"
+export type StickerState = "ready" | "locked" | "held"
 
-export type StickerTileAction = "keep" | "remove"
+export type StickerPlace = "favourites" | "own" | "others"
 
-export interface PackTile {
-  sticker: Sticker
-  state: StickerTileState
-  action: StickerTileAction | null
-}
-
-export type TrayTab = "stickers" | "giphy" | "gifs"
-
-export interface TrayEmpty {
+export interface StickerMenuItem<Id extends string = string> {
+  id: Id
+  label: string
   icon: LucideIcon
-  title: string
-  description: string
+  destructive?: boolean
 }
 
-export interface TrayTile {
-  id: string
-  url: string
-  preview_url: string | null
-  width: number
-  height: number
-  title?: string | null
+export type TileActionId = "favourite" | "unfavourite" | "remove"
+
+export type PackMenuId = "share" | "copy" | "rename" | "delete" | "report"
+
+export type MakeMenuId = "upload" | "giphy"
+
+export interface StickerTile {
+  sticker: Sticker
+  state: StickerState
+  actions: StickerMenuItem<TileActionId>[]
 }
 
-export interface TrayGridState {
-  items: TrayTile[]
-  itemLabel: string
-  loading: boolean
-  failed: boolean
-  empty: TrayEmpty
-  onRetry: () => void
-  onPick: (id: string) => void
-  onKeep?: (id: string) => void
+export type PickerTab = "stickers" | "gifs"
+
+export type PackSave = "add" | "remove"
+
+export type PickerRow =
+  | {
+      kind: "section"
+      key: string
+      packId: string
+      title: string
+      byline: string | null
+      makes: boolean
+      opens: boolean
+    }
+  | { kind: "tile"; key: string; tile: StickerTile }
+  | { kind: "hint"; key: string }
+  | { kind: "discover"; key: string }
+  | { kind: "pack"; key: string; pack: StickerPack; details: string }
+  | {
+      kind: "top"
+      key: string
+      pack: StickerPackDetail
+      details: string
+      save: PackSave | null
+    }
+  | { kind: "giphy"; key: string; gif: Gif }
+
+export interface PickerJump {
+  key: string
+  pack: StickerPackDetail | null
 }
 
-export interface ShelfPack {
-  id: string
-  title: string
-  coverUrl: string | null
-  favourites: boolean
+export interface HubAction {
+  label: string
+  outline: boolean
 }
 
-export interface PackShelfState {
-  packs: ShelfPack[]
-  selectedId: string | null
-  loading: boolean
-  failed: boolean
-  onRetry: () => void
-  onSelect: (id: string) => void
-  onBrowse: () => void
-}
-
-export interface PackPanelState {
-  title: string
-  byline: string | null
-  tiles: PackTile[]
-  loading: boolean
-  failed: boolean
-  empty: TrayEmpty
-  onRetry: () => void
-  onCreate?: () => void
-  onPick: (tile: PackTile) => void
-  onAction: (tile: PackTile) => void
-}
-
-export interface PackMenu {
-  share: boolean
-  report: boolean
-  rename: boolean
-  remove: boolean
-}
+export type HubRow =
+  | { kind: "section"; key: string; title: string }
+  | {
+      kind: "pack"
+      key: string
+      pack: StickerPack
+      details: string
+      action: HubAction | null
+    }
+  | { kind: "new"; key: string }

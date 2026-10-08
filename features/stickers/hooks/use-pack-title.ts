@@ -10,69 +10,78 @@ import { stickerPackPath } from "../routes"
 import type { StickerPack } from "../types"
 import { PACK_TITLE_MAX, packTitleReady } from "../utils/packs"
 
-function usePackTitleSheet(
-  copy: { heading: string; action: string },
-  busy: boolean,
-  save: (title: string, done: () => void) => void
-) {
-  const [open, setOpen] = useState(false)
-  const [title, setTitle] = useState("")
-  const ready = packTitleReady(title) && !busy
-
-  return {
-    begin: (current: string) => {
-      setTitle(current)
-      setOpen(true)
-    },
-    sheet: {
-      ...copy,
-      open,
-      onOpenChange: setOpen,
-      title,
-      maxLength: PACK_TITLE_MAX,
-      onTitleChange: setTitle,
-      canSave: ready,
-      saving: busy,
-      onSave: () => {
-        if (ready) save(title.trim(), () => setOpen(false))
-      },
-    },
-  }
+export interface PackTitleField {
+  value: string
+  placeholder: string
+  action: string
+  maxLength: number
+  canSave: boolean
+  saving: boolean
+  onChange: (title: string) => void
+  onSave: () => void
+  onCancel?: () => void
 }
 
-export function useNewStickerPack() {
+export function useNewPackField(): PackTitleField {
   const router = useRouter()
+  const [title, setTitle] = useState("")
   const create = useMutation({
     mutationFn: createStickerPack,
     onSuccess: (pack) => {
       putPack(pack)
+      setTitle("")
       router.push(stickerPackPath(pack.id))
     },
   })
-  const { begin, sheet } = usePackTitleSheet(
-    { heading: "New pack", action: "Make pack" },
-    create.isPending,
-    (title, done) => create.mutate(title, { onSuccess: done })
-  )
 
-  return { start: () => begin(""), sheet }
+  return {
+    value: title,
+    placeholder: "Name a new pack",
+    action: "Create",
+    maxLength: PACK_TITLE_MAX,
+    canSave: packTitleReady(title) && !create.isPending,
+    saving: create.isPending,
+    onChange: setTitle,
+    onSave: () => {
+      if (packTitleReady(title)) create.mutate(title.trim())
+    },
+  }
 }
 
-export function useRenameStickerPack(pack: StickerPack | undefined) {
+export function useRenameField(pack: Pick<StickerPack, "id" | "title"> | null) {
+  const [draft, setDraft] = useState<string | null>(null)
   const rename = useMutation({
     mutationFn: renameStickerPack,
     onSuccess: (renamed) => {
       putPack(renamed)
+      setDraft(null)
       showSuccess("Pack renamed.")
     },
   })
-  const { begin, sheet } = usePackTitleSheet(
-    { heading: "Rename pack", action: "Save" },
-    rename.isPending,
-    (title, done) => {
-      if (pack) rename.mutate({ id: pack.id, title }, { onSuccess: done })
-    }
-  )
+  const trimmed = draft?.trim() ?? ""
 
-  return { start: () => begin(pack?.title ?? ""), sheet }
+  const field: PackTitleField | null =
+    pack && draft !== null
+      ? {
+          value: draft,
+          placeholder: "Pack name",
+          action: "Save",
+          maxLength: PACK_TITLE_MAX,
+          canSave:
+            packTitleReady(trimmed) &&
+            trimmed !== pack.title &&
+            !rename.isPending,
+          saving: rename.isPending,
+          onChange: setDraft,
+          onSave: () => rename.mutate({ id: pack.id, title: trimmed }),
+          onCancel: () => setDraft(null),
+        }
+      : null
+
+  return {
+    start: () => {
+      if (pack) setDraft(pack.title)
+    },
+    field,
+  }
 }

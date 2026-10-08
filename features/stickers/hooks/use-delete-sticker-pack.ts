@@ -3,19 +3,24 @@
 import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { confirm } from "@/components/ui/confirm"
-import { showSuccess } from "@/lib/feedback"
+import { showError, showSuccess } from "@/lib/feedback"
 import { deleteStickerPack } from "../api"
-import { refreshStickerPacks } from "../cache"
-import { MY_STICKER_PACKS_PATH } from "../routes"
+import { dropPack, refreshStickerPacks, refreshStickerTray } from "../cache"
+import { STICKERS_PATH } from "../routes"
 
 export function useDeleteStickerPack(): (packId: string) => void {
   const router = useRouter()
   const remove = useMutation({
     mutationFn: deleteStickerPack,
-    onSuccess: () => {
+    onMutate: (packId) => {
+      dropPack(packId)
+      router.replace(STICKERS_PATH)
+    },
+    onSuccess: () => showSuccess("Pack deleted."),
+    onError: (error) => showError(error),
+    onSettled: () => {
       refreshStickerPacks()
-      router.replace(MY_STICKER_PACKS_PATH)
-      showSuccess("Pack deleted.")
+      refreshStickerTray()
     },
   })
 

@@ -3,7 +3,6 @@
 import { EyeIcon, FlagIcon, Trash2Icon, XIcon } from "lucide-react"
 import { useCallback, useState, type RefObject } from "react"
 import { LoadFailed } from "@/components/ui/load-failed"
-import { Spinner } from "@/components/ui/spinner"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { timeAgo } from "@/lib/format"
 import { cn } from "@/lib/utils"
@@ -25,8 +24,6 @@ interface MomentPlayerProps {
   loading: boolean
   failed: boolean
   ready: boolean
-  removing: boolean
-  replying: boolean
   onRetry: () => void
   onMediaReady: (id: string) => void
   onPause: () => void
@@ -56,8 +53,6 @@ export function MomentPlayer({
   loading,
   failed,
   ready,
-  removing,
-  replying,
   onRetry,
   onMediaReady,
   onPause,
@@ -166,16 +161,11 @@ export function MomentPlayer({
           {current.mine ? (
             <button
               type="button"
-              disabled={removing}
               onClick={onDelete}
               aria-label="Take this down"
               className="p-1 text-white"
             >
-              {removing ? (
-                <Spinner className="size-5" />
-              ) : (
-                <Trash2Icon className="size-5" />
-              )}
+              <Trash2Icon className="size-5" />
             </button>
           ) : (
             <button
@@ -228,7 +218,6 @@ export function MomentPlayer({
             liked={current.liked}
             onSetLike={onSetLike}
             onReply={onReply}
-            replying={replying}
             onFocus={onPause}
             onBlur={onResume}
           />

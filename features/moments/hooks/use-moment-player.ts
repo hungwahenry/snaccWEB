@@ -12,7 +12,7 @@ import {
 } from "../api"
 import type { Moment } from "../types"
 import { MOMENT_DURATION_MS } from "../utils/constants"
-import { isReady, upcomingImage } from "../utils/playback"
+import { isReady, openingIndex, upcomingImage } from "../utils/playback"
 import { authorMomentsKey, MOMENTS_TRAY_KEY } from "../utils/keys"
 import { useAuthorMoments } from "./use-author-moments"
 import { useMomentClock } from "./use-moment-clock"
@@ -48,22 +48,27 @@ export function useMomentPlayer(
   const seen = useRef(new Set<string>())
   const watched = useRef(new Set<string>())
 
-  const { mutate: remove, isPending: removing } = useMutation({
+  const { mutate: remove } = useMutation({
     mutationFn: deleteMoment,
-    onSuccess: async () => {
-      const wasTheirLast = list.length <= 1
-
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: MOMENTS_TRAY_KEY }),
-        queryClient.invalidateQueries({ queryKey: authorMomentsKey(authorId) }),
-      ])
-
+    onMutate: (momentId) => {
+      const key = authorMomentsKey(authorId)
+      const before = queryClient.getQueryData<Moment[]>(key)
+      queryClient.setQueryData<Moment[]>(key, (rows) =>
+        rows?.filter((moment) => moment.id !== momentId)
+      )
       setPaused(false)
-      if (wasTheirLast) onFinished()
+      if (list.length <= 1) onFinished()
+      return { before }
     },
-    onError: () => {
-      setPaused(false)
+    onError: (_error, _momentId, context) => {
+      queryClient.setQueryData(authorMomentsKey(authorId), context?.before)
       showErrorMessage("Could not take that down. Try again.")
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: MOMENTS_TRAY_KEY })
+      void queryClient.invalidateQueries({
+        queryKey: authorMomentsKey(authorId),
+      })
     },
   })
 
@@ -87,11 +92,7 @@ export function useMomentPlayer(
   if (list.length > 0 && positionedFor !== authorId) {
     setPositionedFor(authorId)
 
-    if (enterAtEnd) setIndex(list.length - 1)
-    else {
-      const first = list.findIndex((moment) => !moment.seen)
-      setIndex(first === -1 ? 0 : first)
-    }
+    setIndex(enterAtEnd ? list.length - 1 : openingIndex(list))
   }
 
   if (list.length > 0 && index >= list.length) setIndex(list.length - 1)
@@ -174,28 +175,26 @@ export function useMomentPlayer(
     [current, like]
   )
 
-  const { mutate: sendReply, isPending: replying } = useMutation({
+  const { mutate: sendReply } = useMutation({
     mutationFn: ({ momentId, body }: { momentId: string; body: string }) =>
       replyToMoment(momentId, body),
-    onSuccess: () => {
-      showSuccess("Sent to their DMs.")
-      setPaused(false)
-    },
     onError: () => showErrorMessage("Could not send that. Try again."),
   })
 
   const reply = useCallback(
     (body: string) => {
       const text = body.trim()
-      if (!current || current.mine || !text || replying) return
+      if (!current || current.mine || !text) return
 
       sendReply({ momentId: current.id, body: text })
+      showSuccess("Sent to their DMs.")
+      setPaused(false)
     },
-    [current, replying, sendReply]
+    [current, sendReply]
   )
 
   const deleteCurrent = useCallback(() => {
-    if (!current || removing) return
+    if (!current) return
     const id = current.id
 
     setPaused(true)
@@ -207,7 +206,7 @@ export function useMomentPlayer(
         { label: "Delete", destructive: true, onPress: () => remove(id) },
       ],
     })
-  }, [current, removing, remove])
+  }, [current, remove])
 
   return {
     moments: list,
@@ -221,8 +220,6 @@ export function useMomentPlayer(
     loading: isLoading,
     failed: isError,
     retry: () => void refetch(),
-    removing,
-    replying,
     viewers: {
       open: viewersOpen,
       onOpenChange: setViewersOpen,

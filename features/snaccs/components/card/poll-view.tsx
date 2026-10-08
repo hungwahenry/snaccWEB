@@ -7,7 +7,7 @@ import { optionShare, pollFooter, pollRevealed } from "../../utils/polls"
 export type PollViewProps = {
   poll: SnaccPoll
   disabled?: boolean
-  voting: boolean
+  choice: string | null
   onVote: (optionId: string) => void
   onOpenImage: (option: SnaccPollOption) => void
 }
@@ -43,10 +43,11 @@ function OptionThumb({
 export function PollView({
   poll,
   disabled = false,
-  voting,
+  choice,
   onVote,
   onOpenImage,
 }: PollViewProps) {
+  const voting = choice !== null
   const revealed = pollRevealed(poll)
   const withImages = poll.options.some((option) => option.image !== null)
   const rowHeight = withImages ? "h-14" : "h-11"
@@ -55,26 +56,37 @@ export function PollView({
     <div className="flex flex-col gap-2">
       {poll.options.map((option) => {
         if (!revealed) {
+          const chosen = option.id === choice
+
           return (
             <button
               key={option.id}
               type="button"
+              aria-pressed={chosen}
               disabled={disabled || voting}
               onClick={(event) => {
                 event.stopPropagation()
                 onVote(option.id)
               }}
               className={cn(
-                "flex items-center gap-2.5 rounded-full border border-primary/40 px-2.5 text-left transition-colors hover:bg-accent disabled:opacity-50",
+                "flex items-center gap-2.5 rounded-full border border-primary/40 px-2.5 text-left transition-colors hover:bg-accent",
                 rowHeight,
-                !withImages && "px-4"
+                !withImages && "px-4",
+                chosen && "border-primary bg-primary hover:bg-primary",
+                voting && !chosen && "opacity-50",
+                disabled && "opacity-50"
               )}
             >
               <OptionThumb
                 option={option}
                 onPress={() => onOpenImage(option)}
               />
-              <span className="truncate text-sm font-bold text-primary">
+              <span
+                className={cn(
+                  "truncate text-sm font-bold",
+                  chosen ? "text-primary-foreground" : "text-primary"
+                )}
+              >
                 {option.label}
               </span>
             </button>

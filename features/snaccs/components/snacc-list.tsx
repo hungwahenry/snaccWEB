@@ -5,7 +5,7 @@ import { ListFooter } from "@/components/ui/list-footer"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { LoadMore } from "@/components/ui/load-more"
 import { SkeletonRows } from "@/components/ui/skeleton-rows"
-import type { Snacc } from "../types"
+import type { PollVote, Snacc } from "../types"
 import { viewedId } from "../utils/resnaccs"
 import { SnaccCard, type SnaccActionHandlers } from "./card/snacc-card"
 import { SnaccCardSkeleton } from "./card/snacc-card-skeleton"
@@ -18,7 +18,7 @@ export type SnaccListProps = {
   onRetry: () => void
   onLoadMore: () => void
   handlers: SnaccActionHandlers
-  votingPollFor: string | null
+  votingPollFor: PollVote | null
   itemRef?: (id: string) => Ref<HTMLElement>
   header?: ReactNode
   empty: {

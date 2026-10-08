@@ -4,6 +4,7 @@ import type {
   PollGalleryImage,
   PollOptionDraft,
   PollPayload,
+  PollVote,
   SnaccPoll,
   SnaccPollOption,
 } from "../types"
@@ -198,4 +199,11 @@ export function optionPlaceholder(index: number): string {
   return index >= MIN_POLL_OPTIONS
     ? `Option ${index + 1} (optional)`
     : `Option ${index + 1}`
+}
+
+export function pollChoice(
+  vote: PollVote | null | undefined,
+  snaccId: string
+): string | null {
+  return vote?.snaccId === snaccId ? vote.optionId : null
 }

@@ -8,6 +8,7 @@ import { voicePlayer } from "@/features/voice/hooks/use-voice-player"
 import { useBack } from "@/hooks/use-back"
 import type { TrayEntry } from "../types"
 import { nextUnseen, playQueue } from "../utils/queue"
+import { prefetchAuthorMoments } from "./use-author-moments"
 import { useAuthorFlip } from "./use-author-flip"
 import { useMomentPlayer } from "./use-moment-player"
 import { useMomentViewers } from "./use-moment-viewers"
@@ -41,6 +42,11 @@ export function useMomentScreen(startAuthorId: string) {
   const authorId = authors[at]?.author.id ?? startAuthorId
 
   const [backwards, setBackwards] = useState(false)
+
+  const upNext = authors[at + 1]?.author.id
+  useEffect(() => {
+    if (upNext) prefetchAuthorMoments(upNext)
+  }, [upNext])
   const { pageRef, flip } = useAuthorFlip()
 
   const stepTo = useCallback(
