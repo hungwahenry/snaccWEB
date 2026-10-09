@@ -9,7 +9,7 @@ import { BackHeader } from "@/features/navigation/components/back-header"
 import { Row, Section } from "@/features/settings/components/rows"
 import { ChatThemePreview } from "../components/themes/chat-theme-preview"
 import { ChatThemeSkeleton } from "../components/themes/chat-theme-skeleton"
-import { ThemeGrid } from "../components/themes/theme-grid"
+import { ThemeRow } from "../components/themes/theme-row"
 import { useChatThemeScreen } from "../hooks/use-chat-theme-screen"
 
 export function ChatThemeScreen({ id }: { id: string }) {
@@ -45,12 +45,12 @@ export function ChatThemeScreen({ id }: { id: string }) {
           />
 
           <Section title="Themes">
-            <ThemeGrid swatches={screen.presets} />
+            <ThemeRow swatches={screen.presets} />
           </Section>
 
           {photo ? (
             <Section title="Your photo">
-              <ThemeGrid swatches={photo.options} />
+              <ThemeRow swatches={photo.options} />
               <Row
                 icon={ImagePlusIcon}
                 label={photo.chooseLabel}

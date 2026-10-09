@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { ChatThemePreview } from "./chat-theme-preview"
 
 const PREVIEW_WIDTH = 300
-const ASPECT = 4 / 3
+export const THUMBNAIL_ASPECT = 4 / 3
 
 export function ThemeThumbnail({
   paint,
@@ -25,7 +25,7 @@ export function ThemeThumbnail({
   return (
     <div
       className="relative overflow-hidden rounded-2xl bg-background"
-      style={{ width, height: width * ASPECT }}
+      style={{ width, height: width * THUMBNAIL_ASPECT }}
     >
       {needsPhoto ? (
         <div className="flex size-full items-center justify-center bg-muted text-muted-foreground">
@@ -36,7 +36,7 @@ export function ThemeThumbnail({
           className="pointer-events-none absolute top-0 left-0 origin-top-left"
           style={{
             width: PREVIEW_WIDTH,
-            height: PREVIEW_WIDTH * ASPECT,
+            height: PREVIEW_WIDTH * THUMBNAIL_ASPECT,
             transform: `scale(${width / PREVIEW_WIDTH})`,
           }}
         >

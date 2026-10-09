@@ -23,7 +23,7 @@ export function ThemeSwatch({
       onClick={onPress}
       aria-pressed={thumbnail.selected}
       aria-label={thumbnail.locked ? `${label}, Premium` : label}
-      className="flex flex-col items-center gap-1.5 rounded-2xl outline-none hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring"
+      className="flex shrink-0 flex-col items-center gap-1.5 rounded-2xl outline-none hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring"
       style={{ width }}
     >
       <ThemeThumbnail width={width} {...thumbnail} />
