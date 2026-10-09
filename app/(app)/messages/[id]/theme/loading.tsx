@@ -4,7 +4,7 @@ import { RouteBackHeader } from "@/features/navigation/containers/route-back-hea
 export default function Loading() {
   return (
     <>
-      <RouteBackHeader title="Chat theme" />
+      <RouteBackHeader title="Chat theme" subtitle="Only you see it" />
       <ChatThemeSkeleton />
     </>
   )

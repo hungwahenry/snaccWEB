@@ -18,7 +18,11 @@ export function ChatThemeScreen({ id }: { id: string }) {
 
   return (
     <>
-      <BackHeader title="Chat theme" onBack={screen.onBack} />
+      <BackHeader
+        title="Chat theme"
+        subtitle="Only you see it"
+        onBack={screen.onBack}
+      />
 
       {screen.unavailable ? (
         <EmptyState
