@@ -11,7 +11,6 @@ import { AppHeader } from "@/features/navigation/components/app-header"
 import { HeaderLink } from "@/features/navigation/components/header-link"
 import { SEARCH_PATH } from "@/features/search/routes"
 import { SnaccCardSkeleton } from "@/features/snaccs/components/card/snacc-card-skeleton"
-import { MoneyFab } from "@/features/wallet/components/money-fab"
 
 const ignore = () => {}
 
@@ -37,7 +36,6 @@ export default function Loading() {
       ) : null}
       {chrome.moments ? <MomentTraySkeleton /> : null}
       <SkeletonRows count={6} item={SnaccCardSkeleton} />
-      {chrome.moneyFab ? <MoneyFab /> : null}
     </>
   )
 }

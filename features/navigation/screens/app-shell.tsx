@@ -9,6 +9,7 @@ import { useLogout } from "@/features/auth/hooks/use-logout"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { DiscoverRail } from "@/features/search/screens/discover-rail"
+import { useHiddenOnScroll } from "@/hooks/use-hidden-on-scroll"
 import { useFileDropGuard } from "@/hooks/use-image-drop"
 import { useOfflineNotice } from "@/hooks/use-offline-notice"
 import { isSuspended, isUnauthenticated } from "@/lib/api/errors"
@@ -25,6 +26,7 @@ import { COMPLETE_PROFILE_PATH } from "@/features/onboarding/routes"
 import { COMPOSE_PATH } from "@/features/snaccs/routes"
 import { SETTINGS_PATH } from "@/features/settings/routes"
 import { NowPlaying } from "@/features/voice/containers/now-playing"
+import { MoneyFab } from "@/features/wallet/components/money-fab"
 
 const IMMERSIVE = [
   /^\/messages\/[^/]+/,
@@ -73,6 +75,7 @@ function Shell({ children }: { children: ReactNode }) {
   useUnreadTitle(nav.unread)
   useFileDropGuard()
   const searchEnabled = useFlag("search")
+  const moneyHidden = useHiddenOnScroll()
   const profile = nav.user?.profile
   const immersive = IMMERSIVE.some((pattern) => pattern.test(pathname))
 
@@ -106,12 +109,15 @@ function Shell({ children }: { children: ReactNode }) {
       }
       tabBar={
         immersive ? null : (
-          <BottomTabBar
-            items={nav.tabItems}
-            activeKey={nav.activeKey}
-            onCompose={openCompose}
-            onReselect={emitNavReselect}
-          />
+          <>
+            <BottomTabBar
+              items={nav.tabItems}
+              activeKey={nav.activeKey}
+              onCompose={openCompose}
+              onReselect={emitNavReselect}
+            />
+            {nav.moneyFab ? <MoneyFab hidden={moneyHidden} /> : null}
+          </>
         )
       }
       nowPlaying={<NowPlaying />}

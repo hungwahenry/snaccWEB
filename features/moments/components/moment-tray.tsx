@@ -4,10 +4,11 @@ import { PlusIcon } from "lucide-react"
 import type { ReactNode } from "react"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { useTier } from "@/features/score/hooks/use-tier"
+import { squircleRadius } from "@/lib/squircle"
 import { cn } from "@/lib/utils"
 import type { TrayEntry } from "../types"
 import { ringColors, ringGradient } from "../utils/ring"
-import { AVATAR_SIZE, TRAY_RING as RING, squircleRadius } from "../utils/shape"
+import { AVATAR_SIZE, TRAY_RING as RING } from "../utils/shape"
 import { nameOf } from "@/features/users/utils/names"
 
 interface MomentTrayProps {

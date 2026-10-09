@@ -34,6 +34,5 @@ export function useHomeScreen() {
       avatarUrl: profile?.avatar_url ?? null,
     },
     birthdayFab: birthdayWish.showButton ? birthdayWish.onOpen : null,
-    moneyFab: chrome.moneyFab,
   }
 }

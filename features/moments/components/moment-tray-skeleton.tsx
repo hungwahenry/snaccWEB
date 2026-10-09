@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton"
-import { TRAY_RING as RING, squircleRadius } from "../utils/shape"
+import { squircleRadius } from "@/lib/squircle"
+import { TRAY_RING as RING } from "../utils/shape"
 
 const PLACEHOLDERS = 8
 

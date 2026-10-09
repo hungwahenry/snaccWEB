@@ -6,14 +6,12 @@ import { useFlag } from "@/features/config/hooks/use-flag"
 export function useHomeChrome() {
   const searchEnabled = useFlag("search")
   const messagesEnabled = useFlag("anon_messages")
-  const moneyFab = useFlag("wallet")
   const moments = useFlag("moments")
 
   return {
     searchEnabled,
     // With messages on, Explore gives up its tab, so it moves up here.
     exploreInHeader: searchEnabled && messagesEnabled,
-    moneyFab,
     moments,
   }
 }

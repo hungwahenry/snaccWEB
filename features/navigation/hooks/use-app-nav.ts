@@ -23,9 +23,24 @@ import { SEARCH_PATH } from "@/features/search/routes"
 import { profilePath } from "@/features/users/routes"
 import { EARNINGS_PATH, payPath, WALLET_PATH } from "@/features/wallet/routes"
 
+function isOwnProfile(pathname: string, ownProfile: string): boolean {
+  return (
+    pathname === `/profile/${ownProfile.slice(2)}` || pathname === ownProfile
+  )
+}
+
+function isTabRoot(
+  pathname: string,
+  href: string,
+  ownProfile: string
+): boolean {
+  return href === ownProfile
+    ? isOwnProfile(pathname, ownProfile)
+    : pathname === href
+}
+
 function isActive(pathname: string, href: string, ownProfile: string): boolean {
-  if (href === ownProfile)
-    return pathname === `/profile/${ownProfile.slice(2)}` || pathname === href
+  if (href === ownProfile) return isOwnProfile(pathname, ownProfile)
   if (href === SEARCH_PATH)
     return pathname.startsWith(SEARCH_PATH) || pathname.startsWith("/hashtag")
   if (href === WALLET_PATH)
@@ -121,6 +136,9 @@ export function useAppNav() {
     tabItems,
     activeKey:
       items.find((item) => isActive(pathname, item.href, own))?.key ?? null,
+    moneyFab:
+      walletEnabled &&
+      tabItems.some((item) => isTabRoot(pathname, item.href, own)),
     user: me.data ?? null,
     unread:
       unreadNotifications +
