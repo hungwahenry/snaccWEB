@@ -48,6 +48,14 @@ export function pickerState<Photo extends { uri: string }>({
   }
 }
 
+export function pictureFor(
+  theme: ChatTheme,
+  photoUrl: string | null
+): string | null {
+  if (theme.kind === "photo") return photoUrl
+  return theme.kind === "image" ? theme.image_url : null
+}
+
 export function choiceFor<Photo extends { uri: string }>(
   theme: ChatTheme | null,
   picked: ThemeChoice<Photo> | null

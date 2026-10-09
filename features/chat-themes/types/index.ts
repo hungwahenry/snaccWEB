@@ -29,7 +29,7 @@ export interface ChatLook {
   dark: ChatPaint
 }
 
-export type ChatThemeKind = "preset" | "photo"
+export type ChatThemeKind = "preset" | "photo" | "image"
 
 export interface ChatTheme {
   id: string
@@ -38,6 +38,7 @@ export interface ChatTheme {
   kind: ChatThemeKind
   premium: boolean
   look: ChatLook
+  image_url: string | null
 }
 
 export interface WornTheme extends ChatTheme {

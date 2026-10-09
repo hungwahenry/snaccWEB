@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, type RefObject } from "react"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { useColorMode } from "@/features/chat-themes/hooks/use-color-mode"
 import { paintOf } from "@/features/chat-themes/utils/paint"
+import { pictureFor } from "@/features/chat-themes/utils/picker"
 import { useReportSheet } from "@/features/reports/hooks/use-report-sheet"
 import { isNotFound } from "@/lib/api/errors"
 import { useLightbox } from "@/providers/lightbox-provider"
@@ -121,7 +122,7 @@ export function useConversationScreen(
     other,
     detailsHref: data ? conversationDetailsPath(id) : undefined,
     paint: theme ? paintOf(theme.look, mode) : null,
-    photoUrl: theme?.photo_url ?? null,
+    photoUrl: theme ? pictureFor(theme, theme.photo_url) : null,
     highlightId: jump.highlightId,
     seeking: jump.seeking,
     confirmReveal,

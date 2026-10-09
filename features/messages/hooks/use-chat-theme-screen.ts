@@ -9,6 +9,7 @@ import { paintOf } from "@/features/chat-themes/utils/paint"
 import {
   choiceFor,
   pickerState,
+  pictureFor,
   type ThemeChoice,
 } from "@/features/chat-themes/utils/picker"
 import { useFlag } from "@/features/config/hooks/use-flag"
@@ -59,7 +60,7 @@ export function useChatThemeScreen(id: string) {
     key: theme.id,
     label: theme.label,
     paint: paintOf(theme.look, mode),
-    photoUrl: theme.kind === "photo" ? state.photoUrl : null,
+    photoUrl: pictureFor(theme, state.photoUrl),
     needsPhoto: theme.kind === "photo" && !state.photoUrl,
     selected: theme.id === state.selectedId,
     locked: theme.premium && !premium,
@@ -78,7 +79,9 @@ export function useChatThemeScreen(id: string) {
     },
     preview: {
       paint: state.selected ? paintOf(state.selected.look, mode) : null,
-      photoUrl: state.selected?.kind === "photo" ? state.photoUrl : null,
+      photoUrl: state.selected
+        ? pictureFor(state.selected, state.photoUrl)
+        : null,
     },
     presets: [
       {
@@ -91,7 +94,7 @@ export function useChatThemeScreen(id: string) {
         locked: false,
         onPress: () => select(null),
       },
-      ...state.themes.filter((theme) => theme.kind === "preset").map(option),
+      ...state.themes.filter((theme) => theme.kind !== "photo").map(option),
     ],
     photo:
       photoThemes.length > 0

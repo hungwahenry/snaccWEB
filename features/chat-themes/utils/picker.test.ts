@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import type { ChatTheme, WornTheme } from "../types"
-import { choiceFor, pickerState } from "./picker"
+import { choiceFor, pickerState, pictureFor } from "./picker"
 
 const theme = (id: string, extra: Partial<ChatTheme> = {}): ChatTheme =>
   ({
@@ -89,5 +89,21 @@ describe("choiceFor", () => {
     expect(choiceFor(night, picked)).toEqual(picked)
     expect(choiceFor(free, picked)).toEqual({ themeId: "free", photo: null })
     expect(choiceFor(null, picked)).toEqual({ themeId: null, photo: null })
+  })
+})
+
+describe("pictureFor", () => {
+  it("puts your photo behind a photo theme and the theme's own picture behind an image theme", () => {
+    const rain = theme("rain", {
+      kind: "image",
+      image_url: "https://cdn/rain.jpg",
+    })
+    expect(pictureFor(night, "https://cdn/mine.jpg")).toBe(
+      "https://cdn/mine.jpg"
+    )
+    expect(pictureFor(rain, "https://cdn/mine.jpg")).toBe(
+      "https://cdn/rain.jpg"
+    )
+    expect(pictureFor(free, "https://cdn/mine.jpg")).toBeNull()
   })
 })

@@ -2,23 +2,35 @@
 
 import type { UseQueryResult } from "@tanstack/react-query"
 import { useMemo } from "react"
+import { Button } from "@/components/ui/button"
 import { CanAct } from "@/features/admin/auth/containers/can-act"
 import { ActionSwitch } from "@/features/admin/shell/components/action-switch"
-import type { Column } from "@/features/admin/shell/components/data-table"
+import { ConfirmAction } from "@/features/admin/shell/components/confirm-action"
+import {
+  HiddenHeader,
+  type Column,
+} from "@/features/admin/shell/components/data-table"
 import { QueryTable } from "@/features/admin/shell/components/query-table"
-import { ThemeThumbnail } from "@/features/messages/components/themes/theme-thumbnail"
 import { useColorMode } from "@/features/chat-themes/hooks/use-color-mode"
 import { paintOf } from "@/features/chat-themes/utils/paint"
-import type { AdminChatTheme } from "../types"
+import { ThemeThumbnail } from "@/features/messages/components/themes/theme-thumbnail"
+import { countLabel } from "@/lib/format"
+import type { AdminChatTheme, ChatThemeDraft } from "../types"
+import { deleteWarning, kindNote } from "../utils/chat-themes"
+import { ThemeDialog } from "./theme-dialog"
 
 export function ChatThemesTable({
   query,
   onSetEnabled,
   onSetPremium,
+  onSave,
+  onDelete,
 }: {
   query: UseQueryResult<AdminChatTheme[]>
   onSetEnabled: (id: string, enabled: boolean) => Promise<unknown>
   onSetPremium: (id: string, premium: boolean) => Promise<unknown>
+  onSave: (draft: ChatThemeDraft, id: string) => Promise<unknown>
+  onDelete: (id: string) => Promise<unknown>
 }) {
   const mode = useColorMode()
   const columns = useMemo<Column<AdminChatTheme>[]>(
@@ -30,8 +42,8 @@ export function ChatThemesTable({
         cell: (theme) => (
           <ThemeThumbnail
             paint={paintOf(theme.look, mode)}
-            photoUrl={null}
-            needsPhoto={theme.kind === "photo"}
+            photoUrl={theme.image_url}
+            needsPhoto={theme.kind !== "preset" && theme.image_url === null}
             width={48}
           />
         ),
@@ -45,10 +57,24 @@ export function ChatThemesTable({
             <span>{theme.label}</span>
             <span className="font-mono text-xs text-muted-foreground">
               {theme.key}
-              {theme.kind === "photo" ? " · own photo" : ""}
+              {kindNote(theme)}
             </span>
           </div>
         ),
+      },
+      {
+        id: "position",
+        header: "Position",
+        align: "end",
+        className: "w-24 tabular-nums",
+        cell: (theme) => theme.position,
+      },
+      {
+        id: "in-use",
+        header: "In use",
+        align: "end",
+        className: "w-28 tabular-nums",
+        cell: (theme) => countLabel(theme.in_use, "chat"),
       },
       {
         id: "premium",
@@ -80,8 +106,41 @@ export function ChatThemesTable({
           </CanAct>
         ),
       },
+      {
+        id: "actions",
+        header: <HiddenHeader>Actions</HiddenHeader>,
+        align: "end",
+        cell: (theme) => (
+          <div className="flex justify-end gap-2">
+            <CanAct permission="chat_themes.write">
+              <ThemeDialog
+                theme={theme}
+                trigger={
+                  <Button variant="outline" size="sm">
+                    Edit
+                  </Button>
+                }
+                onSubmit={(draft) => onSave(draft, theme.id)}
+              />
+            </CanAct>
+            <CanAct permission="chat_themes.delete">
+              <ConfirmAction
+                trigger={
+                  <Button variant="ghost" size="sm">
+                    Delete
+                  </Button>
+                }
+                title={`Delete ${theme.label}?`}
+                description={deleteWarning(theme)}
+                confirmLabel="Delete theme"
+                onConfirm={() => onDelete(theme.id)}
+              />
+            </CanAct>
+          </div>
+        ),
+      },
     ],
-    [mode, onSetEnabled, onSetPremium]
+    [mode, onSetEnabled, onSetPremium, onSave, onDelete]
   )
 
   return (
@@ -90,7 +149,7 @@ export function ChatThemesTable({
       what="chat themes"
       columns={columns}
       rowKey={(theme) => theme.id}
-      empty="No chat themes yet."
+      empty="No chat themes yet. Add one to fill the picker."
     />
   )
 }
