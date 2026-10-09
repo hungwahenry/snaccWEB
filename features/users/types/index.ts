@@ -35,6 +35,7 @@ export interface Profile {
   completed_at: string | null
   official: boolean
   premium: boolean
+  premium_badge: boolean
   is_private: boolean
   university: University | null
   university_locked: boolean

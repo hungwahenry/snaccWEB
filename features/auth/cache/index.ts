@@ -27,7 +27,7 @@ function withProfile(
     birthday: mine.birthday,
     is_birthday: mine.is_birthday,
     official: mine.official,
-    premium: mine.premium,
+    premium: mine.premium_badge,
     is_private: mine.is_private,
   }
 }

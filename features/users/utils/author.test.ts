@@ -19,6 +19,7 @@ function user(profile: Partial<NonNullable<User["profile"]>> = {}): User {
       university,
       official: false,
       premium: true,
+      premium_badge: true,
       is_birthday: false,
       ...profile,
     },
@@ -38,6 +39,15 @@ describe("authorFromUser", () => {
       premium: true,
       is_birthday: false,
     })
+  })
+
+  it("shows the Premium mark only while the mark is switched on", () => {
+    expect(
+      authorFromUser(user({ premium: true, premium_badge: false })).premium
+    ).toBe(false)
+    expect(
+      authorFromUser(user({ premium: false, premium_badge: true })).premium
+    ).toBe(true)
   })
 
   it("leaves the campus off an official account, as the server does", () => {

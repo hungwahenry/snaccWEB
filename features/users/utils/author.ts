@@ -21,7 +21,7 @@ export function authorFromUser(user: User): Author {
       : null,
     score: { tier: null, og: false },
     official: profile?.official ?? false,
-    premium: profile?.premium ?? false,
+    premium: profile?.premium_badge ?? false,
     is_birthday: profile?.is_birthday ?? false,
   }
 }
