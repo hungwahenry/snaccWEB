@@ -44,6 +44,7 @@ export function MessageGlimpseView({
           body={glimpse.moment.body}
           background={glimpse.moment.background}
           imageUrl={glimpse.moment.image_url}
+          sharesSnacc={glimpse.moment.shares_snacc}
         />
       ) : null}
     </span>

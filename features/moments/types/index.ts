@@ -1,6 +1,7 @@
+import type { EmbeddedSnacc, Snacc } from "@/features/snaccs/types"
 import type { SnaccAuthor } from "@/features/snaccs/types"
 
-export type MomentMode = "text" | "image"
+export type MomentMode = "text" | "image" | "snacc"
 
 export interface MomentImage {
   id: string
@@ -16,6 +17,8 @@ export interface Moment {
   body: string | null
   background: string | null
   image: MomentImage | null
+  snacc: EmbeddedSnacc | null
+  snacc_gone: Snacc["quoted_gone"]
   views_count: number
   seen: boolean
   created_at: string

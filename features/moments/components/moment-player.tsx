@@ -13,6 +13,8 @@ import { MomentGestures } from "./moment-gestures"
 import { MomentPlayerSkeleton } from "./moment-player-skeleton"
 import { MomentProgress } from "./moment-progress"
 import { MomentReplyBar } from "./moment-reply-bar"
+import { MomentSharedSnacc } from "./moment-shared-snacc"
+import { sharesSnacc } from "../utils/shared"
 
 interface MomentPlayerProps {
   moments: Moment[]
@@ -41,6 +43,7 @@ interface MomentPlayerProps {
   onSetLike: (liked: boolean) => Promise<void>
   onReply: (body: string) => void
   onOpenAuthor: (username: string | null) => void
+  onOpenSnacc: (snaccId: string) => void
 }
 
 export function MomentPlayer({
@@ -70,6 +73,7 @@ export function MomentPlayer({
   onSetLike,
   onReply,
   onOpenAuthor,
+  onOpenSnacc,
 }: MomentPlayerProps) {
   const [replyBarHeight, setReplyBarHeight] = useState(0)
   const measureReplyBar = useCallback((node: HTMLDivElement | null) => {
@@ -118,6 +122,10 @@ export function MomentPlayer({
         onNextAuthor={onNextAuthor}
         onPreviousAuthor={onPreviousAuthor}
       />
+
+      {sharesSnacc(current) ? (
+        <MomentSharedSnacc moment={current} onOpen={onOpenSnacc} />
+      ) : null}
 
       <div
         className={cn(

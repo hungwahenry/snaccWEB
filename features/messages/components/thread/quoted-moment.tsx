@@ -30,6 +30,7 @@ export function QuotedMomentCard({
         body={moment.body}
         background={moment.background}
         imageUrl={moment.image_url}
+        sharesSnacc={moment.shares_snacc}
       />
     </div>
   )

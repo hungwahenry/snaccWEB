@@ -7,12 +7,13 @@ import { ComposerHeader } from "@/features/snaccs/components/composer/composer-h
 import { MomentComposeBar } from "../components/composer/moment-compose-bar"
 import { MomentInput } from "../components/composer/moment-input"
 import { MomentPostButton } from "../components/composer/moment-post-button"
+import { MomentSnaccCanvas } from "../components/composer/moment-snacc-canvas"
 import { MomentTextCanvas } from "../components/composer/moment-text-canvas"
 import { MomentTextShell } from "../components/composer/moment-text-shell"
 import { useMomentComposeScreen } from "../hooks/use-moment-compose-screen"
 
-export function MomentComposeScreen() {
-  const { close, composer, pickMode } = useMomentComposeScreen()
+export function MomentComposeScreen({ snaccId }: { snaccId: string | null }) {
+  const { close, composer, pickMode, sharing } = useMomentComposeScreen(snaccId)
 
   const bar = (
     <MomentComposeBar
@@ -34,6 +35,23 @@ export function MomentComposeScreen() {
       }
     />
   )
+
+  if (sharing) {
+    return (
+      <MomentTextShell
+        background={composer.background}
+        onClose={close}
+        bar={bar}
+      >
+        <MomentSnaccCanvas
+          snacc={sharing.snacc}
+          failed={sharing.failed}
+          value={composer.body}
+          onChange={composer.setBody}
+        />
+      </MomentTextShell>
+    )
+  }
 
   if (composer.mode === "text") {
     return (

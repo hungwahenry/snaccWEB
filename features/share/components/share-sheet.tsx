@@ -1,4 +1,10 @@
-import { CopyIcon, ImageIcon, SendIcon, ShareIcon } from "lucide-react"
+import {
+  CirclePlusIcon,
+  CopyIcon,
+  ImageIcon,
+  SendIcon,
+  ShareIcon,
+} from "lucide-react"
 import type { RefObject } from "react"
 import { ActionSheet } from "@/components/ui/action-sheet"
 import { Button } from "@/components/ui/button"
@@ -17,6 +23,7 @@ export type ShareSheetProps = {
   canShareNative: boolean
   onCopyLink: () => void
   onShareLink: () => void
+  onAddToMoment: (() => void) | null
   image: { busy: boolean; onShare: () => void }
   cardRef: RefObject<HTMLDivElement | null>
   recipients: {
@@ -39,6 +46,7 @@ export function ShareSheet({
   canShareNative,
   onCopyLink,
   onShareLink,
+  onAddToMoment,
   image,
   cardRef,
   recipients,
@@ -67,23 +75,38 @@ export function ShareSheet({
             </Button>
           </div>
         ) : subject ? (
-          <div className="flex gap-3">
-            <Button
-              variant="ghost"
-              className="flex-1"
-              disabled={image.busy}
-              onClick={image.onShare}
-            >
-              {image.busy ? <Spinner /> : <ImageIcon />} Image
-            </Button>
-            <Button variant="ghost" className="flex-1" onClick={onCopyLink}>
-              <CopyIcon /> Copy link
-            </Button>
-            {canShareNative ? (
-              <Button variant="ghost" className="flex-1" onClick={onShareLink}>
-                <ShareIcon /> More
+          <div className="flex flex-col gap-2">
+            {onAddToMoment ? (
+              <Button
+                variant="secondary"
+                className="h-11 w-full"
+                onClick={onAddToMoment}
+              >
+                <CirclePlusIcon /> Add to your moment
               </Button>
             ) : null}
+            <div className="flex gap-3">
+              <Button
+                variant="ghost"
+                className="flex-1"
+                disabled={image.busy}
+                onClick={image.onShare}
+              >
+                {image.busy ? <Spinner /> : <ImageIcon />} Image
+              </Button>
+              <Button variant="ghost" className="flex-1" onClick={onCopyLink}>
+                <CopyIcon /> Copy link
+              </Button>
+              {canShareNative ? (
+                <Button
+                  variant="ghost"
+                  className="flex-1"
+                  onClick={onShareLink}
+                >
+                  <ShareIcon /> More
+                </Button>
+              ) : null}
+            </div>
           </div>
         ) : undefined
       }

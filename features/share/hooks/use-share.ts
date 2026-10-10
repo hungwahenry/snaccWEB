@@ -1,9 +1,12 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { submitMessage } from "@/features/messages/cache/pending-messages"
 import { useConversations } from "@/features/messages/hooks/use-conversations"
+import { shareToMomentPath } from "@/features/moments/routes"
+import { isPlainResnacc } from "@/features/snaccs/utils/resnaccs"
 import { signal } from "@/features/signals/utils/queue"
 import { useShareCapture } from "@/hooks/use-share-capture"
 import { copyLink, shareOrCopy } from "@/lib/share-links"
@@ -17,6 +20,9 @@ export function useShare() {
   const [picked, setPicked] = useState<string[]>([])
   const [note, setNote] = useState("")
   const messagesEnabled = useFlag("anon_messages")
+  const momentsEnabled = useFlag("moments")
+  const momentSharesEnabled = useFlag("moment_snaccs")
+  const router = useRouter()
   const conversations = useConversations()
   const capture = useShareCapture("snacc-card.png")
 
@@ -38,6 +44,16 @@ export function useShare() {
     noteShare("dm")
     setOpen(false)
     showSuccess("Sent")
+  }
+
+  function addToMoment(
+    snacc: Extract<ShareSubject, { kind: "snacc" }>["snacc"]
+  ) {
+    const shared =
+      isPlainResnacc(snacc) && snacc.resnacc_of ? snacc.resnacc_of : snacc
+    signal("share", { subjectId: shared.id, detail: "moment" })
+    setOpen(false)
+    router.push(shareToMomentPath(shared.id))
   }
 
   return {
@@ -70,6 +86,10 @@ export function useShare() {
           capture.share()
         },
       },
+      onAddToMoment:
+        subject?.kind === "snacc" && momentsEnabled && momentSharesEnabled
+          ? () => addToMoment(subject.snacc)
+          : null,
       onShareLink: () => {
         if (!subject) return
         noteShare("sheet")

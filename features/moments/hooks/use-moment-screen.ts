@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useReportSheet } from "@/features/reports/hooks/use-report-sheet"
+import { snaccPath } from "@/features/snaccs/routes"
 import { profilePath } from "@/features/users/routes"
 import { voicePlayer } from "@/features/voice/hooks/use-voice-player"
 import { useBack } from "@/hooks/use-back"
@@ -104,6 +105,11 @@ export function useMomentScreen(startAuthorId: string) {
     [router]
   )
 
+  const openSnacc = useCallback(
+    (snaccId: string) => router.push(snaccPath(snaccId)),
+    [router]
+  )
+
   useEffect(() => {
     const onVisibility = () =>
       setBackgrounded(document.visibilityState !== "visible")
@@ -119,6 +125,7 @@ export function useMomentScreen(startAuthorId: string) {
     previousAuthor,
     reportCurrent,
     openProfile,
+    openSnacc,
     viewers: { items: viewers.data ?? [], loading: viewers.isPending },
     reportSheet: {
       ...report.sheet,

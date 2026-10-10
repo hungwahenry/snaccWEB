@@ -37,6 +37,7 @@ export const FLAG_KEYS = [
   'chat_streaks',
   'score',
   'moments',
+  'moment_snaccs',
   'stickers',
   'snacc_stickers',
   'message_stickers',

@@ -39,6 +39,7 @@ export interface CreateMomentInput {
   body?: string
   background?: string
   image?: PickedImage
+  snaccId?: string
   hours?: number
 }
 
@@ -48,6 +49,7 @@ export function createMoment(input: CreateMomentInput): Promise<Moment> {
       id: input.id,
       body: input.body,
       background: input.background,
+      snaccId: input.snaccId,
       hours: input.hours,
     })
   }

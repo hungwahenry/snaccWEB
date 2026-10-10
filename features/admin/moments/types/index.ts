@@ -1,10 +1,18 @@
 import type { UserRef } from "@/lib/api/types"
 
+export type SharedSnaccRow = {
+  id: string
+  body: string | null
+  author: UserRef | null
+  deleted: boolean
+}
+
 export type MomentRow = {
   id: string
   body: string | null
   background: string | null
   image_url: string | null
+  snacc: SharedSnaccRow | null
   author: UserRef | null
   views_count: number
   reports_count: number

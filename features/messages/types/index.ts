@@ -49,6 +49,7 @@ export interface QuotedMoment {
   body: string | null
   background: string | null
   image_url: string | null
+  shares_snacc: boolean
 }
 
 export interface MessageReaction {

@@ -14,10 +14,13 @@ import {
 } from "@/features/admin/shell/components/data-table"
 import { QueryTable } from "@/features/admin/shell/components/query-table"
 import { UserCell } from "@/features/admin/shell/components/user-cell"
+import { snaccPath } from "@/features/admin/shell/routes"
 import { plural } from "@/features/admin/shell/utils/format"
 import type { Paginated } from "@/lib/api/types"
 import { formatDate, formatNumber } from "@/lib/format"
+import Link from "next/link"
 import type { MomentRow } from "../types"
+import { sharedSnaccLabel } from "../utils/moments"
 
 export function MomentsTable({
   query,
@@ -53,9 +56,17 @@ export function MomentsTable({
                 Aa
               </div>
             )}
-            <span className="line-clamp-2 max-w-sm text-sm">
-              {moment.body ?? "—"}
-            </span>
+            <div className="flex max-w-sm flex-col gap-1">
+              <span className="line-clamp-2 text-sm">{moment.body ?? "—"}</span>
+              {moment.snacc ? (
+                <Link
+                  href={snaccPath(moment.snacc.id)}
+                  className="line-clamp-2 text-xs text-muted-foreground hover:underline"
+                >
+                  {sharedSnaccLabel(moment.snacc)}
+                </Link>
+              ) : null}
+            </div>
           </div>
         ),
       },

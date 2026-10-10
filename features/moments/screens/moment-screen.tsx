@@ -44,6 +44,7 @@ export function MomentScreen({ authorId }: { authorId: string }) {
           onSetLike={player.setLike}
           onReply={player.reply}
           onOpenAuthor={screen.openProfile}
+          onOpenSnacc={screen.openSnacc}
         />
       </div>
 

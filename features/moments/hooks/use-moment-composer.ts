@@ -9,14 +9,23 @@ import type { PickedImage } from "@/lib/media"
 import { createMoment } from "../api"
 import type { MomentMode } from "../types"
 import { DEFAULT_BACKGROUND } from "../utils/backgrounds"
+import { momentContent } from "../utils/draft"
 import { authorMomentsKey, MOMENTS_TRAY_KEY } from "../utils/keys"
 import { showError, showHeld } from "@/lib/feedback"
 import { useMomentLength } from "./use-moment-length"
 
 const COUNTER_APPEARS_AT = 80
 
-export function useMomentComposer(onPosted: () => void) {
-  const [mode, setMode] = useState<MomentMode>("text")
+export interface MomentSharing {
+  snaccId: string
+  ready: boolean
+}
+
+export function useMomentComposer(
+  onPosted: () => void,
+  sharing: MomentSharing | null
+) {
+  const [mode, setMode] = useState<MomentMode>(sharing ? "snacc" : "text")
   const [body, setBody] = useState("")
   const [image, setImage] = useState<PickedImage | null>(null)
   const [background, setBackground] = useState<string>(DEFAULT_BACKGROUND)
@@ -46,8 +55,12 @@ export function useMomentComposer(onPosted: () => void) {
 
   const trimmed = body.trim()
   const remaining = maxLength - trimmed.length
-  const ready =
-    remaining >= 0 && (mode === "text" ? trimmed.length > 0 : image !== null)
+  const filled = {
+    text: trimmed.length > 0,
+    image: image !== null,
+    snacc: sharing?.ready ?? false,
+  }
+  const ready = remaining >= 0 && filled[mode]
 
   const post = useCallback(() => {
     if (!ready || isPending) return
@@ -56,7 +69,11 @@ export function useMomentComposer(onPosted: () => void) {
       id: newId(),
       body: trimmed || undefined,
       hours: length.picked ?? undefined,
-      ...(mode === "text" ? { background } : { image: image ?? undefined }),
+      ...momentContent(mode, {
+        background,
+        image,
+        snaccId: sharing?.snaccId ?? null,
+      }),
     })
   }, [
     ready,
@@ -67,6 +84,7 @@ export function useMomentComposer(onPosted: () => void) {
     mode,
     background,
     image,
+    sharing?.snaccId,
   ])
 
   return {

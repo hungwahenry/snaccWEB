@@ -4,6 +4,7 @@ import {
   DELETED_VALUES,
   HELD_OPTIONS,
   HELD_VALUES,
+  sharedSnaccLabel,
 } from "./moments"
 
 describe("moment filters", () => {
@@ -19,5 +20,23 @@ describe("moment filters", () => {
       "Live",
       "Removed",
     ])
+  })
+})
+
+describe("sharedSnaccLabel", () => {
+  const author = {
+    id: "u1",
+    username: "ada",
+    display_name: null,
+    avatar_url: "",
+  }
+
+  it("says whose snacc a moment shares and what it said", () => {
+    expect(
+      sharedSnaccLabel({ id: "s1", body: "hi", author, deleted: false })
+    ).toBe("Shares a snacc by @ada: hi")
+    expect(
+      sharedSnaccLabel({ id: "s1", body: null, author: null, deleted: true })
+    ).toBe("Shared a deleted snacc by someone")
   })
 })

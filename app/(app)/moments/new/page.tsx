@@ -5,8 +5,11 @@ import { requireSession } from "@/lib/auth-server"
 
 export const metadata: Metadata = { title: "New moment" }
 
-export default async function NewMomentPage() {
-  await requireSession(NEW_MOMENT_PATH)
+type Props = { searchParams: Promise<{ snacc?: string }> }
 
-  return <MomentComposeScreen />
+export default async function NewMomentPage({ searchParams }: Props) {
+  await requireSession(NEW_MOMENT_PATH)
+  const { snacc } = await searchParams
+
+  return <MomentComposeScreen snaccId={snacc ?? null} />
 }

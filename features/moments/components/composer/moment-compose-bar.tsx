@@ -33,7 +33,7 @@ export function MomentComposeBar({
 }: MomentComposeBarProps) {
   return (
     <>
-      {mode === "text" ? (
+      {mode !== "image" ? (
         <MomentBackgroundRow value={background} onChange={onBackgroundChange} />
       ) : (
         <MomentAttachment image={image} onRemove={onRemoveImage} />
