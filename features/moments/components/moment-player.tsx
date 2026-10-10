@@ -14,7 +14,9 @@ import { MomentPlayerSkeleton } from "./moment-player-skeleton"
 import { MomentProgress } from "./moment-progress"
 import { MomentReplyBar } from "./moment-reply-bar"
 import { MomentSharedSnacc } from "./moment-shared-snacc"
+import { MomentMentions } from "./moment-mentions"
 import { MomentWords } from "./moment-words"
+import { mentionedPeople } from "../utils/mentions"
 import { sharesSnacc } from "../utils/shared"
 
 interface MomentPlayerProps {
@@ -199,6 +201,8 @@ export function MomentPlayer({
             <XIcon className="size-6" />
           </button>
         </div>
+
+        <MomentMentions people={mentionedPeople(current.entities)} />
       </div>
 
       {current.mine ? (

@@ -1,9 +1,7 @@
 import type { KeyboardEvent } from "react"
-import { QuotedSnacc } from "@/features/snaccs/components/card/quote/quoted-snacc"
-import { QuotedSnaccSkeleton } from "@/features/snaccs/components/card/quote/quoted-snacc-skeleton"
-import { QuotedTombstone } from "@/features/snaccs/components/card/quote/quoted-tombstone"
 import type { EmbeddedSnacc } from "@/features/snaccs/types"
 import { caretTracking } from "@/lib/caret"
+import { MomentSnaccCard } from "../moment-snacc-card"
 
 export function MomentSnaccCanvas({
   snacc,
@@ -21,25 +19,21 @@ export function MomentSnaccCanvas({
   onKeyDown: (event: KeyboardEvent<HTMLTextAreaElement>) => void
 }) {
   return (
-    <div className="flex flex-1 flex-col justify-center gap-6 px-6">
-      <div className="overflow-hidden rounded-2xl bg-background">
-        {snacc ? (
-          <QuotedSnacc snacc={snacc} />
-        ) : failed ? (
-          <QuotedTombstone reason="unavailable" />
-        ) : (
-          <QuotedSnaccSkeleton />
-        )}
+    <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col justify-center px-6">
+        <MomentSnaccCard snacc={snacc} gone={failed ? "unavailable" : null} />
       </div>
 
-      <textarea
-        value={value}
-        {...caretTracking(onChange, onCursorChange)}
-        onKeyDown={onKeyDown}
-        placeholder="Add a caption"
-        rows={1}
-        className="field-sizing-content w-full resize-none bg-transparent text-center text-lg leading-7 font-bold text-white outline-none placeholder:text-white/55"
-      />
+      <div className="bg-black/45 px-5 py-4">
+        <textarea
+          value={value}
+          {...caretTracking(onChange, onCursorChange)}
+          onKeyDown={onKeyDown}
+          placeholder="Add a caption"
+          rows={1}
+          className="field-sizing-content w-full resize-none bg-transparent text-base leading-6 font-medium text-white outline-none placeholder:text-white/55"
+        />
+      </div>
     </div>
   )
 }

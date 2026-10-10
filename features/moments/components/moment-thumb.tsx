@@ -11,13 +11,13 @@ export function MomentThumb({
   body,
   background,
   imageUrl,
-  sharesSnacc = false,
+  sharesSnacc,
   size = "card",
 }: {
   body: string | null
   background: string | null
   imageUrl: string | null
-  sharesSnacc?: boolean
+  sharesSnacc: boolean
   size?: keyof typeof SIZES
 }) {
   const card = size === "card"

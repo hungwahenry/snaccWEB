@@ -12,11 +12,11 @@ import { IconButton } from "@/components/ui/icon-button"
 import { PREMIUM_PATH } from "@/features/premium/routes"
 import { cn } from "@/lib/utils"
 import type { MomentLengthChip } from "../../hooks/use-moment-length"
-import type { MomentMode } from "../../types"
+import type { ChosenMode, MomentMode } from "../../types"
 
 type MomentToolbarProps = {
   mode: MomentMode
-  onModeChange: (mode: MomentMode) => void
+  onModeChange: (mode: ChosenMode) => void
   remaining: number
   showCounter: boolean
   length: MomentLengthChip | null

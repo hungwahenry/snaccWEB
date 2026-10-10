@@ -8,7 +8,8 @@ import { useCaretText } from "@/hooks/use-caret-text"
 import { newId } from "@/lib/ids"
 import type { PickedImage } from "@/lib/media"
 import { createMoment } from "../api"
-import type { MomentMode } from "../types"
+import { mentionLimitProblem } from "@/features/snaccs/utils/entities"
+import type { ChosenMode, MomentMode, MomentSharing } from "../types"
 import { DEFAULT_BACKGROUND } from "../utils/backgrounds"
 import { momentContent } from "../utils/draft"
 import { authorMomentsKey, MOMENTS_TRAY_KEY } from "../utils/keys"
@@ -17,22 +18,19 @@ import { useMomentLength } from "./use-moment-length"
 
 const COUNTER_APPEARS_AT = 80
 
-export interface MomentSharing {
-  snaccId: string
-  ready: boolean
-}
-
 export function useMomentComposer(
   onPosted: () => void,
   sharing: MomentSharing | null
 ) {
-  const [mode, setMode] = useState<MomentMode>(sharing ? "snacc" : "text")
+  const [chosen, setChosen] = useState<ChosenMode>("text")
+  const mode: MomentMode = sharing ? "snacc" : chosen
   const text = useCaretText()
   const { body } = text
   const [image, setImage] = useState<PickedImage | null>(null)
   const [background, setBackground] = useState<string>(DEFAULT_BACKGROUND)
 
   const maxLength = useConfigValue("moments.caption_max_length")
+  const maxMentions = useConfigValue("moments.max_mentions")
   const length = useMomentLength()
   const me = useMe()
   const queryClient = useQueryClient()
@@ -57,41 +55,29 @@ export function useMomentComposer(
 
   const trimmed = body.trim()
   const remaining = maxLength - trimmed.length
-  const filled = {
-    text: trimmed.length > 0,
-    image: image !== null,
-    snacc: sharing?.ready ?? false,
-  }
-  const ready = remaining >= 0 && filled[mode]
+  const tagProblem = mentionLimitProblem(trimmed, maxMentions, "moment")
+  const content = momentContent(mode, {
+    hasWords: trimmed.length > 0,
+    background,
+    image,
+    sharing,
+  })
+  const ready = remaining >= 0 && tagProblem === null && content !== null
 
   const post = useCallback(() => {
-    if (!ready || isPending) return
+    if (!ready || content === null || isPending) return
 
     mutate({
       id: newId(),
       body: trimmed || undefined,
       hours: length.picked ?? undefined,
-      ...momentContent(mode, {
-        background,
-        image,
-        snaccId: sharing?.snaccId ?? null,
-      }),
+      ...content,
     })
-  }, [
-    ready,
-    isPending,
-    mutate,
-    trimmed,
-    length.picked,
-    mode,
-    background,
-    image,
-    sharing?.snaccId,
-  ])
+  }, [ready, content, isPending, mutate, trimmed, length.picked])
 
   return {
     mode,
-    setMode,
+    setMode: setChosen,
     body,
     setBody: text.setBody,
     cursor: text.cursor,
@@ -106,6 +92,7 @@ export function useMomentComposer(
     avatarUrl: me.data?.profile?.avatar_url ?? null,
     username: me.data?.profile?.username ?? null,
     remaining,
+    tagProblem,
     showCounter: remaining <= COUNTER_APPEARS_AT,
     canPost: ready,
     posting: isPending,

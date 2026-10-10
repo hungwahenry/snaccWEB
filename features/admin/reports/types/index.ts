@@ -1,3 +1,4 @@
+import type { SharedSnaccRow } from "@/features/admin/moments/types"
 import type { UserRefWithCampus } from "@/lib/api/types"
 import type {
   MediaClip,
@@ -49,6 +50,7 @@ export type ReportTarget =
         expires_at: string
         held: boolean
         author: ReportAuthor
+        snacc: SharedSnaccRow | null
         images: MediaImage[]
         sticker: MediaSticker | null
         gif: MediaGif | null

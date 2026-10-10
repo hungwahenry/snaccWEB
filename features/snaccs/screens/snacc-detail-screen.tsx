@@ -49,7 +49,7 @@ export function SnaccDetailScreen({ id }: { id: string }) {
 
   const loaded = snacc.data
   const isPost = loaded ? loaded.parent_id === null : undefined
-  const parent = useSnacc(loaded?.parent_id ?? "")
+  const parent = useSnacc(loaded?.parent_id ?? null)
   // The answer paints from the cache straight away; keep its place until the parent lands.
   const awaitingParent = loaded?.parent_id != null && !parent.data
 

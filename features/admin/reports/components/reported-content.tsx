@@ -12,6 +12,7 @@ import {
   threadPath,
   userPath,
 } from "@/features/admin/shell/routes"
+import { sharedSnaccLabel } from "@/features/admin/moments/utils/moments"
 import { SnaccView } from "@/features/admin/snaccs/components/snacc-view"
 import { PACK_STATUS } from "@/features/admin/stickers/utils/packs"
 import type { UserRef } from "@/lib/api/types"
@@ -171,6 +172,14 @@ function ReportedMoment({ moment }: { moment: TargetOf<"moment">["moment"] }) {
         <p className="text-sm whitespace-pre-wrap">{moment.body}</p>
       ) : null}
       <ContentMedia images={moment.images} />
+      {moment.snacc ? (
+        <Link
+          href={snaccPath(moment.snacc.id)}
+          className="rounded-lg border border-border p-3 text-sm hover:bg-accent/40"
+        >
+          {sharedSnaccLabel(moment.snacc)}
+        </Link>
+      ) : null}
       <p className="text-xs text-muted-foreground">
         A moment is gone for good once released, so decide from what is shown
         here.

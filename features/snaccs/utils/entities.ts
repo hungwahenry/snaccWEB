@@ -26,9 +26,9 @@ interface BodySegment {
   entity: boolean
 }
 
-export interface RenderedSegment {
+export interface RenderedSegment<E extends SnaccEntity = SnaccEntity> {
   text: string
-  entity: SnaccEntity | null
+  entity: E | null
 }
 
 function segmentsOf<S extends Span>(
@@ -50,12 +50,12 @@ function segmentsOf<S extends Span>(
   return segments
 }
 
-export function toRenderedSegments(
+export function toRenderedSegments<E extends SnaccEntity>(
   body: string,
-  entities: SnaccEntity[],
+  entities: E[],
   stripLinks = false
-): RenderedSegment[] {
-  const spans: { entity: SnaccEntity | null; start: number; end: number }[] = [
+): RenderedSegment<E>[] {
+  const spans: { entity: E | null; start: number; end: number }[] = [
     ...entities.map((entity) => ({
       entity,
       start: entity.start,
@@ -68,7 +68,7 @@ export function toRenderedSegments(
     })),
   ].sort((a, b) => a.start - b.start)
 
-  const kept: RenderedSegment[] = []
+  const kept: RenderedSegment<E>[] = []
   let gap = false
 
   for (const { text, span } of segmentsOf(body, spans)) {
@@ -139,21 +139,30 @@ export interface TagLimits {
   maxCashtags: number
 }
 
-export function tagLimitProblem(
+export function mentionLimitProblem(
   body: string,
-  limits: TagLimits
+  maxMentions: number,
+  place: "snacc" | "moment"
 ): string | null {
   const people = new Set(
     [...body.matchAll(MENTION_PATTERN)].map((match) => match[1].toLowerCase())
   )
+  return people.size > maxMentions
+    ? `You can tag up to ${maxMentions} people in one ${place}.`
+    : null
+}
+
+export function tagLimitProblem(
+  body: string,
+  limits: TagLimits
+): string | null {
+  const people = mentionLimitProblem(body, limits.maxMentions, "snacc")
   const hashtags = new Set(
     hashtagMatches(body).map(({ tag }) => tag.toLowerCase())
   )
   const coins = new Set(cashtagMatches(body).map(({ symbol }) => symbol))
 
-  if (people.size > limits.maxMentions) {
-    return `You can tag up to ${limits.maxMentions} people in one snacc.`
-  }
+  if (people) return people
   if (hashtags.size > limits.maxHashtags) {
     return `You can use up to ${limits.maxHashtags} hashtags in one snacc.`
   }

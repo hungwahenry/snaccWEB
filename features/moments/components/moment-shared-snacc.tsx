@@ -1,6 +1,5 @@
-import { QuotedSnacc } from "@/features/snaccs/components/card/quote/quoted-snacc"
-import { QuotedTombstone } from "@/features/snaccs/components/card/quote/quoted-tombstone"
 import type { Moment } from "../types"
+import { MomentSnaccCard } from "./moment-snacc-card"
 
 export function MomentSharedSnacc({
   moment,
@@ -10,16 +9,26 @@ export function MomentSharedSnacc({
   onOpen: (snaccId: string) => void
 }) {
   const { snacc, snacc_gone: gone } = moment
+  const card = <MomentSnaccCard snacc={snacc} gone={gone} />
 
   return (
     <div className="pointer-events-none absolute inset-0 flex flex-col justify-center px-6">
-      <div className="pointer-events-auto overflow-hidden rounded-2xl bg-background">
-        {snacc ? (
-          <QuotedSnacc snacc={snacc} onPress={() => onOpen(snacc.id)} />
-        ) : gone ? (
-          <QuotedTombstone reason={gone} />
-        ) : null}
-      </div>
+      {snacc ? (
+        <div
+          role="link"
+          tabIndex={0}
+          aria-label="Open the snacc"
+          onClick={() => onOpen(snacc.id)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") onOpen(snacc.id)
+          }}
+          className="pointer-events-auto cursor-pointer"
+        >
+          {card}
+        </div>
+      ) : (
+        card
+      )}
     </div>
   )
 }

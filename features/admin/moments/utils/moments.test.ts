@@ -37,6 +37,6 @@ describe("sharedSnaccLabel", () => {
     ).toBe("Shares a snacc by @ada: hi")
     expect(
       sharedSnaccLabel({ id: "s1", body: null, author: null, deleted: true })
-    ).toBe("Shared a deleted snacc by someone")
+    ).toBe("Shares a deleted snacc by someone")
   })
 })

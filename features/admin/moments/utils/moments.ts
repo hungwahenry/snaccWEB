@@ -16,5 +16,5 @@ export const DELETED_OPTIONS: Option<(typeof DELETED_VALUES)[number]>[] = [
 export function sharedSnaccLabel(snacc: SharedSnaccRow): string {
   const by = snacc.author?.username ? `@${snacc.author.username}` : "someone"
   const said = snacc.body ? `: ${snacc.body}` : ""
-  return `${snacc.deleted ? "Shared a deleted snacc" : "Shares a snacc"} by ${by}${said}`
+  return `${snacc.deleted ? "Shares a deleted snacc" : "Shares a snacc"} by ${by}${said}`
 }

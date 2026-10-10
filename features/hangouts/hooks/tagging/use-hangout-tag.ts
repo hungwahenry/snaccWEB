@@ -7,7 +7,7 @@ import type { HangoutTag } from "../../types"
 export function useHangoutTag(hangoutId: string | undefined, allowed: boolean) {
   const [dropped, setDropped] = useState(false)
   const taggedId = hangoutId && allowed && !dropped ? hangoutId : undefined
-  const hangout = useSnacc(taggedId ?? "").data?.hangout ?? null
+  const hangout = useSnacc(taggedId ?? null).data?.hangout ?? null
 
   const tag: HangoutTag | undefined =
     taggedId && hangout

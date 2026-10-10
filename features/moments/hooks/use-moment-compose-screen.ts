@@ -6,7 +6,7 @@ import { useSnacc } from "@/features/snaccs/hooks/use-snacc"
 import type { EntityKind } from "@/features/snaccs/types"
 import { useBack } from "@/hooks/use-back"
 import { pickImages } from "@/lib/media"
-import type { MomentMode } from "../types"
+import type { ChosenMode } from "../types"
 import { useMomentComposer } from "./use-moment-composer"
 
 const MOMENT_ENTITIES: readonly EntityKind[] = ["mention"]
@@ -21,7 +21,7 @@ export function useMomentComposeScreen(snaccId: string | null) {
     back()
   }, [back])
 
-  const shared = useSnacc(snaccId ?? "")
+  const shared = useSnacc(snaccId)
   const composer = useMomentComposer(
     close,
     snaccId ? { snaccId, ready: shared.data !== undefined } : null
@@ -37,7 +37,7 @@ export function useMomentComposeScreen(snaccId: string | null) {
   }, [setImage, setMode])
 
   const pickMode = useCallback(
-    (next: MomentMode) => {
+    (next: ChosenMode) => {
       setMode(next)
       if (next === "image" && !image) void pickPhoto()
     },

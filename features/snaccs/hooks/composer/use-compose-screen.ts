@@ -27,8 +27,8 @@ export function useComposeScreen(params: ComposeParams) {
     enabled: composer.schedule.available,
   })
   const typeahead = useTypeaheadPicker(composer, SNACC_ENTITIES)
-  const parent = useSnacc(params.parentId ?? "")
-  const quoting = useSnacc(params.resnaccOfId ?? "")
+  const parent = useSnacc(params.parentId ?? null)
+  const quoting = useSnacc(params.resnaccOfId ?? null)
   const [trayOpen, setTrayOpen] = useState(false)
   const [draftsOpen, setDraftsOpen] = useState(false)
   const [scheduledOpen, setScheduledOpen] = useState(false)

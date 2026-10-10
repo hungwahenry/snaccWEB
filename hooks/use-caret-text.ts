@@ -19,3 +19,5 @@ export function useCaretText(seed = "") {
     },
   }
 }
+
+export type CaretText = ReturnType<typeof useCaretText>

@@ -11,5 +11,5 @@ export default async function NewMomentPage({ searchParams }: Props) {
   await requireSession(NEW_MOMENT_PATH)
   const { snacc } = await searchParams
 
-  return <MomentComposeScreen snaccId={snacc ?? null} />
+  return <MomentComposeScreen key={snacc ?? "new"} snaccId={snacc ?? null} />
 }

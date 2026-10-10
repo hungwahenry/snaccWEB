@@ -1,5 +1,4 @@
 import { EntityText } from "@/features/snaccs/components/card/entity-text"
-import { profilePath } from "@/features/users/routes"
 import type { Moment } from "../types"
 import { sharesSnacc } from "../utils/shared"
 
@@ -15,18 +14,6 @@ export function MomentWords({
   const { body } = moment
   if (!body) return null
 
-  const words = (className: string, entityClassName: string) => (
-    <EntityText
-      body={body}
-      entities={moment.entities}
-      hrefFor={(entity) =>
-        profilePath(entity.type === "mention" ? entity.user.username : null)
-      }
-      className={className}
-      entityClassName={`pointer-events-auto ${entityClassName}`}
-    />
-  )
-
   if (moment.image || sharesSnacc(moment)) {
     return (
       <div
@@ -35,20 +22,24 @@ export function MomentWords({
           paddingBottom: `calc(max(env(safe-area-inset-bottom), ${bottomClearance}px) + ${CAPTION_LIFT}px)`,
         }}
       >
-        {words(
-          "text-base leading-6 font-medium whitespace-pre-wrap text-white",
-          "font-extrabold hover:underline"
-        )}
+        <EntityText
+          body={body}
+          entities={moment.entities}
+          className="text-base leading-6 font-medium whitespace-pre-wrap text-white"
+          entityClassName="font-extrabold"
+        />
       </div>
     )
   }
 
   return (
     <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-8">
-      {words(
-        "text-center text-3xl leading-10 font-extrabold break-words whitespace-pre-wrap text-white",
-        "underline"
-      )}
+      <EntityText
+        body={body}
+        entities={moment.entities}
+        className="text-center text-3xl leading-10 font-extrabold break-words whitespace-pre-wrap text-white"
+        entityClassName="underline"
+      />
     </div>
   )
 }

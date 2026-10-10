@@ -6,7 +6,7 @@ import type { CommentSort } from "../types"
 const LIST = "snacc-list"
 
 export const snaccKeys = {
-  detail: (id: string) => ["snaccs", "detail", id] as const,
+  detail: (id: string | null) => ["snaccs", "detail", id] as const,
   likers: (id: string) => ["snaccs", "likers", id] as const,
   resnaccSummary: (id: string) => ["snaccs", "resnacc-summary", id] as const,
   resnaccers: (id: string) => ["snaccs", "resnaccers", id] as const,

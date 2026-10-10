@@ -3,7 +3,7 @@ import type { CSSProperties } from "react"
 import type { SnaccEntity } from "../../types"
 import { toRenderedSegments } from "../../utils/entities"
 
-export function EntityText({
+export function EntityText<E extends SnaccEntity>({
   body,
   entities,
   hrefFor,
@@ -13,10 +13,10 @@ export function EntityText({
   className,
 }: {
   body: string
-  entities: SnaccEntity[]
-  hrefFor: (entity: SnaccEntity) => string
+  entities: E[]
+  hrefFor?: (entity: E) => string
   entityClassName?: string
-  entityStyle?: (entity: SnaccEntity) => CSSProperties | undefined
+  entityStyle?: (entity: E) => CSSProperties | undefined
   stripLinks?: boolean
   className?: string
 }) {
@@ -25,6 +25,17 @@ export function EntityText({
       {toRenderedSegments(body, entities, stripLinks).map((segment, index) => {
         const { entity } = segment
         if (!entity) return segment.text
+        if (!hrefFor) {
+          return (
+            <span
+              key={index}
+              className={entityClassName}
+              style={entityStyle?.(entity)}
+            >
+              {segment.text}
+            </span>
+          )
+        }
         return (
           <Link
             key={index}

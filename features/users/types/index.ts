@@ -53,6 +53,18 @@ export interface User {
 }
 
 /** Someone as they appear next to what they posted. */
+export interface Author {
+  id: string
+  username: string | null
+  display_name: string | null
+  avatar_url: string
+  university: UniversityBadge | null
+  score: UserScore
+  official: boolean
+  premium: boolean
+  is_birthday: boolean
+}
+
 export interface MentionUser {
   id: string
   username: string | null
@@ -65,18 +77,6 @@ export interface MentionEntity {
   start: number
   length: number
   user: MentionUser
-}
-
-export interface Author {
-  id: string
-  username: string | null
-  display_name: string | null
-  avatar_url: string
-  university: UniversityBadge | null
-  score: UserScore
-  official: boolean
-  premium: boolean
-  is_birthday: boolean
 }
 
 export type UserSuggestion = Author

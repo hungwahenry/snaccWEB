@@ -25,6 +25,7 @@ export function MomentComposeScreen({ snaccId }: { snaccId: string | null }) {
       image={composer.image}
       onRemoveImage={composer.clearImage}
       remaining={composer.remaining}
+      problem={composer.tagProblem}
       showCounter={composer.showCounter}
       length={composer.length}
       suggestions={suggestions}
