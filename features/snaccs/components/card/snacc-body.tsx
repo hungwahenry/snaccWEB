@@ -1,13 +1,12 @@
 "use client"
 
-import Link from "next/link"
 import { cashtagPath } from "@/features/cashtags/routes"
 import { hashtagPath } from "@/features/hashtags/routes"
 import { useTierLookup } from "@/providers/tiers-provider"
 import { profilePath } from "@/features/users/routes"
 import { cn } from "@/lib/utils"
 import type { SnaccEntity } from "../../types"
-import { toRenderedSegments } from "../../utils/entities"
+import { EntityText } from "./entity-text"
 
 type SnaccBodyProps = {
   body: string | null
@@ -40,26 +39,17 @@ export function SnaccBody({
   }
 
   return (
-    <p
+    <EntityText
+      body={body}
+      entities={entities}
+      stripLinks={stripLinks}
+      hrefFor={entityPath}
       className={cn(
         "text-base leading-6 break-words whitespace-pre-wrap text-foreground",
         className
       )}
-    >
-      {toRenderedSegments(body, entities, stripLinks).map((segment, index) => {
-        if (!segment.entity) return segment.text
-        return (
-          <Link
-            key={index}
-            href={entityPath(segment.entity)}
-            onClick={(event) => event.stopPropagation()}
-            className="font-extrabold hover:underline"
-            style={{ color: entityColor(segment.entity) }}
-          >
-            {segment.text}
-          </Link>
-        )
-      })}
-    </p>
+      entityClassName="font-extrabold hover:underline"
+      entityStyle={(entity) => ({ color: entityColor(entity) })}
+    />
   )
 }

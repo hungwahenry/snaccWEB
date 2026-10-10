@@ -7,8 +7,12 @@ export function trayOrder(entries: TrayEntry[]): TrayEntry[] {
   return mine ? [mine, ...others] : others
 }
 
-export function playQueue(entries: TrayEntry[]): TrayEntry[] {
-  return trayOrder(entries)
+export function playQueue(
+  entries: TrayEntry[],
+  startAuthorId: string
+): TrayEntry[] {
+  const order = trayOrder(entries)
+  return order.some((entry) => entry.author.id === startAuthorId) ? order : []
 }
 
 export function nextUnseen(queue: TrayEntry[], from: number): number {

@@ -4,11 +4,7 @@ import { useRouter } from "next/navigation"
 import { useState, type KeyboardEvent } from "react"
 import { confirm } from "@/components/ui/confirm"
 import { composePath } from "../../routes"
-import type {
-  ComposeParams,
-  StoredDraft,
-  TypeaheadSuggestion,
-} from "../../types"
+import type { ComposeParams, EntityKind, StoredDraft } from "../../types"
 import {
   COMPOSER_COPY,
   HANGOUT_COPY,
@@ -17,8 +13,10 @@ import {
 import { useScheduledSheet } from "../scheduled/use-scheduled-sheet"
 import { useSnacc } from "../use-snacc"
 import { useComposer } from "./use-composer"
-import { useComposerTypeahead } from "./use-composer-typeahead"
+import { useTypeaheadPicker } from "./use-typeahead-picker"
 import { useDrafts } from "./use-drafts"
+
+const SNACC_ENTITIES: readonly EntityKind[] = ["hashtag", "mention", "cashtag"]
 
 /** The compose page: the composer, the words it suggests, the sticker tray and the drafts. */
 export function useComposeScreen(params: ComposeParams) {
@@ -28,21 +26,12 @@ export function useComposeScreen(params: ComposeParams) {
   const scheduled = useScheduledSheet({
     enabled: composer.schedule.available,
   })
-  const typeahead = useComposerTypeahead(composer.body, composer.cursor)
+  const typeahead = useTypeaheadPicker(composer, SNACC_ENTITIES)
   const parent = useSnacc(params.parentId ?? "")
   const quoting = useSnacc(params.resnaccOfId ?? "")
   const [trayOpen, setTrayOpen] = useState(false)
   const [draftsOpen, setDraftsOpen] = useState(false)
   const [scheduledOpen, setScheduledOpen] = useState(false)
-
-  function pick(suggestion: TypeaheadSuggestion) {
-    if (!typeahead.token) return
-    composer.replaceRange(
-      typeahead.token.start,
-      typeahead.token.end,
-      suggestion.replacement
-    )
-  }
 
   function onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (isSubmitShortcut(event)) {
@@ -50,16 +39,7 @@ export function useComposeScreen(params: ComposeParams) {
       composer.post()
       return
     }
-    const choice = typeahead.suggestions[typeahead.highlighted]
-    if (!typeahead.open || !choice) return
-
-    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-      event.preventDefault()
-      typeahead.move(event.key === "ArrowDown" ? 1 : -1)
-    } else if (event.key === "Enter" || event.key === "Tab") {
-      event.preventDefault()
-      pick(choice)
-    }
+    typeahead.handleKey(event)
   }
 
   function openDraft(draft: StoredDraft) {
@@ -82,14 +62,7 @@ export function useComposeScreen(params: ComposeParams) {
     parent: parent.data ?? null,
     quoting: quoting.data ?? null,
     onKeyDown,
-    suggestions: typeahead.open
-      ? {
-          suggestions: typeahead.suggestions,
-          loading: typeahead.loading,
-          highlighted: typeahead.highlighted,
-          onPick: pick,
-        }
-      : null,
+    suggestions: typeahead.suggestions,
     openStickerTray: () => setTrayOpen(true),
     stickerTray: {
       open: trayOpen,

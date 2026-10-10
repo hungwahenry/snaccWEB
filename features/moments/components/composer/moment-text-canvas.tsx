@@ -1,15 +1,23 @@
+import type { KeyboardEvent } from "react"
+import { caretTracking } from "@/lib/caret"
+
 export function MomentTextCanvas({
   value,
   onChange,
+  onCursorChange,
+  onKeyDown,
 }: {
   value: string
   onChange: (next: string) => void
+  onCursorChange: (cursor: number) => void
+  onKeyDown: (event: KeyboardEvent<HTMLTextAreaElement>) => void
 }) {
   return (
     <div className="flex flex-1 items-center justify-center px-6">
       <textarea
         value={value}
-        onChange={(event) => onChange(event.target.value)}
+        {...caretTracking(onChange, onCursorChange)}
+        onKeyDown={onKeyDown}
         placeholder="What's the moment?"
         autoFocus
         rows={1}

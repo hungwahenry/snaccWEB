@@ -1,16 +1,24 @@
+import type { KeyboardEvent } from "react"
+import { caretTracking } from "@/lib/caret"
+
 export function MomentInput({
   value,
   onChange,
+  onCursorChange,
+  onKeyDown,
   placeholder,
 }: {
   value: string
   onChange: (next: string) => void
+  onCursorChange: (cursor: number) => void
+  onKeyDown: (event: KeyboardEvent<HTMLTextAreaElement>) => void
   placeholder: string
 }) {
   return (
     <textarea
       value={value}
-      onChange={(event) => onChange(event.target.value)}
+      {...caretTracking(onChange, onCursorChange)}
+      onKeyDown={onKeyDown}
       placeholder={placeholder}
       rows={1}
       autoFocus

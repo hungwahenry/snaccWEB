@@ -14,6 +14,7 @@ import { MomentPlayerSkeleton } from "./moment-player-skeleton"
 import { MomentProgress } from "./moment-progress"
 import { MomentReplyBar } from "./moment-reply-bar"
 import { MomentSharedSnacc } from "./moment-shared-snacc"
+import { MomentWords } from "./moment-words"
 import { sharesSnacc } from "../utils/shared"
 
 interface MomentPlayerProps {
@@ -109,7 +110,6 @@ export function MomentPlayer({
         key={current.id}
         moment={current}
         ready={ready}
-        bottomClearance={current.mine ? 0 : replyBarHeight}
         onReady={onMediaReady}
       />
 
@@ -121,6 +121,11 @@ export function MomentPlayer({
         onClose={onClose}
         onNextAuthor={onNextAuthor}
         onPreviousAuthor={onPreviousAuthor}
+      />
+
+      <MomentWords
+        moment={current}
+        bottomClearance={current.mine ? 0 : replyBarHeight}
       />
 
       {sharesSnacc(current) ? (

@@ -135,6 +135,7 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly 'moments.durations_hours': readonly string[];
   readonly 'moments.max_per_day': number;
   readonly 'moments.caption_max_length': number;
+  readonly 'moments.max_mentions': number;
   readonly 'hangouts.title_max_length': number;
   readonly 'hangouts.place_max_length': number;
   readonly 'hangouts.capacity_min': number;
@@ -225,6 +226,7 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   'moments.durations_hours': [],
   'moments.max_per_day': 20,
   'moments.caption_max_length': 200,
+  'moments.max_mentions': 3,
   'hangouts.title_max_length': 80,
   'hangouts.place_max_length': 120,
   'hangouts.capacity_min': 2,

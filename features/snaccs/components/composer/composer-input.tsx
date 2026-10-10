@@ -1,6 +1,7 @@
 "use client"
 
 import { useLayoutEffect, useRef, type KeyboardEvent } from "react"
+import { caretTracking } from "@/lib/caret"
 
 type ComposerInputProps = {
   value: string
@@ -35,20 +36,7 @@ export function ComposerInput({
       autoFocus={autoFocus}
       placeholder={placeholder}
       onKeyDown={onKeyDown}
-      onChange={(event) => {
-        onChange(event.target.value)
-        onCursorChange(event.target.selectionStart ?? event.target.value.length)
-      }}
-      onSelect={(event) =>
-        onCursorChange(
-          (event.target as HTMLTextAreaElement).selectionStart ?? 0
-        )
-      }
-      onKeyUp={(event) =>
-        onCursorChange(
-          (event.target as HTMLTextAreaElement).selectionStart ?? 0
-        )
-      }
+      {...caretTracking(onChange, onCursorChange)}
       className="min-h-32 w-full resize-none bg-transparent py-1 text-xl leading-7 font-medium text-foreground outline-none placeholder:text-muted-foreground/50"
     />
   )

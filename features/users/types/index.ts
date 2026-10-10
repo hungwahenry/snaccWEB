@@ -53,6 +53,20 @@ export interface User {
 }
 
 /** Someone as they appear next to what they posted. */
+export interface MentionUser {
+  id: string
+  username: string | null
+  display_name: string | null
+  tier: string | null
+}
+
+export interface MentionEntity {
+  type: "mention"
+  start: number
+  length: number
+  user: MentionUser
+}
+
 export interface Author {
   id: string
   username: string | null

@@ -1,4 +1,5 @@
-import type { ReactNode } from "react"
+import type { ComponentProps, ReactNode } from "react"
+import { ComposerSuggestions } from "@/features/snaccs/components/composer/composer-suggestions"
 import type { PickedImage } from "@/lib/media"
 import type { MomentMode } from "../../types"
 import type { MomentLengthChip } from "../../hooks/use-moment-length"
@@ -16,6 +17,7 @@ type MomentComposeBarProps = {
   remaining: number
   showCounter: boolean
   length: MomentLengthChip | null
+  suggestions: ComponentProps<typeof ComposerSuggestions> | null
   action: ReactNode
 }
 
@@ -29,11 +31,14 @@ export function MomentComposeBar({
   remaining,
   showCounter,
   length,
+  suggestions,
   action,
 }: MomentComposeBarProps) {
   return (
     <>
-      {mode !== "image" ? (
+      {suggestions ? (
+        <ComposerSuggestions {...suggestions} />
+      ) : mode !== "image" ? (
         <MomentBackgroundRow value={background} onChange={onBackgroundChange} />
       ) : (
         <MomentAttachment image={image} onRemove={onRemoveImage} />

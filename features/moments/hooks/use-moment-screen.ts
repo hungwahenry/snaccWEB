@@ -31,7 +31,8 @@ export function useMomentScreen(startAuthorId: string) {
   // Frozen once, so the order cannot reshuffle underfoot as things are watched. State rather than
   // a ref because it decides what plays, and the tray arrives after the first render.
   const [queue, setQueue] = useState<TrayEntry[] | null>(null)
-  if (queue === null && entries !== undefined) setQueue(playQueue(entries))
+  if (queue === null && entries !== undefined)
+    setQueue(playQueue(entries, startAuthorId))
   const authors = useMemo(() => queue ?? [], [queue])
 
   const opened = Math.max(

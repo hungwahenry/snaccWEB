@@ -10,7 +10,7 @@ import type {
 } from "@/features/hangouts/types"
 import type { StickerAttachment, StickerPick } from "@/features/stickers/types"
 import type { UniversityBadge } from "@/features/universities/types"
-import type { Author } from "@/features/users/types"
+import type { Author, MentionEntity } from "@/features/users/types"
 import type { VoiceDraft } from "@/features/voice/types"
 import type { PickedImage } from "@/lib/media"
 
@@ -18,17 +18,10 @@ export type SnaccAuthorUniversity = UniversityBadge
 
 export type SnaccAuthor = Author
 
-export interface SnaccMentionUser {
-  id: string
-  username: string | null
-  display_name: string | null
-  tier: string | null
-}
-
 export type SnaccEntity =
   | { type: "hashtag"; start: number; length: number; tag: string }
   | { type: "cashtag"; start: number; length: number; symbol: string }
-  | { type: "mention"; start: number; length: number; user: SnaccMentionUser }
+  | MentionEntity
 
 export interface SnaccPollOptionImage {
   url: string
@@ -283,8 +276,10 @@ export interface TypeaheadSuggestion {
   replacement: string
 }
 
+export type EntityKind = "hashtag" | "mention" | "cashtag"
+
 export interface ActiveToken {
-  kind: "hashtag" | "mention" | "cashtag"
+  kind: EntityKind
   term: string
   start: number
   end: number

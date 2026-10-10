@@ -13,7 +13,8 @@ import { MomentTextShell } from "../components/composer/moment-text-shell"
 import { useMomentComposeScreen } from "../hooks/use-moment-compose-screen"
 
 export function MomentComposeScreen({ snaccId }: { snaccId: string | null }) {
-  const { close, composer, pickMode, sharing } = useMomentComposeScreen(snaccId)
+  const { close, composer, pickMode, sharing, suggestions, onKeyDown } =
+    useMomentComposeScreen(snaccId)
 
   const bar = (
     <MomentComposeBar
@@ -26,6 +27,7 @@ export function MomentComposeScreen({ snaccId }: { snaccId: string | null }) {
       remaining={composer.remaining}
       showCounter={composer.showCounter}
       length={composer.length}
+      suggestions={suggestions}
       action={
         <MomentPostButton
           disabled={!composer.canPost}
@@ -48,6 +50,8 @@ export function MomentComposeScreen({ snaccId }: { snaccId: string | null }) {
           failed={sharing.failed}
           value={composer.body}
           onChange={composer.setBody}
+          onCursorChange={composer.setCursor}
+          onKeyDown={onKeyDown}
         />
       </MomentTextShell>
     )
@@ -60,7 +64,12 @@ export function MomentComposeScreen({ snaccId }: { snaccId: string | null }) {
         onClose={close}
         bar={bar}
       >
-        <MomentTextCanvas value={composer.body} onChange={composer.setBody} />
+        <MomentTextCanvas
+          value={composer.body}
+          onChange={composer.setBody}
+          onCursorChange={composer.setCursor}
+          onKeyDown={onKeyDown}
+        />
       </MomentTextShell>
     )
   }
@@ -77,6 +86,8 @@ export function MomentComposeScreen({ snaccId }: { snaccId: string | null }) {
           <MomentInput
             value={composer.body}
             onChange={composer.setBody}
+            onCursorChange={composer.setCursor}
+            onKeyDown={onKeyDown}
             placeholder="Add a caption"
           />
         </ComposerFrame>

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useDraftClip } from "@/features/clips/hooks/use-draft-clip"
+import { useCaretText } from "@/hooks/use-caret-text"
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import type { Gif } from "@/features/giphy/types"
@@ -27,8 +28,8 @@ export function useSnaccDraft(
   const maxHashtags = useConfigValue("content.snacc.max_hashtags")
   const maxCashtags = useConfigValue("content.snacc.max_cashtags")
 
-  const [body, setBody] = useState(seed.body)
-  const [cursor, setCursor] = useState(seed.body.length)
+  const text = useCaretText(seed.body)
+  const { body } = text
   const [gif, setGif] = useState<Gif | null>(seed.gif)
   const [sticker, setSticker] = useState<StickerPick | null>(
     seed.sticker ?? null
@@ -89,13 +90,6 @@ export function useSnaccDraft(
     spoiler,
   }
 
-  function replaceRange(start: number, end: number, text: string) {
-    setBody(
-      (current) => `${current.slice(0, start)}${text}${current.slice(end)}`
-    )
-    setCursor(start + text.length)
-  }
-
   return {
     ...images,
     ...voice,
@@ -105,11 +99,11 @@ export function useSnaccDraft(
     ...rules,
     content,
     body,
-    setBody,
+    setBody: text.setBody,
     trimmed,
-    cursor,
-    setCursor,
-    replaceRange,
+    cursor: text.cursor,
+    setCursor: text.setCursor,
+    replaceRange: text.replaceRange,
     gif,
     sticker,
     spoiler,

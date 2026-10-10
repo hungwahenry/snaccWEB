@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useCallback, useState } from "react"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
+import { useCaretText } from "@/hooks/use-caret-text"
 import { newId } from "@/lib/ids"
 import type { PickedImage } from "@/lib/media"
 import { createMoment } from "../api"
@@ -26,7 +27,8 @@ export function useMomentComposer(
   sharing: MomentSharing | null
 ) {
   const [mode, setMode] = useState<MomentMode>(sharing ? "snacc" : "text")
-  const [body, setBody] = useState("")
+  const text = useCaretText()
+  const { body } = text
   const [image, setImage] = useState<PickedImage | null>(null)
   const [background, setBackground] = useState<string>(DEFAULT_BACKGROUND)
 
@@ -91,7 +93,10 @@ export function useMomentComposer(
     mode,
     setMode,
     body,
-    setBody,
+    setBody: text.setBody,
+    cursor: text.cursor,
+    setCursor: text.setCursor,
+    replaceRange: text.replaceRange,
     background,
     setBackground,
     image,

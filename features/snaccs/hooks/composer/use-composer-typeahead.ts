@@ -6,7 +6,7 @@ import { useFlag } from "@/features/config/hooks/use-flag"
 import { useHashtagSuggestions } from "@/features/hashtags/hooks/use-hashtag-suggestions"
 import { useUserSuggestions } from "@/features/users/hooks/use-user-suggestions"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
-import type { TypeaheadSuggestion } from "../../types"
+import type { EntityKind, TypeaheadSuggestion } from "../../types"
 import { activeToken } from "../../utils/entities"
 import {
   cashtagSuggestion,
@@ -18,10 +18,18 @@ import {
 const SEPARATOR = " "
 const SETTLE_MS = 200
 
-export function useComposerTypeahead(body: string, cursor: number) {
+export function useComposerTypeahead(
+  body: string,
+  cursor: number,
+  kinds: readonly EntityKind[]
+) {
   const cashtagsOn = useFlag("cashtags")
   const found = activeToken(body, cursor)
-  const token = found?.kind === "cashtag" && !cashtagsOn ? null : found
+  const offered =
+    found &&
+    kinds.includes(found.kind) &&
+    (found.kind !== "cashtag" || cashtagsOn)
+  const token = offered ? found : null
 
   const signature = token ? `${token.kind}${SEPARATOR}${token.term}` : ""
   const settled = useDebouncedValue(signature, SETTLE_MS)

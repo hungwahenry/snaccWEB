@@ -1,3 +1,4 @@
+import type { MentionEntity } from "@/features/users/types"
 import type { EmbeddedSnacc, Snacc } from "@/features/snaccs/types"
 import type { SnaccAuthor } from "@/features/snaccs/types"
 
@@ -15,6 +16,7 @@ export interface Moment {
   author: SnaccAuthor
   mine: boolean
   body: string | null
+  entities: MentionEntity[]
   background: string | null
   image: MomentImage | null
   snacc: EmbeddedSnacc | null
