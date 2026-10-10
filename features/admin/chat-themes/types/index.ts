@@ -1,5 +1,10 @@
 import type { ChatLook, ChatThemeKind } from "@/features/chat-themes/types"
 
+export interface ThemeInUse {
+  chats: number
+  all_chats: number
+}
+
 export interface AdminChatTheme {
   id: string
   key: string
@@ -9,7 +14,7 @@ export interface AdminChatTheme {
   position: number
   enabled: boolean
   premium: boolean
-  in_use: number
+  in_use: ThemeInUse
   image_url: string | null
   updated_at: string
 }

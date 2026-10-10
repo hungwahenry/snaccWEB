@@ -27,7 +27,7 @@ const lagoon: AdminChatTheme = {
   position: 0,
   enabled: true,
   premium: false,
-  in_use: 3,
+  in_use: { chats: 3, all_chats: 0 },
   image_url: null,
   updated_at: "2026-10-09T00:00:00.000Z",
   look: {
@@ -213,14 +213,24 @@ describe("kindNote", () => {
 
 describe("deleteWarning", () => {
   it("says who loses the look, and the photos when it is a photo theme", () => {
-    expect(deleteWarning({ in_use: 0, kind: "preset" })).toBe(
+    const none = { chats: 0, all_chats: 0 }
+    expect(deleteWarning({ in_use: none, kind: "preset" })).toBe(
       "Nobody is using it, so no chat changes."
     )
-    expect(deleteWarning({ in_use: 1, kind: "preset" })).toBe(
-      "Used in 1 chat, which goes back to the default look straight away."
+    expect(
+      deleteWarning({ in_use: { chats: 1, all_chats: 0 }, kind: "preset" })
+    ).toBe(
+      "In use: 1 chat. Everyone using it goes back to the default look straight away."
     )
-    expect(deleteWarning({ in_use: 3, kind: "photo" })).toBe(
-      "Used in 3 chats, which go back to the default look straight away. The photos people put behind it are deleted too."
+    expect(
+      deleteWarning({ in_use: { chats: 3, all_chats: 2 }, kind: "photo" })
+    ).toBe(
+      "In use: 3 chats · 2 people for all chats. Everyone using it goes back to the default look straight away. The photos people put behind it are deleted too."
+    )
+    expect(
+      deleteWarning({ in_use: { chats: 0, all_chats: 1 }, kind: "preset" })
+    ).toBe(
+      "In use: 1 person for all chats. Everyone using it goes back to the default look straight away."
     )
   })
 })

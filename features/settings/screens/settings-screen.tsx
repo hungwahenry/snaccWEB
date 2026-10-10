@@ -15,6 +15,7 @@ import {
   InfoIcon,
   LockIcon,
   MailIcon,
+  MessagesSquareIcon,
   PaletteIcon,
   ShieldCheckIcon,
   ShieldIcon,
@@ -43,7 +44,7 @@ import {
 } from "@/features/wallet/routes"
 import { useBack } from "@/hooks/use-back"
 import { hasAdminAccess } from "@/lib/permissions"
-import { Row, Section } from "../components/rows"
+import { Row, Section, SelectRow } from "../components/rows"
 import { SAVED_PATH } from "@/features/bookmarks/routes"
 import { APPEARANCE_PATH } from "@/features/appearance/routes"
 import {
@@ -57,6 +58,8 @@ import { BLOCKED_PATH } from "@/features/blocks/routes"
 import { MY_REPORTS_PATH } from "@/features/reports/routes"
 import { NOTIFICATION_SETTINGS_PATH } from "@/features/notifications/routes"
 import { STICKERS_PATH } from "@/features/stickers/routes"
+import { useAllChatsTheme } from "@/features/messages/hooks/use-all-chats-theme"
+import { ALL_CHATS_THEME_PATH } from "@/features/messages/routes"
 import { ABOUT_PATH, PRIVACY_SETTINGS_PATH } from "../routes"
 
 export function SettingsScreen() {
@@ -73,6 +76,8 @@ export function SettingsScreen() {
   const savedEnabled = useFlag("bookmarks")
   const stickersEnabled = useFlag("stickers")
   const inviteEnabled = useFlag("referrals")
+  const chatThemeEnabled = useFlag("chat_themes") && messagesEnabled
+  const allChats = useAllChatsTheme()
 
   function confirmLogout() {
     confirm({
@@ -127,7 +132,11 @@ export function SettingsScreen() {
           </Section>
         ) : null}
 
-        {savedEnabled || stickersEnabled || eggsEnabled || accentsEnabled ? (
+        {savedEnabled ||
+        stickersEnabled ||
+        eggsEnabled ||
+        accentsEnabled ||
+        chatThemeEnabled ? (
           <Section title="Content">
             {savedEnabled ? (
               <Row icon={BookmarkIcon} label="Saved snaccs" href={SAVED_PATH} />
@@ -143,6 +152,14 @@ export function SettingsScreen() {
                 icon={PaletteIcon}
                 label="Appearance"
                 href={APPEARANCE_PATH}
+              />
+            ) : null}
+            {chatThemeEnabled ? (
+              <SelectRow
+                icon={MessagesSquareIcon}
+                label="Chat theme"
+                value={allChats.theme?.label ?? "Default"}
+                href={ALL_CHATS_THEME_PATH}
               />
             ) : null}
           </Section>

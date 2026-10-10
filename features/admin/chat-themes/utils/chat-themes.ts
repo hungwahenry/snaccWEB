@@ -12,6 +12,7 @@ import type {
   CreateChatThemeInput,
   LookMode,
   PaintDraft,
+  ThemeInUse,
   UpdateChatThemeInput,
 } from "../types"
 
@@ -323,17 +324,27 @@ export function kindNote(
   return ""
 }
 
+export function inUseLabel({ chats, all_chats }: ThemeInUse): string {
+  const everywhere =
+    all_chats > 0
+      ? `${countLabel(all_chats, "person", "people")} for all chats`
+      : null
+  if (chats === 0 && everywhere) return everywhere
+  const inChats = countLabel(chats, "chat")
+  return everywhere ? `${inChats} · ${everywhere}` : inChats
+}
+
 export function deleteWarning(
   theme: Pick<AdminChatTheme, "in_use" | "kind">
 ): string {
-  if (theme.in_use === 0) return "Nobody is using it, so no chat changes."
+  const { chats, all_chats } = theme.in_use
+  if (chats + all_chats === 0) return "Nobody is using it, so no chat changes."
 
   const photos =
     theme.kind === "photo"
       ? " The photos people put behind it are deleted too."
       : ""
-  const goes = theme.in_use === 1 ? "goes" : "go"
-  return `Used in ${countLabel(theme.in_use, "chat")}, which ${goes} back to the default look straight away.${photos}`
+  return `In use: ${inUseLabel(theme.in_use)}. Everyone using it goes back to the default look straight away.${photos}`
 }
 
 export function chatThemeMessage(

@@ -10,6 +10,7 @@ export const conversationDetailsPath = (id: string) =>
   `${conversationPath(id)}/details`
 
 export const chatThemePath = (id: string) => `${conversationPath(id)}/theme`
+export const ALL_CHATS_THEME_PATH = "/messages/theme"
 
 export const conversationPhotosPath = (id: string) =>
   `${conversationPath(id)}/photos`

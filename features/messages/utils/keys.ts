@@ -9,4 +9,5 @@ export const messageKeys = {
     ["messages", "search", conversationId ?? "all", q] as const,
   photos: (id: string) => ["messages", "photos", id] as const,
   unread: () => ["messages", "unread"] as const,
+  allChatsTheme: () => ["messages", "all-chats-theme"] as const,
 }

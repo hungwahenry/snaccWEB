@@ -14,6 +14,7 @@ import {
 } from "../routes"
 import { partyName } from "../utils/preview"
 import { anonymityNote } from "../utils/safety"
+import { useAllChatsTheme } from "./use-all-chats-theme"
 import { useConversation } from "./use-conversation"
 import { useConversationPhotoViewer } from "./use-conversation-photo-viewer"
 import { useConversationSafety } from "./use-conversation-safety"
@@ -24,6 +25,7 @@ const PREVIEW_PHOTOS = 6
 export function useConversationDetailsScreen(id: string) {
   const back = useBack(conversationPath(id))
   const query = useConversation(id)
+  const allChats = useAllChatsTheme()
   const conversation = query.data ?? null
   const other = conversation?.other ?? null
   const report = useReportSheet()
@@ -52,7 +54,8 @@ export function useConversationDetailsScreen(id: string) {
     theme:
       themesOn && conversation
         ? {
-            label: conversation.theme?.label ?? "Default",
+            label:
+              conversation.theme?.label ?? allChats.theme?.label ?? "Default",
             href: chatThemePath(id),
           }
         : null,

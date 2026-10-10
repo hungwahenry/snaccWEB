@@ -6,6 +6,7 @@ import {
   patchConversation,
   prependMessage,
   replaceMessage,
+  setAllChatsTheme,
   setPeerRead,
   unreadChanged,
 } from "./cache"
@@ -40,6 +41,10 @@ export function onConversationTheme(payload: {
     ...conversation,
     theme: payload.theme,
   }))
+}
+
+export function onAllChatsTheme(payload: { theme: WornTheme | null }): void {
+  setAllChatsTheme(payload.theme)
 }
 
 export function onConversationRead(payload: {

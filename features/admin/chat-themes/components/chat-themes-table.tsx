@@ -14,9 +14,8 @@ import { QueryTable } from "@/features/admin/shell/components/query-table"
 import { useColorMode } from "@/features/chat-themes/hooks/use-color-mode"
 import { paintOf } from "@/features/chat-themes/utils/paint"
 import { ThemeThumbnail } from "@/features/messages/components/themes/theme-thumbnail"
-import { countLabel } from "@/lib/format"
 import type { AdminChatTheme, ChatThemeDraft } from "../types"
-import { deleteWarning, kindNote } from "../utils/chat-themes"
+import { deleteWarning, inUseLabel, kindNote } from "../utils/chat-themes"
 import { ThemeDialog } from "./theme-dialog"
 
 export function ChatThemesTable({
@@ -73,8 +72,8 @@ export function ChatThemesTable({
         id: "in-use",
         header: "In use",
         align: "end",
-        className: "w-28 tabular-nums",
-        cell: (theme) => countLabel(theme.in_use, "chat"),
+        className: "w-48 tabular-nums",
+        cell: (theme) => inUseLabel(theme.in_use),
       },
       {
         id: "premium",

@@ -3,6 +3,9 @@ import type { Paginated } from "@/lib/api/types"
 import type { VoiceDraft } from "@/features/voice/types"
 import { voiceFileName } from "@/features/voice/utils/recording"
 import { appendImage, type PickedImage } from "@/lib/media"
+import type { WornTheme } from "@/features/chat-themes/types"
+
+const ALL_CHATS_THEME_PATH = "/chat-themes/all-chats"
 import type {
   Conversation,
   ConversationPhoto,
@@ -204,6 +207,37 @@ export function wearChatThemePhoto(
     `${conversationPath(conversationId)}/theme/photo`,
     form
   )
+}
+
+export async function getAllChatsTheme(): Promise<WornTheme | null> {
+  const { theme } = await api.get<{ theme: WornTheme | null }>(
+    ALL_CHATS_THEME_PATH
+  )
+  return theme
+}
+
+export async function wearAllChatsTheme(
+  themeId: string | null
+): Promise<WornTheme | null> {
+  const { theme } = await api.put<{ theme: WornTheme | null }>(
+    ALL_CHATS_THEME_PATH,
+    { themeId }
+  )
+  return theme
+}
+
+export async function wearAllChatsThemePhoto(input: {
+  themeId: string
+  image: PickedImage
+}): Promise<WornTheme | null> {
+  const form = new FormData()
+  form.append("themeId", input.themeId)
+  appendImage(form, "image", input.image, "chat-theme")
+  const { theme } = await api.upload<{ theme: WornTheme | null }>(
+    `${ALL_CHATS_THEME_PATH}/photo`,
+    form
+  )
+  return theme
 }
 
 export async function muteConversation(id: string): Promise<void> {

@@ -15,6 +15,7 @@ import { shownImagesOf } from "../utils/images"
 import { partyName } from "../utils/preview"
 import { decorateThread } from "../utils/thread"
 import { conversationVoiceSources } from "../utils/voice"
+import { useAllChatsTheme } from "./use-all-chats-theme"
 import { useConversation } from "./use-conversation"
 import { useConversationComposer } from "./use-conversation-composer"
 import { useConfirmReveal } from "./use-confirm-reveal"
@@ -54,7 +55,8 @@ export function useConversationScreen(
   )
   const confirmReveal = useConfirmReveal(id)
   const mode = useColorMode()
-  const theme = data?.theme ?? null
+  const allChats = useAllChatsTheme()
+  const theme = data?.theme ?? allChats.theme
   const money = useConversationMoney(id, other?.username ?? null)
 
   const newest = messages.messages[0]

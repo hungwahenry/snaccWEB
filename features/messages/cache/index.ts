@@ -1,3 +1,4 @@
+import type { WornTheme } from "@/features/chat-themes/types"
 import type { PaginatedPages } from "@/lib/api/types"
 import { getQueryClient } from "@/lib/query/client"
 import { filterItems, findItem, mapItems, prependItem } from "@/lib/query/pages"
@@ -126,6 +127,10 @@ export function findConversation(id: string): Conversation | undefined {
 export function setConversation(conversation: Conversation): void {
   client().setQueryData(messageKeys.conversation(conversation.id), conversation)
   inboxChanged()
+}
+
+export function setAllChatsTheme(theme: WornTheme | null): void {
+  client().setQueryData(messageKeys.allChatsTheme(), theme)
 }
 
 export function patchConversation(
