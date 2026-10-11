@@ -24,7 +24,7 @@ describe("visibleNav", () => {
     const sections = visibleNav(holding("reports.read", "audit.read"))
     expect(sections.map((section) => section.group)).toEqual([
       "Moderation",
-      "Ops",
+      "Team",
     ])
     expect(sections[0].items.map((item) => item.label)).toEqual(["Reports"])
   })

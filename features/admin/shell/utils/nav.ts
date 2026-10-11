@@ -166,16 +166,10 @@ export const NAV: NavSection[] = [
         permission: "users.read",
       },
       {
-        href: ADMINS_PATH,
-        label: "Admins",
-        icon: UserCog,
-        permission: "roles.read",
-      },
-      {
-        href: ROLES_PATH,
-        label: "Roles",
-        icon: ShieldCheck,
-        permission: "roles.read",
+        href: UNIVERSITIES_PATH,
+        label: "Universities",
+        icon: School,
+        permission: "universities.read",
       },
       {
         href: RESERVED_USERNAMES_PATH,
@@ -183,11 +177,34 @@ export const NAV: NavSection[] = [
         icon: AtSign,
         permission: "reserved_usernames.read",
       },
+    ],
+  },
+  {
+    group: "Growth",
+    items: [
       {
         href: REFERRALS_PATH,
         label: "Referrals",
         icon: UserPlus,
         permission: "referrals.read",
+      },
+      {
+        href: PROMPTS_PATH,
+        label: "Onboarding prompts",
+        icon: Sparkles,
+        permission: "onboarding_prompts.read",
+      },
+      {
+        href: SCORE_TIERS_PATH,
+        label: "Score tiers",
+        icon: Medal,
+        permission: "score_tiers.read",
+      },
+      {
+        href: ENGAGEMENT_PATH,
+        label: "Engagement weights",
+        icon: Scale,
+        permission: "engagement.read",
       },
     ],
   },
@@ -221,7 +238,82 @@ export const NAV: NavSection[] = [
     ],
   },
   {
-    group: "Platform",
+    group: "Customization",
+    items: [
+      {
+        href: CHAT_THEMES_PATH,
+        label: "Chat themes",
+        icon: MessageSquareHeart,
+        permission: "chat_themes.read",
+      },
+      {
+        href: STICKER_PACKS_PATH,
+        label: "Sticker packs",
+        icon: Sticker,
+        permission: "stickers.read",
+      },
+      {
+        href: APP_ICONS_PATH,
+        label: "App icons",
+        icon: Palette,
+        permission: "app_icons.read",
+      },
+      {
+        href: EGGS_PATH,
+        label: "Easter eggs",
+        icon: Egg,
+        permission: "easter_eggs.read",
+      },
+    ],
+  },
+  {
+    group: "Comms",
+    items: [
+      {
+        href: ANNOUNCEMENTS_PATH,
+        label: "Announcements",
+        icon: Megaphone,
+        permission: "announcements.read",
+      },
+      {
+        href: NOTIFICATION_TYPES_PATH,
+        label: "Notifications",
+        icon: Bell,
+        permission: "notification_types.read",
+      },
+      {
+        href: PAGES_PATH,
+        label: "Pages",
+        icon: FileText,
+        permission: "pages.read",
+      },
+    ],
+  },
+  {
+    group: "Team",
+    items: [
+      {
+        href: ADMINS_PATH,
+        label: "Admins",
+        icon: UserCog,
+        permission: "roles.read",
+      },
+      {
+        href: ROLES_PATH,
+        label: "Roles",
+        icon: ShieldCheck,
+        permission: "roles.read",
+      },
+      {
+        href: AUDIT_PATH,
+        label: "Audit log",
+        icon: ScrollText,
+        permission: "audit.read",
+      },
+    ],
+  },
+  {
+    group: "System",
     items: [
       {
         href: CONFIG_PATH,
@@ -242,92 +334,10 @@ export const NAV: NavSection[] = [
         permission: "webhooks.read",
       },
       {
-        href: ENGAGEMENT_PATH,
-        label: "Engagement weights",
-        icon: Scale,
-        permission: "engagement.read",
-      },
-      {
-        href: SCORE_TIERS_PATH,
-        label: "Score tiers",
-        icon: Medal,
-        permission: "score_tiers.read",
-      },
-      {
-        href: EGGS_PATH,
-        label: "Easter eggs",
-        icon: Egg,
-        permission: "easter_eggs.read",
-      },
-      {
-        href: APP_ICONS_PATH,
-        label: "App icons",
-        icon: Palette,
-        permission: "app_icons.read",
-      },
-      {
-        href: CHAT_THEMES_PATH,
-        label: "Chat themes",
-        icon: MessageSquareHeart,
-        permission: "chat_themes.read",
-      },
-      {
-        href: STICKER_PACKS_PATH,
-        label: "Sticker packs",
-        icon: Sticker,
-        permission: "stickers.read",
-      },
-      {
-        href: UNIVERSITIES_PATH,
-        label: "Universities",
-        icon: School,
-        permission: "universities.read",
-      },
-      {
-        href: NOTIFICATION_TYPES_PATH,
-        label: "Notifications",
-        icon: Bell,
-        permission: "notification_types.read",
-      },
-      {
-        href: PROMPTS_PATH,
-        label: "Onboarding prompts",
-        icon: Sparkles,
-        permission: "onboarding_prompts.read",
-      },
-    ],
-  },
-  {
-    group: "Comms",
-    items: [
-      {
-        href: PAGES_PATH,
-        label: "Pages",
-        icon: FileText,
-        permission: "pages.read",
-      },
-      {
-        href: ANNOUNCEMENTS_PATH,
-        label: "Announcements",
-        icon: Megaphone,
-        permission: "announcements.read",
-      },
-    ],
-  },
-  {
-    group: "Ops",
-    items: [
-      {
         href: OPS_PATH,
         label: "Health & drift",
         icon: Wrench,
         permission: "ops.read",
-      },
-      {
-        href: AUDIT_PATH,
-        label: "Audit log",
-        icon: ScrollText,
-        permission: "audit.read",
       },
     ],
   },
