@@ -42,7 +42,7 @@ export function ConfigTables({
       {
         id: "setting",
         header: "Setting",
-        className: "max-w-md whitespace-normal align-top",
+        className: "max-w-md whitespace-normal",
         cell: (setting) => (
           <div className="min-w-0">
             <p className="font-mono text-xs">{setting.key}</p>
@@ -55,13 +55,12 @@ export function ConfigTables({
       {
         id: "value",
         header: "Value",
-        className: "max-w-xs whitespace-normal align-top",
+        className: "max-w-xs whitespace-normal",
         cell: (setting) => <ValuePreview value={setting.value} />,
       },
       {
         id: "state",
         header: "State",
-        className: "align-top",
         cell: (setting) => (
           <div className="flex flex-wrap gap-1">
             <StatusBadge
@@ -77,7 +76,6 @@ export function ConfigTables({
         id: "actions",
         header: <HiddenHeader>Actions</HiddenHeader>,
         align: "end",
-        className: "align-top",
         cell: (setting) => (
           <CanAct permission="config.write">
             <ConfigDialog
@@ -107,6 +105,7 @@ export function ConfigTables({
             rows={group.settings}
             rowKey={(setting) => setting.key}
             empty="Nothing in this category."
+            topAligned
           />
         </TableFrame>
       ))}

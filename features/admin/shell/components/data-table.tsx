@@ -28,13 +28,25 @@ export function alignClass(align: Column<unknown>["align"]) {
   return align === "end" ? "text-right" : undefined
 }
 
-function RowView<T>({ row, columns }: { row: T; columns: Column<T>[] }) {
+function RowView<T>({
+  row,
+  columns,
+  topAligned,
+}: {
+  row: T
+  columns: Column<T>[]
+  topAligned: boolean
+}) {
   return (
     <TableRow>
       {columns.map((column) => (
         <TableCell
           key={column.id}
-          className={cn(alignClass(column.align), column.className)}
+          className={cn(
+            topAligned && "align-top",
+            alignClass(column.align),
+            column.className
+          )}
         >
           {column.cell(row)}
         </TableCell>
@@ -55,12 +67,14 @@ export function DataTable<T>({
   rowKey,
   empty,
   hideHeader = false,
+  topAligned = false,
 }: {
   columns: Column<T>[]
   rows: T[]
   rowKey: (row: T) => string
   empty: ReactNode
   hideHeader?: boolean
+  topAligned?: boolean
 }) {
   return (
     <Table>
@@ -90,7 +104,12 @@ export function DataTable<T>({
           </TableRow>
         ) : (
           rows.map((row) => (
-            <Row key={rowKey(row)} row={row} columns={columns} />
+            <Row
+              key={rowKey(row)}
+              row={row}
+              columns={columns}
+              topAligned={topAligned}
+            />
           ))
         )}
       </TableBody>

@@ -76,7 +76,7 @@ export function FlagsTables({
       {
         id: "flag",
         header: "Flag",
-        className: "max-w-md whitespace-normal align-top",
+        className: "max-w-md whitespace-normal",
         cell: (flag) => (
           <div className="min-w-0">
             <p className="flex items-center gap-2 font-mono text-xs">
@@ -96,7 +96,6 @@ export function FlagsTables({
       {
         id: "audience",
         header: "For",
-        className: "align-top",
         cell: (flag) =>
           flag.audience === "everyone" ? (
             <span className="text-xs text-muted-foreground">Everyone</span>
@@ -107,14 +106,12 @@ export function FlagsTables({
       {
         id: "reach",
         header: "Reaches",
-        className: "align-top",
         cell: (flag) => <Reach flag={flag} />,
       },
       {
         id: "actions",
         header: <HiddenHeader>Actions</HiddenHeader>,
         align: "end",
-        className: "align-top",
         cell: (flag) => (
           <div className="flex items-center justify-end gap-3">
             {flag.is_public &&
@@ -164,6 +161,7 @@ export function FlagsTables({
             rows={group.flags}
             rowKey={(flag) => flag.key}
             empty="Nothing in this category."
+            topAligned
           />
         </TableFrame>
       ))}

@@ -26,7 +26,7 @@ import {
 } from "../utils/engagement"
 import { RepriceDialog } from "./reprice-dialog"
 
-const NUMBER_CLASS = "w-24 align-top tabular-nums"
+const NUMBER_CLASS = "w-24 tabular-nums"
 
 export function EngagementTables({
   groups,
@@ -44,7 +44,7 @@ export function EngagementTables({
       {
         id: "act",
         header: "Act",
-        className: "max-w-md whitespace-normal align-top",
+        className: "max-w-md whitespace-normal",
         cell: (kind) => (
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
@@ -86,7 +86,6 @@ export function EngagementTables({
         id: "actions",
         header: <HiddenHeader>Actions</HiddenHeader>,
         align: "end",
-        className: "align-top",
         cell: (kind) => (
           <div className="flex items-center justify-end gap-2">
             {kind.is_default ? null : (
@@ -147,6 +146,7 @@ export function EngagementTables({
             rows={group.kinds}
             rowKey={(kind) => kind.key}
             empty="Nothing here."
+            topAligned
           />
         </TableFrame>
       ))}
