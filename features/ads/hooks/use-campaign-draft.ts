@@ -1,6 +1,8 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import type { RegionGroup } from "@/features/places/types"
+import { toggleGroup, toggleMember } from "@/features/places/utils/regions"
 import type { Gender } from "@/features/users/types"
 import type {
   AdPlacement,
@@ -8,9 +10,6 @@ import type {
   Campaign,
   CampaignDraft,
   CampusPick,
-  NigerianState,
-  Ownership,
-  RegionStates,
   Standing,
 } from "../types"
 import {
@@ -22,19 +21,19 @@ import {
   toggleIn,
   wholeNaira,
 } from "../utils/draft"
-import { toggleRegion } from "../utils/regions"
 
 const yearOf = (value: string) => (value ? Number(value) : null)
 
 export function useCampaignDraft(
   clip: boolean,
   maxDays: number,
-  source: Campaign | null
+  source: Campaign | null,
+  homeCountry: string
 ) {
   const [draft, setDraft] = useState(() =>
     source
       ? draftFromCampaign(source, Date.now(), clip, maxDays)
-      : newDraft(Date.now(), clip, maxDays)
+      : newDraft(Date.now(), clip, maxDays, homeCountry)
   )
   const [tagText, setTagText] = useState("")
   const audience = useMemo(() => audienceOf(draft), [draft])
@@ -55,6 +54,20 @@ export function useCampaignDraft(
     audience,
     setSchedule: (patch: Pick<Partial<CampaignDraft>, "startsAt" | "endsAt">) =>
       set(patch),
+    country: {
+      value: draft.countryCode,
+      onChange: (code: string) =>
+        update((current) =>
+          current.countryCode === code
+            ? {}
+            : {
+                countryCode: code,
+                campuses: [],
+                regionIds: [],
+                campusTypeIds: [],
+              }
+        ),
+    },
     campuses: {
       picked: draft.campuses,
       onAdd: (campus: CampusPick) =>
@@ -72,17 +85,21 @@ export function useCampaignDraft(
         })),
     },
     regions: {
-      picked: draft.states,
-      onToggleRegion: (region: RegionStates) =>
-        update((current) => ({ states: toggleRegion(current.states, region) })),
-      onToggleState: (state: NigerianState) =>
-        update((current) => ({ states: toggleIn(current.states, state) })),
-    },
-    ownerships: {
-      value: draft.ownerships,
-      onToggle: (value: Ownership) =>
+      picked: draft.regionIds,
+      onToggleGroup: (group: RegionGroup) =>
         update((current) => ({
-          ownerships: toggleIn(current.ownerships, value),
+          regionIds: toggleGroup(current.regionIds, group),
+        })),
+      onToggleMember: (group: RegionGroup, memberId: string) =>
+        update((current) => ({
+          regionIds: toggleMember(current.regionIds, group, memberId),
+        })),
+    },
+    campusTypes: {
+      value: draft.campusTypeIds,
+      onToggle: (id: string) =>
+        update((current) => ({
+          campusTypeIds: toggleIn(current.campusTypeIds, id),
         })),
     },
     genders: {

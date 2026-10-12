@@ -3,6 +3,7 @@ export interface University {
   name: string
   acronym: string
   slug: string
+  country_code: string
   motto: string | null
   website: string | null
   logo_url: string | null

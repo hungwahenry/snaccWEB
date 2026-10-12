@@ -35,8 +35,9 @@ const status = (patch: Partial<Campaign>) => ({
 
 const nobody: CampaignAudience = {
   campuses: [],
-  states: [],
-  ownerships: [],
+  country: { code: "GH", name: "Ghana" },
+  regions: [],
+  campus_types: [],
   genders: [],
   graduation_from: null,
   graduation_to: null,
@@ -182,16 +183,19 @@ describe("campaign copy", () => {
 
 describe("audienceLines", () => {
   it("says everyone when nothing narrows it", () => {
-    expect(audienceLines(nobody)).toEqual(["Everyone on Snacc"])
+    expect(audienceLines(nobody)).toEqual(["Everyone in Ghana"])
   })
 
   it("spells out each choice", () => {
     expect(
       audienceLines({
         ...nobody,
-        campuses: [{ id: "c", name: "University of Lagos", acronym: "UNILAG" }],
-        states: ["lagos", "fct"],
-        ownerships: ["federal"],
+        campuses: [{ id: "c", name: "University of Ghana", acronym: "UG" }],
+        regions: [
+          { id: "r1", name: "Greater Accra" },
+          { id: "r2", name: "Ashanti" },
+        ],
+        campus_types: [{ id: "t1", name: "Public" }],
         genders: ["female"],
         graduation_from: 2020,
         graduation_to: 2024,
@@ -201,9 +205,10 @@ describe("audienceLines", () => {
         hashtags: ["afrobeats"],
       })
     ).toEqual([
-      "Campuses: UNILAG",
-      "States: Lagos, FCT (Abuja)",
-      "School type: Federal",
+      "In Ghana",
+      "Campuses: UG",
+      "Regions: Greater Accra, Ashanti",
+      "Campus type: Public",
       "Gender: Female",
       "Class of 2020–2024",
       "Graduates only",
@@ -215,6 +220,7 @@ describe("audienceLines", () => {
 
   it("reads an open-ended graduation range", () => {
     expect(audienceLines({ ...nobody, graduation_from: 2022 })).toEqual([
+      "In Ghana",
       "Class of 2022 or later",
     ])
   })

@@ -1,3 +1,4 @@
+import type { CountryPlaces } from "@/features/places/types"
 import { describe, expect, it } from "vitest"
 import { ApiError } from "@/lib/api/errors"
 import { DAY_MS, HOUR_MS } from "@/lib/duration"
@@ -30,21 +31,32 @@ const limits: DraftLimits = {
   balanceKobo: 1_000_000,
 }
 
+const KENYA: CountryPlaces = {
+  code: "KE",
+  name: "Kenya",
+  currency: "KES",
+  open: true,
+  regions: [
+    { id: "01NAIROBI", parent_id: null, slug: "nairobi", name: "Nairobi" },
+  ],
+  campus_types: [{ id: "01PUBLIC", slug: "public", name: "Public" }],
+}
+
 const draft = (patch: Partial<CampaignDraft> = {}): CampaignDraft => ({
-  ...newDraft(NOW, false, 30),
+  ...newDraft(NOW, false, 30, "KE"),
   budget: "5000",
   ...patch,
 })
 
 describe("newDraft", () => {
   it("shows a clip everywhere and anything else everywhere but Clips", () => {
-    expect(newDraft(NOW, true, 30).placements).toEqual([
+    expect(newDraft(NOW, true, 30, "KE").placements).toEqual([
       "feed",
       "clips",
       "discover",
       "lists",
     ])
-    expect(newDraft(NOW, false, 30).placements).toEqual([
+    expect(newDraft(NOW, false, 30, "KE").placements).toEqual([
       "feed",
       "discover",
       "lists",
@@ -55,10 +67,12 @@ describe("newDraft", () => {
   })
 
   it("starts right away and runs a week, or less when that is the most allowed", () => {
-    const week = newDraft(NOW, false, 30)
+    const week = newDraft(NOW, false, 30, "KE")
     expect(week.startsAt).toBeNull()
     expect(Date.parse(week.endsAt) - NOW).toBe(7 * DAY_MS)
-    expect(Date.parse(newDraft(NOW, false, 3).endsAt) - NOW).toBe(3 * DAY_MS)
+    expect(Date.parse(newDraft(NOW, false, 3, "KE").endsAt) - NOW).toBe(
+      3 * DAY_MS
+    )
   })
 })
 
@@ -91,9 +105,9 @@ describe("campaignInput", () => {
       draft({
         budget: "2500",
         campuses: [
-          { id: "01CAMPUS", name: "University of Lagos", acronym: "UNILAG" },
+          { id: "01CAMPUS", name: "University of Nairobi", acronym: "UON" },
         ],
-        states: ["lagos"],
+        regionIds: ["01NAIROBI"],
         buttonId: "01BUTTON00000000000000000A",
         buttonUrl: " https://shop.example/x ",
       }),
@@ -106,7 +120,8 @@ describe("campaignInput", () => {
     expect(input.buttonId).toBe("01BUTTON00000000000000000A")
     expect(input.buttonUrl).toBe("https://shop.example/x")
     expect(input.audience.campusIds).toEqual(["01CAMPUS"])
-    expect(input.audience.states).toEqual(["lagos"])
+    expect(input.audience.countryCode).toBe("KE")
+    expect(input.audience.regionIds).toEqual(["01NAIROBI"])
     expect(input.audience.standing).toBe("any")
   })
 
@@ -270,12 +285,14 @@ describe("reviewRows", () => {
   it("sums up the draft the way a promotion's page does", () => {
     const rows = reviewRows({
       draft: draft({
-        states: ["lagos"],
+        regionIds: ["01NAIROBI"],
+        campusTypeIds: ["01PUBLIC"],
         placements: ["feed"],
         buttonId: "01BUTTON00000000000000000A",
         buttonUrl: " https://shop.example ",
         budget: "5000",
       }),
+      places: KENYA,
       buttonLabel: "Shop now",
       start: "Right away",
       end: "Mon 19 Oct, 9:00",
@@ -289,7 +306,11 @@ describe("reviewRows", () => {
       "When it runs",
       "Budget",
     ])
-    expect(rows[0].lines).toEqual(["States: Lagos"])
+    expect(rows[0].lines).toEqual([
+      "In Kenya",
+      "Regions: Nairobi",
+      "Campus type: Public",
+    ])
     expect(rows[2].lines).toEqual(["Shop now", "https://shop.example"])
     expect(rows[3].lines).toEqual([
       "Starts Right away",
@@ -301,6 +322,7 @@ describe("reviewRows", () => {
   it("says there is no button when none was picked", () => {
     const rows = reviewRows({
       draft: draft(),
+      places: KENYA,
       buttonLabel: null,
       start: "Right away",
       end: "later",
@@ -336,9 +358,10 @@ describe("draftFromCampaign", () => {
       },
       budget_kobo: 500_000,
       audience: {
+        country: { code: "KE", name: "Kenya" },
         campuses: [],
-        states: ["lagos"],
-        ownerships: [],
+        regions: [{ id: "01NAIROBI", name: "Nairobi" }],
+        campus_types: [],
         genders: ["female"],
         graduation_from: 2027,
         graduation_to: null,
@@ -350,7 +373,8 @@ describe("draftFromCampaign", () => {
     } as unknown as Campaign
     const copy = draftFromCampaign(source, NOW, false, 30)
 
-    expect(copy.states).toEqual(["lagos"])
+    expect(copy.countryCode).toBe("KE")
+    expect(copy.regionIds).toEqual(["01NAIROBI"])
     expect(copy.genders).toEqual(["female"])
     expect(copy.graduationFrom).toBe(2027)
     expect(copy.standing).toBe("students")

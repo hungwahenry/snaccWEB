@@ -1,3 +1,4 @@
+import type { NamedPlace } from "@/features/places/types"
 import type { Snacc } from "@/features/snaccs/types"
 import { GENDER_OPTIONS } from "@/features/users/utils/gender"
 import type { StatusLook } from "@/features/wallet/types"
@@ -10,12 +11,10 @@ import type {
   CampaignAudience,
   CampaignEndReason,
   Choice,
-  Ownership,
   PromotionLink,
   SetupRow,
   Standing,
 } from "../types"
-import { stateName } from "./regions"
 
 export const SLOT_MINUTES = 5
 
@@ -37,12 +36,6 @@ export const PLACEMENT_CHOICES: Choice<AdPlacement>[] = [
 export const TARGET_GENDERS = GENDER_OPTIONS.filter(
   (option) => option.value !== "prefer_not_to_say"
 )
-
-export const OWNERSHIP_CHOICES: Choice<Ownership>[] = [
-  { value: "federal", label: "Federal" },
-  { value: "state", label: "State" },
-  { value: "private", label: "Private" },
-]
 
 export const STANDING_CHOICES: Choice<Standing>[] = [
   { value: "any", label: "Everyone" },
@@ -204,6 +197,10 @@ function labelsOf<T extends string>(choices: Choice<T>[], values: T[]) {
     .join(", ")
 }
 
+function namesOf(places: NamedPlace[]): string {
+  return places.map((place) => place.name).join(", ")
+}
+
 function classLine(from: number | null, to: number | null): string | null {
   if (from !== null && to !== null)
     return from === to ? `Class of ${from}` : `Class of ${from}–${to}`
@@ -219,12 +216,10 @@ export function audienceLines(audience: CampaignAudience): string[] {
     lines.push(
       `Campuses: ${audience.campuses.map((campus) => campus.acronym).join(", ")}`
     )
-  if (audience.states.length > 0)
-    lines.push(`States: ${audience.states.map(stateName).join(", ")}`)
-  if (audience.ownerships.length > 0)
-    lines.push(
-      `School type: ${labelsOf(OWNERSHIP_CHOICES, audience.ownerships)}`
-    )
+  if (audience.regions.length > 0)
+    lines.push(`Regions: ${namesOf(audience.regions)}`)
+  if (audience.campus_types.length > 0)
+    lines.push(`Campus type: ${namesOf(audience.campus_types)}`)
   if (audience.genders.length > 0)
     lines.push(`Gender: ${labelsOf(GENDER_OPTIONS, audience.genders)}`)
 
@@ -240,7 +235,9 @@ export function audienceLines(audience: CampaignAudience): string[] {
   if (audience.hashtags.length > 0)
     lines.push(`Into ${audience.hashtags.map((tag) => `#${tag}`).join(", ")}`)
 
-  return lines.length > 0 ? lines : ["Everyone on Snacc"]
+  return lines.length > 0
+    ? [`In ${audience.country.name}`, ...lines]
+    : [`Everyone in ${audience.country.name}`]
 }
 
 export function placementsLine(placements: AdPlacement[]): string {

@@ -1,7 +1,15 @@
 "use client"
 
-import { useId, type ChangeEvent, type ReactNode } from "react"
+import { useId, useMemo, type ChangeEvent, type ReactNode } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox"
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
@@ -111,6 +119,59 @@ export function SelectField<V extends string>({
         placeholder={placeholder}
         className="w-full"
       />
+      {hint ? <FieldDescription>{hint}</FieldDescription> : null}
+    </Field>
+  )
+}
+
+export function SearchSelectField<V extends string>({
+  label,
+  value,
+  onChange,
+  options,
+  placeholder,
+  empty,
+  hint,
+}: {
+  label: string
+  value: V | null
+  onChange: (value: V) => void
+  options: readonly Option<V>[]
+  placeholder?: string
+  empty: string
+  hint?: ReactNode
+}) {
+  const id = useId()
+  const labels = useMemo(
+    () => new Map(options.map((option) => [option.value, option.label])),
+    [options]
+  )
+  const items = useMemo(() => options.map((option) => option.value), [options])
+
+  return (
+    <Field>
+      <FieldLabel htmlFor={id}>{label}</FieldLabel>
+      <Combobox
+        autoHighlight
+        items={items}
+        value={value}
+        onValueChange={(next: V | null) => {
+          if (next !== null) onChange(next)
+        }}
+        itemToStringLabel={(item: V) => labels.get(item) ?? ""}
+      >
+        <ComboboxInput id={id} placeholder={placeholder} className="w-full" />
+        <ComboboxContent>
+          <ComboboxEmpty>{empty}</ComboboxEmpty>
+          <ComboboxList>
+            {(item: V) => (
+              <ComboboxItem key={item} value={item}>
+                {labels.get(item)}
+              </ComboboxItem>
+            )}
+          </ComboboxList>
+        </ComboboxContent>
+      </Combobox>
       {hint ? <FieldDescription>{hint}</FieldDescription> : null}
     </Field>
   )

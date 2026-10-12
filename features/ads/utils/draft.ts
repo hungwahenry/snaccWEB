@@ -1,3 +1,5 @@
+import type { CountryPlaces } from "@/features/places/types"
+import { namedRegions } from "@/features/places/utils/regions"
 import { isApiError } from "@/lib/api/errors"
 import { roundUpToStep } from "@/lib/calendar"
 import { DAY_MS, MINUTE_MS } from "@/lib/duration"
@@ -38,14 +40,16 @@ export function placementChoices(clip: boolean): Choice<AdPlacement>[] {
 export function newDraft(
   now: number,
   clip: boolean,
-  maxDays: number
+  maxDays: number,
+  countryCode: string
 ): CampaignDraft {
   const days = Math.max(1, Math.min(DEFAULT_DAYS, maxDays))
 
   return {
+    countryCode,
     campuses: [],
-    states: [],
-    ownerships: [],
+    regionIds: [],
+    campusTypeIds: [],
     genders: [],
     graduationFrom: null,
     graduationTo: null,
@@ -76,10 +80,10 @@ export function draftFromCampaign(
   const { audience } = campaign
 
   return {
-    ...newDraft(now, clip, maxDays),
+    ...newDraft(now, clip, maxDays, audience.country.code),
     campuses: audience.campuses,
-    states: audience.states,
-    ownerships: audience.ownerships,
+    regionIds: audience.regions.map((region) => region.id),
+    campusTypeIds: audience.campus_types.map((type) => type.id),
     genders: audience.genders,
     graduationFrom: audience.graduation_from,
     graduationTo: audience.graduation_to,
@@ -113,9 +117,10 @@ export function addHashtag(tags: string[], raw: string): string[] {
 
 export function audienceOf(draft: CampaignDraft): AdAudience {
   return {
+    countryCode: draft.countryCode,
     campusIds: draft.campuses.map((campus) => campus.id),
-    states: draft.states,
-    ownerships: draft.ownerships,
+    regionIds: draft.regionIds,
+    campusTypeIds: draft.campusTypeIds,
     genders: draft.genders,
     graduationFrom: draft.graduationFrom,
     graduationTo: draft.graduationTo,
@@ -126,11 +131,17 @@ export function audienceOf(draft: CampaignDraft): AdAudience {
   }
 }
 
-export function draftAudience(draft: CampaignDraft): CampaignAudience {
+export function draftAudience(
+  draft: CampaignDraft,
+  places: CountryPlaces | null
+): CampaignAudience {
   return {
+    country: { code: draft.countryCode, name: places?.name ?? "" },
     campuses: draft.campuses,
-    states: draft.states,
-    ownerships: draft.ownerships,
+    regions: namedRegions(places?.regions ?? [], draft.regionIds),
+    campus_types: (places?.campus_types ?? [])
+      .filter((type) => draft.campusTypeIds.includes(type.id))
+      .map((type) => ({ id: type.id, name: type.name })),
     genders: draft.genders,
     graduation_from: draft.graduationFrom,
     graduation_to: draft.graduationTo,
@@ -143,12 +154,14 @@ export function draftAudience(draft: CampaignDraft): CampaignAudience {
 
 export function reviewRows({
   draft,
+  places,
   buttonLabel,
   start,
   end,
   estimate,
 }: {
   draft: CampaignDraft
+  places: CountryPlaces | null
   buttonLabel: string | null
   start: string
   end: string
@@ -158,7 +171,7 @@ export function reviewRows({
 
   return [
     ...campaignSetupRows({
-      audience: draftAudience(draft),
+      audience: draftAudience(draft, places),
       placements: draft.placements,
       button: buttonLabel && link ? { label: buttonLabel, url: link } : null,
     }),
@@ -279,7 +292,8 @@ export function draftProblems(
 ): DraftProblems {
   const problems: DraftProblems = {}
 
-  if (
+  if (!draft.countryCode) problems.audience = "Pick the country it runs in."
+  else if (
     draft.graduationFrom !== null &&
     draft.graduationTo !== null &&
     draft.graduationFrom > draft.graduationTo

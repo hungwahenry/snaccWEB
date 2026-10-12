@@ -2,6 +2,7 @@
 
 import type { ReactElement } from "react"
 import {
+  SearchSelectField,
   SelectField,
   TextField,
 } from "@/features/admin/shell/components/form-fields"
@@ -11,13 +12,14 @@ import {
   FormNote,
 } from "@/features/admin/shell/components/form-dialog"
 import { useDraft } from "@/features/admin/shell/hooks/use-draft"
+import { useUniversityPlaces } from "../hooks/use-university-places"
 import type { AdminUniversity, UniversityDraft } from "../types"
 import {
   draftFrom,
   isDraftReady,
-  OWNERSHIP_CHOICES,
-  STATE_CHOICES,
+  TIME_ZONE_OPTIONS,
   UNIVERSITY_LIMITS,
+  withCountry,
 } from "../utils/university"
 
 function UniversityForm({
@@ -27,7 +29,8 @@ function UniversityForm({
   university?: AdminUniversity
   onSubmit: (draft: UniversityDraft) => Promise<unknown>
 }) {
-  const { draft, set, text } = useDraft(() => draftFrom(university))
+  const { draft, set, text, replace } = useDraft(() => draftFrom(university))
+  const places = useUniversityPlaces(draft.countryCode)
   const editing = university !== undefined
 
   return (
@@ -59,21 +62,42 @@ function UniversityForm({
         />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <SelectField
-          label="State"
-          value={draft.state}
-          onChange={(state) => set("state", state)}
-          options={STATE_CHOICES}
+        <SearchSelectField
+          label="Country"
+          value={draft.countryCode || null}
+          onChange={(code) => replace((current) => withCountry(current, code))}
+          options={places.countries}
+          placeholder="Search countries"
+          empty="No country by that name."
+        />
+        <SearchSelectField
+          label="Time zone"
+          value={draft.timeZone || null}
+          onChange={(zone) => set("timeZone", zone)}
+          options={TIME_ZONE_OPTIONS}
+          placeholder="Search time zones"
+          empty="No time zone by that name."
+        />
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <SearchSelectField
+          label="Region"
+          value={draft.regionId}
+          onChange={(regionId) => set("regionId", regionId)}
+          options={places.regions}
+          placeholder="Search regions"
+          empty="No region by that name."
         />
         <SelectField
-          label="Ownership"
-          value={draft.ownership}
-          onChange={(ownership) => set("ownership", ownership)}
-          options={OWNERSHIP_CHOICES}
+          label="Campus type"
+          value={draft.campusTypeId}
+          onChange={(campusTypeId) => set("campusTypeId", campusTypeId)}
+          options={places.campusTypes}
         />
       </div>
       <FormNote>
-        Promotions can be aimed at campuses by state and by who runs them.
+        Promotions can be aimed at campuses by region and campus type. Hangouts
+        on this campus show in its time zone.
       </FormNote>
       <TextField
         label="Motto"

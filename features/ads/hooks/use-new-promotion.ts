@@ -1,7 +1,13 @@
 "use client"
 
 import { useState } from "react"
+import { useMe } from "@/features/auth/hooks/use-me"
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
+import {
+  useCountries,
+  useCountryPlaces,
+} from "@/features/places/hooks/use-places"
+import { regionGroups } from "@/features/places/utils/regions"
 import type { Snacc } from "@/features/snaccs/types"
 import { toEmbedded } from "@/features/snaccs/utils/resnaccs"
 import { useWalletOverview } from "@/features/wallet/hooks/account/use-wallet-overview"
@@ -56,9 +62,17 @@ export function useNewPromotion(
     setStep(next)
     window.scrollTo({ top: 0 })
   }
-  const form = useCampaignDraft(snacc.clip !== null, maxDays, source)
+  const homeCountry = useMe().data?.profile?.university?.country_code ?? ""
+  const form = useCampaignDraft(
+    snacc.clip !== null,
+    maxDays,
+    source,
+    homeCountry
+  )
   const { draft } = form
-  const search = useCampusSearch(draft.campuses)
+  const countries = useCountries()
+  const places = useCountryPlaces(draft.countryCode || null)
+  const search = useCampusSearch(draft.campuses, draft.countryCode)
   const reach = useCampaignReach(form.audience)
   const policy = useCampaignPolicy()
   const buttons = useAdButtons()
@@ -110,6 +124,7 @@ export function useNewPromotion(
     },
     review: reviewRows({
       draft,
+      places: places.data ?? null,
       buttonLabel,
       start: schedule.fields.start,
       end: schedule.fields.end,
@@ -123,6 +138,12 @@ export function useNewPromotion(
         : null
     ),
     problems,
+    country: {
+      ...form.country,
+      options: (countries.data ?? [])
+        .filter((country) => country.open)
+        .map((country) => ({ value: country.code, label: country.name })),
+    },
     campuses: {
       ...form.campuses,
       search: search.search,
@@ -134,8 +155,17 @@ export function useNewPromotion(
         search.clear()
       },
     },
-    regions: form.regions,
-    ownerships: form.ownerships,
+    regions: {
+      ...form.regions,
+      groups: regionGroups(places.data?.regions ?? []),
+    },
+    campusTypes: {
+      ...form.campusTypes,
+      choices: (places.data?.campus_types ?? []).map((type) => ({
+        value: type.id,
+        label: type.name,
+      })),
+    },
     genders: form.genders,
     graduation: form.graduation,
     standing: form.standing,

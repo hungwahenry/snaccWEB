@@ -1,3 +1,4 @@
+import type { Country, NamedPlace } from "@/features/places/types"
 import type { Snacc } from "@/features/snaccs/types"
 import type { University } from "@/features/universities/types"
 import type { Gender } from "@/features/users/types"
@@ -43,71 +44,15 @@ export interface AdEvent {
   placement: AdPlacement
 }
 
-export type NigerianState =
-  | "abia"
-  | "adamawa"
-  | "akwa_ibom"
-  | "anambra"
-  | "bauchi"
-  | "bayelsa"
-  | "benue"
-  | "borno"
-  | "cross_river"
-  | "delta"
-  | "ebonyi"
-  | "edo"
-  | "ekiti"
-  | "enugu"
-  | "gombe"
-  | "imo"
-  | "jigawa"
-  | "kaduna"
-  | "kano"
-  | "katsina"
-  | "kebbi"
-  | "kogi"
-  | "kwara"
-  | "lagos"
-  | "nasarawa"
-  | "niger"
-  | "ogun"
-  | "ondo"
-  | "osun"
-  | "oyo"
-  | "plateau"
-  | "rivers"
-  | "sokoto"
-  | "taraba"
-  | "yobe"
-  | "zamfara"
-  | "fct"
-
-export type Region =
-  | "north_central"
-  | "north_east"
-  | "north_west"
-  | "south_east"
-  | "south_south"
-  | "south_west"
-
-export interface RegionStates {
-  key: Region
-  label: string
-  states: NigerianState[]
-}
-
-export type RegionCoverage = "all" | "some" | "none"
-
-export type Ownership = "federal" | "state" | "private"
-
 export type Standing = "any" | "students" | "graduates"
 
 export type AdPlatform = "ios" | "android" | "web"
 
 export interface AdAudience {
+  countryCode: string
   campusIds: string[]
-  states: NigerianState[]
-  ownerships: Ownership[]
+  regionIds: string[]
+  campusTypeIds: string[]
   genders: Gender[]
   graduationFrom: number | null
   graduationTo: number | null
@@ -119,10 +64,13 @@ export interface AdAudience {
 
 export type CampusPick = Pick<University, "id" | "name" | "acronym">
 
+export type CampaignCountry = Pick<Country, "code" | "name">
+
 export interface CampaignAudience {
+  country: CampaignCountry
   campuses: CampusPick[]
-  states: NigerianState[]
-  ownerships: Ownership[]
+  regions: NamedPlace[]
+  campus_types: NamedPlace[]
   genders: Gender[]
   graduation_from: number | null
   graduation_to: number | null
@@ -237,9 +185,10 @@ export interface CreateCampaignInput {
 }
 
 export interface CampaignDraft {
+  countryCode: string
   campuses: CampusPick[]
-  states: NigerianState[]
-  ownerships: Ownership[]
+  regionIds: string[]
+  campusTypeIds: string[]
   genders: Gender[]
   graduationFrom: number | null
   graduationTo: number | null

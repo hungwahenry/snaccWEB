@@ -8,6 +8,7 @@ const unilag: UniversityDetail = {
   name: "University of Lagos",
   acronym: "unilag",
   slug: "unilag",
+  country_code: "NG",
   motto: null,
   website: null,
   logo_url: null,

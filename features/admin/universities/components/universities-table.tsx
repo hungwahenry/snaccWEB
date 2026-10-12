@@ -46,7 +46,7 @@ export function UniversitiesTable({
       },
       {
         id: "place",
-        header: "State and ownership",
+        header: "Place",
         className: "text-muted-foreground",
         cell: (university) => universityPlace(university),
       },

@@ -4,6 +4,7 @@ import type { University } from "@/features/universities/types"
 
 export interface ListUniversitiesParams {
   search?: string
+  country?: string
   page?: number
   perPage?: number
 }

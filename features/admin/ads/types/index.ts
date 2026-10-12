@@ -1,7 +1,4 @@
-import type {
-  NigerianState,
-  UniversityOwnership,
-} from "@/features/admin/universities/types"
+import type { NamedPlace } from "@/features/places/types"
 import type { Snacc } from "@/features/snaccs/types"
 
 export type AdStatus = "pending" | "active" | "paused" | "rejected" | "ended"
@@ -33,9 +30,10 @@ export interface AdCampus {
 }
 
 export interface AdAudience {
+  country: { code: string; name: string }
   campuses: AdCampus[]
-  states: NigerianState[]
-  ownerships: UniversityOwnership[]
+  regions: NamedPlace[]
+  campus_types: NamedPlace[]
   genders: AdGender[]
   graduation_from: number | null
   graduation_to: number | null

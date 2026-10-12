@@ -8,9 +8,10 @@ import {
 } from "./audience"
 
 const open: AdAudience = {
+  country: { code: "KE", name: "Kenya" },
   campuses: [],
-  states: [],
-  ownerships: [],
+  regions: [],
+  campus_types: [],
   genders: [],
   graduation_from: null,
   graduation_to: null,
@@ -23,8 +24,9 @@ const open: AdAudience = {
 describe("audienceFacts", () => {
   it("says when nothing narrows the audience", () => {
     expect(audienceFacts(open).map((fact) => fact.value)).toEqual([
+      "Kenya",
       "Any campus",
-      "Anywhere",
+      "Anywhere in the country",
       "Any",
       "Anyone",
       "Any year",
@@ -38,12 +40,19 @@ describe("audienceFacts", () => {
   it("names every choice that narrows it", () => {
     expect(
       audienceFacts({
+        country: { code: "KE", name: "Kenya" },
         campuses: [
-          { id: "u1", name: "University of Lagos", acronym: "UNILAG" },
-          { id: "u2", name: "Covenant University", acronym: "CU" },
+          { id: "u1", name: "University of Nairobi", acronym: "UON" },
+          { id: "u2", name: "Strathmore University", acronym: "SU" },
         ],
-        states: ["lagos", "akwa_ibom", "fct"],
-        ownerships: ["federal", "private"],
+        regions: [
+          { id: "r1", name: "Nairobi" },
+          { id: "r2", name: "Mombasa" },
+        ],
+        campus_types: [
+          { id: "t1", name: "Public" },
+          { id: "t2", name: "Private" },
+        ],
         genders: ["female", "non_binary"],
         graduation_from: 2025,
         graduation_to: 2027,
@@ -53,9 +62,10 @@ describe("audienceFacts", () => {
         hashtags: ["afrobeats", "jollof"],
       }).map((fact) => [fact.label, fact.value])
     ).toEqual([
-      ["Campuses", "UNILAG, CU"],
-      ["States", "Lagos, Akwa Ibom, FCT (Abuja)"],
-      ["School types", "Federal, Private"],
+      ["Country", "Kenya"],
+      ["Campuses", "UON, SU"],
+      ["Regions", "Nairobi, Mombasa"],
+      ["Campus types", "Public, Private"],
       ["Gender", "Women, Non-binary"],
       ["Graduation year", "2025–2027"],
       ["Students or graduates", "Students only"],

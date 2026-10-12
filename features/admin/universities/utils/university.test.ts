@@ -1,15 +1,17 @@
 import { describe, expect, it } from "vitest"
+import type { CountryPlaces } from "@/features/places/types"
 import type { AdminUniversity } from "../types"
 import {
   acronymsById,
   campusOptions,
+  campusTypeChoices,
   draftFrom,
   isDraftReady,
-  OWNERSHIP_CHOICES,
-  STATE_CHOICES,
+  regionChoices,
   toCreateInput,
   toUpdateInput,
   universityPlace,
+  withCountry,
 } from "./university"
 
 const campus = (
@@ -24,8 +26,10 @@ const campus = (
   motto: null,
   website: null,
   logo_url: null,
-  state: null,
-  ownership: null,
+  country: { code: "GH", name: "Ghana" },
+  region: null,
+  campus_type: null,
+  time_zone: "Africa/Accra",
   stats: { profiles: 0, snaccs: 0 },
   fund: null,
 })
@@ -65,7 +69,13 @@ describe("drafts", () => {
   })
 
   it("needs a slug only when creating", () => {
-    const draft = { ...draftFrom(), name: "Covenant", acronym: "CU" }
+    const draft = {
+      ...draftFrom(),
+      name: "Covenant",
+      acronym: "CU",
+      countryCode: "GH",
+      timeZone: "Africa/Accra",
+    }
     expect(isDraftReady(draft, false)).toBe(false)
     expect(isDraftReady(draft, true)).toBe(true)
     expect(isDraftReady({ ...draft, slug: "cu" }, false)).toBe(true)
@@ -88,54 +98,81 @@ describe("drafts", () => {
   })
 })
 
-describe("state and ownership", () => {
-  it("offers leaving each one unset first", () => {
-    expect(STATE_CHOICES[0]).toEqual({ value: "unset", label: "Not set" })
-    expect(STATE_CHOICES).toHaveLength(38)
-    expect(OWNERSHIP_CHOICES.map((option) => option.label)).toEqual([
-      "Not set",
-      "Federal",
-      "State",
-      "Private",
+const GHANA: CountryPlaces = {
+  code: "GH",
+  name: "Ghana",
+  currency: "GHS",
+  open: false,
+  regions: [
+    { id: "r1", parent_id: null, slug: "southern", name: "Southern" },
+    { id: "r2", parent_id: "r1", slug: "accra", name: "Greater Accra" },
+  ],
+  campus_types: [{ id: "t1", slug: "public", name: "Public" }],
+}
+
+describe("place", () => {
+  it("offers leaving region and campus type unset first", () => {
+    expect(regionChoices(GHANA)).toEqual([
+      { value: "unset", label: "Not set" },
+      { value: "r1", label: "Southern" },
+      { value: "r2", label: "Southern › Greater Accra" },
     ])
+    expect(campusTypeChoices(GHANA).map((option) => option.label)).toEqual([
+      "Not set",
+      "Public",
+    ])
+    expect(regionChoices(undefined)).toHaveLength(1)
   })
 
-  it("starts unset and keeps what a campus already has", () => {
-    expect(draftFrom()).toMatchObject({ state: "unset", ownership: "unset" })
+  it("needs a country and a time zone", () => {
+    const draft = { ...draftFrom(), name: "UG", acronym: "UG", slug: "ug" }
+    expect(isDraftReady(draft, false)).toBe(false)
     expect(
-      draftFrom({
-        ...campus("1", "University of Lagos", "UNILAG"),
-        state: "lagos",
-        ownership: "federal",
-      })
-    ).toMatchObject({ state: "lagos", ownership: "federal" })
+      isDraftReady(
+        { ...draft, countryCode: "GH", timeZone: "Africa/Accra" },
+        false
+      )
+    ).toBe(true)
   })
 
-  it("clears an unset one on edit and leaves it out on create", () => {
+  it("forgets the region and type when the country changes", () => {
     const draft = {
-      ...draftFrom(campus("1", "Covenant", "CU")),
-      state: "ogun" as const,
+      ...draftFrom(campus("1", "University of Ghana", "UG")),
+      regionId: "r2",
+      campusTypeId: "t1",
     }
-    expect(toUpdateInput(draft)).toMatchObject({
-      state: "ogun",
-      ownership: null,
-    })
-    expect(toCreateInput({ ...draft, slug: "cu" })).toMatchObject({
-      state: "ogun",
-      ownership: undefined,
+    expect(withCountry(draft, "GH")).toBe(draft)
+    expect(withCountry(draft, "KE")).toMatchObject({
+      countryCode: "KE",
+      regionId: "unset",
+      campusTypeId: "unset",
     })
   })
 
-  it("reads where a campus is and who runs it", () => {
-    expect(universityPlace({ state: "akwa_ibom", ownership: "state" })).toBe(
-      "Akwa Ibom · State"
-    )
-    expect(universityPlace({ state: "fct", ownership: null })).toBe(
-      "FCT (Abuja)"
-    )
-    expect(universityPlace({ state: null, ownership: "private" })).toBe(
-      "Private"
-    )
-    expect(universityPlace({ state: null, ownership: null })).toBe("Not set")
+  it("sends an unset region and type as null", () => {
+    const draft = draftFrom(campus("1", "University of Ghana", "UG"))
+    expect(toUpdateInput({ ...draft, regionId: "r2" })).toMatchObject({
+      countryCode: "GH",
+      regionId: "r2",
+      campusTypeId: null,
+      timeZone: "Africa/Accra",
+    })
+  })
+
+  it("reads where a campus is", () => {
+    expect(
+      universityPlace({
+        country: { code: "GH", name: "Ghana" },
+        region: { id: "r2", name: "Greater Accra" },
+        campus_type: { id: "t1", name: "Public" },
+      })
+    ).toBe("Greater Accra · Public · Ghana")
+    expect(
+      universityPlace({
+        country: { code: "GH", name: "Ghana" },
+        region: null,
+        campus_type: null,
+      })
+    ).toBe("Ghana")
   })
 })

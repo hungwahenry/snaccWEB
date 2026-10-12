@@ -4,12 +4,10 @@ import { GRADUATION_YEARS } from "@/features/users/utils/graduation-years"
 import type { NewPromotion } from "../../hooks/use-new-promotion"
 import {
   JOINED_CHOICES,
-  OWNERSHIP_CHOICES,
   PLATFORM_CHOICES,
   STANDING_CHOICES,
   TARGET_GENDERS,
 } from "../../utils/campaigns"
-import { REGIONS } from "../../utils/regions"
 import { CampusPicker } from "./campus-picker"
 import { ChoiceChips } from "./choice-chips"
 import { FormField } from "./form-section"
@@ -34,9 +32,10 @@ const JOINED_OPTIONS = [
 
 type AudienceFieldsProps = Pick<
   NewPromotion,
+  | "country"
   | "campuses"
   | "regions"
-  | "ownerships"
+  | "campusTypes"
   | "genders"
   | "graduation"
   | "standing"
@@ -46,9 +45,10 @@ type AudienceFieldsProps = Pick<
 >
 
 export function AudienceFields({
+  country,
   campuses,
   regions,
-  ownerships,
+  campusTypes,
   genders,
   graduation,
   standing,
@@ -58,17 +58,30 @@ export function AudienceFields({
 }: AudienceFieldsProps) {
   return (
     <div className="flex flex-col gap-6">
+      <FormField label="Country">
+        <OptionSelect
+          label="Runs in"
+          value={country.value}
+          options={country.options}
+          onChange={country.onChange}
+        />
+      </FormField>
+
       <FormField label="Campuses">
         <CampusPicker {...campuses} />
       </FormField>
 
-      <FormField label="States">
-        <RegionPicker regions={REGIONS} {...regions} />
-      </FormField>
+      {regions.groups.length > 0 ? (
+        <FormField label="Regions">
+          <RegionPicker {...regions} />
+        </FormField>
+      ) : null}
 
-      <FormField label="School type">
-        <ChoiceChips choices={OWNERSHIP_CHOICES} {...ownerships} />
-      </FormField>
+      {campusTypes.choices.length > 0 ? (
+        <FormField label="Campus type">
+          <ChoiceChips {...campusTypes} />
+        </FormField>
+      ) : null}
 
       <FormField label="Gender">
         <ChoiceChips choices={TARGET_GENDERS} {...genders} />

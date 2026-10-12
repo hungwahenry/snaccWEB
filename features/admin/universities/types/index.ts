@@ -1,47 +1,4 @@
-export type NigerianState =
-  | "abia"
-  | "adamawa"
-  | "akwa_ibom"
-  | "anambra"
-  | "bauchi"
-  | "bayelsa"
-  | "benue"
-  | "borno"
-  | "cross_river"
-  | "delta"
-  | "ebonyi"
-  | "edo"
-  | "ekiti"
-  | "enugu"
-  | "gombe"
-  | "imo"
-  | "jigawa"
-  | "kaduna"
-  | "kano"
-  | "katsina"
-  | "kebbi"
-  | "kogi"
-  | "kwara"
-  | "lagos"
-  | "nasarawa"
-  | "niger"
-  | "ogun"
-  | "ondo"
-  | "osun"
-  | "oyo"
-  | "plateau"
-  | "rivers"
-  | "sokoto"
-  | "taraba"
-  | "yobe"
-  | "zamfara"
-  | "fct"
-
-export type UniversityOwnership = "federal" | "state" | "private"
-
-export type StateChoice = NigerianState | "unset"
-
-export type OwnershipChoice = UniversityOwnership | "unset"
+import type { NamedPlace } from "@/features/places/types"
 
 export interface AdminUniversity {
   id: string
@@ -51,8 +8,10 @@ export interface AdminUniversity {
   motto: string | null
   website: string | null
   logo_url: string | null
-  state: NigerianState | null
-  ownership: UniversityOwnership | null
+  country: { code: string; name: string }
+  region: NamedPlace | null
+  campus_type: NamedPlace | null
+  time_zone: string
   stats: { profiles: number; snaccs: number }
   fund: { cap: number; distributed: number } | null
 }
@@ -70,11 +29,13 @@ export interface CreateUniversityInput {
   motto?: string
   website?: string
   logoUrl?: string
-  state?: NigerianState | null
-  ownership?: UniversityOwnership | null
+  countryCode: string
+  regionId: string | null
+  campusTypeId: string | null
+  timeZone: string
 }
 
-export type UpdateUniversityInput = Partial<Omit<CreateUniversityInput, "slug">>
+export type UpdateUniversityInput = Omit<CreateUniversityInput, "slug">
 
 export interface UniversityDraft {
   name: string
@@ -83,6 +44,8 @@ export interface UniversityDraft {
   motto: string
   website: string
   logoUrl: string
-  state: StateChoice
-  ownership: OwnershipChoice
+  countryCode: string
+  regionId: string
+  campusTypeId: string
+  timeZone: string
 }

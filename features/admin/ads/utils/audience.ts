@@ -1,6 +1,4 @@
 import { PLATFORM_LABELS } from "@/features/admin/announcements/utils/audience"
-import { stateName } from "@/features/admin/universities/utils/states"
-import { OWNERSHIP_LABELS } from "@/features/admin/universities/utils/university"
 import type {
   AdAudience,
   AdFact,
@@ -51,6 +49,7 @@ export function joinedLine(days: number | null): string {
 
 export function audienceFacts(audience: AdAudience): AdFact[] {
   return [
+    { label: "Country", value: audience.country.name },
     {
       label: "Campuses",
       value: listOr(
@@ -59,13 +58,16 @@ export function audienceFacts(audience: AdAudience): AdFact[] {
       ),
     },
     {
-      label: "States",
-      value: listOr(audience.states.map(stateName), "Anywhere"),
+      label: "Regions",
+      value: listOr(
+        audience.regions.map((region) => region.name),
+        "Anywhere in the country"
+      ),
     },
     {
-      label: "School types",
+      label: "Campus types",
       value: listOr(
-        audience.ownerships.map((ownership) => OWNERSHIP_LABELS[ownership]),
+        audience.campus_types.map((type) => type.name),
         "Any"
       ),
     },

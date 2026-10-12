@@ -12,13 +12,14 @@ export function AudienceStep({ form }: { form: NewPromotion }) {
 
       <FormSection
         title={FORM_SECTIONS.audience}
-        hint="Leave it all open to reach everyone on Snacc."
+        hint="Leave the rest open to reach everyone in that country."
         problem={form.problems.audience}
       >
         <AudienceFields
+          country={form.country}
           campuses={form.campuses}
           regions={form.regions}
-          ownerships={form.ownerships}
+          campusTypes={form.campusTypes}
           genders={form.genders}
           graduation={form.graduation}
           standing={form.standing}

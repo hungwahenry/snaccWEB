@@ -14,6 +14,7 @@ export function useCampaignReach(audience: AdAudience) {
   return useQuery({
     queryKey: adKeys.reach(settled),
     queryFn: () => estimateReach(settled),
+    enabled: settled.countryCode !== "",
     placeholderData: keepPreviousData,
   })
 }
