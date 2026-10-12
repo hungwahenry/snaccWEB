@@ -7,8 +7,8 @@ import { feedTabs } from "../utils/scopes"
 /** Which feeds are switched on, and whether there is anything to switch between. */
 export function useFeedTabs() {
   const following = useFlag("feed_following")
-  const global = useFlag("feed_global")
-  const enabled = useMemo(() => ({ following, global }), [following, global])
+  const country = useFlag("feed_global")
+  const enabled = useMemo(() => ({ following, country }), [following, country])
   const tabs = useMemo(() => feedTabs(enabled), [enabled])
 
   return { enabled, tabs, show: tabs.length > 1 }

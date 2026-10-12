@@ -36,8 +36,8 @@ export function roomSubtitle(room: ChatRoom | null, now = Date.now()): string {
   switch (room.kind) {
     case "campus":
       return room.campus?.name ?? "Your campus"
-    case "global":
-      return "Everyone on Snacc"
+    case "country":
+      return "Every campus in the country"
     case "hangout":
       return hangoutLine(room.hangout, now)
   }

@@ -27,8 +27,8 @@ export function useFeedScreen() {
 
   const scope = resolveScope(picked, enabled)
   const feed = useFeed(scope)
-  const campusSlug = useMe().data?.profile?.university?.slug ?? null
-  const room = liveFeedRoom(scope, campusSlug)
+  const campus = useMe().data?.profile?.university ?? null
+  const room = liveFeedRoom(scope, campus)
 
   useRealtimeRoom(room)
   useRealtimeEvent("feed.snacc", (payload) => {

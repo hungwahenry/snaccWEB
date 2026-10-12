@@ -1,9 +1,9 @@
-export type FeedScope = "campus" | "global" | "following"
+export type FeedScope = "campus" | "country" | "following"
 
 /** Which of the optional feeds are switched on. Campus is always there. */
 export interface FeedScopesEnabled {
   following: boolean
-  global: boolean
+  country: boolean
 }
 
 /** A face on the new-snaccs pill. */

@@ -14,7 +14,9 @@ vi.mock("@/features/config/hooks/use-flag", () => ({
   useFlag: (key: string) => flags[key] ?? false,
 }))
 vi.mock("@/features/auth/hooks/use-me", () => ({
-  useMe: () => ({ data: { profile: { university: { slug: "unilag" } } } }),
+  useMe: () => ({
+    data: { profile: { university: { slug: "unilag", country_code: "NG" } } },
+  }),
 }))
 vi.mock("@/features/signals/utils/queue", () => ({
   signal: (...args: unknown[]) => signal(...args),
@@ -55,18 +57,19 @@ describe("useFeedScreen", () => {
     window.scrollTo = vi.fn()
   })
 
-  it("opens on global, so a quiet campus is never the first thing you see", () => {
+  it("opens on your country, so a quiet campus is never the first thing you see", () => {
     flags.feed_global = true
     const { result } = renderHook(() => useFeedScreen())
 
-    expect(result.current.tabs.value).toBe("global")
-    expect(result.current.list.feed).toMatchObject({ scope: "global" })
+    expect(result.current.tabs.value).toBe("country")
+    expect(result.current.list.feed).toMatchObject({ scope: "country" })
+    expect(joined.at(-1)).toBe(realtimeRooms.feedCountry("NG"))
   })
 
   it("falls back to campus when the picked feed is switched off", () => {
     flags.feed_global = true
     const { result, rerender } = renderHook(() => useFeedScreen())
-    expect(result.current.tabs.value).toBe("global")
+    expect(result.current.tabs.value).toBe("country")
 
     flags.feed_global = false
     rerender()

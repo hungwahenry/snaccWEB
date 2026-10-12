@@ -16,7 +16,7 @@ export interface ChatRoomCampus {
   slug: string
 }
 
-export type ChatRoomKind = "global" | "campus" | "hangout"
+export type ChatRoomKind = "country" | "campus" | "hangout"
 
 export interface ChatRoomHangout {
   snacc_id: string

@@ -61,13 +61,13 @@ const hangoutRoom = (patch: Partial<NonNullable<ChatRoom["hangout"]>> = {}) =>
 describe("rooms", () => {
   it("names a room the way the server does, or Room before it loads", () => {
     expect(roomTitle(null)).toBe("Room")
-    expect(roomTitle({ name: "Everyone" } as ChatRoom)).toBe("Everyone")
+    expect(roomTitle({ name: "Nigeria" } as ChatRoom)).toBe("Nigeria")
     expect(roomTitle(hangoutRoom())).toBe("⚽ watch the derby")
   })
 
   it("says what each kind of room is under its name", () => {
-    expect(roomSubtitle({ kind: "global" } as ChatRoom)).toBe(
-      "Everyone on Snacc"
+    expect(roomSubtitle({ kind: "country" } as ChatRoom)).toBe(
+      "Every campus in the country"
     )
     expect(
       roomSubtitle({

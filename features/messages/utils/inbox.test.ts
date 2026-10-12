@@ -15,15 +15,15 @@ const keys = (entries: ReturnType<typeof inboxEntries>) =>
 describe("the inbox", () => {
   const rooms = [
     room("campus", "campus", "2026-10-07T12:00:00.000Z"),
-    room("global", "global", "2026-10-07T12:30:00.000Z"),
+    room("country", "country", "2026-10-07T12:30:00.000Z"),
     room("derby", "hangout", "2026-10-07T11:00:00.000Z"),
     room("picnic", "hangout", "2026-10-05T09:00:00.000Z"),
   ]
 
-  it("pins the campus and global rooms, in the order they came", () => {
+  it("pins the campus and country rooms, in the order they came", () => {
     expect(pinnedRooms(rooms).map((each) => each.id)).toEqual([
       "campus",
-      "global",
+      "country",
     ])
   })
 

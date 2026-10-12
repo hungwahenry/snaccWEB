@@ -33,29 +33,29 @@ describe("withNewPoster", () => {
 })
 
 describe("feed scopes", () => {
-  it("leads with global, always offers campus, and the rest only when switched on", () => {
+  it("leads with your country, always offers campus, and the rest only when switched on", () => {
     expect(
-      feedTabs({ following: false, global: false }).map((tab) => tab.value)
+      feedTabs({ following: false, country: false }).map((tab) => tab.value)
     ).toEqual(["campus"])
     expect(
-      feedTabs({ following: true, global: true }).map((tab) => tab.value)
-    ).toEqual(["global", "campus", "following"])
+      feedTabs({ following: true, country: true }).map((tab) => tab.value)
+    ).toEqual(["country", "campus", "following"])
   })
 
   it("only allows a feed that is switched on", () => {
-    expect(scopeAllowed("global", { following: true, global: false })).toBe(
+    expect(scopeAllowed("country", { following: true, country: false })).toBe(
       false
     )
-    expect(scopeAllowed("following", { following: true, global: false })).toBe(
+    expect(scopeAllowed("following", { following: true, country: false })).toBe(
       true
     )
-    expect(scopeAllowed("campus", { following: false, global: false })).toBe(
+    expect(scopeAllowed("campus", { following: false, country: false })).toBe(
       true
     )
   })
 
   it("has copy for every feed", () => {
-    for (const scope of ["campus", "global", "following"] as const) {
+    for (const scope of ["campus", "country", "following"] as const) {
       expect(FEED_EMPTY[scope].title).toBeTruthy()
       expect(FEED_FAILED[scope]).toBeTruthy()
     }
@@ -63,15 +63,19 @@ describe("feed scopes", () => {
 })
 
 describe("liveFeedRoom", () => {
-  it("listens to your campus or to everyone", () => {
-    expect(liveFeedRoom("campus", "unilag")).toBe(
+  const unilag = { slug: "unilag", country_code: "NG" }
+
+  it("listens to your campus or to your campus's country", () => {
+    expect(liveFeedRoom("campus", unilag)).toBe(
       realtimeRooms.feedCampus("unilag")
     )
-    expect(liveFeedRoom("global", "unilag")).toBe(realtimeRooms.feedGlobal)
+    expect(liveFeedRoom("country", unilag)).toBe(
+      realtimeRooms.feedCountry("NG")
+    )
   })
 
   it("has nothing to listen to for following, or without a campus", () => {
-    expect(liveFeedRoom("following", "unilag")).toBeNull()
+    expect(liveFeedRoom("following", unilag)).toBeNull()
     expect(liveFeedRoom("campus", null)).toBeNull()
   })
 })

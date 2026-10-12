@@ -6,10 +6,13 @@ import {
   type LucideIcon,
 } from "lucide-react"
 import type { PillTab } from "@/components/ui/pill-tabs"
+import type { University } from "@/features/universities/types"
 import { realtimeRooms } from "@/providers/realtime-rooms"
 import type { FeedScope, FeedScopesEnabled } from "../types"
 
-export const DEFAULT_FEED_SCOPE: FeedScope = "global"
+export const DEFAULT_FEED_SCOPE: FeedScope = "country"
+
+export const FALLBACK_FEED_SCOPE: FeedScope = "campus"
 
 const CAMPUS: PillTab<FeedScope> = {
   value: "campus",
@@ -21,15 +24,15 @@ const FOLLOWING: PillTab<FeedScope> = {
   label: "Following",
   icon: UsersRoundIcon,
 }
-const GLOBAL: PillTab<FeedScope> = {
-  value: "global",
+const COUNTRY: PillTab<FeedScope> = {
+  value: "country",
   label: "Global",
   icon: GlobeIcon,
 }
 
 export function feedTabs(enabled: FeedScopesEnabled): PillTab<FeedScope>[] {
   return [
-    ...(enabled.global ? [GLOBAL] : []),
+    ...(enabled.country ? [COUNTRY] : []),
     CAMPUS,
     ...(enabled.following ? [FOLLOWING] : []),
   ]
@@ -46,16 +49,16 @@ export function resolveScope(
   picked: FeedScope,
   enabled: FeedScopesEnabled
 ): FeedScope {
-  return scopeAllowed(picked, enabled) ? picked : "campus"
+  return scopeAllowed(picked, enabled) ? picked : FALLBACK_FEED_SCOPE
 }
 
 export function liveFeedRoom(
   scope: FeedScope,
-  campusSlug: string | null
+  campus: Pick<University, "slug" | "country_code"> | null
 ): string | null {
-  if (scope === "global") return realtimeRooms.feedGlobal
-  if (scope === "campus" && campusSlug)
-    return realtimeRooms.feedCampus(campusSlug)
+  if (!campus) return null
+  if (scope === "country") return realtimeRooms.feedCountry(campus.country_code)
+  if (scope === "campus") return realtimeRooms.feedCampus(campus.slug)
   return null
 }
 
@@ -68,10 +71,11 @@ export const FEED_EMPTY: Record<
     title: "No snaccs yet",
     description: "Nothing has been posted on your campus. Be the first.",
   },
-  global: {
+  country: {
     icon: MessageSquareDashedIcon,
     title: "Nothing going on",
-    description: "No campus has posted anything worth passing on yet.",
+    description:
+      "No campus in your country has posted anything worth passing on yet.",
   },
   following: {
     icon: UsersRoundIcon,
@@ -82,6 +86,6 @@ export const FEED_EMPTY: Record<
 
 export const FEED_FAILED: Record<FeedScope, string> = {
   campus: "Could not load your campus",
-  global: "Could not load the global feed",
+  country: "Could not load the global feed",
   following: "Could not load the people you follow",
 }

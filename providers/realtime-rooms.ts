@@ -1,6 +1,6 @@
 export const realtimeRooms = {
   snacc: (id: string) => `snacc:${id}`,
-  feedGlobal: "feed:global",
+  feedCountry: (countryCode: string) => `feed:country:${countryCode}`,
   feedCampus: (slug: string) => `feed:campus:${slug}`,
   profile: (username: string) => `profile:${username}`,
   campus: (slug: string) => `campus:${slug}`,
