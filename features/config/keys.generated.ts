@@ -2,251 +2,262 @@
 // feature-flags.defaults.ts. Do not edit by hand.
 
 export const FLAG_KEYS = [
-  'giphy',
-  'snacc_gifs',
-  'snacc_matches',
-  'cashtags',
-  'snacc_clips',
-  'message_gifs',
-  'search',
-  'earnings',
-  'referrals',
-  'resnacc',
-  'post_pinning',
-  'post_editing',
-  'scheduled_posts',
-  'anon_messages',
-  'first_post_prompt',
-  'private_accounts',
-  'profile_visitors',
-  'profile_photo_upload',
-  'avatar_customization',
-  'bookmarks',
-  'hides',
-  'feed_global',
-  'clip_autoplay',
-  'feed_following',
-  'message_images',
-  'message_view_once',
-  'message_editing',
-  'chat_themes',
-  'voice_notes',
-  'voice_snaccs',
-  'campus_chat',
-  'global_chat',
-  'chat_streaks',
-  'score',
-  'moments',
-  'moment_snaccs',
-  'stickers',
-  'snacc_stickers',
-  'message_stickers',
-  'ads',
-  'ads_manager',
-  'premium_wallet',
-  'premium',
-  'wallet',
-  'wallet_dva',
-  'app_icon',
-  'polls',
-  'hangouts',
-  'hangout_hosting',
-  'easter_eggs',
-  'live_scores',
-  'accent_colors',
-  'realtime',
-] as const;
+  "giphy",
+  "snacc_gifs",
+  "snacc_matches",
+  "cashtags",
+  "snacc_clips",
+  "message_gifs",
+  "search",
+  "earnings",
+  "referrals",
+  "resnacc",
+  "post_pinning",
+  "post_editing",
+  "scheduled_posts",
+  "anon_messages",
+  "first_post_prompt",
+  "private_accounts",
+  "profile_visitors",
+  "profile_photo_upload",
+  "avatar_customization",
+  "bookmarks",
+  "hides",
+  "feed_global",
+  "clip_autoplay",
+  "feed_following",
+  "message_images",
+  "message_view_once",
+  "message_editing",
+  "chat_themes",
+  "voice_notes",
+  "voice_snaccs",
+  "campus_chat",
+  "global_chat",
+  "chat_streaks",
+  "score",
+  "moments",
+  "moment_snaccs",
+  "stickers",
+  "snacc_stickers",
+  "message_stickers",
+  "ads",
+  "ads_manager",
+  "premium_wallet",
+  "premium",
+  "wallet",
+  "wallet_dva",
+  "app_icon",
+  "polls",
+  "hangouts",
+  "hangout_hosting",
+  "easter_eggs",
+  "live_scores",
+  "accent_colors",
+  "realtime",
+] as const
 
 export const PUBLIC_CONFIG_DEFAULTS: {
-  readonly 'client.min_version': string;
-  readonly 'client.min_version_ios': string;
-  readonly 'client.min_version_android': string;
-  readonly 'client.store_url_android': string;
-  readonly 'client.store_url_ios': string;
-  readonly 'content.snacc.body_max_length': number;
-  readonly 'content.snacc.max_images': number;
-  readonly 'content.snacc.max_mentions': number;
-  readonly 'content.snacc.max_hashtags': number;
-  readonly 'content.snacc.voice_max_seconds': number;
-  readonly 'content.snacc.clip_max_seconds': number;
-  readonly 'content.snacc.clip_max_mb': number;
-  readonly 'content.snacc.edit_window_minutes': number;
-  readonly 'content.scheduled.max_pending': number;
-  readonly 'content.scheduled.min_lead_minutes': number;
-  readonly 'content.scheduled.max_lead_days': number;
-  readonly 'content.poll.max_options': number;
-  readonly 'content.poll.option_max_length': number;
-  readonly 'content.poll.min_minutes': number;
-  readonly 'content.poll.max_minutes': number;
-  readonly 'chat.message_max_length': number;
-  readonly 'chat.max_images': number;
-  readonly 'content.message.edit_window_minutes': number;
-  readonly 'content.message.body_max_length': number;
-  readonly 'content.message.max_images': number;
-  readonly 'content.message.voice_max_seconds': number;
-  readonly 'messages.streak_grace_days': number;
-  readonly 'messages.streak_min_days': number;
-  readonly 'messages.streak_milestones': readonly string[];
-  readonly 'content.sticker.max_edge': number;
-  readonly 'content.sticker.favourites_max': number;
-  readonly 'content.sticker.pack_size_max': number;
-  readonly 'content.sticker.packs_max': number;
-  readonly 'content.sticker.saved_packs_max': number;
-  readonly 'content.snacc.max_cashtags': number;
-  readonly 'cashtags.refresh_minutes': number;
-  readonly 'media.clip_short_side': number;
-  readonly 'media.clip_video_kbps': number;
-  readonly 'media.clip_audio_kbps': number;
-  readonly 'moderation.suspension.durations_days': readonly string[];
-  readonly 'content.report.detail_max_length': number;
-  readonly 'profile.username.max_length': number;
-  readonly 'profile.display_name.max_length': number;
-  readonly 'profile.bio.max_length': number;
-  readonly 'avatar.base': string;
-  readonly 'avatar.style': string;
-  readonly 'avatar.format': string;
-  readonly 'discovery.popular_hashtags.limit': number;
-  readonly 'views.record.max_batch': number;
-  readonly 'earn.withdrawal.balance': number;
-  readonly 'earn.withdrawal.views': number;
-  readonly 'earn.withdrawal.followers': number;
-  readonly 'earn.withdrawal.account_age_days': number;
-  readonly 'referral.claim_window_days': number;
-  readonly 'referral.monthly_cap': number;
-  readonly 'wallet.send.min_kobo': number;
-  readonly 'wallet.send.bank_fee_kobo': number;
-  readonly 'wallet.confirm.user_stepup_threshold_kobo': number;
-  readonly 'wallet.confirm.bank_stepup_threshold_kobo': number;
-  readonly 'wallet.request.expiry_days': number;
-  readonly 'wallet.deposit.min_kobo': number;
-  readonly 'wallet.deposit.max_kobo': number;
-  readonly 'wallet.limits.basic.daily_send_kobo': number;
-  readonly 'wallet.limits.basic.daily_bank_send_kobo': number;
-  readonly 'wallet.limits.basic.daily_deposit_kobo': number;
-  readonly 'wallet.limits.verified.daily_send_kobo': number;
-  readonly 'wallet.limits.verified.daily_bank_send_kobo': number;
-  readonly 'wallet.limits.verified.daily_deposit_kobo': number;
-  readonly 'wallet.dva.requires_identity': boolean;
-  readonly 'premium.wallet.monthly_kobo': number;
-  readonly 'premium.wallet.yearly_kobo': number;
-  readonly 'premium.rc_ios_key': string;
-  readonly 'premium.rc_android_key': string;
-  readonly 'premium.offering_id': string;
-  readonly 'moments.default_hours': number;
-  readonly 'moments.durations_hours': readonly string[];
-  readonly 'moments.max_per_day': number;
-  readonly 'moments.caption_max_length': number;
-  readonly 'moments.max_mentions': number;
-  readonly 'hangouts.title_max_length': number;
-  readonly 'hangouts.place_max_length': number;
-  readonly 'hangouts.capacity_min': number;
-  readonly 'hangouts.capacity_max': number;
-  readonly 'hangouts.min_lead_minutes': number;
-  readonly 'hangouts.max_ahead_days': number;
-  readonly 'score.floor.unique_engagers': number;
-  readonly 'score.daily.full_posts': number;
-  readonly 'score.daily.half_posts': number;
-  readonly 'score.actor.daily_cap': number;
-  readonly 'eggs.burst_counts': Readonly<Record<string, number>>;
-  readonly 'ads.price_per_thousand_kobo': number;
-  readonly 'ads.min_budget_kobo': number;
-  readonly 'ads.max_days': number;
-  readonly 'ads.max_lead_days': number;
-  readonly 'ads.min_audience': number;
+  readonly "client.min_version": string
+  readonly "client.min_version_ios": string
+  readonly "client.min_version_android": string
+  readonly "client.store_url_android": string
+  readonly "client.store_url_ios": string
+  readonly "content.snacc.body_max_length": number
+  readonly "content.snacc.max_images": number
+  readonly "content.snacc.max_mentions": number
+  readonly "content.snacc.max_hashtags": number
+  readonly "content.snacc.voice_max_seconds": number
+  readonly "content.snacc.clip_max_seconds": number
+  readonly "content.snacc.clip_max_mb": number
+  readonly "content.snacc.edit_window_minutes": number
+  readonly "content.scheduled.max_pending": number
+  readonly "content.scheduled.min_lead_minutes": number
+  readonly "content.scheduled.max_lead_days": number
+  readonly "content.poll.max_options": number
+  readonly "content.poll.option_max_length": number
+  readonly "content.poll.min_minutes": number
+  readonly "content.poll.max_minutes": number
+  readonly "chat.message_max_length": number
+  readonly "chat.max_images": number
+  readonly "content.message.edit_window_minutes": number
+  readonly "content.message.body_max_length": number
+  readonly "content.message.max_images": number
+  readonly "content.message.voice_max_seconds": number
+  readonly "messages.streak_grace_days": number
+  readonly "messages.streak_min_days": number
+  readonly "messages.streak_milestones": readonly string[]
+  readonly "content.sticker.max_edge": number
+  readonly "content.sticker.favourites_max": number
+  readonly "content.sticker.pack_size_max": number
+  readonly "content.sticker.packs_max": number
+  readonly "content.sticker.saved_packs_max": number
+  readonly "content.snacc.max_cashtags": number
+  readonly "cashtags.refresh_minutes": number
+  readonly "media.clip_short_side": number
+  readonly "media.clip_video_kbps": number
+  readonly "media.clip_audio_kbps": number
+  readonly "moderation.suspension.durations_days": readonly string[]
+  readonly "content.report.detail_max_length": number
+  readonly "profile.username.max_length": number
+  readonly "profile.display_name.max_length": number
+  readonly "profile.bio.max_length": number
+  readonly "avatar.base": string
+  readonly "avatar.style": string
+  readonly "avatar.format": string
+  readonly "discovery.popular_hashtags.limit": number
+  readonly "views.record.max_batch": number
+  readonly "earn.withdrawal.balance": number
+  readonly "earn.withdrawal.views": number
+  readonly "earn.withdrawal.followers": number
+  readonly "earn.withdrawal.account_age_days": number
+  readonly "referral.claim_window_days": number
+  readonly "referral.monthly_cap": number
+  readonly "wallet.send.min_kobo": number
+  readonly "wallet.send.bank_fee_kobo": number
+  readonly "wallet.confirm.user_stepup_threshold_kobo": number
+  readonly "wallet.confirm.bank_stepup_threshold_kobo": number
+  readonly "wallet.request.expiry_days": number
+  readonly "wallet.deposit.min_kobo": number
+  readonly "wallet.deposit.max_kobo": number
+  readonly "wallet.limits.basic.daily_send_kobo": number
+  readonly "wallet.limits.basic.daily_bank_send_kobo": number
+  readonly "wallet.limits.basic.daily_deposit_kobo": number
+  readonly "wallet.limits.verified.daily_send_kobo": number
+  readonly "wallet.limits.verified.daily_bank_send_kobo": number
+  readonly "wallet.limits.verified.daily_deposit_kobo": number
+  readonly "wallet.dva.requires_identity": boolean
+  readonly "premium.wallet.monthly_kobo": number
+  readonly "premium.wallet.yearly_kobo": number
+  readonly "premium.rc_ios_key": string
+  readonly "premium.rc_android_key": string
+  readonly "premium.offering_id": string
+  readonly "moments.default_hours": number
+  readonly "moments.durations_hours": readonly string[]
+  readonly "moments.max_per_day": number
+  readonly "moments.caption_max_length": number
+  readonly "moments.max_mentions": number
+  readonly "hangouts.title_max_length": number
+  readonly "hangouts.place_max_length": number
+  readonly "hangouts.capacity_min": number
+  readonly "hangouts.capacity_max": number
+  readonly "hangouts.min_lead_minutes": number
+  readonly "hangouts.max_ahead_days": number
+  readonly "score.floor.unique_engagers": number
+  readonly "score.daily.full_posts": number
+  readonly "score.daily.half_posts": number
+  readonly "score.actor.daily_cap": number
+  readonly "eggs.burst_counts": Readonly<Record<string, number>>
+  readonly "ads.price_per_thousand_kobo": number
+  readonly "ads.min_budget_kobo": number
+  readonly "ads.budget_presets_kobo": readonly string[]
+  readonly "ads.max_days": number
+  readonly "ads.max_lead_days": number
+  readonly "ads.active_days": number
+  readonly "ads.min_audience": number
 } = {
-  'client.min_version': "0.0.0",
-  'client.min_version_ios': "",
-  'client.min_version_android': "",
-  'client.store_url_android': "https://play.google.com/store/apps/details?id=com.snacc.fyi",
-  'client.store_url_ios': "",
-  'content.snacc.body_max_length': 500,
-  'content.snacc.max_images': 10,
-  'content.snacc.max_mentions': 3,
-  'content.snacc.max_hashtags': 5,
-  'content.snacc.voice_max_seconds': 300,
-  'content.snacc.clip_max_seconds': 60,
-  'content.snacc.clip_max_mb': 100,
-  'content.snacc.edit_window_minutes': 15,
-  'content.scheduled.max_pending': 10,
-  'content.scheduled.min_lead_minutes': 5,
-  'content.scheduled.max_lead_days': 30,
-  'content.poll.max_options': 4,
-  'content.poll.option_max_length': 50,
-  'content.poll.min_minutes': 5,
-  'content.poll.max_minutes': 10080,
-  'chat.message_max_length': 2000,
-  'chat.max_images': 4,
-  'content.message.edit_window_minutes': 5,
-  'content.message.body_max_length': 500,
-  'content.message.max_images': 4,
-  'content.message.voice_max_seconds': 120,
-  'messages.streak_grace_days': 1,
-  'messages.streak_min_days': 2,
-  'messages.streak_milestones': ["3","7","14","30","50","100"],
-  'content.sticker.max_edge': 512,
-  'content.sticker.favourites_max': 200,
-  'content.sticker.pack_size_max': 60,
-  'content.sticker.packs_max': 3,
-  'content.sticker.saved_packs_max': 30,
-  'content.snacc.max_cashtags': 3,
-  'cashtags.refresh_minutes': 5,
-  'media.clip_short_side': 720,
-  'media.clip_video_kbps': 4800,
-  'media.clip_audio_kbps': 96,
-  'moderation.suspension.durations_days': ["1","3","7","30"],
-  'content.report.detail_max_length': 500,
-  'profile.username.max_length': 30,
-  'profile.display_name.max_length': 50,
-  'profile.bio.max_length': 160,
-  'avatar.base': "https://api.dicebear.com/9.x",
-  'avatar.style': "adventurer",
-  'avatar.format': "png",
-  'discovery.popular_hashtags.limit': 15,
-  'views.record.max_batch': 50,
-  'earn.withdrawal.balance': 100000,
-  'earn.withdrawal.views': 5000,
-  'earn.withdrawal.followers': 50,
-  'earn.withdrawal.account_age_days': 14,
-  'referral.claim_window_days': 7,
-  'referral.monthly_cap': 20,
-  'wallet.send.min_kobo': 10000,
-  'wallet.send.bank_fee_kobo': 2500,
-  'wallet.confirm.user_stepup_threshold_kobo': 500000,
-  'wallet.confirm.bank_stepup_threshold_kobo': 2000000,
-  'wallet.request.expiry_days': 7,
-  'wallet.deposit.min_kobo': 10000,
-  'wallet.deposit.max_kobo': 5000000,
-  'wallet.limits.basic.daily_send_kobo': 5000000,
-  'wallet.limits.basic.daily_bank_send_kobo': 2000000,
-  'wallet.limits.basic.daily_deposit_kobo': 10000000,
-  'wallet.limits.verified.daily_send_kobo': 50000000,
-  'wallet.limits.verified.daily_bank_send_kobo': 20000000,
-  'wallet.limits.verified.daily_deposit_kobo': 100000000,
-  'wallet.dva.requires_identity': true,
-  'premium.wallet.monthly_kobo': 350000,
-  'premium.wallet.yearly_kobo': 3200000,
-  'premium.rc_ios_key': "",
-  'premium.rc_android_key': "",
-  'premium.offering_id': "",
-  'moments.default_hours': 24,
-  'moments.durations_hours': [],
-  'moments.max_per_day': 20,
-  'moments.caption_max_length': 200,
-  'moments.max_mentions': 3,
-  'hangouts.title_max_length': 80,
-  'hangouts.place_max_length': 120,
-  'hangouts.capacity_min': 2,
-  'hangouts.capacity_max': 50,
-  'hangouts.min_lead_minutes': 15,
-  'hangouts.max_ahead_days': 14,
-  'score.floor.unique_engagers': 3,
-  'score.daily.full_posts': 20,
-  'score.daily.half_posts': 20,
-  'score.actor.daily_cap': 25,
-  'eggs.burst_counts': {"common":10,"uncommon":14,"rare":20,"epic":28,"legendary":36},
-  'ads.price_per_thousand_kobo': 100000,
-  'ads.min_budget_kobo': 200000,
-  'ads.max_days': 30,
-  'ads.max_lead_days': 30,
-  'ads.min_audience': 100,
-};
+  "client.min_version": "0.0.0",
+  "client.min_version_ios": "",
+  "client.min_version_android": "",
+  "client.store_url_android":
+    "https://play.google.com/store/apps/details?id=com.snacc.fyi",
+  "client.store_url_ios": "",
+  "content.snacc.body_max_length": 500,
+  "content.snacc.max_images": 10,
+  "content.snacc.max_mentions": 3,
+  "content.snacc.max_hashtags": 5,
+  "content.snacc.voice_max_seconds": 300,
+  "content.snacc.clip_max_seconds": 60,
+  "content.snacc.clip_max_mb": 100,
+  "content.snacc.edit_window_minutes": 15,
+  "content.scheduled.max_pending": 10,
+  "content.scheduled.min_lead_minutes": 5,
+  "content.scheduled.max_lead_days": 30,
+  "content.poll.max_options": 4,
+  "content.poll.option_max_length": 50,
+  "content.poll.min_minutes": 5,
+  "content.poll.max_minutes": 10080,
+  "chat.message_max_length": 2000,
+  "chat.max_images": 4,
+  "content.message.edit_window_minutes": 5,
+  "content.message.body_max_length": 500,
+  "content.message.max_images": 4,
+  "content.message.voice_max_seconds": 120,
+  "messages.streak_grace_days": 1,
+  "messages.streak_min_days": 2,
+  "messages.streak_milestones": ["3", "7", "14", "30", "50", "100"],
+  "content.sticker.max_edge": 512,
+  "content.sticker.favourites_max": 200,
+  "content.sticker.pack_size_max": 60,
+  "content.sticker.packs_max": 3,
+  "content.sticker.saved_packs_max": 30,
+  "content.snacc.max_cashtags": 3,
+  "cashtags.refresh_minutes": 5,
+  "media.clip_short_side": 720,
+  "media.clip_video_kbps": 4800,
+  "media.clip_audio_kbps": 96,
+  "moderation.suspension.durations_days": ["1", "3", "7", "30"],
+  "content.report.detail_max_length": 500,
+  "profile.username.max_length": 30,
+  "profile.display_name.max_length": 50,
+  "profile.bio.max_length": 160,
+  "avatar.base": "https://api.dicebear.com/9.x",
+  "avatar.style": "adventurer",
+  "avatar.format": "png",
+  "discovery.popular_hashtags.limit": 15,
+  "views.record.max_batch": 50,
+  "earn.withdrawal.balance": 100000,
+  "earn.withdrawal.views": 5000,
+  "earn.withdrawal.followers": 50,
+  "earn.withdrawal.account_age_days": 14,
+  "referral.claim_window_days": 7,
+  "referral.monthly_cap": 20,
+  "wallet.send.min_kobo": 10000,
+  "wallet.send.bank_fee_kobo": 2500,
+  "wallet.confirm.user_stepup_threshold_kobo": 500000,
+  "wallet.confirm.bank_stepup_threshold_kobo": 2000000,
+  "wallet.request.expiry_days": 7,
+  "wallet.deposit.min_kobo": 10000,
+  "wallet.deposit.max_kobo": 5000000,
+  "wallet.limits.basic.daily_send_kobo": 5000000,
+  "wallet.limits.basic.daily_bank_send_kobo": 2000000,
+  "wallet.limits.basic.daily_deposit_kobo": 10000000,
+  "wallet.limits.verified.daily_send_kobo": 50000000,
+  "wallet.limits.verified.daily_bank_send_kobo": 20000000,
+  "wallet.limits.verified.daily_deposit_kobo": 100000000,
+  "wallet.dva.requires_identity": true,
+  "premium.wallet.monthly_kobo": 350000,
+  "premium.wallet.yearly_kobo": 3200000,
+  "premium.rc_ios_key": "",
+  "premium.rc_android_key": "",
+  "premium.offering_id": "",
+  "moments.default_hours": 24,
+  "moments.durations_hours": [],
+  "moments.max_per_day": 20,
+  "moments.caption_max_length": 200,
+  "moments.max_mentions": 3,
+  "hangouts.title_max_length": 80,
+  "hangouts.place_max_length": 120,
+  "hangouts.capacity_min": 2,
+  "hangouts.capacity_max": 50,
+  "hangouts.min_lead_minutes": 15,
+  "hangouts.max_ahead_days": 14,
+  "score.floor.unique_engagers": 3,
+  "score.daily.full_posts": 20,
+  "score.daily.half_posts": 20,
+  "score.actor.daily_cap": 25,
+  "eggs.burst_counts": {
+    common: 10,
+    uncommon: 14,
+    rare: 20,
+    epic: 28,
+    legendary: 36,
+  },
+  "ads.price_per_thousand_kobo": 100000,
+  "ads.min_budget_kobo": 200000,
+  "ads.budget_presets_kobo": ["200000", "500000", "1000000"],
+  "ads.max_days": 30,
+  "ads.max_lead_days": 30,
+  "ads.active_days": 30,
+  "ads.min_audience": 100,
+}

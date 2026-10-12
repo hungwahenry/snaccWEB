@@ -1,7 +1,8 @@
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { groupAmount } from "@/features/wallet/utils/amount"
-import type { ReachEstimate } from "../../types"
+import { cn } from "@/lib/utils"
+import type { BudgetPreset, ReachEstimate } from "../../types"
 
 export function BudgetField({
   value,
@@ -65,6 +66,56 @@ export function ReachCard({
           Couldn&apos;t work out the reach right now.
         </p>
       )}
+    </div>
+  )
+}
+
+export function BudgetPresets({
+  presets,
+  selectedKobo,
+  onPick,
+}: {
+  presets: BudgetPreset[]
+  selectedKobo: number
+  onPick: (kobo: number) => void
+}) {
+  if (presets.length === 0) return null
+
+  return (
+    <div className="grid grid-cols-3 gap-2">
+      {presets.map((preset) => {
+        const active = preset.kobo === selectedKobo
+        return (
+          <button
+            key={preset.kobo}
+            type="button"
+            aria-pressed={active}
+            onClick={() => onPick(preset.kobo)}
+            className={cn(
+              "flex min-w-0 flex-col items-center gap-0.5 rounded-2xl px-2 py-3 transition-colors",
+              active
+                ? "bg-primary text-primary-foreground"
+                : "bg-card text-foreground hover:bg-accent"
+            )}
+          >
+            <span className="text-base font-extrabold tabular-nums">
+              {preset.label}
+            </span>
+            {preset.views ? (
+              <span
+                className={cn(
+                  "max-w-full truncate text-xs",
+                  active
+                    ? "text-primary-foreground/80"
+                    : "text-muted-foreground"
+                )}
+              >
+                {preset.views}
+              </span>
+            ) : null}
+          </button>
+        )
+      })}
     </div>
   )
 }

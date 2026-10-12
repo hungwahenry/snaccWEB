@@ -1,13 +1,20 @@
 import {
   EyeIcon,
+  HeartIcon,
+  MessageCircleIcon,
   MousePointerClickIcon,
+  RepeatIcon,
+  UserRoundIcon,
+  UserRoundPlusIcon,
   UsersRoundIcon,
   WalletIcon,
   type LucideIcon,
 } from "lucide-react"
 import { DAY_MS } from "@/lib/duration"
 import { compactCount, formatNaira } from "@/lib/format"
-import type { Campaign, CampaignDay } from "../types"
+import type { Campaign, CampaignDay, CampaignEngagement } from "../types"
+
+const BUTTON_TAPS = "Button taps"
 
 export interface ResultStat {
   icon: LucideIcon
@@ -23,7 +30,7 @@ export const RESULT_STATS: ResultStat[] = [
   },
   {
     icon: MousePointerClickIcon,
-    label: "Button taps",
+    label: BUTTON_TAPS,
     value: (campaign) => compactCount(campaign.clicks_count),
   },
   {
@@ -38,7 +45,52 @@ export const RESULT_STATS: ResultStat[] = [
   },
 ]
 
+export function resultStats(campaign: Pick<Campaign, "button">): ResultStat[] {
+  return campaign.button
+    ? RESULT_STATS
+    : RESULT_STATS.filter((stat) => stat.label !== BUTTON_TAPS)
+}
+
+export interface EngagementStat {
+  icon: LucideIcon
+  label: string
+  value: (engagement: CampaignEngagement) => string
+}
+
+export const ENGAGEMENT_STATS: EngagementStat[] = [
+  {
+    icon: HeartIcon,
+    label: "Likes",
+    value: (engagement) => compactCount(engagement.likes),
+  },
+  {
+    icon: MessageCircleIcon,
+    label: "Replies",
+    value: (engagement) => compactCount(engagement.replies),
+  },
+  {
+    icon: RepeatIcon,
+    label: "Resnaccs",
+    value: (engagement) => compactCount(engagement.resnaccs),
+  },
+  {
+    icon: UserRoundIcon,
+    label: "Profile visits",
+    value: (engagement) => compactCount(engagement.profile_visits),
+  },
+  {
+    icon: UserRoundPlusIcon,
+    label: "New followers",
+    value: (engagement) => compactCount(engagement.follows),
+  },
+]
+
 export const RESULTS_CHART = "Views a day"
+
+export const ENGAGEMENT_SECTION = {
+  title: "What it led to",
+  note: "From people who saw it as a promotion, after they saw it.",
+}
 
 const dayTime = (day: string) => Date.parse(`${day}T00:00:00Z`)
 

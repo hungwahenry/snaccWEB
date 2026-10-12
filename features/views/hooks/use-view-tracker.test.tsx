@@ -9,8 +9,12 @@ vi.mock("@/features/views/api", () => ({
 
 const observed: Element[] = []
 const unobserved: Element[] = []
+let fire: IntersectionObserverCallback = () => undefined
 
 class FakeObserver {
+  constructor(callback: IntersectionObserverCallback) {
+    fire = callback
+  }
   observe(node: Element) {
     observed.push(node)
   }
@@ -92,5 +96,62 @@ describe("useViewTracker", () => {
 
     expect(observed).toEqual([a, container.querySelector("article")])
     expect(unobserved).toEqual([a])
+  })
+
+  describe("what counts as seen", () => {
+    beforeEach(() => vi.useFakeTimers())
+    afterEach(() => vi.useRealTimers())
+
+    const show = (node: Element, ratio: number) =>
+      fire(
+        [
+          {
+            target: node,
+            intersectionRatio: ratio,
+          } as IntersectionObserverEntry,
+        ],
+        {} as IntersectionObserver
+      )
+
+    function mount(campaignId: string | null) {
+      const onVisible = vi.fn()
+      const onPromoted = vi.fn()
+      const { result } = renderHook(() =>
+        useViewTracker({ onVisible, onPromoted })
+      )
+      const node = document.createElement("article")
+      const ref = result.current.ref("s1", campaignId)
+      if (typeof ref === "function") ref(node)
+      return { node, onVisible, onPromoted }
+    }
+
+    it("bills a promoted card only after a second at least half on screen", () => {
+      const { node, onPromoted } = mount("c1")
+
+      show(node, 0.55)
+      vi.advanceTimersByTime(900)
+      expect(onPromoted).not.toHaveBeenCalled()
+      vi.advanceTimersByTime(100)
+      expect(onPromoted).toHaveBeenCalledWith("c1")
+    })
+
+    it("does not bill a promoted card scrolled away inside the second", () => {
+      const { node, onPromoted } = mount("c1")
+
+      show(node, 0.7)
+      vi.advanceTimersByTime(500)
+      show(node, 0.3)
+      vi.advanceTimersByTime(1000)
+      expect(onPromoted).not.toHaveBeenCalled()
+    })
+
+    it("treats an ordinary card as gone once it drops under the visible share", () => {
+      const { node, onVisible } = mount(null)
+
+      show(node, 0.65)
+      expect(onVisible).toHaveBeenLastCalledWith(["s1"])
+      show(node, 0.55)
+      expect(onVisible).toHaveBeenLastCalledWith([])
+    })
   })
 })

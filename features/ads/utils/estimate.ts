@@ -1,5 +1,5 @@
 import { formatNaira, formatNumber } from "@/lib/format"
-import type { AdReach, PriceRange, ReachEstimate } from "../types"
+import type { AdReach, BudgetPreset, PriceRange, ReachEstimate } from "../types"
 
 const PER = 1000
 
@@ -8,7 +8,7 @@ export function viewsFor(budgetKobo: number, pricePerThousand: number): number {
   return Math.floor((budgetKobo / pricePerThousand) * PER)
 }
 
-function priceLine(price: PriceRange): string {
+export function priceLine(price: PriceRange): string {
   const range =
     price.min === price.max
       ? formatNaira(price.min)
@@ -27,8 +27,22 @@ function viewsLine(budgetKobo: number, price: PriceRange): string | null {
 
 export function estimateOf(reach: AdReach, budgetKobo: number): ReachEstimate {
   return {
-    people: `Reaches about ${formatNumber(reach.people)} ${reach.people === 1 ? "person" : "people"}`,
+    people: `Reaches about ${formatNumber(reach.people)} ${reach.people === 1 ? "person" : "people"} active this month`,
     price: priceLine(reach.price_per_thousand_kobo),
     views: viewsLine(budgetKobo, reach.price_per_thousand_kobo),
   }
+}
+
+export function budgetPresets(
+  presetsKobo: readonly string[],
+  price: PriceRange | null
+): BudgetPreset[] {
+  return presetsKobo
+    .map(Number)
+    .filter((kobo) => Number.isInteger(kobo) && kobo > 0)
+    .map((kobo) => ({
+      kobo,
+      label: formatNaira(kobo),
+      views: price ? viewsLine(kobo, price) : null,
+    }))
 }

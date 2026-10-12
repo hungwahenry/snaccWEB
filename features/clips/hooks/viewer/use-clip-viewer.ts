@@ -11,6 +11,7 @@ import {
   useState,
 } from "react"
 import { usePromotionEvents } from "@/features/ads/hooks/use-promotion-events"
+import { BILLED_VIEW_MS } from "@/features/views/utils/visible"
 import { useFlagWhenKnown } from "@/features/config/hooks/use-flag"
 import { signal } from "@/features/signals/utils/queue"
 import { useSnacc } from "@/features/snaccs/hooks/use-snacc"
@@ -92,7 +93,12 @@ export function useClipViewer(startId: string, startRevealed: boolean) {
   useClipWatch(campaignId ? null : currentId, pageVisible && !veiled, playing)
 
   useEffect(() => {
-    if (campaignId && pageVisible && !veiled) promotions.viewed(campaignId)
+    if (!campaignId || !pageVisible || veiled) return
+    const timer = setTimeout(
+      () => promotions.viewed(campaignId),
+      BILLED_VIEW_MS
+    )
+    return () => clearTimeout(timer)
   }, [campaignId, pageVisible, veiled, promotions])
 
   useEffect(() => {

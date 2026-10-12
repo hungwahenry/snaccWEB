@@ -8,6 +8,7 @@ export function canEditSnacc(
   now = Date.now()
 ): boolean {
   if (!snacc.mine || snacc.status !== undefined) return false
+  if (snacc.my_promotion) return false
   if (isPlainResnacc(snacc)) return false
   if (windowMinutes <= 0) return false
   return now < editWindowClosesAt(snacc.created_at, windowMinutes)

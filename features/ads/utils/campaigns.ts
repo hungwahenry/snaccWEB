@@ -109,7 +109,7 @@ export function statusNote(
 ): string {
   switch (campaign.status) {
     case "pending":
-      return "Snacc is checking it. It starts once it's approved, and the whole budget comes back if it isn't."
+      return "Snacc is checking it, usually within a few hours. It starts once it's approved, and the whole budget comes back if it isn't."
     case "active":
       return isScheduled(campaign, now)
         ? `Approved. It starts ${dateAtTime(campaign.starts_at)}.`

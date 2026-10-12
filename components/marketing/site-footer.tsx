@@ -1,6 +1,8 @@
 import { ArrowUpRightIcon } from "lucide-react"
 import Link from "next/link"
 import { Eyebrow } from "@/components/ui/eyebrow"
+import { getAdsInfo } from "@/features/ads/api/public"
+import { ADVERTISE_PATH } from "@/features/ads/routes"
 import { loginPath } from "@/features/auth/routes"
 import { getPublicPages } from "@/lib/pages"
 import { DOWNLOAD_PATH, FEATURES_PATH, sitePagePath } from "@/lib/routes"
@@ -26,7 +28,7 @@ const STORES: FooterLink[] = [
 ]
 
 export async function SiteFooter() {
-  const pages = await getPublicPages()
+  const [pages, ads] = await Promise.all([getPublicPages(), getAdsInfo()])
   const legal = (pages.length > 0 ? pages : FALLBACK_PAGES).map((page) => ({
     href: sitePagePath(page.slug),
     label: page.title,
@@ -44,7 +46,14 @@ export async function SiteFooter() {
           </div>
 
           <div className="grid grid-cols-2 gap-10 @lg:grid-cols-3 @2xl:gap-16">
-            <FooterColumn title="Product" links={PRODUCT} />
+            <FooterColumn
+              title="Product"
+              links={
+                ads
+                  ? [...PRODUCT, { href: ADVERTISE_PATH, label: "Advertise" }]
+                  : PRODUCT
+              }
+            />
             <FooterColumn title="Get the app" links={STORES} />
             <FooterColumn title="Legal" links={legal} />
           </div>

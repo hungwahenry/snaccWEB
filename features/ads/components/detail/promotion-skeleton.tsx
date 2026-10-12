@@ -5,7 +5,12 @@ import {
   StatCard,
 } from "@/features/insights/components/insight-cards"
 import { QuotedSnaccSkeleton } from "@/features/snaccs/components/card/quote/quoted-snacc-skeleton"
-import { RESULT_STATS, RESULTS_CHART } from "../../utils/results"
+import {
+  ENGAGEMENT_SECTION,
+  ENGAGEMENT_STATS,
+  RESULT_STATS,
+  RESULTS_CHART,
+} from "../../utils/results"
 
 export function PromotionSkeleton() {
   return (
@@ -46,6 +51,25 @@ export function PromotionSkeleton() {
             value={<Skeleton className="my-1 h-6 w-16 bg-accent" />}
           />
         ))}
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-0.5">
+          <Eyebrow>{ENGAGEMENT_SECTION.title}</Eyebrow>
+          <p className="text-[13px] leading-5 text-pretty text-muted-foreground">
+            {ENGAGEMENT_SECTION.note}
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          {ENGAGEMENT_STATS.map((stat) => (
+            <StatCard
+              key={stat.label}
+              icon={stat.icon}
+              label={stat.label}
+              value={<Skeleton className="my-1 h-6 w-16 bg-accent" />}
+            />
+          ))}
+        </div>
       </div>
 
       <ChartPanel

@@ -1,5 +1,6 @@
 import { memo, type ReactNode, type Ref } from "react"
 import { UserAvatar } from "@/components/ui/user-avatar"
+import { OwnPromotionHeader } from "@/features/ads/components/own-promotion-header"
 import { PromotionButton } from "@/features/ads/components/promotion-button"
 import { CashtagCards } from "@/features/cashtags/components/cashtag-cards"
 import { HangoutTagChip } from "@/features/hangouts/components/tagging/hangout-tag-chip"
@@ -168,6 +169,9 @@ function SnaccCardComponent(props: SnaccCardProps) {
       style={{ paddingLeft: 16 + inset }}
     >
       {header}
+      {snacc.my_promotion ? (
+        <OwnPromotionHeader promotion={snacc.my_promotion} />
+      ) : null}
 
       <div className="flex gap-3">
         <div className="flex w-11 shrink-0 flex-col">

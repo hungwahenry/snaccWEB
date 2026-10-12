@@ -3,7 +3,11 @@
 import { useCallback, useEffect, useRef } from "react"
 import { recordViews } from "@/features/views/api"
 import { trackViewFlush } from "@/features/views/utils/flush"
-import { VISIBLE_SHARE } from "@/features/views/utils/visible"
+import {
+  BILLED_SHARE,
+  BILLED_VIEW_MS,
+  VISIBLE_SHARE,
+} from "@/features/views/utils/visible"
 
 const FLUSH_INTERVAL_MS = 5000
 const MAX_PER_FLUSH = 50
@@ -32,6 +36,7 @@ export function useViewTracker({
   const ids = useRef<Map<Element, TrackedRow>>(new Map())
   const visible = useRef<Set<string>>(new Set())
   const promoted = useRef<Set<string>>(new Set())
+  const billing = useRef<Map<Element, ReturnType<typeof setTimeout>>>(new Map())
   const since = useRef<Map<string, number>>(new Map())
   const pending = useRef<Map<string, number>>(new Map())
   const sent = useRef<Map<string, number>>(new Map())
@@ -43,6 +48,13 @@ export function useViewTracker({
     visibleChanged.current = onVisible
     promotedSeen.current = onPromoted
   })
+
+  const stopBilling = useCallback((node: Element) => {
+    const timer = billing.current.get(node)
+    if (timer === undefined) return
+    clearTimeout(timer)
+    billing.current.delete(node)
+  }, [])
 
   const announce = useCallback(
     () => visibleChanged.current?.([...visible.current]),
@@ -95,6 +107,7 @@ export function useViewTracker({
   )
 
   useEffect(() => {
+    const timers = billing.current
     observer.current = new IntersectionObserver(
       (entries) => {
         const now = Date.now()
@@ -102,24 +115,40 @@ export function useViewTracker({
           const row = ids.current.get(entry.target)
           if (!row) continue
           const { id, campaignId } = row
+          const ratio = entry.intersectionRatio
 
-          if (entry.isIntersecting) {
-            visible.current.add(id)
-            if (campaignId) {
-              promotedSeen.current?.(campaignId)
-              continue
+          if (campaignId) {
+            if (ratio >= BILLED_SHARE) {
+              visible.current.add(id)
+              if (!billing.current.has(entry.target)) {
+                billing.current.set(
+                  entry.target,
+                  setTimeout(
+                    () => promotedSeen.current?.(campaignId),
+                    BILLED_VIEW_MS
+                  )
+                )
+              }
+            } else {
+              visible.current.delete(id)
+              stopBilling(entry.target)
             }
+            continue
+          }
+
+          if (ratio >= VISIBLE_SHARE) {
+            visible.current.add(id)
             if (!since.current.has(id)) since.current.set(id, now)
             if (!pending.current.has(id) && !sent.current.has(id))
               pending.current.set(id, 0)
           } else {
             visible.current.delete(id)
-            if (!campaignId) bank(id, now)
+            bank(id, now)
           }
         }
         announce()
       },
-      { threshold: VISIBLE_SHARE }
+      { threshold: [BILLED_SHARE, VISIBLE_SHARE] }
     )
     for (const node of ids.current.keys()) observer.current.observe(node)
 
@@ -143,9 +172,10 @@ export function useViewTracker({
       document.removeEventListener("visibilitychange", onVisibility)
       observer.current?.disconnect()
       observer.current = null
+      for (const node of [...timers.keys()]) stopBilling(node)
       void flush(true)
     }
-  }, [announce, bank, flush])
+  }, [announce, bank, flush, stopBilling])
 
   const ref = useCallback(
     (id: string, campaignId: string | null = null): CardRef => {
@@ -161,6 +191,7 @@ export function useViewTracker({
         return () => {
           ids.current.delete(node)
           observer.current?.unobserve(node)
+          stopBilling(node)
           if (campaignId) promoted.current.delete(id)
           else bank(id, Date.now())
           if (visible.current.delete(id)) announce()
@@ -169,7 +200,7 @@ export function useViewTracker({
       refs.current.set(key, attach)
       return attach
     },
-    [announce, bank]
+    [announce, bank, stopBilling]
   )
 
   return { ref }

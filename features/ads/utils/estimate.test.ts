@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { estimateOf, viewsFor } from "./estimate"
+import { budgetPresets, estimateOf, viewsFor } from "./estimate"
 
 describe("viewsFor", () => {
   it("is the budget over the price, times a thousand", () => {
@@ -19,7 +19,7 @@ describe("estimateOf", () => {
       { people: 1200, price_per_thousand_kobo: { min: 100_000, max: 100_000 } },
       500_000
     )
-    expect(estimate.people).toBe("Reaches about 1,200 people")
+    expect(estimate.people).toBe("Reaches about 1,200 people active this month")
     expect(estimate.price).toBe("₦1,000 per 1,000 views")
     expect(estimate.views).toBe("About 5,000 views")
   })
@@ -29,7 +29,7 @@ describe("estimateOf", () => {
       { people: 1, price_per_thousand_kobo: { min: 100_000, max: 200_000 } },
       400_000
     )
-    expect(estimate.people).toBe("Reaches about 1 person")
+    expect(estimate.people).toBe("Reaches about 1 person active this month")
     expect(estimate.price).toBe("₦1,000–₦2,000 per 1,000 views")
     expect(estimate.views).toBe("About 2,000–4,000 views")
   })
@@ -40,5 +40,24 @@ describe("estimateOf", () => {
       0
     )
     expect(estimate.views).toBeNull()
+  })
+})
+
+describe("budgetPresets", () => {
+  it("offers each preset with the views it buys", () => {
+    const presets = budgetPresets(["200000", "500000"], {
+      min: 100_000,
+      max: 100_000,
+    })
+    expect(presets).toEqual([
+      { kobo: 200_000, label: "₦2,000", views: "About 2,000 views" },
+      { kobo: 500_000, label: "₦5,000", views: "About 5,000 views" },
+    ])
+  })
+
+  it("shows the amounts alone until the price is known, and skips junk", () => {
+    expect(budgetPresets(["200000", "nope", "0"], null)).toEqual([
+      { kobo: 200_000, label: "₦2,000", views: null },
+    ])
   })
 })

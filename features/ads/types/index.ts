@@ -28,6 +28,13 @@ export interface Promotion {
 
 export type PromotedSnacc = Snacc & { promoted: Promotion }
 
+export interface OwnPromotion {
+  campaign_id: string
+  status: "pending" | "active" | "paused"
+  views_count: number
+  starts_at: string
+}
+
 export type AdEventKind = "view" | "click"
 
 export interface AdEvent {
@@ -168,8 +175,24 @@ export interface CampaignDay {
   spent_kobo: number
 }
 
+export interface CampaignEngagement {
+  likes: number
+  replies: number
+  resnaccs: number
+  profile_visits: number
+  follows: number
+}
+
+export interface CampaignCampusResult {
+  university: CampusPick
+  views: number
+  spent_kobo: number
+}
+
 export interface CampaignDetail extends Campaign {
   days: CampaignDay[]
+  engagement: CampaignEngagement
+  campuses: CampaignCampusResult[]
 }
 
 export interface PriceRange {
@@ -177,9 +200,23 @@ export interface PriceRange {
   max: number
 }
 
+export interface AdsInfo {
+  price_per_thousand_kobo: PriceRange
+  min_budget_kobo: number
+  max_days: number
+  campuses: number
+  prohibited: string[]
+}
+
 export interface AdReach {
   people: number
   price_per_thousand_kobo: PriceRange
+}
+
+export interface BudgetPreset {
+  kobo: number
+  label: string
+  views: string | null
 }
 
 export interface ReachEstimate {

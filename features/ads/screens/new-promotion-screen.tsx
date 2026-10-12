@@ -3,7 +3,9 @@
 import { MegaphoneIcon } from "lucide-react"
 import { EmptyState } from "@/components/ui/empty-state"
 import { LoadFailed } from "@/components/ui/load-failed"
+import { useOpenSiteLink } from "@/features/links/hooks/use-open-site-link"
 import { BackHeader } from "@/features/navigation/components/back-header"
+import { useSnaccActions } from "@/features/snaccs/hooks/use-snacc-actions"
 import type { Snacc } from "@/features/snaccs/types"
 import type { Campaign } from "../types"
 import { AudienceStep } from "../components/form/audience-step"
@@ -73,6 +75,8 @@ function Editor({
   onLeave: () => void
 }) {
   const form = useNewPromotion(snacc, source, onLeave)
+  const { handlers } = useSnaccActions()
+  const openSiteLink = useOpenSiteLink()
 
   return (
     <>
@@ -83,7 +87,13 @@ function Editor({
         {form.step === "placement" ? <PlacementStep form={form} /> : null}
         {form.step === "budget" ? <BudgetStep form={form} /> : null}
         {form.step === "review" ? (
-          <ReviewStep form={form} />
+          <ReviewStep
+            form={form}
+            handlers={handlers}
+            onOpenLink={(card) => {
+              if (card.promoted?.button) openSiteLink(card.promoted.button.url)
+            }}
+          />
         ) : (
           <StepButton {...form.next} />
         )}

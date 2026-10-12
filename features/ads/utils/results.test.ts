@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
-import { everyDay } from "./results"
+import type { Campaign } from "../types"
+import { everyDay, resultStats } from "./results"
 
 describe("everyDay", () => {
   it("fills the quiet days between the first and the last", () => {
@@ -25,5 +26,17 @@ describe("everyDay", () => {
 
   it("is empty before anything has been seen", () => {
     expect(everyDay([])).toEqual([])
+  })
+})
+
+describe("resultStats", () => {
+  it("leaves out button taps when there is no button", () => {
+    const labels = (button: Campaign["button"]) =>
+      resultStats({ button }).map((stat) => stat.label)
+
+    expect(labels(null)).not.toContain("Button taps")
+    expect(
+      labels({ id: "b1", label: "Shop now", url: "https://a.example" })
+    ).toContain("Button taps")
   })
 })

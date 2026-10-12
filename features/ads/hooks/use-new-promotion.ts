@@ -20,7 +20,8 @@ import {
   reachProblem,
   reviewRows,
 } from "../utils/draft"
-import { estimateOf } from "../utils/estimate"
+import { budgetPresets, estimateOf } from "../utils/estimate"
+import { promotedPreview } from "../utils/preview"
 import {
   firstProblem,
   nextStep,
@@ -46,6 +47,7 @@ export function useNewPromotion(
   const maxDays = useConfigValue("ads.max_days")
   const maxLeadDays = useConfigValue("ads.max_lead_days")
   const minBudgetKobo = useConfigValue("ads.min_budget_kobo")
+  const presetsKobo = useConfigValue("ads.budget_presets_kobo")
   const minAudience = useConfigValue("ads.min_audience")
   const now = useNow(TICK_MS)
   const [step, setStep] = useState<PromotionStep>("audience")
@@ -114,6 +116,12 @@ export function useNewPromotion(
       estimate,
     }),
     preview: toEmbedded(snacc),
+    card: promotedPreview(
+      snacc,
+      buttonLabel && draft.buttonUrl.trim()
+        ? { label: buttonLabel, url: draft.buttonUrl.trim() }
+        : null
+    ),
     problems,
     campuses: {
       ...form.campuses,
@@ -150,6 +158,14 @@ export function useNewPromotion(
     },
     schedule: schedule.fields,
     timeSheet: schedule.sheet,
+    presets: {
+      presets: budgetPresets(
+        presetsKobo,
+        reach.data?.price_per_thousand_kobo ?? null
+      ),
+      selectedKobo: budgetKobo,
+      onPick: (kobo: number) => form.budget.onChange(String(kobo / 100)),
+    },
     budget: {
       ...form.budget,
       hint: `At least ${formatNaira(minBudgetKobo)}`,
