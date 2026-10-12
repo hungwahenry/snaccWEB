@@ -1,50 +1,72 @@
-import { formatNaira, formatNumber } from "@/lib/format"
+import { formatNaira } from "@/lib/format"
 import type { AdsInfo } from "../types"
-import { priceLine } from "./estimate"
+import { viewsRange } from "./estimate"
 
-export interface AdvertiseFact {
-  label: string
-  value: string
+export const HOW_IT_WORKS_ID = "how-it-works"
+
+export interface AdvertisePricing {
+  start: string
+  views: string | null
+  rate: string
 }
 
-export interface AdvertiseStep {
-  title: string
-  line: string
+export interface AdvertiseQuestion {
+  q: string
+  a: string
 }
 
-export const ADVERTISE_STEPS: AdvertiseStep[] = [
-  {
-    title: "Post it on Snacc",
-    line: "Promote something you've already posted, then choose Promote from its menu on the web.",
-  },
-  {
-    title: "Choose who sees it",
-    line: "Pick campuses, states, school type, gender, class year, students or graduates, the phone they use and the hashtags they're into.",
-  },
-  {
-    title: "Set a budget and dates",
-    line: "Pay from your Snacc wallet. You only pay for views, and anything left unspent comes back.",
-  },
-  {
-    title: "Snacc checks it",
-    line: "Every promotion is reviewed, usually within a few hours. If it isn't approved, the whole budget comes back.",
-  },
-]
+function rateLine({ min, max }: AdsInfo["price_per_thousand_kobo"]): string {
+  return min === max
+    ? `${formatNaira(min)} per 1,000 views`
+    : `${formatNaira(min)}–${formatNaira(max)} per 1,000 views, depending on the campus`
+}
 
-export const VIEW_RULE =
-  "A view counts when at least half of your snacc is on someone's screen for a full second. Each person counts once a day."
+export function advertisePricing(info: AdsInfo): AdvertisePricing {
+  return {
+    start: formatNaira(info.min_budget_kobo),
+    views: viewsRange(info.min_budget_kobo, info.price_per_thousand_kobo),
+    rate: rateLine(info.price_per_thousand_kobo),
+  }
+}
 
-export function advertiseFacts(info: AdsInfo): AdvertiseFact[] {
-  return [
-    { label: "Price", value: priceLine(info.price_per_thousand_kobo) },
-    { label: "Smallest budget", value: formatNaira(info.min_budget_kobo) },
+export function advertiseQuestions(info: AdsInfo): AdvertiseQuestion[] {
+  const questions: AdvertiseQuestion[] = [
     {
-      label: "Longest run",
-      value: `${info.max_days} ${info.max_days === 1 ? "day" : "days"}`,
+      q: "What can I promote?",
+      a: "Anything you've posted on Snacc: a flyer, a photo, a clip, a poll. You can add a button like Order now, Book now or Learn more that opens your link.",
     },
     {
-      label: "Campuses",
-      value: `${formatNumber(info.campuses)} across Nigeria`,
+      q: "How much does it cost?",
+      a: `You choose the budget, starting from ${formatNaira(info.min_budget_kobo)}. It costs ${rateLine(info.price_per_thousand_kobo)}, and whatever isn't spent goes back to your wallet.`,
+    },
+    {
+      q: "What counts as a view?",
+      a: "Someone has at least half of your snacc on their screen for a full second. Each person counts once a day, so you're not paying for the same scroll twice.",
+    },
+    {
+      q: "How quickly does it go live?",
+      a: "Our team checks every promotion, usually within a few hours. If it isn't approved, the whole budget comes back to your wallet.",
+    },
+    {
+      q: "Can I change it once it's running?",
+      a: `Yes. Pause it, add to the budget or push back the end date whenever you like, up to ${info.max_days} days from the start. Stop it and the rest of the budget comes back.`,
+    },
+    {
+      q: "How do I pay?",
+      a: "From your Snacc wallet. Add money to it, then pay for your promotion in a tap.",
+    },
+    {
+      q: "Where do I set it up?",
+      a: "On the web at snacc.fyi. Open any of your snaccs, tap the menu, and choose Promote.",
     },
   ]
+
+  if (info.prohibited.length > 0) {
+    questions.splice(4, 0, {
+      q: "Is there anything I can't promote?",
+      a: `Yes. We don't take promotions for: ${info.prohibited.join(", ")}.`,
+    })
+  }
+
+  return questions
 }

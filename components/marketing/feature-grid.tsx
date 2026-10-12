@@ -11,7 +11,7 @@ import { Eyebrow } from "@/components/ui/eyebrow"
 import { cn } from "@/lib/utils"
 import { FEATURE_COLORS } from "./palette"
 
-type Feature = {
+export type Feature = {
   icon: LucideIcon
   name: string
   line: string
@@ -82,7 +82,7 @@ export function FeatureGrid() {
   )
 }
 
-function FeatureCard({ icon: Icon, name, line, color, wide }: Feature) {
+export function FeatureCard({ icon: Icon, name, line, color, wide }: Feature) {
   return (
     <li
       className={cn(

@@ -8,7 +8,7 @@ export function viewsFor(budgetKobo: number, pricePerThousand: number): number {
   return Math.floor((budgetKobo / pricePerThousand) * PER)
 }
 
-export function priceLine(price: PriceRange): string {
+function priceLine(price: PriceRange): string {
   const range =
     price.min === price.max
       ? formatNaira(price.min)
@@ -16,13 +16,21 @@ export function priceLine(price: PriceRange): string {
   return `${range} per 1,000 views`
 }
 
-function viewsLine(budgetKobo: number, price: PriceRange): string | null {
+export function viewsRange(
+  budgetKobo: number,
+  price: PriceRange
+): string | null {
   const fewest = viewsFor(budgetKobo, price.max)
   const most = viewsFor(budgetKobo, price.min)
   if (most === 0) return null
   return fewest === most
-    ? `About ${formatNumber(most)} views`
-    : `About ${formatNumber(fewest)}–${formatNumber(most)} views`
+    ? formatNumber(most)
+    : `${formatNumber(fewest)}–${formatNumber(most)}`
+}
+
+function viewsLine(budgetKobo: number, price: PriceRange): string | null {
+  const range = viewsRange(budgetKobo, price)
+  return range ? `About ${range} views` : null
 }
 
 export function estimateOf(reach: AdReach, budgetKobo: number): ReachEstimate {

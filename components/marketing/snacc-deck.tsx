@@ -59,7 +59,7 @@ export function SnaccDeck() {
   )
 }
 
-type SnaccMockProps = {
+export type SnaccMockProps = {
   name: string
   handle: string
   campus: string
@@ -68,13 +68,14 @@ type SnaccMockProps = {
   body: string
   lines?: number
   media?: string
+  button?: string
   likes: number
   liked?: boolean
   comments: number
   resnaccs: number
 }
 
-function SnaccMock({
+export function SnaccMock({
   name,
   handle,
   campus,
@@ -83,6 +84,7 @@ function SnaccMock({
   body,
   lines = 2,
   media,
+  button,
   likes,
   liked = false,
   comments,
@@ -135,6 +137,12 @@ function SnaccMock({
         </div>
       ) : null}
 
+      {button ? (
+        <span className="flex h-9 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
+          {button}
+        </span>
+      ) : null}
+
       <div className="flex items-center">
         <div className="flex items-center gap-1">
           <LikeGlyph
@@ -178,7 +186,7 @@ function ActionCount({
   )
 }
 
-function FloatingCard({
+export function FloatingCard({
   rotate,
   baseY,
   className,

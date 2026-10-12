@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import { DownloadBand } from "@/components/marketing/download-band"
 import { Faq } from "@/components/marketing/faq"
+import { LANDING_QUESTIONS } from "@/components/marketing/landing-questions"
 import { FeatureGrid } from "@/components/marketing/feature-grid"
 import { Hero } from "@/components/marketing/hero"
 import { MoneySpotlight } from "@/components/marketing/money-spotlight"
@@ -28,7 +29,7 @@ export default async function Home() {
       <FeatureGrid />
       <MoneySpotlight />
       <WhySnacc />
-      <Faq />
+      <Faq questions={LANDING_QUESTIONS} />
       <DownloadBand
         title="Get Snacc."
         line="The feed, the clips, the ghosts, the money — everything your campus is up to, in your pocket. Free on iOS and Android."
