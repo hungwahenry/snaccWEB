@@ -26,13 +26,20 @@ export const AD_STATUS: Record<AdStatus, StatusMeta> = {
 }
 
 const SCHEDULED: StatusMeta = { label: "Scheduled", variant: "secondary" }
+const PAUSED_BY_ADVERTISER: StatusMeta = {
+  label: "Paused by advertiser",
+  variant: "outline",
+}
 
 export function adStatus(
-  ad: Pick<AdminAd, "status" | "starts_at">,
+  ad: Pick<AdminAd, "status" | "starts_at" | "paused_by">,
   now = Date.now()
 ): StatusMeta {
   if (ad.status === "active" && Date.parse(ad.starts_at) > now) {
     return SCHEDULED
+  }
+  if (ad.status === "paused" && ad.paused_by === "advertiser") {
+    return PAUSED_BY_ADVERTISER
   }
 
   return AD_STATUS[ad.status]

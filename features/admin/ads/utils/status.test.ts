@@ -26,7 +26,14 @@ describe("adStatus", () => {
   it("names each status in plain words", () => {
     expect(AD_STATUS.pending.label).toBe("Pending")
     expect(
-      adStatus({ status: "rejected", starts_at: "2026-10-01T00:00:00Z" }, now)
+      adStatus(
+        {
+          status: "rejected",
+          starts_at: "2026-10-01T00:00:00Z",
+          paused_by: null,
+        },
+        now
+      )
     ).toEqual({
       label: "Rejected",
       variant: "destructive",
@@ -35,13 +42,48 @@ describe("adStatus", () => {
 
   it("calls an approved one that has not started yet scheduled", () => {
     expect(
-      adStatus({ status: "active", starts_at: "2026-10-13T00:00:00Z" }, now)
-        .label
+      adStatus(
+        {
+          status: "active",
+          starts_at: "2026-10-13T00:00:00Z",
+          paused_by: null,
+        },
+        now
+      ).label
     ).toBe("Scheduled")
     expect(
-      adStatus({ status: "active", starts_at: "2026-10-12T00:00:00Z" }, now)
-        .label
+      adStatus(
+        {
+          status: "active",
+          starts_at: "2026-10-12T00:00:00Z",
+          paused_by: null,
+        },
+        now
+      ).label
     ).toBe("Active")
+  })
+
+  it("says when the advertiser paused it", () => {
+    expect(
+      adStatus(
+        {
+          status: "paused",
+          starts_at: "2026-10-01T00:00:00Z",
+          paused_by: "advertiser",
+        },
+        now
+      ).label
+    ).toBe("Paused by advertiser")
+    expect(
+      adStatus(
+        {
+          status: "paused",
+          starts_at: "2026-10-01T00:00:00Z",
+          paused_by: "admin",
+        },
+        now
+      ).label
+    ).toBe("Paused")
   })
 })
 

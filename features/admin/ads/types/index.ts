@@ -75,6 +75,7 @@ export interface AdPerson {
 export interface AdminAd {
   id: string
   status: AdStatus
+  paused_by: "advertiser" | "admin" | null
   end_reason: AdEndReason | null
   budget_kobo: number
   spent_kobo: number

@@ -1,6 +1,6 @@
 import { ChevronRightIcon } from "lucide-react"
 
-function TimeRow({
+export function TimeRow({
   label,
   value,
   onPress,

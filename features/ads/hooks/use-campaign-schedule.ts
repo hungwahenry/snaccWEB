@@ -7,7 +7,8 @@ import { roundUpToStep } from "@/lib/calendar"
 import { HOUR_MS } from "@/lib/duration"
 import { dateAtTime } from "@/lib/format"
 import type { CampaignDraft, DraftLimits, ScheduleEnd } from "../types"
-import { scheduleBounds, SLOT_MINUTES } from "../utils/draft"
+import { SLOT_MINUTES } from "../utils/campaigns"
+import { scheduleBounds } from "../utils/draft"
 
 const TICK_MS = 30_000
 

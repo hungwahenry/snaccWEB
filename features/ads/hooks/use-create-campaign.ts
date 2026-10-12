@@ -18,7 +18,10 @@ interface Refusal {
   message: string
 }
 
-export function useCreateCampaign(snaccId: string) {
+export function useCreateCampaign(
+  snaccId: string,
+  onRefused: (field: DraftField) => void
+) {
   const router = useRouter()
   const queryClient = useQueryClient()
   const confirm = useMoneyConfirm()
@@ -43,8 +46,10 @@ export function useCreateCampaign(snaccId: string) {
       router.replace(promotionPath(campaign.id))
     } catch (error) {
       const problem = submitProblem(error)
-      if (problem) setRefusal({ draft, ...problem })
-      else showError(error)
+      if (problem) {
+        setRefusal({ draft, ...problem })
+        onRefused(problem.field)
+      } else showError(error)
     } finally {
       setPaying(false)
     }

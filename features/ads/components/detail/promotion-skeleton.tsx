@@ -25,6 +25,18 @@ export function PromotionSkeleton() {
         </div>
       </div>
 
+      <div className="flex flex-col gap-4">
+        <Eyebrow>Manage</Eyebrow>
+        <Skeleton className="h-12 rounded-xl" />
+        <div className="flex flex-col gap-2">
+          <Skeleton className="my-1 h-3 w-32" />
+          <Skeleton className="h-14 rounded-full" />
+          <Skeleton className="my-0.5 h-3 w-56" />
+          <Skeleton className="h-12 rounded-full" />
+        </div>
+        <Skeleton className="h-12 rounded-full" />
+      </div>
+
       <div className="flex flex-wrap gap-3">
         {RESULT_STATS.map((stat) => (
           <StatCard

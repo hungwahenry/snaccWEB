@@ -5,18 +5,21 @@ import { formatNaira, formatNumber, nairaToKobo } from "@/lib/format"
 import type {
   AdAudience,
   AdPlacement,
+  Campaign,
+  CampaignAudience,
   CampaignDraft,
   Choice,
   CreateCampaignInput,
   DraftField,
   DraftLimits,
   DraftProblems,
+  ReachEstimate,
   ScheduleEnd,
+  SetupRow,
 } from "../types"
-import { PLACEMENT_CHOICES } from "./campaigns"
+import { campaignSetupRows, PLACEMENT_CHOICES, SLOT_MINUTES } from "./campaigns"
 
 export const HASHTAGS_MAX = 10
-export const SLOT_MINUTES = 5
 
 const DEFAULT_DAYS = 7
 
@@ -62,6 +65,41 @@ export function newDraft(
   }
 }
 
+export function draftFromCampaign(
+  campaign: Campaign,
+  now: number,
+  clip: boolean,
+  maxDays: number
+): CampaignDraft {
+  const ran = Date.parse(campaign.ends_at) - Date.parse(campaign.starts_at)
+  const days = Math.max(1, Math.min(maxDays, Math.round(ran / DAY_MS)))
+  const { audience } = campaign
+
+  return {
+    ...newDraft(now, clip, maxDays),
+    campuses: audience.campuses,
+    states: audience.states,
+    ownerships: audience.ownerships,
+    genders: audience.genders,
+    graduationFrom: audience.graduation_from,
+    graduationTo: audience.graduation_to,
+    standing: audience.standing,
+    platforms: audience.platforms,
+    joinedWithinDays: audience.joined_within_days,
+    hashtags: audience.hashtags,
+    placements: campaign.placements.filter(
+      (placement) => clip || placement !== "clips"
+    ),
+    buttonId: campaign.button?.id ?? null,
+    buttonUrl: campaign.button?.url ?? "",
+    endsAt: roundUpToStep(
+      new Date(now + days * DAY_MS),
+      SLOT_MINUTES
+    ).toISOString(),
+    budget: String(Math.round(campaign.budget_kobo / 100)),
+  }
+}
+
 export function wholeNaira(raw: string): string {
   return raw.replace(/\D/g, "").replace(/^0+(?=\d)/, "")
 }
@@ -86,6 +124,53 @@ export function audienceOf(draft: CampaignDraft): AdAudience {
     joinedWithinDays: draft.joinedWithinDays,
     hashtags: draft.hashtags,
   }
+}
+
+export function draftAudience(draft: CampaignDraft): CampaignAudience {
+  return {
+    campuses: draft.campuses,
+    states: draft.states,
+    ownerships: draft.ownerships,
+    genders: draft.genders,
+    graduation_from: draft.graduationFrom,
+    graduation_to: draft.graduationTo,
+    standing: draft.standing,
+    platforms: draft.platforms,
+    joined_within_days: draft.joinedWithinDays,
+    hashtags: draft.hashtags,
+  }
+}
+
+export function reviewRows({
+  draft,
+  buttonLabel,
+  start,
+  end,
+  estimate,
+}: {
+  draft: CampaignDraft
+  buttonLabel: string | null
+  start: string
+  end: string
+  estimate: ReachEstimate | null
+}): SetupRow[] {
+  const link = draft.buttonUrl.trim()
+
+  return [
+    ...campaignSetupRows({
+      audience: draftAudience(draft),
+      placements: draft.placements,
+      button: buttonLabel && link ? { label: buttonLabel, url: link } : null,
+    }),
+    { label: "When it runs", lines: [`Starts ${start}`, `Ends ${end}`] },
+    {
+      label: "Budget",
+      lines: [
+        formatNaira(nairaToKobo(draft.budget)),
+        ...(estimate?.views ? [estimate.views] : []),
+      ],
+    },
+  ]
 }
 
 export function campaignInput(
@@ -159,17 +244,33 @@ function scheduleProblem(
   return null
 }
 
+type MoneyLimits = Pick<DraftLimits, "minBudgetKobo" | "balanceKobo">
+
+function balanceProblem(kobo: number, balanceKobo: number | null) {
+  return balanceKobo !== null && kobo > balanceKobo
+    ? `That's more than your Snacc balance of ${formatNaira(balanceKobo)}.`
+    : null
+}
+
 function budgetProblem(
   raw: string,
-  { minBudgetKobo, balanceKobo }: DraftLimits
+  { minBudgetKobo, balanceKobo }: MoneyLimits
 ): string | null {
   if (!raw) return null
   const kobo = nairaToKobo(raw)
   if (kobo < minBudgetKobo)
     return `The smallest budget is ${formatNaira(minBudgetKobo)}.`
-  if (balanceKobo !== null && kobo > balanceKobo)
-    return `That's more than your Snacc balance of ${formatNaira(balanceKobo)}.`
-  return null
+  return balanceProblem(kobo, balanceKobo)
+}
+
+export function topUpProblem(
+  raw: string,
+  { minBudgetKobo, balanceKobo }: MoneyLimits
+): string | null {
+  if (!raw) return null
+  const kobo = nairaToKobo(raw)
+  if (kobo < minBudgetKobo) return `Add at least ${formatNaira(minBudgetKobo)}.`
+  return balanceProblem(kobo, balanceKobo)
 }
 
 export function draftProblems(

@@ -1,20 +1,22 @@
 "use client"
 
 import { MegaphoneOffIcon } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Eyebrow } from "@/components/ui/eyebrow"
 import { LoadFailed } from "@/components/ui/load-failed"
-import { Spinner } from "@/components/ui/spinner"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { QuotedSnacc } from "@/features/snaccs/components/card/quote/quoted-snacc"
+import { CampaignControls } from "../components/detail/campaign-controls"
 import { CampaignOverview } from "../components/detail/campaign-overview"
 import { CampaignResults } from "../components/detail/campaign-results"
-import { CampaignSetup } from "../components/detail/campaign-setup"
 import { PromotionSkeleton } from "../components/detail/promotion-skeleton"
 import { RejectionCard } from "../components/detail/rejection-card"
+import { CampaignTimeSheet } from "../components/form/campaign-time-sheet"
 import { PromotionsOff } from "../components/promotions-off"
+import { SetupRows } from "../components/setup-rows"
+import { usePromotionControls } from "../hooks/use-promotion-controls"
 import { usePromotionScreen } from "../hooks/use-promotion-screen"
+import type { Campaign } from "../types"
 
 export function PromotionScreen({ id }: { id: string }) {
   const screen = usePromotionScreen(id)
@@ -54,6 +56,8 @@ export function PromotionScreen({ id }: { id: string }) {
             <RejectionCard rejection={view.campaign.rejection} />
           ) : null}
 
+          <Controls campaign={view.campaign} />
+
           <CampaignResults campaign={view.campaign} />
 
           <div className="flex flex-col gap-3">
@@ -61,21 +65,20 @@ export function PromotionScreen({ id }: { id: string }) {
             <QuotedSnacc snacc={view.preview} onPress={screen.onOpenSnacc} />
           </div>
 
-          <CampaignSetup campaign={view.campaign} />
-
-          {view.stoppable ? (
-            <Button
-              variant="destructive"
-              size="lg"
-              className="h-12 w-full"
-              disabled={screen.stopping}
-              onClick={screen.onStop}
-            >
-              {screen.stopping ? <Spinner /> : "Stop promotion"}
-            </Button>
-          ) : null}
+          <SetupRows title="How it's set up" rows={view.setup} />
         </div>
       )}
+    </>
+  )
+}
+
+function Controls({ campaign }: { campaign: Campaign }) {
+  const { timeSheet, ...controls } = usePromotionControls(campaign)
+
+  return (
+    <>
+      <CampaignControls {...controls} />
+      <CampaignTimeSheet {...timeSheet} />
     </>
   )
 }

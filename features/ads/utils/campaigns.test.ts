@@ -6,7 +6,11 @@ import {
   campaignHeadline,
   campaignStatus,
   campaignThumb,
-  canStop,
+  canPause,
+  canPromoteAgain,
+  canResume,
+  extendBounds,
+  isOpen,
   placementsLine,
   spendLine,
   spentPercent,
@@ -20,6 +24,7 @@ const EARLIER = "2026-10-10T09:00:00.000Z"
 
 const status = (patch: Partial<Campaign>) => ({
   status: "active" as const,
+  paused_by: null,
   end_reason: null,
   starts_at: EARLIER,
   ends_at: LATER,
@@ -94,10 +99,33 @@ describe("campaignStatus", () => {
   })
 
   it("can be stopped only while it is open", () => {
-    expect(canStop({ status: "pending" })).toBe(true)
-    expect(canStop({ status: "paused" })).toBe(true)
-    expect(canStop({ status: "ended" })).toBe(false)
-    expect(canStop({ status: "rejected" })).toBe(false)
+    expect(isOpen({ status: "pending" })).toBe(true)
+    expect(isOpen({ status: "paused" })).toBe(true)
+    expect(isOpen({ status: "ended" })).toBe(false)
+    expect(isOpen({ status: "rejected" })).toBe(false)
+  })
+
+  it("pauses only while running, and resumes only its own pause", () => {
+    expect(canPause({ status: "active" })).toBe(true)
+    expect(canPause({ status: "pending" })).toBe(false)
+    expect(canResume({ status: "paused", paused_by: "advertiser" })).toBe(true)
+    expect(canResume({ status: "paused", paused_by: "admin" })).toBe(false)
+  })
+
+  it("says when Snacc paused it", () => {
+    const held = status({ status: "paused", paused_by: "admin" })
+    expect(campaignStatus(held, NOW).label).toBe("Paused by Snacc")
+    expect(statusNote(held, NOW)).toMatch(/only Snacc can start it again/)
+    expect(
+      campaignStatus(status({ status: "paused", paused_by: "advertiser" }), NOW)
+        .label
+    ).toBe("Paused")
+  })
+
+  it("offers promoting again once it is over", () => {
+    expect(canPromoteAgain({ status: "ended" })).toBe(true)
+    expect(canPromoteAgain({ status: "rejected" })).toBe(true)
+    expect(canPromoteAgain({ status: "active" })).toBe(false)
   })
 })
 
@@ -185,5 +213,13 @@ describe("audienceLines", () => {
     expect(audienceLines({ ...nobody, graduation_from: 2022 })).toEqual([
       "Class of 2022 or later",
     ])
+  })
+})
+
+describe("extendBounds", () => {
+  it("starts after the current end and stops at the longest run", () => {
+    const bounds = extendBounds({ starts_at: EARLIER, ends_at: LATER }, NOW, 30)
+    expect(bounds.min.getTime()).toBe(Date.parse(LATER) + 5 * 60_000)
+    expect(bounds.max.getTime()).toBe(Date.parse(EARLIER) + 30 * 86_400_000)
   })
 })

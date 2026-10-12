@@ -9,6 +9,12 @@ export interface PromotionLink {
   url: string
 }
 
+export interface CampaignButton extends PromotionLink {
+  id: string
+}
+
+export type CampaignPauser = "advertiser" | "admin"
+
 export interface AdButtonOption {
   id: string
   slug: string
@@ -136,6 +142,7 @@ export interface PolicyReason {
 export interface Campaign {
   id: string
   status: CampaignStatus
+  paused_by: CampaignPauser | null
   end_reason: CampaignEndReason | null
   budget_kobo: number
   spent_kobo: number
@@ -144,7 +151,7 @@ export interface Campaign {
   starts_at: string
   ends_at: string
   placements: AdPlacement[]
-  button: PromotionLink | null
+  button: CampaignButton | null
   audience: CampaignAudience
   reach: number
   rejection: (PolicyReason & { note: string | null }) | null
@@ -225,6 +232,13 @@ export interface DraftLimits {
 }
 
 export type ScheduleEnd = "start" | "end"
+
+export type PromotionStep = "audience" | "placement" | "budget" | "review"
+
+export interface SetupRow {
+  label: string
+  lines: string[]
+}
 
 export interface Choice<T extends string> {
   value: T

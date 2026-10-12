@@ -56,3 +56,22 @@ export const createCampaign = (
 
 export const cancelCampaign = (id: string) =>
   api.post<CampaignDetail>(`${campaignUrl(id)}/cancel`)
+
+export const pauseCampaign = (id: string) =>
+  api.post<CampaignDetail>(`${campaignUrl(id)}/pause`)
+
+export const resumeCampaign = (id: string) =>
+  api.post<CampaignDetail>(`${campaignUrl(id)}/resume`)
+
+export const addCampaignBudget = (
+  id: string,
+  amountKobo: number,
+  credential: MoneyCredential
+) =>
+  api.post<CampaignDetail>(`${campaignUrl(id)}/budget`, {
+    amountKobo,
+    ...credential,
+  })
+
+export const extendCampaign = (id: string, endsAt: string) =>
+  api.post<CampaignDetail>(`${campaignUrl(id)}/extend`, { endsAt })

@@ -4,23 +4,40 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { confirm } from "@/components/ui/confirm"
 import { walletChanged } from "@/features/wallet/cache"
 import { showSuccess } from "@/lib/feedback"
-import { cancelCampaign } from "../api"
+import { cancelCampaign, pauseCampaign, resumeCampaign } from "../api"
+import type { CampaignDetail } from "../types"
 import { adKeys } from "../utils/keys"
 
-export function useStopCampaign(id: string) {
+export function useCampaignActions(id: string) {
   const queryClient = useQueryClient()
+
+  function settle(campaign: CampaignDetail, message: string) {
+    queryClient.setQueryData(adKeys.campaign(id), campaign)
+    void queryClient.invalidateQueries({ queryKey: adKeys.campaigns() })
+    showSuccess(message)
+  }
+
   const stop = useMutation({
     mutationFn: () => cancelCampaign(id),
     onSuccess: (campaign) => {
-      queryClient.setQueryData(adKeys.campaign(id), campaign)
-      void queryClient.invalidateQueries({ queryKey: adKeys.campaigns() })
       walletChanged()
-      showSuccess("Promotion stopped.")
+      settle(campaign, "Promotion stopped.")
     },
+  })
+  const pause = useMutation({
+    mutationFn: () => pauseCampaign(id),
+    onSuccess: (campaign) => settle(campaign, "Promotion paused."),
+  })
+  const resume = useMutation({
+    mutationFn: () => resumeCampaign(id),
+    onSuccess: (campaign) => settle(campaign, "Promotion running again."),
   })
 
   return {
     stopping: stop.isPending,
+    switching: pause.isPending || resume.isPending,
+    onPause: () => pause.mutate(),
+    onResume: () => resume.mutate(),
     onStop: () =>
       confirm({
         title: "Stop this promotion?",

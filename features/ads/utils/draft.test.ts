@@ -1,19 +1,22 @@
 import { describe, expect, it } from "vitest"
 import { ApiError } from "@/lib/api/errors"
 import { DAY_MS, HOUR_MS } from "@/lib/duration"
-import type { CampaignDraft, DraftLimits } from "../types"
+import type { Campaign, CampaignDraft, DraftLimits } from "../types"
 import {
   addHashtag,
   campaignInput,
+  draftFromCampaign,
   draftProblems,
   HASHTAGS_MAX,
   isReady,
   newDraft,
   placementChoices,
   reachProblem,
+  reviewRows,
   scheduleBounds,
   submitProblem,
   toggleIn,
+  topUpProblem,
   wholeNaira,
 } from "./draft"
 
@@ -260,5 +263,102 @@ describe("reachProblem", () => {
     )
     expect(reachProblem(null, 100, 100)).toBeNull()
     expect(reachProblem(null, undefined, 100)).toBeNull()
+  })
+})
+
+describe("reviewRows", () => {
+  it("sums up the draft the way a promotion's page does", () => {
+    const rows = reviewRows({
+      draft: draft({
+        states: ["lagos"],
+        placements: ["feed"],
+        buttonId: "01BUTTON00000000000000000A",
+        buttonUrl: " https://shop.example ",
+        budget: "5000",
+      }),
+      buttonLabel: "Shop now",
+      start: "Right away",
+      end: "Mon 19 Oct, 9:00",
+      estimate: null,
+    })
+
+    expect(rows.map((row) => row.label)).toEqual([
+      "Who sees it",
+      "Where it shows",
+      "Button",
+      "When it runs",
+      "Budget",
+    ])
+    expect(rows[0].lines).toEqual(["States: Lagos"])
+    expect(rows[2].lines).toEqual(["Shop now", "https://shop.example"])
+    expect(rows[3].lines).toEqual([
+      "Starts Right away",
+      "Ends Mon 19 Oct, 9:00",
+    ])
+    expect(rows[4].lines).toEqual(["₦5,000"])
+  })
+
+  it("says there is no button when none was picked", () => {
+    const rows = reviewRows({
+      draft: draft(),
+      buttonLabel: null,
+      start: "Right away",
+      end: "later",
+      estimate: null,
+    })
+    expect(rows[2].lines).toEqual(["No button"])
+  })
+})
+
+describe("topUpProblem", () => {
+  const money = { minBudgetKobo: 200_000, balanceKobo: 500_000 }
+
+  it("waits for an amount, then checks the floor and the balance", () => {
+    expect(topUpProblem("", money)).toBeNull()
+    expect(topUpProblem("500", money)).toBe("Add at least ₦2,000.")
+    expect(topUpProblem("6000", money)).toBe(
+      "That's more than your Snacc balance of ₦5,000."
+    )
+    expect(topUpProblem("3000", money)).toBeNull()
+  })
+})
+
+describe("draftFromCampaign", () => {
+  it("copies the setup and starts a fresh run of the same length", () => {
+    const source = {
+      starts_at: "2026-10-01T09:00:00.000Z",
+      ends_at: "2026-10-04T09:00:00.000Z",
+      placements: ["feed", "clips"],
+      button: {
+        id: "01BUTTON00000000000000000A",
+        label: "Shop now",
+        url: "https://a.example",
+      },
+      budget_kobo: 500_000,
+      audience: {
+        campuses: [],
+        states: ["lagos"],
+        ownerships: [],
+        genders: ["female"],
+        graduation_from: 2027,
+        graduation_to: null,
+        standing: "students",
+        platforms: [],
+        joined_within_days: null,
+        hashtags: ["unilag"],
+      },
+    } as unknown as Campaign
+    const copy = draftFromCampaign(source, NOW, false, 30)
+
+    expect(copy.states).toEqual(["lagos"])
+    expect(copy.genders).toEqual(["female"])
+    expect(copy.graduationFrom).toBe(2027)
+    expect(copy.standing).toBe("students")
+    expect(copy.hashtags).toEqual(["unilag"])
+    expect(copy.placements).toEqual(["feed"])
+    expect(copy.buttonId).toBe("01BUTTON00000000000000000A")
+    expect(copy.budget).toBe("5000")
+    expect(copy.startsAt).toBeNull()
+    expect(Date.parse(copy.endsAt)).toBeGreaterThanOrEqual(NOW + 3 * DAY_MS)
   })
 })

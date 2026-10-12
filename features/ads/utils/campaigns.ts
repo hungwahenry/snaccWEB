@@ -1,6 +1,7 @@
 import type { Snacc } from "@/features/snaccs/types"
 import { GENDER_OPTIONS } from "@/features/users/utils/gender"
 import type { StatusLook } from "@/features/wallet/types"
+import { DAY_MS, MINUTE_MS } from "@/lib/duration"
 import { dateAtTime, formatNaira, shortDate } from "@/lib/format"
 import type {
   AdPlacement,
@@ -10,9 +11,13 @@ import type {
   CampaignEndReason,
   Choice,
   Ownership,
+  PromotionLink,
+  SetupRow,
   Standing,
 } from "../types"
 import { stateName } from "./regions"
+
+export const SLOT_MINUTES = 5
 
 export const FORM_SECTIONS = {
   audience: "Who sees it",
@@ -66,7 +71,10 @@ const ENDED: Record<CampaignEndReason, StatusLook> = {
   stopped: { label: "Stopped by Snacc", tone: "bad" },
 }
 
-type StatusFields = Pick<Campaign, "status" | "end_reason" | "starts_at">
+type StatusFields = Pick<
+  Campaign,
+  "status" | "paused_by" | "end_reason" | "starts_at"
+>
 
 const isScheduled = (campaign: StatusFields, now: number) =>
   campaign.status === "active" && Date.parse(campaign.starts_at) > now
@@ -83,7 +91,9 @@ export function campaignStatus(
         ? { label: "Scheduled", tone: "open" }
         : { label: "Running", tone: "good" }
     case "paused":
-      return { label: "Paused", tone: "quiet" }
+      return campaign.paused_by === "admin"
+        ? { label: "Paused by Snacc", tone: "bad" }
+        : { label: "Paused", tone: "quiet" }
     case "rejected":
       return { label: "Not approved", tone: "bad" }
     case "ended":
@@ -105,7 +115,9 @@ export function statusNote(
         ? `Approved. It starts ${dateAtTime(campaign.starts_at)}.`
         : `Running until ${dateAtTime(campaign.ends_at)}.`
     case "paused":
-      return "Snacc has paused it for now."
+      return campaign.paused_by === "admin"
+        ? "Snacc has paused it while we look at it. Its budget is held, and only Snacc can start it again."
+        : `Paused. It stays off until you resume it, and still ends ${dateAtTime(campaign.ends_at)}.`
     case "rejected":
       return "Not approved. The whole budget went back to your wallet."
     case "ended":
@@ -113,12 +125,26 @@ export function statusNote(
   }
 }
 
-export function canStop(campaign: Pick<Campaign, "status">): boolean {
+export function isOpen(campaign: Pick<Campaign, "status">): boolean {
   return (
     campaign.status === "pending" ||
     campaign.status === "active" ||
     campaign.status === "paused"
   )
+}
+
+export function canPause(campaign: Pick<Campaign, "status">): boolean {
+  return campaign.status === "active"
+}
+
+export function canResume(
+  campaign: Pick<Campaign, "status" | "paused_by">
+): boolean {
+  return campaign.status === "paused" && campaign.paused_by === "advertiser"
+}
+
+export function canPromoteAgain(campaign: Pick<Campaign, "status">): boolean {
+  return campaign.status === "rejected" || campaign.status === "ended"
 }
 
 export function spendLine(
@@ -213,4 +239,33 @@ export function audienceLines(audience: CampaignAudience): string[] {
 
 export function placementsLine(placements: AdPlacement[]): string {
   return labelsOf(PLACEMENT_CHOICES, placements)
+}
+
+export function campaignSetupRows(campaign: {
+  audience: CampaignAudience
+  placements: AdPlacement[]
+  button: PromotionLink | null
+}): SetupRow[] {
+  return [
+    { label: "Who sees it", lines: audienceLines(campaign.audience) },
+    { label: "Where it shows", lines: [placementsLine(campaign.placements)] },
+    {
+      label: "Button",
+      lines: campaign.button
+        ? [campaign.button.label, campaign.button.url]
+        : ["No button"],
+    },
+  ]
+}
+
+export function extendBounds(
+  campaign: Pick<Campaign, "starts_at" | "ends_at">,
+  now: number,
+  maxDays: number
+): { min: Date; max: Date } {
+  const from = Math.max(Date.parse(campaign.ends_at), now)
+  return {
+    min: new Date(from + SLOT_MINUTES * MINUTE_MS),
+    max: new Date(Date.parse(campaign.starts_at) + maxDays * DAY_MS),
+  }
 }

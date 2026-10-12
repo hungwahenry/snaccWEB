@@ -5,6 +5,7 @@ import type { Gender } from "@/features/users/types"
 import type {
   AdPlacement,
   AdPlatform,
+  Campaign,
   CampaignDraft,
   CampusPick,
   NigerianState,
@@ -15,6 +16,7 @@ import type {
 import {
   addHashtag,
   audienceOf,
+  draftFromCampaign,
   HASHTAGS_MAX,
   newDraft,
   toggleIn,
@@ -24,8 +26,16 @@ import { toggleRegion } from "../utils/regions"
 
 const yearOf = (value: string) => (value ? Number(value) : null)
 
-export function useCampaignDraft(clip: boolean, maxDays: number) {
-  const [draft, setDraft] = useState(() => newDraft(Date.now(), clip, maxDays))
+export function useCampaignDraft(
+  clip: boolean,
+  maxDays: number,
+  source: Campaign | null
+) {
+  const [draft, setDraft] = useState(() =>
+    source
+      ? draftFromCampaign(source, Date.now(), clip, maxDays)
+      : newDraft(Date.now(), clip, maxDays)
+  )
   const [tagText, setTagText] = useState("")
   const audience = useMemo(() => audienceOf(draft), [draft])
 
