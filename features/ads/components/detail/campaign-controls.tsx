@@ -3,73 +3,65 @@ import { Button } from "@/components/ui/button"
 import { Eyebrow } from "@/components/ui/eyebrow"
 import { Spinner } from "@/components/ui/spinner"
 import type { PromotionControls } from "../../hooks/use-promotion-controls"
-import { BudgetField } from "../form/budget-field"
-import { FormField } from "../form/form-section"
-import { TimeRow } from "../form/schedule-fields"
+import { ValueRow } from "../form/value-row"
 
 export function CampaignControls({
+  budget,
   ends,
-  topUp,
   switcher,
   stop,
   againHref,
-}: Omit<PromotionControls, "timeSheet">) {
-  if (!ends && !topUp && !switcher && !stop && !againHref) return null
+}: Omit<PromotionControls, "timeSheet" | "topUpSheet">) {
+  if (!budget && !ends && !switcher && !stop && !againHref) return null
 
   return (
     <div className="flex flex-col gap-4">
       <Eyebrow>Manage</Eyebrow>
 
-      {ends ? (
-        <TimeRow label={ends.label} value={ends.value} onPress={ends.onEdit} />
-      ) : null}
-
-      {topUp ? (
-        <FormField label="Add to the budget">
-          <BudgetField
-            value={topUp.value}
-            hint={topUp.hint}
-            onChange={topUp.onChange}
-          />
-          {topUp.problem ? (
-            <p role="alert" className="px-1 text-sm text-destructive">
-              {topUp.problem}
-            </p>
+      {budget || ends ? (
+        <div className="flex flex-col gap-2">
+          {budget ? (
+            <ValueRow
+              label={budget.label}
+              value={budget.value}
+              onPress={budget.onEdit}
+            />
           ) : null}
-          <Button
-            variant="outline"
-            size="lg"
-            className="h-12 w-full"
-            disabled={!topUp.ready || topUp.adding}
-            onClick={topUp.onAdd}
-          >
-            {topUp.adding ? <Spinner /> : topUp.label}
-          </Button>
-        </FormField>
+          {ends ? (
+            <ValueRow
+              label={ends.label}
+              value={ends.value}
+              onPress={ends.onEdit}
+            />
+          ) : null}
+        </div>
       ) : null}
 
-      {switcher ? (
-        <Button
-          variant="outline"
-          size="lg"
-          className="h-12 w-full"
-          disabled={switcher.busy}
-          onClick={switcher.onPress}
-        >
-          {switcher.busy ? <Spinner /> : switcher.label}
-        </Button>
-      ) : null}
-
-      {stop ? (
-        <Button
-          variant="destructive"
-          size="lg"
-          className="h-12 w-full"
-          disabled={stop.busy}
-          onClick={stop.onPress}
-        >
-          {stop.busy ? <Spinner /> : "Stop promotion"}
-        </Button>
+      {switcher || stop ? (
+        <div className="flex gap-3">
+          {switcher ? (
+            <Button
+              variant="outline"
+              size="lg"
+              className="h-12 flex-1"
+              disabled={switcher.busy}
+              onClick={switcher.onPress}
+            >
+              {switcher.busy ? <Spinner /> : switcher.label}
+            </Button>
+          ) : null}
+          {stop ? (
+            <Button
+              variant="destructive"
+              size="lg"
+              className="h-12 flex-1"
+              disabled={stop.busy}
+              onClick={stop.onPress}
+            >
+              {stop.busy ? <Spinner /> : "Stop"}
+            </Button>
+          ) : null}
+        </div>
       ) : null}
 
       {againHref ? (

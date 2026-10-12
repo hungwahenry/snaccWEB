@@ -3,6 +3,7 @@ import type { Snacc } from "@/features/snaccs/types"
 import type { Campaign, CampaignAudience } from "../types"
 import {
   audienceLines,
+  budgetLeftLine,
   campaignHeadline,
   campaignStatus,
   campaignThumb,
@@ -136,6 +137,9 @@ describe("campaign copy", () => {
     )
     expect(spentPercent({ spent_kobo: 120_000, budget_kobo: 500_000 })).toBe(24)
     expect(spentPercent({ spent_kobo: 9, budget_kobo: 0 })).toBe(0)
+    expect(budgetLeftLine({ spent_kobo: 120_000, budget_kobo: 500_000 })).toBe(
+      "₦3,800 left"
+    )
   })
 
   it("names the snacc by its words, else by what it carries", () => {

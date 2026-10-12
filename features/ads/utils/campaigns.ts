@@ -153,6 +153,12 @@ export function spendLine(
   return `${formatNaira(campaign.spent_kobo)} of ${formatNaira(campaign.budget_kobo)} spent`
 }
 
+export function budgetLeftLine(
+  campaign: Pick<Campaign, "spent_kobo" | "budget_kobo">
+): string {
+  return `${formatNaira(Math.max(0, campaign.budget_kobo - campaign.spent_kobo))} left`
+}
+
 export function spentPercent(
   campaign: Pick<Campaign, "spent_kobo" | "budget_kobo">
 ): number {

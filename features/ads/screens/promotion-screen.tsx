@@ -11,6 +11,7 @@ import { CampaignOverview } from "../components/detail/campaign-overview"
 import { CampaignResults } from "../components/detail/campaign-results"
 import { PromotionSkeleton } from "../components/detail/promotion-skeleton"
 import { RejectionCard } from "../components/detail/rejection-card"
+import { TopUpSheet } from "../components/detail/top-up-sheet"
 import { CampaignTimeSheet } from "../components/form/campaign-time-sheet"
 import { PromotionsOff } from "../components/promotions-off"
 import { SetupRows } from "../components/setup-rows"
@@ -73,12 +74,13 @@ export function PromotionScreen({ id }: { id: string }) {
 }
 
 function Controls({ campaign }: { campaign: Campaign }) {
-  const { timeSheet, ...controls } = usePromotionControls(campaign)
+  const { timeSheet, topUpSheet, ...controls } = usePromotionControls(campaign)
 
   return (
     <>
       <CampaignControls {...controls} />
       <CampaignTimeSheet {...timeSheet} />
+      <TopUpSheet {...topUpSheet} />
     </>
   )
 }

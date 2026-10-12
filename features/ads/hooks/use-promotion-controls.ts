@@ -14,23 +14,24 @@ import { useCampaignTopUp } from "./use-campaign-top-up"
 
 export function usePromotionControls(campaign: Campaign) {
   const actions = useCampaignActions(campaign.id)
-  const topUp = useCampaignTopUp(campaign.id)
+  const topUp = useCampaignTopUp(campaign)
   const extend = useCampaignExtend(campaign)
   const open = isOpen(campaign)
 
   return {
+    budget: open ? topUp.row : null,
     ends: open ? extend.field : null,
+    topUpSheet: topUp.sheet,
     timeSheet: extend.sheet,
-    topUp: open ? topUp : null,
     switcher: canPause(campaign)
       ? {
-          label: "Pause promotion",
+          label: "Pause",
           busy: actions.switching,
           onPress: actions.onPause,
         }
       : canResume(campaign)
         ? {
-            label: "Resume promotion",
+            label: "Resume",
             busy: actions.switching,
             onPress: actions.onResume,
           }
