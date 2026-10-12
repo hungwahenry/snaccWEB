@@ -1,5 +1,6 @@
 "use client"
 
+import { FilmIcon } from "lucide-react"
 import { memo } from "react"
 import { EmptyState } from "@/components/ui/empty-state"
 import { LazyImage } from "@/components/ui/lazy-image"
@@ -29,7 +30,8 @@ export function PickerGifGrid({
     if (failed) return <LoadFailed onRetry={onRetry} />
     return (
       <EmptyState
-        title="Nothing matched"
+        icon={FilmIcon}
+        title="No GIFs here"
         description="Try another word."
         className="py-16"
       />

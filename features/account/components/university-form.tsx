@@ -1,19 +1,20 @@
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
-import { CampusSearchField } from "@/features/universities/components/campus-search-field"
-import type { CampusChoice } from "@/features/universities/hooks/use-campus-choice"
+import { CampusField } from "@/features/universities/components/campus-field"
+import { CampusPickerSheet } from "@/features/universities/components/campus-picker-sheet"
+import type { CampusPicker } from "@/features/universities/hooks/use-campus-picker"
 
 export function UniversityForm({
   locked,
   currentName,
-  choice,
+  picker,
   valid,
   submitting,
   onSubmit,
 }: {
   locked: boolean
   currentName: string | null
-  choice: CampusChoice
+  picker: CampusPicker
   valid: boolean
   submitting: boolean
   onSubmit: () => void
@@ -38,7 +39,12 @@ export function UniversityForm({
         <div className="flex flex-col gap-2">
           <p className="text-sm font-semibold text-foreground">New campus</p>
 
-          <CampusSearchField {...choice} />
+          <CampusField
+            placeholder="Pick your new campus"
+            value={picker.selected?.name ?? null}
+            onPress={picker.open}
+          />
+          <CampusPickerSheet title="Change campus" {...picker.sheet} />
         </div>
       )}
 

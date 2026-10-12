@@ -15,7 +15,7 @@ import {
   inviteMessage,
   rewardBlurb,
 } from "@/features/referrals/utils/invite"
-import { useCampusChoice } from "@/features/universities/hooks/use-campus-choice"
+import { useCampusPicker } from "@/features/universities/hooks/use-campus-picker"
 import { pickImage, type PickedImage } from "@/lib/media"
 import { copyLink, shareOrCopy } from "@/lib/share-links"
 import { useCompleteProfile } from "./use-complete-profile"
@@ -35,10 +35,7 @@ export function useOnboardingForm() {
   const usernameField = useUsernameField()
   const [graduated, setGraduated] = useState(false)
   const [graduationYear, setGraduationYear] = useState<number | null>(null)
-  const campus = useCampusChoice(() => {
-    setGraduated(false)
-    setGraduationYear(null)
-  })
+  const campus = useCampusPicker()
   const university = campus.selected
   const invitesOn = useFlag("referrals")
   const invite = useInviteCodeField()

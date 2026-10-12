@@ -14,9 +14,19 @@ import { useFollowsScreen } from "../hooks/use-follows-screen"
 import type { FollowTab } from "../types"
 import { FOLLOW_TABS } from "../utils/tabs"
 
-const EMPTY: Record<FollowTab, string> = {
-  followers: "No followers yet",
-  following: "Not following anyone yet",
+const EMPTY: Record<
+  FollowTab,
+  { title: string; description: (username: string) => string }
+> = {
+  followers: {
+    title: "No followers yet",
+    description: (username) =>
+      `When someone follows @${username}, they show up here.`,
+  },
+  following: {
+    title: "Not following anyone yet",
+    description: (username) => `Accounts @${username} follows show up here.`,
+  },
 }
 
 export function FollowsScreen({
@@ -49,8 +59,8 @@ export function FollowsScreen({
         ) : (
           <EmptyState
             icon={UsersRoundIcon}
-            title={EMPTY[tab]}
-            description="Nothing here yet."
+            title={EMPTY[tab].title}
+            description={EMPTY[tab].description(username)}
             className="py-24"
           />
         )

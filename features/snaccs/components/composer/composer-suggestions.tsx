@@ -1,3 +1,4 @@
+import { SearchXIcon } from "lucide-react"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Spinner } from "@/components/ui/spinner"
 import { UserAvatar } from "@/components/ui/user-avatar"
@@ -28,7 +29,13 @@ export function ComposerSuggestions({
             <Spinner className="text-muted-foreground" />
           </div>
         ) : (
-          <EmptyState compact title="No matches." className="py-4" />
+          <EmptyState
+            compact
+            icon={SearchXIcon}
+            title="No matches"
+            description="Keep typing, or check the spelling."
+            className="py-4"
+          />
         )
       ) : (
         suggestions.map((suggestion, index) => (

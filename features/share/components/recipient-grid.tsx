@@ -1,4 +1,5 @@
-import { CheckIcon } from "lucide-react"
+import { CheckIcon, MessageCircleIcon } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import type { Conversation } from "@/features/messages/types"
 import { cn } from "@/lib/utils"
@@ -20,9 +21,12 @@ export function RecipientGrid({
 
   if (conversations.length === 0) {
     return (
-      <p className="py-3 text-sm text-muted-foreground">
-        Nobody to send to yet. Start a chat first.
-      </p>
+      <EmptyState
+        compact
+        icon={MessageCircleIcon}
+        title="Nobody to send to yet"
+        description="Start a chat with someone, then share it here."
+      />
     )
   }
 

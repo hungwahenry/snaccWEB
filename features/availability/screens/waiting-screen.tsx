@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { LoadFailed } from "@/components/ui/load-failed"
 import { Spinner } from "@/components/ui/spinner"
-import { CampusSearchField } from "@/features/universities/components/campus-search-field"
+import { CampusPickerSheet } from "@/features/universities/components/campus-picker-sheet"
 import { WaitingNotice } from "../components/waiting-notice"
 import { useWaitingScreen } from "../hooks/use-waiting-screen"
 
@@ -27,36 +27,14 @@ export function WaitingScreen() {
         <div className="flex flex-1 flex-col justify-center gap-8">
           <WaitingNotice availability={screen.availability} />
 
-          {screen.picking ? (
-            <div className="flex flex-col gap-3">
-              <p className="text-sm font-semibold text-foreground">
-                Your campus
-              </p>
-              <CampusSearchField {...screen.choice} />
-              <Button
-                className="h-12"
-                disabled={!screen.canSave || screen.saving}
-                onClick={screen.save}
-              >
-                {screen.saving ? <Spinner /> : "Save campus"}
-              </Button>
-              <Button
-                variant="ghost"
-                className="h-12 text-muted-foreground"
-                onClick={screen.stopPicking}
-              >
-                Keep my campus
-              </Button>
-            </div>
-          ) : (
-            <Button
-              variant="ghost"
-              className="h-12"
-              onClick={screen.startPicking}
-            >
-              Picked the wrong campus?
-            </Button>
-          )}
+          <Button
+            variant="ghost"
+            className="h-12"
+            disabled={screen.changing}
+            onClick={screen.changeCampus}
+          >
+            {screen.changing ? <Spinner /> : "Picked the wrong campus?"}
+          </Button>
         </div>
       ) : (
         <div className="flex-1" />
@@ -80,6 +58,8 @@ export function WaitingScreen() {
           {screen.signingOut ? <Spinner /> : "Sign out"}
         </Button>
       </div>
+
+      <CampusPickerSheet title="Change campus" {...screen.campusSheet} />
     </div>
   )
 }

@@ -42,6 +42,7 @@ export function InsightsScreen() {
             />
           ) : insights.data.snaccs === 0 ? (
             <EmptyState
+              icon={ChartColumnIcon}
               title="Nothing to measure yet"
               description="Post something and the numbers will show up here."
             />

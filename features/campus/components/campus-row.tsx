@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { memo } from "react"
+import { useCountryName } from "@/features/places/hooks/use-places"
 import type { University } from "@/features/universities/types"
 import { campusPath } from "../routes"
 import { CampusBadge } from "./campus-badge"
@@ -9,6 +10,8 @@ export const CampusRow = memo(function CampusRow({
 }: {
   university: University
 }) {
+  const country = useCountryName(university.country_code)
+
   return (
     <Link
       href={campusPath(university.slug)}
@@ -18,6 +21,11 @@ export const CampusRow = memo(function CampusRow({
       <span className="min-w-0 flex-1">
         <span className="block truncate font-extrabold text-foreground">
           {university.acronym}
+          {country ? (
+            <span className="font-medium text-muted-foreground">
+              {` · ${country}`}
+            </span>
+          ) : null}
         </span>
         <span className="block truncate text-sm text-muted-foreground">
           {university.name}

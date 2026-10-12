@@ -1,24 +1,19 @@
-import { Input } from "@/components/ui/input"
-import { Spinner } from "@/components/ui/spinner"
+import { CampusField } from "@/features/universities/components/campus-field"
+import { CampusPickerSheet } from "@/features/universities/components/campus-picker-sheet"
+import type { CampusSheetState } from "@/features/universities/hooks/use-campus-sheet"
 import type { CampusPick } from "../../types"
 import { RemovableChip } from "./choice-chips"
 
 export function CampusPicker({
   picked,
   onRemove,
-  search,
-  onSearch,
-  searching,
-  results,
-  onAdd,
+  onOpen,
+  sheet,
 }: {
   picked: CampusPick[]
   onRemove: (id: string) => void
-  search: string
-  onSearch: (next: string) => void
-  searching: boolean
-  results: CampusPick[]
-  onAdd: (campus: CampusPick) => void
+  onOpen: () => void
+  sheet: CampusSheetState
 }) {
   return (
     <div className="flex flex-col gap-2">
@@ -35,47 +30,16 @@ export function CampusPicker({
         </div>
       ) : null}
 
-      <div className="relative">
-        <Input
-          value={search}
-          onChange={(event) => onSearch(event.target.value)}
-          placeholder={
-            picked.length > 0 ? "Add another campus" : "Every campus, or search"
-          }
-          aria-label="Search campuses"
-          autoCorrect="off"
-          className="h-12 rounded-full px-5 text-base md:text-base"
-        />
-        {searching ? (
-          <Spinner className="absolute top-1/2 right-5 -translate-y-1/2 text-muted-foreground" />
-        ) : null}
-      </div>
-
-      {search.trim().length === 0 ? null : results.length === 0 ? (
-        searching ? null : (
-          <p className="px-5 py-2 text-xs text-muted-foreground">
-            No match. Try the acronym.
-          </p>
-        )
-      ) : (
-        <div className="flex max-h-72 flex-col gap-1 overflow-y-auto">
-          {results.map((university) => (
-            <button
-              key={university.id}
-              type="button"
-              onClick={() => onAdd(university)}
-              className="flex flex-col rounded-2xl px-4 py-3 text-left transition-colors hover:bg-accent active:bg-accent"
-            >
-              <span className="truncate font-semibold text-foreground">
-                {university.name}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {university.acronym}
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
+      <CampusField
+        placeholder={
+          picked.length > 0
+            ? "Add another campus"
+            : "Every campus, or pick some"
+        }
+        value={null}
+        onPress={onOpen}
+      />
+      <CampusPickerSheet title="Add a campus" {...sheet} />
     </div>
   )
 }

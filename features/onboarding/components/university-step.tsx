@@ -1,11 +1,12 @@
 import { Switch } from "@/components/ui/switch"
-import { CampusSearchField } from "@/features/universities/components/campus-search-field"
-import type { CampusChoice } from "@/features/universities/hooks/use-campus-choice"
+import { CampusField } from "@/features/universities/components/campus-field"
+import { CampusPickerSheet } from "@/features/universities/components/campus-picker-sheet"
+import type { CampusPicker } from "@/features/universities/hooks/use-campus-picker"
 import { GraduationYearSelect } from "@/features/users/components/graduation-year-select"
 import { cn } from "@/lib/utils"
 
 type UniversityStepProps = {
-  campus: CampusChoice
+  campus: CampusPicker
   graduated: boolean
   onToggleGraduated: (next: boolean) => void
   graduationYear: number | null
@@ -30,7 +31,12 @@ export function UniversityStep({
         </p>
       </div>
 
-      <CampusSearchField {...campus} autoFocus />
+      <CampusField
+        placeholder="Pick your campus"
+        value={campus.selected?.name ?? null}
+        onPress={campus.open}
+      />
+      <CampusPickerSheet title="Pick your campus" {...campus.sheet} />
 
       <div
         className={cn("flex flex-col gap-5", !campus.selected && "opacity-50")}

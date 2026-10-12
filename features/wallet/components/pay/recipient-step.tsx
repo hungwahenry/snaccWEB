@@ -1,4 +1,9 @@
-import { AtSignIcon, ChevronDownIcon, LandmarkIcon } from "lucide-react"
+import {
+  AtSignIcon,
+  ChevronDownIcon,
+  LandmarkIcon,
+  SearchXIcon,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Eyebrow } from "@/components/ui/eyebrow"
@@ -105,7 +110,13 @@ export function RecipientStep({
             <Spinner className="text-muted-foreground" />
           </div>
         ) : noMatches ? (
-          <EmptyState compact title="No matches." className="py-4" />
+          <EmptyState
+            compact
+            icon={SearchXIcon}
+            title="No one by that name"
+            description="Check the username, or try their name."
+            className="py-4"
+          />
         ) : null}
 
         {recents.length > 0 ? (

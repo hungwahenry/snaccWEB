@@ -8,17 +8,13 @@ import {
   useCountryPlaces,
 } from "@/features/places/hooks/use-places"
 import { regionGroups } from "@/features/places/utils/regions"
+import { useCampusSheet } from "@/features/universities/hooks/use-campus-sheet"
 import type { Snacc } from "@/features/snaccs/types"
 import { toEmbedded } from "@/features/snaccs/utils/resnaccs"
 import { useWalletOverview } from "@/features/wallet/hooks/account/use-wallet-overview"
 import { useNow } from "@/hooks/use-now"
 import { formatNaira, nairaToKobo } from "@/lib/format"
-import type {
-  Campaign,
-  CampusPick,
-  DraftProblems,
-  PromotionStep,
-} from "../types"
+import type { Campaign, DraftProblems, PromotionStep } from "../types"
 import {
   draftProblems,
   isReady,
@@ -40,7 +36,6 @@ import { useCampaignDraft } from "./use-campaign-draft"
 import { useAdButtons, useCampaignPolicy } from "./use-campaigns"
 import { useCampaignReach } from "./use-campaign-reach"
 import { useCampaignSchedule } from "./use-campaign-schedule"
-import { useCampusSearch } from "./use-campus-search"
 import { useCreateCampaign } from "./use-create-campaign"
 
 const TICK_MS = 30_000
@@ -72,7 +67,10 @@ export function useNewPromotion(
   const { draft } = form
   const countries = useCountries()
   const places = useCountryPlaces(draft.countryCode || null)
-  const search = useCampusSearch(draft.campuses, draft.countryCode)
+  const campusSheet = useCampusSheet(form.campuses.onAdd, {
+    country: draft.countryCode || null,
+    exclude: draft.campuses.map((campus) => campus.id),
+  })
   const reach = useCampaignReach(form.audience)
   const policy = useCampaignPolicy()
   const buttons = useAdButtons()
@@ -145,15 +143,10 @@ export function useNewPromotion(
         .map((country) => ({ value: country.code, label: country.name })),
     },
     campuses: {
-      ...form.campuses,
-      search: search.search,
-      onSearch: search.onSearch,
-      searching: search.searching,
-      results: search.results,
-      onAdd: (campus: CampusPick) => {
-        form.campuses.onAdd(campus)
-        search.clear()
-      },
+      picked: form.campuses.picked,
+      onRemove: form.campuses.onRemove,
+      onOpen: campusSheet.show,
+      sheet: campusSheet.sheet,
     },
     regions: {
       ...form.regions,

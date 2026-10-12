@@ -8,6 +8,7 @@ import {
   LightbulbIcon,
   PizzaIcon,
   PlaneIcon,
+  SearchXIcon,
   SmileIcon,
   VolleyballIcon,
   ZapIcon,
@@ -124,7 +125,13 @@ function PickerContent({
             <Spinner className="text-muted-foreground" />
           </div>
         ) : picker.searching && picker.emojis.length === 0 ? (
-          <EmptyState compact title="No emoji found." className="h-full" />
+          <EmptyState
+            compact
+            icon={SearchXIcon}
+            title="No emoji found"
+            description="Try another word."
+            className="h-full"
+          />
         ) : (
           <EmojiGrid emojis={picker.emojis} onSelect={onSelect} />
         )}

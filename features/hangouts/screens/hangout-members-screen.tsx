@@ -28,8 +28,8 @@ export function HangoutMembersScreen({ snaccId }: { snaccId: string }) {
       ) : list.users.length === 0 ? (
         <EmptyState
           icon={UsersRoundIcon}
-          title="Nobody here"
-          description="Nothing to show."
+          title="Nobody's going yet"
+          description="People who join this hangout show up here."
           className="py-24"
         />
       ) : (

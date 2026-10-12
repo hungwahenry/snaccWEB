@@ -1,7 +1,7 @@
 "use client"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useCampusChoice } from "@/features/universities/hooks/use-campus-choice"
+import { useCampusPicker } from "@/features/universities/hooks/use-campus-picker"
 import type { Profile } from "@/features/users/types"
 import { useBack } from "@/hooks/use-back"
 import { authKeys } from "@/features/auth/utils/keys"
@@ -11,8 +11,8 @@ import { showSuccess } from "@/lib/feedback"
 export function useUniversityForm(profile: Profile) {
   const back = useBack("/edit-profile")
   const queryClient = useQueryClient()
-  const choice = useCampusChoice()
-  const { selected } = choice
+  const picker = useCampusPicker()
+  const { selected } = picker
 
   const change = useMutation({
     mutationFn: changeUniversity,
@@ -32,7 +32,7 @@ export function useUniversityForm(profile: Profile) {
   return {
     locked: profile.university_locked,
     currentName: profile.university?.name ?? null,
-    choice,
+    picker,
     valid,
     submitting: change.isPending,
     onSubmit: () => {

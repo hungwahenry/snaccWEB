@@ -5,12 +5,23 @@ import { HOUR_MS } from "@/lib/duration"
 import { getCountryPlaces, listCountries } from "../api"
 import { placeKeys } from "../utils/keys"
 
+const countriesQuery = {
+  queryKey: placeKeys.countries(),
+  queryFn: listCountries,
+  staleTime: HOUR_MS,
+}
+
 export function useCountries() {
-  return useQuery({
-    queryKey: placeKeys.countries(),
-    queryFn: listCountries,
-    staleTime: HOUR_MS,
+  return useQuery(countriesQuery)
+}
+
+export function useCountryName(code: string) {
+  const query = useQuery({
+    ...countriesQuery,
+    select: (countries) =>
+      countries.find((country) => country.code === code)?.name ?? null,
   })
+  return query.data ?? null
 }
 
 export function useCountryPlaces(code: string | null) {

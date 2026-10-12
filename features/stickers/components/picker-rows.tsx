@@ -1,6 +1,11 @@
 "use client"
 
-import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from "lucide-react"
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  PlusIcon,
+  SearchXIcon,
+} from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -60,6 +65,7 @@ export function PickerRows({
       )
     return (
       <EmptyState
+        icon={SearchXIcon}
         title="Nothing matched"
         description="Try another word."
         compact
