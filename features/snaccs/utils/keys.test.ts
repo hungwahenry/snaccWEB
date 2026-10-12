@@ -15,6 +15,7 @@ describe("snaccKeys", () => {
       snaccKeys.bookmarks(),
       snaccKeys.hashtag("Exams"),
       snaccKeys.search("exam"),
+      snaccKeys.discoverPromotion(),
       snaccKeys.campus("UNILAG"),
       snaccKeys.match("m1"),
       snaccKeys.comments("s1", "newest"),

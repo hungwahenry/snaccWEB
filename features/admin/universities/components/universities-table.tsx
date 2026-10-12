@@ -14,6 +14,7 @@ import { QueryTable } from "@/features/admin/shell/components/query-table"
 import { formatNaira, formatNumber } from "@/lib/format"
 import type { Paginated } from "@/lib/api/types"
 import type { AdminUniversity, UniversityDraft } from "../types"
+import { universityPlace } from "../utils/university"
 import { UniversityDialog } from "./university-dialog"
 
 export function UniversitiesTable({
@@ -42,6 +43,12 @@ export function UniversitiesTable({
             </p>
           </div>
         ),
+      },
+      {
+        id: "place",
+        header: "State and ownership",
+        className: "text-muted-foreground",
+        cell: (university) => universityPlace(university),
       },
       {
         id: "members",

@@ -1,5 +1,6 @@
 import {
   AtSign,
+  Ban,
   Banknote,
   Bell,
   Coins,
@@ -14,7 +15,9 @@ import {
   Megaphone,
   MessageSquare,
   MessageSquareHeart,
+  MousePointerClick,
   Palette,
+  Rocket,
   Scale,
   ScanEye,
   School,
@@ -23,6 +26,7 @@ import {
   SlidersHorizontal,
   Sparkles,
   Sticker,
+  Tag,
   Tags,
   ToggleRight,
   type LucideIcon,
@@ -36,8 +40,12 @@ import {
 } from "lucide-react"
 import { can, type AdminPermissions } from "@/lib/permissions"
 import {
+  AD_BUTTONS_PATH,
+  AD_PRICES_PATH,
+  AD_REASONS_PATH,
   ADMIN_PATH,
   ADMINS_PATH,
+  ADS_PATH,
   ANNOUNCEMENTS_PATH,
   APP_ICONS_PATH,
   CHAT_THEMES_PATH,
@@ -234,6 +242,30 @@ export const NAV: NavSection[] = [
         label: "Premium",
         icon: Sparkles,
         permission: "premium.read",
+      },
+      {
+        href: ADS_PATH,
+        label: "Promotions",
+        icon: Rocket,
+        permission: "ads.read",
+      },
+      {
+        href: AD_PRICES_PATH,
+        label: "Ad prices",
+        icon: Tag,
+        permission: "ads.read",
+      },
+      {
+        href: AD_REASONS_PATH,
+        label: "Ad rejection reasons",
+        icon: Ban,
+        permission: "ads.read",
+      },
+      {
+        href: AD_BUTTONS_PATH,
+        label: "Ad button labels",
+        icon: MousePointerClick,
+        permission: "ads.read",
       },
     ],
   },

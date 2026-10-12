@@ -54,6 +54,28 @@ describe("snaccPreview", () => {
       snaccPreview(content({ images: [{ url: "a" }, { url: "b" }] }))
     ).toBe("2 image(s)")
     expect(snaccPreview(content({ gif: { url: "g" } }))).toBe("GIF")
+    expect(
+      snaccPreview(
+        content({
+          clip: {
+            id: "c1",
+            status: "ready",
+            hls_url: null,
+            poster_url: null,
+            poster_thumb_url: null,
+            width: 720,
+            height: 1280,
+            duration_ms: 9000,
+          },
+        })
+      )
+    ).toBe("Clip")
+    expect(
+      snaccPreview(content({ voice: { url: "v", duration_ms: 1000 } }))
+    ).toBe("Voice note")
+    expect(
+      snaccPreview(content({ sticker: { url: "s", removed: false } }))
+    ).toBe("Sticker")
     expect(snaccPreview(content({ hangout: hangout() }))).toBe(
       "⚽ watch the derby"
     )

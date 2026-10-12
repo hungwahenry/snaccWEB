@@ -89,10 +89,14 @@ describe("targetHref", () => {
     expect(
       targetHref(log({ target_type: "sticker_pack", target_id: "k1" }))
     ).toBe("/admin/sticker-packs/k1")
+    expect(
+      targetHref(log({ target_type: "ad_campaign", target_id: "c1" }))
+    ).toBe("/admin/ads/c1")
   })
 
   it("leaves the rest unlinked", () => {
     expect(targetHref(log({ target_type: "config" }))).toBeNull()
+    expect(targetHref(log({ target_type: "ad_rejection_reason" }))).toBeNull()
     expect(targetHref(log({ target_id: null }))).toBeNull()
   })
 })

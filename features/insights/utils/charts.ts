@@ -1,10 +1,10 @@
 import { hourLabel, shortDay, utcHourToLocal } from "@/lib/format"
 import type { Bar } from "../components/bar-chart"
-import type { InsightsDay, InsightsHour } from "../types"
+import type { InsightsHour } from "../types"
 
-export function dailyBars(
-  series: InsightsDay[],
-  of: (day: InsightsDay) => number
+export function dailyBars<T extends { day: string }>(
+  series: T[],
+  of: (day: T) => number
 ): Bar[] {
   return series.map((day, index) => ({
     key: day.day,

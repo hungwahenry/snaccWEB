@@ -1,10 +1,8 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import { useEffect, useSyncExternalStore } from "react"
 import { isNotFound } from "@/lib/api/errors"
-import { openExternal } from "@/lib/links"
-import { announcementLink } from "../utils/links"
+import { useOpenSiteLink } from "@/features/links/hooks/use-open-site-link"
 import { useAnnouncement } from "./use-announcement"
 import { useAnnouncementEvent } from "./use-announcement-event"
 
@@ -42,7 +40,7 @@ function closeAnnouncement(): void {
 }
 
 export function useAnnouncementSheet() {
-  const router = useRouter()
+  const openSiteLink = useOpenSiteLink()
   const { id, open } = useSyncExternalStore(
     subscribe,
     getSnapshot,
@@ -62,9 +60,7 @@ export function useAnnouncementSheet() {
     record({ id: announcement.id, kind: "tapped", button: index })
     closeAnnouncement()
 
-    const link = announcementLink(button.url)
-    if (link?.kind === "app") router.push(link.path)
-    else if (link?.kind === "web") openExternal(link.url)
+    openSiteLink(button.url)
   }
 
   return {

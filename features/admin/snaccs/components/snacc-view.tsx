@@ -7,7 +7,7 @@ import type { AdminSnacc, SnaccContent } from "../types"
 import { isBlank, snaccBadges } from "../utils/snaccs"
 import { HangoutPanel } from "./hangout-panel"
 
-function SnaccBody({ snacc }: { snacc: SnaccContent }) {
+export function SnaccBody({ snacc }: { snacc: SnaccContent }) {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-2">

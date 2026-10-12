@@ -21,6 +21,10 @@ export const WALLETS_PATH = "/admin/wallet"
 export const WITHDRAWALS_PATH = "/admin/withdrawals"
 export const EARNINGS_PATH = "/admin/earnings"
 export const PREMIUM_PATH = "/admin/premium"
+export const ADS_PATH = "/admin/ads"
+export const AD_PRICES_PATH = "/admin/ad-prices"
+export const AD_REASONS_PATH = "/admin/ad-reasons"
+export const AD_BUTTONS_PATH = "/admin/ad-buttons"
 
 export const CONFIG_PATH = "/admin/config"
 export const FLAGS_PATH = "/admin/flags"
@@ -52,3 +56,4 @@ export const withdrawalPath = (id: string) => `${WITHDRAWALS_PATH}/${id}`
 export const pagePath = (id: string) => `${PAGES_PATH}/${id}`
 export const announcementPath = (id: string) => `${ANNOUNCEMENTS_PATH}/${id}`
 export const stickerPackPath = (id: string) => `${STICKER_PACKS_PATH}/${id}`
+export const adPath = (id: string) => `${ADS_PATH}/${id}`

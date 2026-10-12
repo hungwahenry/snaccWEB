@@ -2,6 +2,8 @@ import {
   ArrowDownLeftIcon,
   ArrowUpRightIcon,
   BadgeCheckIcon,
+  MegaphoneIcon,
+  Undo2Icon,
 } from "lucide-react"
 import { describe, expect, it } from "vitest"
 import type { WalletTransaction, WalletTransactionDetail } from "../types"
@@ -57,6 +59,15 @@ describe("transactionLook", () => {
     expect(transactionLook({ type: "premium", direction: "out" }).icon).toBe(
       BadgeCheckIcon
     )
+  })
+
+  it("has a look for a promotion and its refund", () => {
+    expect(transactionLook({ type: "ad_budget", direction: "out" }).icon).toBe(
+      MegaphoneIcon
+    )
+    const refund = transactionLook({ type: "ad_refund", direction: "in" })
+    expect(refund.icon).toBe(Undo2Icon)
+    expect(refund.amount).toBe("text-success")
   })
 })
 

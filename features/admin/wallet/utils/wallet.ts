@@ -42,6 +42,8 @@ const POOLS: Record<string, string> = {
   deposits: "Paid in from banks",
   fees: "Kept as fees",
   adjustments: "Moved by hand",
+  ads: "Held for running promotions",
+  revenue: "Earned from Premium and promotions",
 }
 
 /** What a system pool holds, in plain words. */

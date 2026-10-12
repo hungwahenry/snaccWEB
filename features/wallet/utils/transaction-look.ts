@@ -5,6 +5,7 @@ import {
   BanknoteArrowDownIcon,
   CoinsIcon,
   LandmarkIcon,
+  MegaphoneIcon,
   SlidersHorizontalIcon,
   Undo2Icon,
   type LucideIcon,
@@ -34,6 +35,9 @@ const BY_TYPE: Record<WalletTransactionType, LucideIcon> = {
   earnings_claim: CoinsIcon,
   adjustment: SlidersHorizontalIcon,
   premium: BadgeCheckIcon,
+  ad_budget: MegaphoneIcon,
+  ad_refund: Undo2Icon,
+  ad_spend: MegaphoneIcon,
 }
 
 /** Green only for money in, the same everywhere money shows. */

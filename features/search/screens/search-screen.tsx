@@ -22,7 +22,7 @@ export function SearchScreen() {
   const back = useBack()
   const search = useSearchScreen()
   const { handlers, votingPollFor, sheets } = useSnaccActions()
-  const tracker = useSnaccTracker()
+  const tracker = useSnaccTracker("lists")
   const { people, snaccs, tags, campuses, settling } = search
 
   return (
@@ -34,7 +34,7 @@ export function SearchScreen() {
       />
 
       {search.idle ? (
-        <Discover />
+        <Discover handlers={handlers} votingPollFor={votingPollFor} />
       ) : (
         <>
           <PillTabs
@@ -74,6 +74,7 @@ export function SearchScreen() {
               handlers={handlers}
               votingPollFor={votingPollFor}
               itemRef={tracker.ref}
+              onOpenPromotionLink={tracker.openPromotionLink}
               failedTitle={SEARCH_FAILED}
               empty={SEARCH_EMPTY.snaccs}
             />

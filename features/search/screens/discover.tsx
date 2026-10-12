@@ -6,12 +6,23 @@ import { MatchDetailSheet } from "@/features/football/components/match-detail-sh
 import { Matchday } from "@/features/football/components/matchday"
 import { MatchdaySkeleton } from "@/features/football/components/matchday-skeleton"
 import { HangoutsStrip } from "@/features/hangouts/components/lists/hangouts-strip"
+import {
+  SnaccCard,
+  type SnaccActionHandlers,
+} from "@/features/snaccs/components/card/snacc-card"
+import type { PollVote } from "@/features/snaccs/types"
 import { DiscoverSections } from "../components/discover-sections"
 import { useDiscover } from "../hooks/use-discover"
 
-export function Discover() {
+export function Discover({
+  handlers,
+  votingPollFor,
+}: {
+  handlers: SnaccActionHandlers
+  votingPollFor: PollVote | null
+}) {
   const discover = useDiscover()
-  const { matchday } = discover
+  const { matchday, promotion } = discover
 
   return (
     <div className="flex flex-col gap-6 px-4 py-4 [--gutter:16px]">
@@ -33,6 +44,17 @@ export function Discover() {
           onPlan={discover.hangouts.onPlan}
           className="-mx-(--gutter)"
         />
+      ) : null}
+      {promotion ? (
+        <div className="-mx-(--gutter) border-t border-border">
+          <SnaccCard
+            snacc={promotion.snacc}
+            votingPollFor={votingPollFor}
+            itemRef={promotion.itemRef}
+            onOpenPromotionLink={promotion.onOpenPromotionLink}
+            {...handlers}
+          />
+        </div>
       ) : null}
       <DiscoverSections
         celebrants={discover.celebrants}

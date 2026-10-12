@@ -25,3 +25,6 @@ export interface ResolvedLink {
   ref: string
   target: LinkTarget | null
 }
+
+export type SiteLink =
+  { kind: "app"; path: string } | { kind: "web"; url: string }

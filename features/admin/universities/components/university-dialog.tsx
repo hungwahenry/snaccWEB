@@ -1,14 +1,24 @@
 "use client"
 
 import type { ReactElement } from "react"
-import { TextField } from "@/features/admin/shell/components/form-fields"
+import {
+  SelectField,
+  TextField,
+} from "@/features/admin/shell/components/form-fields"
 import {
   DialogForm,
   FormDialog,
+  FormNote,
 } from "@/features/admin/shell/components/form-dialog"
 import { useDraft } from "@/features/admin/shell/hooks/use-draft"
 import type { AdminUniversity, UniversityDraft } from "../types"
-import { draftFrom, isDraftReady, UNIVERSITY_LIMITS } from "../utils/university"
+import {
+  draftFrom,
+  isDraftReady,
+  OWNERSHIP_CHOICES,
+  STATE_CHOICES,
+  UNIVERSITY_LIMITS,
+} from "../utils/university"
 
 function UniversityForm({
   university,
@@ -17,7 +27,7 @@ function UniversityForm({
   university?: AdminUniversity
   onSubmit: (draft: UniversityDraft) => Promise<unknown>
 }) {
-  const { draft, text } = useDraft(() => draftFrom(university))
+  const { draft, set, text } = useDraft(() => draftFrom(university))
   const editing = university !== undefined
 
   return (
@@ -48,6 +58,23 @@ function UniversityForm({
           {...text("acronym")}
         />
       </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <SelectField
+          label="State"
+          value={draft.state}
+          onChange={(state) => set("state", state)}
+          options={STATE_CHOICES}
+        />
+        <SelectField
+          label="Ownership"
+          value={draft.ownership}
+          onChange={(ownership) => set("ownership", ownership)}
+          options={OWNERSHIP_CHOICES}
+        />
+      </div>
+      <FormNote>
+        Promotions can be aimed at campuses by state and by who runs them.
+      </FormNote>
       <TextField
         label="Motto"
         optional

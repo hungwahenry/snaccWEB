@@ -19,7 +19,8 @@ export type SnaccListProps = {
   onLoadMore: () => void
   handlers: SnaccActionHandlers
   votingPollFor: PollVote | null
-  itemRef?: (id: string) => Ref<HTMLElement>
+  itemRef?: (id: string, campaignId?: string | null) => Ref<HTMLElement>
+  onOpenPromotionLink?: (snacc: Snacc) => void
   header?: ReactNode
   empty: {
     icon: LucideIcon
@@ -42,6 +43,7 @@ export function SnaccList({
   handlers,
   votingPollFor,
   itemRef,
+  onOpenPromotionLink,
   header,
   empty,
   failedTitle,
@@ -88,7 +90,8 @@ export function SnaccList({
               key={snacc.id}
               snacc={snacc}
               votingPollFor={votingPollFor}
-              itemRef={itemRef?.(viewedId(snacc))}
+              itemRef={itemRef?.(viewedId(snacc), snacc.promoted?.campaign_id)}
+              onOpenPromotionLink={onOpenPromotionLink}
               {...handlers}
             />
           )

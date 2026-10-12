@@ -9,6 +9,7 @@ type AuthorMetaProps = {
   createdAt: string
   editedAt?: string | null
   linkCampus?: boolean
+  promoted?: boolean
 }
 
 export function AuthorMeta({
@@ -16,6 +17,7 @@ export function AuthorMeta({
   createdAt,
   editedAt,
   linkCampus = true,
+  promoted = false,
 }: AuthorMetaProps) {
   return (
     <>
@@ -39,12 +41,16 @@ export function AuthorMeta({
       ) : null}
 
       <Dot />
-      <time
-        dateTime={createdAt}
-        className="shrink-0 text-sm text-muted-foreground"
-      >
-        {timeAgo(createdAt)}
-      </time>
+      {promoted ? (
+        <span className="shrink-0 text-sm text-muted-foreground">Promoted</span>
+      ) : (
+        <time
+          dateTime={createdAt}
+          className="shrink-0 text-sm text-muted-foreground"
+        >
+          {timeAgo(createdAt)}
+        </time>
+      )}
 
       {editedAt ? (
         <PencilIcon

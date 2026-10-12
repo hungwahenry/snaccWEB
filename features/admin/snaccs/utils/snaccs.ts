@@ -23,12 +23,18 @@ export const STATE_OPTIONS: Option<SnaccState>[] = [
 
 /** The text a snaccs row links with: its body, else what is attached. */
 export function snaccPreview(
-  snacc: Pick<SnaccContent, "body" | "images" | "gif" | "hangout">
+  snacc: Pick<
+    SnaccContent,
+    "body" | "images" | "gif" | "hangout" | "clip" | "voice" | "sticker"
+  >
 ): string {
   if (snacc.body) return snacc.body
   if (snacc.hangout) return `${snacc.hangout.emoji} ${snacc.hangout.title}`
+  if (snacc.clip) return "Clip"
   if (snacc.images.length) return `${snacc.images.length} image(s)`
   if (snacc.gif) return "GIF"
+  if (snacc.voice) return "Voice note"
+  if (snacc.sticker) return "Sticker"
   return "—"
 }
 

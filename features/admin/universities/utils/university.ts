@@ -2,9 +2,14 @@ import type { Option } from "@/features/admin/shell/types"
 import type {
   AdminUniversity,
   CreateUniversityInput,
+  NigerianState,
+  OwnershipChoice,
+  StateChoice,
   UniversityDraft,
+  UniversityOwnership,
   UpdateUniversityInput,
 } from "../types"
+import { STATE_OPTIONS, stateName } from "./states"
 
 export const UNIVERSITY_LIMITS = {
   name: 200,
@@ -33,6 +38,50 @@ export function acronymsById(
   )
 }
 
+const OWNERSHIPS = [
+  "federal",
+  "state",
+  "private",
+] as const satisfies readonly UniversityOwnership[]
+
+export const OWNERSHIP_LABELS: Record<UniversityOwnership, string> = {
+  federal: "Federal",
+  state: "State",
+  private: "Private",
+}
+
+const OWNERSHIP_OPTIONS: Option<UniversityOwnership>[] = OWNERSHIPS.map(
+  (ownership) => ({ value: ownership, label: OWNERSHIP_LABELS[ownership] })
+)
+
+const UNSET = { value: "unset", label: "Not set" } as const
+
+export const STATE_CHOICES: Option<StateChoice>[] = [UNSET, ...STATE_OPTIONS]
+
+export const OWNERSHIP_CHOICES: Option<OwnershipChoice>[] = [
+  UNSET,
+  ...OWNERSHIP_OPTIONS,
+]
+
+function stateOf(choice: StateChoice): NigerianState | null {
+  return choice === "unset" ? null : choice
+}
+
+function ownershipOf(choice: OwnershipChoice): UniversityOwnership | null {
+  return choice === "unset" ? null : choice
+}
+
+export function universityPlace(
+  university: Pick<AdminUniversity, "state" | "ownership">
+): string {
+  const parts = [
+    university.state ? stateName(university.state) : null,
+    university.ownership ? OWNERSHIP_LABELS[university.ownership] : null,
+  ].filter((part): part is string => part !== null)
+
+  return parts.length > 0 ? parts.join(" · ") : "Not set"
+}
+
 export function draftFrom(university?: AdminUniversity): UniversityDraft {
   return {
     name: university?.name ?? "",
@@ -41,6 +90,8 @@ export function draftFrom(university?: AdminUniversity): UniversityDraft {
     motto: university?.motto ?? "",
     website: university?.website ?? "",
     logoUrl: university?.logo_url ?? "",
+    state: university?.state ?? "unset",
+    ownership: university?.ownership ?? "unset",
   }
 }
 
@@ -62,6 +113,8 @@ export function toUpdateInput(draft: UniversityDraft): UpdateUniversityInput {
     motto: draft.motto.trim(),
     website: draft.website.trim(),
     logoUrl: draft.logoUrl.trim(),
+    state: stateOf(draft.state),
+    ownership: ownershipOf(draft.ownership),
   }
 }
 
@@ -73,5 +126,7 @@ export function toCreateInput(draft: UniversityDraft): CreateUniversityInput {
     motto: draft.motto.trim() || undefined,
     website: draft.website.trim() || undefined,
     logoUrl: draft.logoUrl.trim() || undefined,
+    state: stateOf(draft.state) ?? undefined,
+    ownership: ownershipOf(draft.ownership) ?? undefined,
   }
 }

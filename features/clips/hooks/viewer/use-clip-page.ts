@@ -84,6 +84,7 @@ export function useClipPage(
     },
   })
   const resnacc = handlers.onResnacc
+  const promotionLink = snacc?.promoted?.button ?? null
 
   return {
     framed,
@@ -130,6 +131,13 @@ export function useClipPage(
         if (url) setFailedFor(id)
       },
     },
+    promotionLink:
+      snacc && promotionLink
+        ? {
+            label: promotionLink.label,
+            onPress: () => handlers.onOpenPromotionLink(snacc),
+          }
+        : null,
     rail: snacc
       ? {
           snacc,

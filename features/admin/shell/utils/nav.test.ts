@@ -29,6 +29,17 @@ describe("visibleNav", () => {
     expect(sections[0].items.map((item) => item.label)).toEqual(["Reports"])
   })
 
+  it("shows the promotion pages under Money to anyone who can read ads", () => {
+    const sections = visibleNav(holding("ads.read"))
+    expect(sections.map((section) => section.group)).toEqual(["Money"])
+    expect(sections[0].items.map((item) => item.label)).toEqual([
+      "Promotions",
+      "Ad prices",
+      "Ad rejection reasons",
+      "Ad button labels",
+    ])
+  })
+
   it("shows nothing before the permissions load", () => {
     expect(visibleNav(undefined)).toEqual([])
   })
@@ -62,6 +73,11 @@ describe("permissionForPath", () => {
     expect(permissionForPath("/admin/sticker-packs/k1")).toBe("stickers.read")
     expect(permissionForPath("/admin/held-stickers")).toBe("stickers.read")
     expect(permissionForPath("/admin/chat-themes")).toBe("chat_themes.read")
+    expect(permissionForPath("/admin/ads")).toBe("ads.read")
+    expect(permissionForPath("/admin/ads/c1")).toBe("ads.read")
+    expect(permissionForPath("/admin/ad-prices")).toBe("ads.read")
+    expect(permissionForPath("/admin/ad-reasons")).toBe("ads.read")
+    expect(permissionForPath("/admin/ad-buttons")).toBe("ads.read")
   })
 
   it("prefers the most specific section", () => {

@@ -5,8 +5,11 @@ import {
   campusOptions,
   draftFrom,
   isDraftReady,
+  OWNERSHIP_CHOICES,
+  STATE_CHOICES,
   toCreateInput,
   toUpdateInput,
+  universityPlace,
 } from "./university"
 
 const campus = (
@@ -21,6 +24,8 @@ const campus = (
   motto: null,
   website: null,
   logo_url: null,
+  state: null,
+  ownership: null,
   stats: { profiles: 0, snaccs: 0 },
   fund: null,
 })
@@ -80,5 +85,57 @@ describe("drafts", () => {
       slug: " New-Campus ",
     }
     expect(toCreateInput(draft).slug).toBe("new-campus")
+  })
+})
+
+describe("state and ownership", () => {
+  it("offers leaving each one unset first", () => {
+    expect(STATE_CHOICES[0]).toEqual({ value: "unset", label: "Not set" })
+    expect(STATE_CHOICES).toHaveLength(38)
+    expect(OWNERSHIP_CHOICES.map((option) => option.label)).toEqual([
+      "Not set",
+      "Federal",
+      "State",
+      "Private",
+    ])
+  })
+
+  it("starts unset and keeps what a campus already has", () => {
+    expect(draftFrom()).toMatchObject({ state: "unset", ownership: "unset" })
+    expect(
+      draftFrom({
+        ...campus("1", "University of Lagos", "UNILAG"),
+        state: "lagos",
+        ownership: "federal",
+      })
+    ).toMatchObject({ state: "lagos", ownership: "federal" })
+  })
+
+  it("clears an unset one on edit and leaves it out on create", () => {
+    const draft = {
+      ...draftFrom(campus("1", "Covenant", "CU")),
+      state: "ogun" as const,
+    }
+    expect(toUpdateInput(draft)).toMatchObject({
+      state: "ogun",
+      ownership: null,
+    })
+    expect(toCreateInput({ ...draft, slug: "cu" })).toMatchObject({
+      state: "ogun",
+      ownership: undefined,
+    })
+  })
+
+  it("reads where a campus is and who runs it", () => {
+    expect(universityPlace({ state: "akwa_ibom", ownership: "state" })).toBe(
+      "Akwa Ibom · State"
+    )
+    expect(universityPlace({ state: "fct", ownership: null })).toBe(
+      "FCT (Abuja)"
+    )
+    expect(universityPlace({ state: null, ownership: "private" })).toBe(
+      "Private"
+    )
+    expect(universityPlace({ state: null, ownership: null })).toBe("Not set")
   })
 })

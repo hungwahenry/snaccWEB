@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from "react"
+import { usePromotionEvents } from "@/features/ads/hooks/use-promotion-events"
 import { useFlagWhenKnown } from "@/features/config/hooks/use-flag"
 import { signal } from "@/features/signals/utils/queue"
 import { useSnacc } from "@/features/snaccs/hooks/use-snacc"
@@ -51,6 +52,7 @@ export function useClipViewer(startId: string, startRevealed: boolean) {
     [start.data, stream.items]
   )
   const { handlers: actions, sheets } = useSnaccActions()
+  const promotions = usePromotionEvents("clips")
   const pageVisible = usePageVisible()
   const reducedMotion = useReducedMotion()
   const voicePlaying = useVoicePlayback()?.status === "playing"
@@ -84,9 +86,14 @@ export function useClipViewer(startId: string, startRevealed: boolean) {
   const isVeiled = (snacc: PlayableClip) =>
     snacc.spoiler && !revealed.has(snacc.id)
   const veiled = current !== null && isVeiled(current)
+  const campaignId = current?.promoted?.campaign_id ?? null
 
   useRecordView(firstId)
-  useClipWatch(currentId, pageVisible && !veiled, playing)
+  useClipWatch(campaignId ? null : currentId, pageVisible && !veiled, playing)
+
+  useEffect(() => {
+    if (campaignId && pageVisible && !veiled) promotions.viewed(campaignId)
+  }, [campaignId, pageVisible, veiled, promotions])
 
   useEffect(() => {
     voicePlayer.pause()
@@ -176,8 +183,9 @@ export function useClipViewer(startId: string, startRevealed: boolean) {
       onResnacc: actions.onResnacc,
       onShare: actions.onShare,
       onMore: actions.onOpenActions,
+      onOpenPromotionLink: promotions.openLink,
     }),
-    [actions]
+    [actions, promotions]
   )
 
   const onKey = useEffectEvent((event: KeyboardEvent) => {

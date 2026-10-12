@@ -22,7 +22,7 @@ export function ClipCaption({ snacc }: { snacc: PlayableClip }) {
           {snacc.author.username}
         </Link>
         <span className="shrink-0 text-sm text-white/70">
-          {timeAgo(snacc.created_at)}
+          {snacc.promoted ? "Promoted" : timeAgo(snacc.created_at)}
         </span>
       </div>
 

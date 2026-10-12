@@ -15,6 +15,7 @@ import {
   InfoIcon,
   LockIcon,
   MailIcon,
+  MegaphoneIcon,
   MessagesSquareIcon,
   PaletteIcon,
   ShieldCheckIcon,
@@ -28,6 +29,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { confirm } from "@/components/ui/confirm"
 import { Spinner } from "@/components/ui/spinner"
+import { PROMOTIONS_PATH } from "@/features/ads/routes"
 import { useLogout } from "@/features/auth/hooks/use-logout"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { useFlag } from "@/features/config/hooks/use-flag"
@@ -71,6 +73,7 @@ export function SettingsScreen() {
   const accentsEnabled = usePremiumFeature("accent_colors")
   const earningsEnabled = useFlag("earnings")
   const walletEnabled = useFlag("wallet")
+  const promotionsEnabled = useFlag("ads_manager")
   const premiumEnabled = useFlag("premium")
   const eggsEnabled = useFlag("easter_eggs")
   const savedEnabled = useFlag("bookmarks")
@@ -115,10 +118,17 @@ export function SettingsScreen() {
           </Section>
         ) : null}
 
-        {earningsEnabled || walletEnabled ? (
+        {earningsEnabled || walletEnabled || promotionsEnabled ? (
           <Section title="Money">
             {earningsEnabled && walletEnabled ? (
               <Row icon={CoinsIcon} label="Monetisation" href={EARNINGS_PATH} />
+            ) : null}
+            {promotionsEnabled ? (
+              <Row
+                icon={MegaphoneIcon}
+                label="Your promotions"
+                href={PROMOTIONS_PATH}
+              />
             ) : null}
             {walletEnabled ? (
               <Row
@@ -126,9 +136,9 @@ export function SettingsScreen() {
                 label="Money settings"
                 href={MONEY_SETTINGS_PATH}
               />
-            ) : (
+            ) : earningsEnabled ? (
               <Row icon={WalletIcon} label="Wallet" href={WALLET_PATH} />
-            )}
+            ) : null}
           </Section>
         ) : null}
 

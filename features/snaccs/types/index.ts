@@ -1,3 +1,4 @@
+import type { Promotion } from "@/features/ads/types"
 import type { Cashtag } from "@/features/cashtags/types"
 import type { ClipDraft } from "@/features/clips/types"
 import type { LiveMatch, SnaccMatch } from "@/features/football/types"
@@ -147,6 +148,7 @@ export interface Snacc {
   comments_count: number
   resnaccs_count: number
   views_count: number
+  promoted?: Promotion
 }
 
 export type EmbeddedSnacc = Omit<Snacc, "resnacc_of" | "quoted_gone">

@@ -30,6 +30,3 @@ export interface AnnouncementEvent {
   kind: AnnouncementEventKind
   button?: number
 }
-
-export type AnnouncementLink =
-  { kind: "app"; path: string } | { kind: "web"; url: string }

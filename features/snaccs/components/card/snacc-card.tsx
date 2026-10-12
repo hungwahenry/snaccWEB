@@ -1,5 +1,6 @@
 import { memo, type ReactNode, type Ref } from "react"
 import { UserAvatar } from "@/components/ui/user-avatar"
+import { PromotionButton } from "@/features/ads/components/promotion-button"
 import { CashtagCards } from "@/features/cashtags/components/cashtag-cards"
 import { HangoutTagChip } from "@/features/hangouts/components/tagging/hangout-tag-chip"
 import { LinkPreviews } from "@/features/links/containers/link-previews"
@@ -53,6 +54,7 @@ export type SnaccCardProps = SnaccActionHandlers & {
   header?: ReactNode
   votingPollFor?: PollVote | null
   itemRef?: Ref<HTMLElement>
+  onOpenPromotionLink?: (snacc: Snacc) => void
 }
 
 function SnaccCardComponent(props: SnaccCardProps) {
@@ -80,6 +82,7 @@ function SnaccCardComponent(props: SnaccCardProps) {
     header,
     votingPollFor,
     itemRef,
+    onOpenPromotionLink,
   } = props
 
   if (snacc.resnacc_of && isPlainResnacc(snacc)) {
@@ -95,6 +98,7 @@ function SnaccCardComponent(props: SnaccCardProps) {
   const { author } = snacc
   const pending = snacc.status !== undefined
   const clickable = !!onPress && !pending
+  const promotionLink = snacc.promoted?.button
 
   const avatar = (
     <ProfileLink
@@ -206,6 +210,15 @@ function SnaccCardComponent(props: SnaccCardProps) {
               onPressImage={(index) => onOpenImages(snacc.resnacc_of!, index)}
             />
           </div>
+        </div>
+      ) : null}
+
+      {promotionLink && onOpenPromotionLink ? (
+        <div className="pl-14">
+          <PromotionButton
+            label={promotionLink.label}
+            onPress={() => onOpenPromotionLink(snacc)}
+          />
         </div>
       ) : null}
 

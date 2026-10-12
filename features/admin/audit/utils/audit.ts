@@ -1,4 +1,5 @@
 import {
+  adPath,
   pagePath,
   snaccPath,
   stickerPackPath,
@@ -60,6 +61,7 @@ const TARGET_PATHS: Record<string, (id: string) => string> = {
   page: pagePath,
   withdrawal: withdrawalPath,
   sticker_pack: stickerPackPath,
+  ad_campaign: adPath,
 }
 
 /** Where the changed thing lives in the panel, when it has a page of its own. */

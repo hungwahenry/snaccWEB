@@ -40,7 +40,7 @@ export function SnaccListScreen({
 }: SnaccListScreenProps) {
   const back = useBack()
   const { handlers, votingPollFor, sheets } = useSnaccActions()
-  const tracker = useSnaccTracker()
+  const tracker = useSnaccTracker("lists")
 
   return (
     <>
@@ -60,6 +60,7 @@ export function SnaccListScreen({
         handlers={handlers}
         votingPollFor={votingPollFor}
         itemRef={tracker.ref}
+        onOpenPromotionLink={tracker.openPromotionLink}
         failedTitle={failedTitle}
         empty={empty}
         header={header}

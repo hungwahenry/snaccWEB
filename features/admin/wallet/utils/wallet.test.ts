@@ -55,6 +55,8 @@ describe("poolNote", () => {
     expect(poolNote("deposits")).toBe("Paid in from banks")
     expect(poolNote("fees")).toBe("Kept as fees")
     expect(poolNote("adjustments")).toBe("Moved by hand")
+    expect(poolNote("ads")).toBe("Held for running promotions")
+    expect(poolNote("revenue")).toBe("Earned from Premium and promotions")
   })
 
   it("falls back for a pool it doesn't know", () => {

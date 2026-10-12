@@ -37,4 +37,5 @@ export interface ClipPageHandlers {
   onResnacc?: (snacc: PlayableClip) => void
   onShare: (snacc: PlayableClip) => void
   onMore: (snacc: PlayableClip) => void
+  onOpenPromotionLink: (snacc: PlayableClip) => void
 }

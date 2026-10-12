@@ -1,11 +1,11 @@
 import { SITE_URL } from "@/lib/site"
-import type { AnnouncementLink } from "../types"
+import type { SiteLink } from "../types"
 
 const withoutWww = (host: string) => host.replace(/^www\./, "")
 
 const SITE_HOST = withoutWww(new URL(SITE_URL).hostname)
 
-export function announcementLink(url: string): AnnouncementLink | null {
+export function siteLink(url: string): SiteLink | null {
   let parsed: URL
   try {
     parsed = new URL(url)

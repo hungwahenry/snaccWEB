@@ -103,6 +103,12 @@ export function dropDeletedFromLists(id: string): void {
   dropFromLists(id, "deleted")
 }
 
+export function removePromotion(campaignId: string): void {
+  changeLists((data) =>
+    filterItems(data, (snacc) => snacc.promoted?.campaign_id !== campaignId)
+  )
+}
+
 export function removeAuthorSnaccs(userId: string): void {
   changeLists((data) =>
     filterItems(data, (snacc) => snacc.author.id !== userId)

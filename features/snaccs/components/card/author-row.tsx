@@ -43,6 +43,7 @@ export function AuthorRow({
         university={author.university}
         createdAt={snacc.created_at}
         editedAt={snacc.edited_at}
+        promoted={snacc.promoted !== undefined}
       />
 
       {pending ? null : (

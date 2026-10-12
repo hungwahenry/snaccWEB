@@ -43,6 +43,9 @@ export type WalletTransactionType =
   | "deposit"
   | "adjustment"
   | "premium"
+  | "ad_budget"
+  | "ad_refund"
+  | "ad_spend"
 
 export type MoneyDirection = "in" | "out"
 

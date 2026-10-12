@@ -25,7 +25,7 @@ import { useHomeScreen } from "../hooks/use-home-screen"
 export function HomeScreen() {
   const screen = useHomeScreen()
   const { handlers, votingPollFor, sheets } = useSnaccActions()
-  const tracker = useSnaccTracker()
+  const tracker = useSnaccTracker("feed")
   const { tabs, list, moments, firstPost } = screen
 
   return (
@@ -59,6 +59,7 @@ export function HomeScreen() {
         handlers={handlers}
         votingPollFor={votingPollFor}
         itemRef={tracker.ref}
+        onOpenPromotionLink={tracker.openPromotionLink}
         header={
           <>
             <FeedAnnouncement />

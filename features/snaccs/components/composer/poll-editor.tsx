@@ -1,7 +1,7 @@
 import { ImagePlusIcon, PlusIcon, XIcon } from "lucide-react"
 import { Input } from "@/components/ui/input"
+import { OptionSelect } from "@/components/ui/option-select"
 import type { NumberOption, PollDraft } from "../../types"
-import { NumberSelect } from "./number-select"
 
 const numbered = (values: number[]): NumberOption[] =>
   values.map((value) => ({ value, label: String(value) }))
@@ -110,19 +110,19 @@ export function PollEditor({
           Poll length
         </span>
         <div className="flex gap-2">
-          <NumberSelect
+          <OptionSelect
             label="Days"
             value={poll.days}
             options={DAYS}
             onChange={(value) => onSetDuration("days", value)}
           />
-          <NumberSelect
+          <OptionSelect
             label="Hours"
             value={poll.hours}
             options={HOURS}
             onChange={(value) => onSetDuration("hours", value)}
           />
-          <NumberSelect
+          <OptionSelect
             label="Minutes"
             value={poll.minutes}
             options={MINUTES}

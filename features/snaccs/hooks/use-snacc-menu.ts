@@ -4,6 +4,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { confirm } from "@/components/ui/confirm"
+import { hidePromotion, unhidePromotion } from "@/features/ads/api"
+import { newPromotionPath } from "@/features/ads/routes"
+import { isPromotable } from "@/features/ads/utils/promotable"
 import { useConfirmBlock } from "@/features/blocks/hooks/use-confirm-block"
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { useFlag } from "@/features/config/hooks/use-flag"
@@ -18,6 +21,7 @@ import { commitWithUndo } from "@/lib/undoable"
 import { pinSnacc, unpinSnacc } from "../api"
 import {
   patchSnacc,
+  removePromotion,
   removeSnacc,
   restoreSnaccs,
   savedChanged,
@@ -56,6 +60,7 @@ export function useSnaccMenu() {
   const canSave = useFlag("bookmarks")
   const canPin = useFlag("post_pinning")
   const canHide = useFlag("hides")
+  const canPromote = useFlag("ads_manager")
   const configuredWindow = useConfigValue("content.snacc.edit_window_minutes")
   const editWindowMinutes = editingEnabled ? configuredWindow : 0
 
@@ -91,6 +96,19 @@ export function useSnaccMenu() {
       commit: () => hideSnacc(id),
       revert: () => restoreSnaccs(snapshot),
       undo: () => unhideSnacc(id),
+    })
+  })
+
+  const notInterestedInPromotion = withActing(({ promoted }) => {
+    if (!promoted) return
+    const campaignId = promoted.campaign_id
+    const snapshot = snapshotSnaccs()
+    removePromotion(campaignId)
+    commitWithUndo({
+      message: "You won't see this promotion again.",
+      commit: () => hidePromotion(campaignId),
+      revert: () => restoreSnaccs(snapshot),
+      undo: () => unhidePromotion(campaignId),
     })
   })
 
@@ -143,7 +161,16 @@ export function useSnaccMenu() {
       saved: acting?.saved ?? false,
       onPin: canPin ? togglePin : undefined,
       pinned: acting?.pinned ?? false,
-      onHide: canHide ? notInterested : undefined,
+      onPromote:
+        canPromote && acting && isPromotable(acting)
+          ? withActing((snacc) => router.push(newPromotionPath(snacc.id)))
+          : undefined,
+      onHide: acting?.promoted
+        ? notInterestedInPromotion
+        : canHide
+          ? notInterested
+          : undefined,
+      promoted: acting?.promoted !== undefined,
       onDelete: confirmDelete,
       onReportSnacc: withActing((snacc) =>
         report.open({ type: "snacc", id: snacc.id })

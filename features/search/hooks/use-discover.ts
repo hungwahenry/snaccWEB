@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useState } from "react"
+import { useDiscoverPromotion } from "@/features/ads/hooks/use-discover-promotion"
 import { useMatchDetail } from "@/features/football/hooks/use-match-detail"
 import { useMatchSnaccCounts } from "@/features/football/hooks/use-match-room"
 import { useScoreboard } from "@/features/football/hooks/use-scoreboard"
@@ -13,6 +14,7 @@ const NO_COUNTS: MatchSnaccCounts = {}
 export function useDiscover() {
   const hangouts = useHangoutsStrip({ always: true })
   const rail = useDiscoverRail()
+  const promotion = useDiscoverPromotion()
   const scoreboard = useScoreboard()
   const counts = useMatchSnaccCounts()
   const [matchId, setMatchId] = useState<string | null>(null)
@@ -20,6 +22,7 @@ export function useDiscover() {
 
   const matches = scoreboard.data?.matches ?? []
   const quiet =
+    promotion === null &&
     !hangouts.loading &&
     !hangouts.show &&
     !scoreboard.isLoading &&
@@ -43,6 +46,7 @@ export function useDiscover() {
       onPressMatch: openMatch,
     },
     hangouts,
+    promotion,
     quiet,
     matchSheet: {
       open: matchId !== null,

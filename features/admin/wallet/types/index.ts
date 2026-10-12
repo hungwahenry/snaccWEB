@@ -8,6 +8,9 @@ export type TransactionType =
   | "deposit"
   | "adjustment"
   | "premium"
+  | "ad_budget"
+  | "ad_refund"
+  | "ad_spend"
 
 export type DepositStatus = "pending" | "success" | "abandoned"
 

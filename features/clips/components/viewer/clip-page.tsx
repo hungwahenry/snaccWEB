@@ -2,6 +2,7 @@
 
 import { PlayIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { PromotionButton } from "@/features/ads/components/promotion-button"
 import { LikeTapBursts } from "@/features/likes/components/like-tap-bursts"
 import { SpoilerVeil } from "@/features/snaccs/components/card/media/spoiler-veil"
 import { cn } from "@/lib/utils"
@@ -104,6 +105,11 @@ export function ClipPage({
               <ClipRail {...page.rail} />
             </div>
           </div>
+          {page.promotionLink ? (
+            <div className="pointer-events-auto px-4">
+              <PromotionButton {...page.promotionLink} />
+            </div>
+          ) : null}
           <div className="pointer-events-auto px-4">
             <ClipScrubber {...page.scrub} />
           </div>

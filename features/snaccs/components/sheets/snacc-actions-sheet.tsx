@@ -5,6 +5,7 @@ import {
   CopyIcon,
   EyeOffIcon,
   FlagIcon,
+  MegaphoneIcon,
   PencilIcon,
   PinIcon,
   ShareIcon,
@@ -25,8 +26,10 @@ export type SnaccActionsSheetProps = {
   saved: boolean
   onPin?: () => void
   pinned: boolean
+  onPromote?: () => void
   onDelete: () => void
   onHide?: () => void
+  promoted: boolean
   onReportSnacc: () => void
   onReportAuthor: () => void
   onBlockAuthor: () => void
@@ -45,8 +48,10 @@ export function SnaccActionsSheet({
   saved,
   onPin,
   pinned,
+  onPromote,
   onDelete,
   onHide,
+  promoted,
   onReportSnacc,
   onReportAuthor,
   onBlockAuthor,
@@ -97,6 +102,14 @@ export function SnaccActionsSheet({
               onPress={onPin}
             />
           )}
+          {onPromote ? (
+            <ActionSheetChoice
+              icon={MegaphoneIcon}
+              label="Promote"
+              hint="Pay to show it to more people"
+              onPress={onPromote}
+            />
+          ) : null}
           <ActionSheetChoice
             icon={Trash2Icon}
             label="Delete"
@@ -111,7 +124,11 @@ export function SnaccActionsSheet({
             <ActionSheetChoice
               icon={EyeOffIcon}
               label="Not interested"
-              hint="Don't show this snacc again"
+              hint={
+                promoted
+                  ? "Don't show this promotion again"
+                  : "Don't show this snacc again"
+              }
               onPress={onHide}
             />
           ) : null}
