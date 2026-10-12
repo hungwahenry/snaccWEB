@@ -12,6 +12,7 @@ export interface AdminUniversity {
   region: NamedPlace | null
   campus_type: NamedPlace | null
   time_zone: string
+  open: boolean
   stats: { profiles: number; snaccs: number }
   fund: { cap: number; distributed: number } | null
 }
@@ -33,6 +34,7 @@ export interface CreateUniversityInput {
   regionId: string | null
   campusTypeId: string | null
   timeZone: string
+  open: boolean
 }
 
 export type UpdateUniversityInput = Omit<CreateUniversityInput, "slug">
@@ -48,4 +50,5 @@ export interface UniversityDraft {
   regionId: string
   campusTypeId: string
   timeZone: string
+  open: boolean
 }

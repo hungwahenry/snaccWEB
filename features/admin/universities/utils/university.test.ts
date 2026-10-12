@@ -30,6 +30,7 @@ const campus = (
   region: null,
   campus_type: null,
   time_zone: "Africa/Accra",
+  open: true,
   stats: { profiles: 0, snaccs: 0 },
   fund: null,
 })
@@ -156,6 +157,7 @@ describe("place", () => {
       regionId: "r2",
       campusTypeId: null,
       timeZone: "Africa/Accra",
+      open: true,
     })
   })
 
@@ -165,6 +167,7 @@ describe("place", () => {
         country: { code: "GH", name: "Ghana" },
         region: { id: "r2", name: "Greater Accra" },
         campus_type: { id: "t1", name: "Public" },
+        open: true,
       })
     ).toBe("Greater Accra · Public · Ghana")
     expect(
@@ -172,7 +175,8 @@ describe("place", () => {
         country: { code: "GH", name: "Ghana" },
         region: null,
         campus_type: null,
+        open: false,
       })
-    ).toBe("Ghana")
+    ).toBe("Ghana · Not open")
   })
 })

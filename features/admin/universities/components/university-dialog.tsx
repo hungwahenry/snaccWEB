@@ -4,6 +4,7 @@ import type { ReactElement } from "react"
 import {
   SearchSelectField,
   SelectField,
+  SwitchField,
   TextField,
 } from "@/features/admin/shell/components/form-fields"
 import {
@@ -99,6 +100,12 @@ function UniversityForm({
         Promotions can be aimed at campuses by region and campus type. Hangouts
         on this campus show in its time zone.
       </FormNote>
+      <SwitchField
+        label="Open"
+        checked={draft.open}
+        onChange={(open) => set("open", open)}
+        hint="People here get in once its country is open too. Closed, they wait on the list and get an email when it opens."
+      />
       <TextField
         label="Motto"
         optional

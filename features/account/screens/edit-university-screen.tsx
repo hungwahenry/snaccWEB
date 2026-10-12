@@ -33,12 +33,7 @@ function Editor({ profile }: { profile: Profile }) {
     <UniversityForm
       locked={form.locked}
       currentName={form.currentName}
-      search={form.search}
-      onSearch={form.setSearch}
-      searching={form.searching}
-      results={form.results}
-      selected={form.selected}
-      onSelect={form.select}
+      choice={form.choice}
       valid={form.valid}
       submitting={form.submitting}
       onSubmit={form.onSubmit}

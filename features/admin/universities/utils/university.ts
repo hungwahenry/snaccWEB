@@ -71,12 +71,16 @@ export function campusTypeChoices(places: CountryPlaces | undefined): Option[] {
 }
 
 export function universityPlace(
-  university: Pick<AdminUniversity, "country" | "region" | "campus_type">
+  university: Pick<
+    AdminUniversity,
+    "country" | "region" | "campus_type" | "open"
+  >
 ): string {
   return [
     university.region?.name,
     university.campus_type?.name,
     university.country.name,
+    university.open ? null : "Not open",
   ]
     .filter((part): part is string => Boolean(part))
     .join(" · ")
@@ -94,6 +98,7 @@ export function draftFrom(university?: AdminUniversity): UniversityDraft {
     regionId: university?.region?.id ?? UNSET.value,
     campusTypeId: university?.campus_type?.id ?? UNSET.value,
     timeZone: university?.time_zone ?? "",
+    open: university?.open ?? true,
   }
 }
 
@@ -133,6 +138,7 @@ function placeInput(draft: UniversityDraft) {
     regionId: placeOf(draft.regionId),
     campusTypeId: placeOf(draft.campusTypeId),
     timeZone: draft.timeZone,
+    open: draft.open,
   }
 }
 

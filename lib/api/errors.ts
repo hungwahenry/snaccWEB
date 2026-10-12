@@ -47,3 +47,7 @@ export function isUnauthenticated(error: unknown): boolean {
 export function isSuspended(error: unknown): boolean {
   return isApiError(error) && error.code === "account_suspended"
 }
+
+export function isWaiting(error: unknown): boolean {
+  return isApiError(error) && error.code === "campus_not_open"
+}

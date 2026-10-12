@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest"
-import { ApiError, getErrorMessage, isNotFound, isSuspended } from "./errors"
+import {
+  ApiError,
+  getErrorMessage,
+  isNotFound,
+  isSuspended,
+  isWaiting,
+} from "./errors"
 
 const withErrors = (errors: Record<string, unknown>) =>
   new ApiError(422, "Validation failed", "validation_failed", errors as never)
@@ -31,5 +37,7 @@ describe("error checks", () => {
     expect(isNotFound(new ApiError(404, "Gone"))).toBe(true)
     expect(isNotFound(new Error("Gone"))).toBe(false)
     expect(isSuspended(new ApiError(403, "No", "account_suspended"))).toBe(true)
+    expect(isWaiting(new ApiError(403, "Soon", "campus_not_open"))).toBe(true)
+    expect(isWaiting(new ApiError(403, "No", "account_suspended"))).toBe(false)
   })
 })

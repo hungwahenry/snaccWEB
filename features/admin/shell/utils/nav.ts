@@ -20,6 +20,7 @@ import {
   Rocket,
   Scale,
   ScanEye,
+  Globe2,
   School,
   ScrollText,
   ShieldCheck,
@@ -75,6 +76,7 @@ import {
   SUSPENSION_REASONS_PATH,
   SUSPENSIONS_PATH,
   UNIVERSITIES_PATH,
+  COUNTRIES_PATH,
   USERS_PATH,
   WALLETS_PATH,
   WEBHOOKS_PATH,
@@ -178,6 +180,12 @@ export const NAV: NavSection[] = [
         label: "Universities",
         icon: School,
         permission: "universities.read",
+      },
+      {
+        href: COUNTRIES_PATH,
+        label: "Countries",
+        icon: Globe2,
+        permission: "countries.read",
       },
       {
         href: RESERVED_USERNAMES_PATH,

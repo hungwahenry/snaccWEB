@@ -15,7 +15,7 @@ export function CompleteProfileScreen() {
   const usernameMax = useConfigValue("profile.username.max_length")
   const canUploadPhoto = useFlag("profile_photo_upload")
 
-  const showFooter = !(form.step === 1 && !form.university)
+  const showFooter = !(form.step === 1 && !form.campus.selected)
 
   return (
     <main className="flex min-h-dvh flex-col bg-background">
@@ -44,13 +44,7 @@ export function CompleteProfileScreen() {
             />
           ) : form.step === 1 || !form.invite ? (
             <UniversityStep
-              search={form.search}
-              onSearch={form.setSearch}
-              results={form.universities}
-              loading={form.universitiesLoading}
-              selected={form.university}
-              onSelect={form.selectUniversity}
-              onClear={form.clearUniversity}
+              campus={form.campus}
               graduated={form.graduated}
               onToggleGraduated={form.toggleGraduated}
               graduationYear={form.graduationYear}

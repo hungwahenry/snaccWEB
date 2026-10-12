@@ -15,9 +15,7 @@ import {
   inviteMessage,
   rewardBlurb,
 } from "@/features/referrals/utils/invite"
-import { useUniversities } from "@/features/universities/hooks/use-universities"
-import type { University } from "@/features/universities/types"
-import { useDebouncedValue } from "@/hooks/use-debounced-value"
+import { useCampusChoice } from "@/features/universities/hooks/use-campus-choice"
 import { pickImage, type PickedImage } from "@/lib/media"
 import { copyLink, shareOrCopy } from "@/lib/share-links"
 import { useCompleteProfile } from "./use-complete-profile"
@@ -35,10 +33,13 @@ export function useOnboardingForm() {
   const [avatar, setAvatar] = useState<PickedImage | null>(null)
   const [displayName, setDisplayName] = useState("")
   const usernameField = useUsernameField()
-  const [university, setUniversity] = useState<University | null>(null)
-  const [search, setSearch] = useState("")
   const [graduated, setGraduated] = useState(false)
   const [graduationYear, setGraduationYear] = useState<number | null>(null)
+  const campus = useCampusChoice(() => {
+    setGraduated(false)
+    setGraduationYear(null)
+  })
+  const university = campus.selected
   const invitesOn = useFlag("referrals")
   const invite = useInviteCodeField()
   const claimInvite = useClaimReferral()
@@ -47,9 +48,6 @@ export function useOnboardingForm() {
   const avatarBase = useConfigValue("avatar.base")
   const avatarStyle = useConfigValue("avatar.style")
   const avatarFormat = useConfigValue("avatar.format")
-
-  const debouncedSearch = useDebouncedValue(search, 300)
-  const universities = useUniversities(debouncedSearch)
 
   const avatarUri =
     avatar?.uri ??
@@ -69,17 +67,6 @@ export function useOnboardingForm() {
     } catch {
       showErrorMessage("Could not read that image.")
     }
-  }
-
-  function selectUniversity(next: University) {
-    setUniversity(next)
-    setSearch("")
-  }
-
-  function clearUniversity() {
-    setUniversity(null)
-    setGraduated(false)
-    setGraduationYear(null)
   }
 
   function toggleGraduated(next: boolean) {
@@ -148,13 +135,7 @@ export function useOnboardingForm() {
     changeUsername: usernameField.change,
     usernameStatus: usernameField.status,
 
-    search,
-    setSearch,
-    universities: universities.data?.items ?? [],
-    universitiesLoading: universities.isFetching,
-    university,
-    selectUniversity,
-    clearUniversity,
+    campus,
     graduated,
     toggleGraduated,
     graduationYear,

@@ -36,6 +36,7 @@ export const APP_ICONS_PATH = "/admin/app-icons"
 export const CHAT_THEMES_PATH = "/admin/chat-themes"
 export const STICKER_PACKS_PATH = "/admin/sticker-packs"
 export const UNIVERSITIES_PATH = "/admin/universities"
+export const COUNTRIES_PATH = "/admin/countries"
 export const NOTIFICATION_TYPES_PATH = "/admin/notification-types"
 export const PROMPTS_PATH = "/admin/prompts"
 

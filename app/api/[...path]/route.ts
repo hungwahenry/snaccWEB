@@ -41,6 +41,8 @@ async function proxy(
     const value = request.headers.get(name)
     if (value) upstream.set(name, value)
   }
+  const region = request.headers.get("x-vercel-ip-country")
+  if (region) upstream.set("X-Client-Region", region)
   if (token) upstream.set("Authorization", `Bearer ${token}`)
   if (installId) upstream.set("X-Install-Id", installId)
 
