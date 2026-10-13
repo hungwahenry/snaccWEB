@@ -70,6 +70,7 @@ export function useNewPromotion(
   const campusSheet = useCampusSheet(form.campuses.onAdd, {
     country: draft.countryCode || null,
     exclude: draft.campuses.map((campus) => campus.id),
+    verifiedOnly: true,
   })
   const reach = useCampaignReach(form.audience)
   const policy = useCampaignPolicy()

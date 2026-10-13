@@ -1,4 +1,7 @@
 import type { NamedPlace } from "@/features/places/types"
+import type { CampusStatus } from "@/features/universities/types"
+
+export type { CampusStatus }
 
 export interface AdminUniversity {
   id: string
@@ -13,6 +16,11 @@ export interface AdminUniversity {
   campus_type: NamedPlace | null
   time_zone: string
   open: boolean
+  status: CampusStatus
+  ror_id: string | null
+  domains: string[]
+  added_by: { id: string; username: string | null } | null
+  created_at: string
   stats: { profiles: number; snaccs: number }
   fund: { cap: number; distributed: number } | null
 }
@@ -21,6 +29,8 @@ export type UniversityListQuery = {
   page: number
   perPage: number
   q?: string
+  status?: CampusStatus
+  country?: string
 }
 
 export interface CreateUniversityInput {

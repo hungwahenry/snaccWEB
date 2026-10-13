@@ -31,6 +31,11 @@ const campus = (
   campus_type: null,
   time_zone: "Africa/Accra",
   open: true,
+  status: "verified",
+  ror_id: null,
+  domains: [],
+  added_by: null,
+  created_at: "2026-10-01T00:00:00.000Z",
   stats: { profiles: 0, snaccs: 0 },
   fund: null,
 })

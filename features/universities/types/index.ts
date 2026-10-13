@@ -1,9 +1,12 @@
+export type CampusStatus = "verified" | "pending" | "rejected"
+
 export interface University {
   id: string
   name: string
   acronym: string
   slug: string
   country_code: string
+  status: CampusStatus
   motto: string | null
   website: string | null
   logo_url: string | null

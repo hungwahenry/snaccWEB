@@ -18,6 +18,8 @@ export function getPublicCampus(slug: string) {
 }
 
 export async function countCampuses(): Promise<number | null> {
-  const page = await serverGet<Paginated<University>>("/universities?perPage=1")
+  const page = await serverGet<Paginated<University>>(
+    "/universities?verified=true&perPage=1"
+  )
   return page?.total ?? null
 }

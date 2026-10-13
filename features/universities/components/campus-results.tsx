@@ -1,4 +1,5 @@
 import { GraduationCapIcon, SearchXIcon } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import type { University } from "../types"
 import { CampusResultRow } from "./campus-result-row"
@@ -8,11 +9,13 @@ export function CampusResults({
   searching,
   results,
   onSelect,
+  onAdd,
 }: {
   search: string
   searching: boolean
   results: University[]
   onSelect: (university: University) => void
+  onAdd: (() => void) | null
 }) {
   if (search.trim().length === 0) {
     return (
@@ -30,7 +33,18 @@ export function CampusResults({
       <EmptyState
         icon={SearchXIcon}
         title="No campus matches that"
-        description="Check the spelling, or try its acronym."
+        description={
+          onAdd
+            ? "Check the spelling, or add your campus if it isn't on Snacc yet."
+            : "Check the spelling, or try its acronym."
+        }
+        action={
+          onAdd ? (
+            <Button variant="outline" size="sm" onClick={onAdd}>
+              Add your campus
+            </Button>
+          ) : undefined
+        }
       />
     )
   }
@@ -44,6 +58,16 @@ export function CampusResults({
           onSelect={onSelect}
         />
       ))}
+      {onAdd && !searching ? (
+        <button
+          type="button"
+          onClick={onAdd}
+          className="py-5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          Can&apos;t find your campus?{" "}
+          <span className="font-semibold text-foreground">Add it</span>
+        </button>
+      ) : null}
     </div>
   )
 }

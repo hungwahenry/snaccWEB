@@ -1,6 +1,6 @@
 import { HourglassIcon } from "lucide-react"
 import type { Availability } from "../types"
-import { WAITING_TITLE, waitingLine } from "../utils/notice"
+import { waitingLine, waitingTitle } from "../utils/notice"
 
 export function WaitingNotice({
   availability,
@@ -14,7 +14,7 @@ export function WaitingNotice({
       </span>
       <div className="flex flex-col gap-2">
         <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
-          {WAITING_TITLE}
+          {waitingTitle(availability)}
         </h1>
         <p className="text-base leading-6 text-pretty text-muted-foreground">
           {waitingLine(availability)}

@@ -9,6 +9,7 @@ const unilag: UniversityDetail = {
   acronym: "unilag",
   slug: "unilag",
   country_code: "NG",
+  status: "verified",
   motto: null,
   website: null,
   logo_url: null,

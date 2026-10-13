@@ -32,6 +32,20 @@ export function updateUniversity(id: string, input: UpdateUniversityInput) {
   return api.patch<AdminUniversity>(`/admin/universities/${id}`, input)
 }
 
+export function verifyUniversity(id: string, input: UpdateUniversityInput) {
+  return api.post<AdminUniversity>(`/admin/universities/${id}/verify`, input)
+}
+
+export function rejectUniversity(id: string) {
+  return api.post<AdminUniversity>(`/admin/universities/${id}/reject`)
+}
+
+export function mergeUniversity(id: string, intoId: string) {
+  return api.post<AdminUniversity>(`/admin/universities/${id}/merge`, {
+    intoId,
+  })
+}
+
 export function deleteUniversity(id: string) {
   return api.del<null>(`/admin/universities/${id}`)
 }

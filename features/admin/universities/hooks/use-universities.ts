@@ -9,10 +9,14 @@ import {
   deleteUniversity,
   listAllUniversities,
   listUniversities,
+  mergeUniversity,
+  rejectUniversity,
   updateUniversity,
+  verifyUniversity,
 } from "../api"
 import type { UniversityDraft, UniversityListQuery } from "../types"
 import { adminUniversityKeys } from "../utils/keys"
+import { verifiedCampuses } from "../utils/status"
 import {
   acronymsById,
   campusOptions,
@@ -28,7 +32,7 @@ export function useUniversities(query: UniversityListQuery) {
   })
 }
 
-/** Every campus, for pickers and for naming campuses by acronym. */
+/** Every campus. Pickers offer the verified ones; acronyms and merges cover them all. */
 export function useCampuses() {
   const query = useQuery({
     queryKey: adminUniversityKeys.everything(),
@@ -37,15 +41,18 @@ export function useCampuses() {
   })
   const universities = query.data
 
-  return useMemo(
-    () => ({
-      universities: universities ?? [],
-      options: campusOptions(universities ?? []),
-      acronyms: acronymsById(universities ?? []),
+  return useMemo(() => {
+    const all = universities ?? []
+    const verified = verifiedCampuses(all)
+
+    return {
+      all,
+      verified,
+      options: campusOptions(verified),
+      acronyms: acronymsById(all),
       loading: query.isPending,
-    }),
-    [universities, query.isPending]
-  )
+    }
+  }, [universities, query.isPending])
 }
 
 export function useUniversityActions() {
@@ -65,12 +72,32 @@ export function useUniversityActions() {
     success: "University deleted.",
     invalidates,
   })
+  const { run: verify } = useAdminMutation({
+    mutationFn: ({ draft, id }: { draft: UniversityDraft; id: string }) =>
+      verifyUniversity(id, toUpdateInput(draft)),
+    success: "Campus verified.",
+    invalidates,
+  })
+  const { run: reject } = useAdminMutation({
+    mutationFn: (id: string) => rejectUniversity(id),
+    success: "Campus turned down. Its people will choose again.",
+    invalidates,
+  })
+  const { run: merge } = useAdminMutation({
+    mutationFn: ({ id, intoId }: { id: string; intoId: string }) =>
+      mergeUniversity(id, intoId),
+    success: "Campuses merged.",
+    invalidates,
+  })
 
   return useMemo(
     () => ({
       save: (draft: UniversityDraft, id?: string) => save({ draft, id }),
       remove,
+      verify: (draft: UniversityDraft, id: string) => verify({ draft, id }),
+      reject,
+      merge: (id: string, intoId: string) => merge({ id, intoId }),
     }),
-    [save, remove]
+    [save, remove, verify, reject, merge]
   )
 }

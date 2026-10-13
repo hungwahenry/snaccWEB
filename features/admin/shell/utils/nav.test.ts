@@ -78,6 +78,9 @@ describe("permissionForPath", () => {
     expect(permissionForPath("/admin/ad-prices")).toBe("ads.read")
     expect(permissionForPath("/admin/ad-reasons")).toBe("ads.read")
     expect(permissionForPath("/admin/ad-buttons")).toBe("ads.read")
+    expect(permissionForPath("/admin/campus-imports/i1")).toBe(
+      "universities.import"
+    )
   })
 
   it("prefers the most specific section", () => {

@@ -5,6 +5,7 @@ import {
   Bell,
   Coins,
   Egg,
+  FileSpreadsheet,
   FileText,
   Flag,
   Ghost,
@@ -76,6 +77,7 @@ import {
   SUSPENSION_REASONS_PATH,
   SUSPENSIONS_PATH,
   UNIVERSITIES_PATH,
+  CAMPUS_IMPORTS_PATH,
   COUNTRIES_PATH,
   USERS_PATH,
   WALLETS_PATH,
@@ -180,6 +182,12 @@ export const NAV: NavSection[] = [
         label: "Universities",
         icon: School,
         permission: "universities.read",
+      },
+      {
+        href: CAMPUS_IMPORTS_PATH,
+        label: "Campus imports",
+        icon: FileSpreadsheet,
+        permission: "universities.import",
       },
       {
         href: COUNTRIES_PATH,

@@ -37,6 +37,14 @@ export function acronymsById(
 
 const UNSET: Option = { value: "unset", label: "Not set" }
 
+export function placeChoice(id: string | null | undefined): string {
+  return id ?? UNSET.value
+}
+
+export function placeOf(choice: string): string | null {
+  return choice === UNSET.value ? null : choice
+}
+
 export const TIME_ZONE_OPTIONS: Option[] = Intl.supportedValuesOf(
   "timeZone"
 ).map((zone) => ({ value: zone, label: zone.replaceAll("_", " ") }))
@@ -95,8 +103,8 @@ export function draftFrom(university?: AdminUniversity): UniversityDraft {
     website: university?.website ?? "",
     logoUrl: university?.logo_url ?? "",
     countryCode: university?.country.code ?? "",
-    regionId: university?.region?.id ?? UNSET.value,
-    campusTypeId: university?.campus_type?.id ?? UNSET.value,
+    regionId: placeChoice(university?.region?.id),
+    campusTypeId: placeChoice(university?.campus_type?.id),
     timeZone: university?.time_zone ?? "",
     open: university?.open ?? true,
   }
@@ -110,8 +118,8 @@ export function withCountry(
   return {
     ...draft,
     countryCode,
-    regionId: UNSET.value,
-    campusTypeId: UNSET.value,
+    regionId: placeChoice(null),
+    campusTypeId: placeChoice(null),
   }
 }
 
@@ -126,10 +134,6 @@ export function isDraftReady(
     draft.timeZone !== "" &&
     (editing || draft.slug.trim() !== "")
   )
-}
-
-function placeOf(choice: string): string | null {
-  return choice === UNSET.value ? null : choice
 }
 
 function placeInput(draft: UniversityDraft) {

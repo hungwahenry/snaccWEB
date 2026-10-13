@@ -27,14 +27,25 @@ export function WaitingScreen() {
         <div className="flex flex-1 flex-col justify-center gap-8">
           <WaitingNotice availability={screen.availability} />
 
-          <Button
-            variant="ghost"
-            className="h-12"
-            disabled={screen.changing}
-            onClick={screen.changeCampus}
-          >
-            {screen.changing ? <Spinner /> : "Picked the wrong campus?"}
-          </Button>
+          {screen.pickAgain ? (
+            <Button
+              size="lg"
+              className="h-12"
+              disabled={screen.changing}
+              onClick={screen.changeCampus}
+            >
+              {screen.changing ? <Spinner /> : "Pick your campus"}
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              className="h-12"
+              disabled={screen.changing}
+              onClick={screen.changeCampus}
+            >
+              {screen.changing ? <Spinner /> : "Picked the wrong campus?"}
+            </Button>
+          )}
         </div>
       ) : (
         <div className="flex-1" />

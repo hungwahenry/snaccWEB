@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query"
 import { changeUniversity } from "@/features/account/api"
 import { useLogout } from "@/features/auth/hooks/use-logout"
 import { useCampusSheet } from "@/features/universities/hooks/use-campus-sheet"
+import { mustPickAgain } from "../utils/notice"
 import { useAvailability } from "./use-availability"
 
 export function useWaitingScreen() {
@@ -26,6 +27,7 @@ export function useWaitingScreen() {
     checking: availability.isFetching,
     check: () => void availability.refetch(),
     changeCampus: campus.show,
+    pickAgain: availability.data ? mustPickAgain(availability.data) : false,
     changing: change.isPending,
     campusSheet: campus.sheet,
     signingOut: logout.isPending,

@@ -36,6 +36,7 @@ export const APP_ICONS_PATH = "/admin/app-icons"
 export const CHAT_THEMES_PATH = "/admin/chat-themes"
 export const STICKER_PACKS_PATH = "/admin/sticker-packs"
 export const UNIVERSITIES_PATH = "/admin/universities"
+export const CAMPUS_IMPORTS_PATH = "/admin/campus-imports"
 export const COUNTRIES_PATH = "/admin/countries"
 export const NOTIFICATION_TYPES_PATH = "/admin/notification-types"
 export const PROMPTS_PATH = "/admin/prompts"
@@ -58,3 +59,4 @@ export const pagePath = (id: string) => `${PAGES_PATH}/${id}`
 export const announcementPath = (id: string) => `${ANNOUNCEMENTS_PATH}/${id}`
 export const stickerPackPath = (id: string) => `${STICKER_PACKS_PATH}/${id}`
 export const adPath = (id: string) => `${ADS_PATH}/${id}`
+export const campusImportPath = (id: string) => `${CAMPUS_IMPORTS_PATH}/${id}`

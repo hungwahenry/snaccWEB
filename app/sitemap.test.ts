@@ -25,12 +25,12 @@ describe("sitemap", () => {
   it("lists every campus, however many pages they come in", async () => {
     api({
       "/pages": [{ slug: "terms" }],
-      "/universities?perPage=100&page=1": {
+      "/universities?verified=true&perPage=100&page=1": {
         items: [{ slug: "unilag" }, { slug: "ui" }],
         page: 1,
         last_page: 2,
       },
-      "/universities?perPage=100&page=2": {
+      "/universities?verified=true&perPage=100&page=2": {
         items: [{ slug: "oau" }],
         page: 2,
         last_page: 2,
@@ -61,7 +61,7 @@ describe("sitemap", () => {
 
   it("stops asking once a page fails, and keeps what it has", async () => {
     const fetcher = api({
-      "/universities?perPage=100&page=1": {
+      "/universities?verified=true&perPage=100&page=1": {
         items: [{ slug: "unilag" }],
         page: 1,
         last_page: 9,

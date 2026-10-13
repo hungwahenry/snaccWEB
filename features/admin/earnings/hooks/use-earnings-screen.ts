@@ -28,10 +28,10 @@ export function useEarningsScreen() {
   const fundList = funds.data
   const provision = useMemo(
     () => ({
-      options: unfundedOptions(campuses.universities, fundList ?? []),
+      options: unfundedOptions(campuses.verified, fundList ?? []),
       loading: campuses.loading || fundList === undefined,
     }),
-    [campuses.universities, campuses.loading, fundList]
+    [campuses.verified, campuses.loading, fundList]
   )
 
   return {

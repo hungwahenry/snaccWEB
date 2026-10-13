@@ -40,7 +40,7 @@ export function useSearchHashtags(q: string, enabled = true) {
 export function useSearchCampuses(q: string, enabled = true) {
   const { items, ...list } = useInfiniteList<University>(
     searchKeys.campuses(q),
-    (page) => listUniversities({ search: q, page }),
+    (page) => listUniversities({ search: q, page, verified: true }),
     { enabled: enabled && q.length > 0 }
   )
   return { campuses: items, ...list }

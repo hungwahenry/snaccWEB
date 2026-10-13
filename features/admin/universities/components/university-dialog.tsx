@@ -25,9 +25,11 @@ import {
 
 function UniversityForm({
   university,
+  reviewing,
   onSubmit,
 }: {
   university?: AdminUniversity
+  reviewing: boolean
   onSubmit: (draft: UniversityDraft) => Promise<unknown>
 }) {
   const { draft, set, text, replace } = useDraft(() => draftFrom(university))
@@ -36,7 +38,7 @@ function UniversityForm({
 
   return (
     <DialogForm
-      submitLabel={editing ? "Save" : "Add university"}
+      submitLabel={reviewing ? "Verify" : editing ? "Save" : "Add university"}
       canSubmit={isDraftReady(draft, editing)}
       onSubmit={() => onSubmit(draft)}
     >
@@ -134,11 +136,13 @@ function UniversityForm({
 
 export function UniversityDialog({
   university,
+  reviewing = false,
   trigger,
   disabled,
   onSubmit,
 }: {
   university?: AdminUniversity
+  reviewing?: boolean
   trigger: ReactElement
   disabled?: boolean
   onSubmit: (draft: UniversityDraft) => Promise<unknown>
@@ -147,9 +151,22 @@ export function UniversityDialog({
     <FormDialog
       trigger={trigger}
       disabled={disabled}
-      title={university ? `Edit ${university.name}` : "Add a university"}
+      title={
+        university
+          ? `${reviewing ? "Review" : "Edit"} ${university.name}`
+          : "Add a university"
+      }
+      description={
+        reviewing
+          ? "Someone added this campus. Fix its name and details, then verify it. People waiting on it get in and get an email, as long as the campus and its country are open."
+          : undefined
+      }
     >
-      <UniversityForm university={university} onSubmit={onSubmit} />
+      <UniversityForm
+        university={university}
+        reviewing={reviewing}
+        onSubmit={onSubmit}
+      />
     </FormDialog>
   )
 }

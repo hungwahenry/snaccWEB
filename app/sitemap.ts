@@ -30,7 +30,7 @@ async function campusSlugs(): Promise<string[]> {
 
   for (let page = 1; page <= CAMPUS_PAGE_LIMIT; page += 1) {
     const list = await read<CampusPage>(
-      `/universities?perPage=${CAMPUS_PAGE_SIZE}&page=${page}`
+      `/universities?verified=true&perPage=${CAMPUS_PAGE_SIZE}&page=${page}`
     )
     if (!list) break
     slugs.push(...list.items.map((campus) => campus.slug))

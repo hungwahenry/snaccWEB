@@ -92,6 +92,9 @@ describe("targetHref", () => {
     expect(
       targetHref(log({ target_type: "ad_campaign", target_id: "c1" }))
     ).toBe("/admin/ads/c1")
+    expect(
+      targetHref(log({ target_type: "campus_import", target_id: "i1" }))
+    ).toBe("/admin/campus-imports/i1")
   })
 
   it("leaves the rest unlinked", () => {

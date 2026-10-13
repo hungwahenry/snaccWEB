@@ -18,6 +18,7 @@ export const FLAG_KEYS = [
   "anon_messages",
   "first_post_prompt",
   "private_accounts",
+  "add_campus",
   "profile_visitors",
   "profile_photo_upload",
   "avatar_customization",
