@@ -44,10 +44,15 @@ export function listCategories() {
   return api.get<CategoryUsage[]>("/admin/moderation/categories")
 }
 
-export function getInsight(surface: ModerationSurface, category: string) {
+export function getInsight(
+  surface: ModerationSurface,
+  category: string,
+  country: string | null
+) {
   return api.get<CategoryInsight>("/admin/moderation/insights", {
     surface,
     category,
+    country: country ?? undefined,
   })
 }
 

@@ -1,37 +1,30 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useMemo } from "react"
+import { useCountryChoices } from "@/features/admin/countries/hooks/use-country-choices"
 import { legalDocumentPath } from "@/features/admin/shell/routes"
-import { countryOptions } from "@/features/admin/universities/utils/university"
+import {
+  countryOfWhere,
+  whereOptions,
+} from "@/features/admin/shell/utils/where"
 import type { LegalKind } from "@/features/legal/types"
-import { useCountries } from "@/features/places/hooks/use-places"
-import { DEFAULT_SET, whereOptions } from "../utils/legal"
 import { useLegalActions, useLegalDocuments } from "./use-legal"
 
 export function useLegalScreen() {
   const router = useRouter()
   const query = useLegalDocuments()
-  const countries = useCountries()
+  const countries = useCountryChoices()
   const actions = useLegalActions({
     onStarted: (doc) => router.push(legalDocumentPath(doc.id)),
   })
-  const options = useMemo(
-    () => countryOptions(countries.data ?? []),
-    [countries.data]
-  )
 
   return {
     query,
-    countryNames: useMemo(
-      () => new Map(options.map((option) => [option.value, option.label])),
-      [options]
-    ),
-    whereOptions: whereOptions(options),
-    start: (kind: LegalKind, where: string) =>
-      actions.start({
-        kind,
-        ...(where === DEFAULT_SET ? {} : { countryCode: where }),
-      }),
+    countryNames: countries.names,
+    whereOptions: whereOptions(countries.options),
+    start: (kind: LegalKind, where: string) => {
+      const countryCode = countryOfWhere(where)
+      return actions.start(countryCode ? { kind, countryCode } : { kind })
+    },
   }
 }

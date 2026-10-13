@@ -25,6 +25,7 @@ export interface ModerationRule {
   id: string
   surface: ModerationSurface
   category: string
+  country_code: string | null
   threshold: number
   action: ModerationAction
   note: string | null
@@ -66,6 +67,7 @@ export interface ModerationSummary {
 export interface ModerationScan {
   id: string
   surface: ModerationSurface
+  country_code: string | null
   target: {
     snacc_id: string | null
     moment_id: string | null
@@ -88,7 +90,7 @@ export interface ModerationScan {
   created_at: string
 }
 
-export interface RuleInput {
+export interface RuleLine {
   surface: ModerationSurface
   category: string
   threshold: number
@@ -97,7 +99,9 @@ export interface RuleInput {
   position?: number
 }
 
-export type RuleChanges = Partial<RuleInput> & { retired?: boolean }
+export type RuleInput = RuleLine & { countryCode?: string }
+
+export type RuleChanges = Partial<RuleLine> & { retired?: boolean }
 
 export type SurfaceChanges = Partial<
   Pick<SurfaceSetting, "enabled" | "mode">
@@ -106,9 +110,11 @@ export type SurfaceChanges = Partial<
 export type ScanQuery = {
   page: number
   verdict?: ModerationAction
+  country?: string
 }
 
 export interface RuleDraft {
+  where: string
   surface: ModerationSurface
   category: string
   threshold: string

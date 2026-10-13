@@ -10,7 +10,8 @@ import { StatusBadge } from "@/features/admin/shell/components/status-badge"
 import { legalDocumentPath } from "@/features/admin/shell/routes"
 import { formatDate, formatNumber } from "@/lib/format"
 import type { AdminLegalSummary } from "../types"
-import { STANDING, standingOf, whereLabel } from "../utils/legal"
+import { whereLabel } from "@/features/admin/shell/utils/where"
+import { STANDING, standingOf } from "../utils/legal"
 
 export function LegalTable({
   query,

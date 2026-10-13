@@ -6,7 +6,7 @@ import { LEGAL_PATH } from "@/features/admin/shell/routes"
 import { longDate } from "@/lib/format"
 import { LegalEditor } from "../components/legal-editor"
 import { useLegalEditorScreen } from "../hooks/use-legal-editor-screen"
-import { whereLabel } from "../utils/legal"
+import { whereLabel } from "@/features/admin/shell/utils/where"
 
 export function LegalEditorScreen({ id }: { id: string }) {
   const screen = useLegalEditorScreen(id)

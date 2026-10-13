@@ -7,6 +7,9 @@ export const adminModerationKeys = {
   categories: () => ["admin", "moderation", "categories"] as const,
   summary: () => ["admin", "moderation", "summary"] as const,
   scans: (query: ScanQuery) => ["admin", "moderation", "scans", query] as const,
-  insight: (surface: ModerationSurface | null, category: string | null) =>
-    ["admin", "moderation", "insight", surface, category] as const,
+  insight: (
+    surface: ModerationSurface | null,
+    category: string | null,
+    country: string | null
+  ) => ["admin", "moderation", "insight", surface, category, country] as const,
 }

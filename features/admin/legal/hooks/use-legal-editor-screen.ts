@@ -1,11 +1,10 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useMemo, useState } from "react"
+import { useState } from "react"
+import { useCountryChoices } from "@/features/admin/countries/hooks/use-country-choices"
 import { useDraft } from "@/features/admin/shell/hooks/use-draft"
 import { LEGAL_PATH } from "@/features/admin/shell/routes"
-import { countryOptions } from "@/features/admin/universities/utils/university"
-import { useCountries } from "@/features/places/hooks/use-places"
 import type { AdminLegalDocument, LegalDraft } from "../types"
 import { draftFrom, isDraftReady } from "../utils/legal"
 import { useLegalActions, useLegalDocument } from "./use-legal"
@@ -15,7 +14,7 @@ const BLANK: LegalDraft = { title: "", content: null, html: "" }
 export function useLegalEditorScreen(id: string) {
   const router = useRouter()
   const query = useLegalDocument(id)
-  const countries = useCountries()
+  const countries = useCountryChoices()
   const actions = useLegalActions({
     onDeleted: () => router.replace(LEGAL_PATH),
   })
@@ -30,16 +29,7 @@ export function useLegalEditorScreen(id: string) {
 
   return {
     query,
-    countryNames: useMemo(
-      () =>
-        new Map(
-          countryOptions(countries.data ?? []).map((option) => [
-            option.value,
-            option.label,
-          ])
-        ),
-      [countries.data]
-    ),
+    countryNames: countries.names,
     draft,
     text,
     ready: isDraftReady(draft),

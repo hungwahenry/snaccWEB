@@ -5,6 +5,7 @@ import { isEnforced, latencyLabel, scanScore, scanTarget } from "./scans"
 const scan = (overrides: Partial<ModerationScan> = {}): ModerationScan => ({
   id: "s1",
   surface: "snacc",
+  country_code: "NG",
   target: {
     snacc_id: null,
     moment_id: null,

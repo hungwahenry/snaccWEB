@@ -96,6 +96,7 @@ export function SelectField<V extends string>({
   placeholder,
   hint,
   className,
+  disabled,
 }: {
   label: string
   value: V | null
@@ -104,6 +105,7 @@ export function SelectField<V extends string>({
   placeholder?: string
   hint?: ReactNode
   className?: string
+  disabled?: boolean
 }) {
   const id = useId()
 
@@ -118,6 +120,7 @@ export function SelectField<V extends string>({
         options={options}
         placeholder={placeholder}
         className="w-full"
+        disabled={disabled}
       />
       {hint ? <FieldDescription>{hint}</FieldDescription> : null}
     </Field>

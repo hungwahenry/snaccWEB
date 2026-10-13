@@ -1,10 +1,12 @@
 import type { Option } from "@/features/admin/shell/types"
+import { countryOfWhere, DEFAULT_SET } from "@/features/admin/shell/utils/where"
 import type {
   CategoryUsage,
   ModerationRule,
   ModerationSurface,
   RuleDraft,
   RuleInput,
+  RuleLine,
 } from "../types"
 
 export const RULE_NOTE_LIMIT = 500
@@ -13,9 +15,11 @@ const DEFAULT_THRESHOLD = 0.85
 
 export function draftFrom(
   rule?: ModerationRule,
-  surface?: ModerationSurface | null
+  surface?: ModerationSurface | null,
+  where?: string | null
 ): RuleDraft {
   return {
+    where: rule ? (rule.country_code ?? DEFAULT_SET) : (where ?? DEFAULT_SET),
     surface: rule?.surface ?? surface ?? "snacc",
     category: rule?.category ?? "",
     threshold: String(rule?.threshold ?? DEFAULT_THRESHOLD),
@@ -40,7 +44,7 @@ export function isDraftReady(draft: RuleDraft): boolean {
   )
 }
 
-export function toRuleInput(draft: RuleDraft): RuleInput {
+export function toRuleLine(draft: RuleDraft): RuleLine {
   return {
     surface: draft.surface,
     category: draft.category.trim(),
@@ -50,14 +54,21 @@ export function toRuleInput(draft: RuleDraft): RuleInput {
   }
 }
 
-/** Every rule, or only the ones on one surface. */
+export function toRuleInput(draft: RuleDraft): RuleInput {
+  const countryCode = countryOfWhere(draft.where)
+  return countryCode ? { ...toRuleLine(draft), countryCode } : toRuleLine(draft)
+}
+
 export function rulesOn(
   rules: ModerationRule[],
-  surface: ModerationSurface | null
+  surface: ModerationSurface | null,
+  where: string | null
 ): ModerationRule[] {
-  return surface === null
-    ? rules
-    : rules.filter((rule) => rule.surface === surface)
+  return rules.filter(
+    (rule) =>
+      (surface === null || rule.surface === surface) &&
+      (where === null || (rule.country_code ?? DEFAULT_SET) === where)
+  )
 }
 
 export function categoryOptions(categories: CategoryUsage[]): Option[] {

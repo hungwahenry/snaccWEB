@@ -24,7 +24,7 @@ import type {
   SurfaceChanges,
 } from "../types"
 import { adminModerationKeys } from "../utils/keys"
-import { rulesOn, toRuleInput } from "../utils/rules"
+import { rulesOn, toRuleInput, toRuleLine } from "../utils/rules"
 
 export function useSurfaces() {
   return useQuery({
@@ -33,10 +33,13 @@ export function useSurfaces() {
   })
 }
 
-export function useRules(surface: ModerationSurface | null) {
+export function useRules(
+  surface: ModerationSurface | null,
+  where: string | null
+) {
   const select = useCallback(
-    (rules: ModerationRule[]) => rulesOn(rules, surface),
-    [surface]
+    (rules: ModerationRule[]) => rulesOn(rules, surface, where),
+    [surface, where]
   )
 
   return useQuery({
@@ -74,9 +77,12 @@ export function useInsight(rule: ModerationRule | null) {
   return useQuery({
     queryKey: adminModerationKeys.insight(
       rule?.surface ?? null,
-      rule?.category ?? null
+      rule?.category ?? null,
+      rule?.country_code ?? null
     ),
-    queryFn: rule ? () => getInsight(rule.surface, rule.category) : skipToken,
+    queryFn: rule
+      ? () => getInsight(rule.surface, rule.category, rule.country_code)
+      : skipToken,
   })
 }
 
@@ -96,7 +102,7 @@ export function useModerationActions() {
   })
   const { run: save } = useAdminMutation({
     mutationFn: ({ draft, id }: { draft: RuleDraft; id?: string }) =>
-      id ? updateRule(id, toRuleInput(draft)) : createRule(toRuleInput(draft)),
+      id ? updateRule(id, toRuleLine(draft)) : createRule(toRuleInput(draft)),
     success: (_rule, { id }) => (id ? "Rule updated." : "Rule added."),
     invalidates,
   })

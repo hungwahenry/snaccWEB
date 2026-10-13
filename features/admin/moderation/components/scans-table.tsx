@@ -36,6 +36,12 @@ const COLUMNS: Column<ModerationScan>[] = [
     cell: (scan) => scan.surface,
   },
   {
+    id: "country",
+    header: "Country",
+    className: "font-mono text-xs",
+    cell: (scan) => scan.country_code ?? "—",
+  },
+  {
     id: "verdict",
     header: "Decided",
     cell: (scan) => <StatusBadge status={ACTION_STATUS[scan.verdict]} />,

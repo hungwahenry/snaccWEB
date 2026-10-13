@@ -7,8 +7,6 @@ import type {
   LegalStanding,
 } from "../types"
 
-export const DEFAULT_SET = "default"
-
 export const KIND_OPTIONS: Option<LegalKind>[] = [
   { value: "terms", label: "Terms of Use" },
   { value: "privacy", label: "Privacy Policy" },
@@ -38,21 +36,6 @@ export function standingOf(
       null
     )
   return newest?.id === doc.id ? "in_force" : "replaced"
-}
-
-export function whereLabel(
-  countryCode: string | null,
-  countries: ReadonlyMap<string, string>
-): string {
-  if (!countryCode) return "Default, everywhere without its own"
-  return countries.get(countryCode) ?? countryCode
-}
-
-export function whereOptions(countries: Option[]): Option[] {
-  return [
-    { value: DEFAULT_SET, label: "Default, everywhere without its own" },
-    ...countries,
-  ]
 }
 
 export function draftFrom(doc: AdminLegalDocument): LegalDraft {

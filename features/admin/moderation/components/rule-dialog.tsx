@@ -10,6 +10,7 @@ import {
   TextField,
 } from "@/features/admin/shell/components/form-fields"
 import { useDraft } from "@/features/admin/shell/hooks/use-draft"
+import type { Option } from "@/features/admin/shell/types"
 import type {
   CategoryUsage,
   ModerationRule,
@@ -41,15 +42,19 @@ function CategoryHint({ category }: { category: CategoryUsage }) {
 function RuleForm({
   rule,
   surface,
+  where,
+  whereOptions,
   categories,
   onSubmit,
 }: {
   rule?: ModerationRule
   surface?: ModerationSurface | null
+  where?: string | null
+  whereOptions: Option[]
   categories: CategoryUsage[]
   onSubmit: (draft: RuleDraft) => Promise<unknown>
 }) {
-  const { draft, set, text } = useDraft(() => draftFrom(rule, surface))
+  const { draft, set, text } = useDraft(() => draftFrom(rule, surface, where))
   const options = useMemo(() => categoryOptions(categories), [categories])
   const chosen = categories.find((entry) => entry.category === draft.category)
 
@@ -59,6 +64,18 @@ function RuleForm({
       canSubmit={isDraftReady(draft)}
       onSubmit={() => onSubmit(draft)}
     >
+      <SelectField
+        label="Where"
+        value={draft.where}
+        onChange={(next) => set("where", next)}
+        options={whereOptions}
+        disabled={rule !== undefined}
+        hint={
+          rule
+            ? "A rule stays where it was made. Add one for another country to tune it there."
+            : "A country's own rule replaces the default one for this surface and category, for content by people on its campuses."
+        }
+      />
       <div className="flex gap-3">
         <SelectField
           label="Surface"
@@ -105,6 +122,8 @@ function RuleForm({
 export function RuleDialog({
   rule,
   surface,
+  where,
+  whereOptions,
   categories,
   trigger,
   disabled,
@@ -112,6 +131,8 @@ export function RuleDialog({
 }: {
   rule?: ModerationRule
   surface?: ModerationSurface | null
+  where?: string | null
+  whereOptions: Option[]
   categories: CategoryUsage[]
   trigger: ReactElement
   disabled?: boolean
@@ -126,6 +147,8 @@ export function RuleDialog({
       <RuleForm
         rule={rule}
         surface={surface}
+        where={where}
+        whereOptions={whereOptions}
         categories={categories}
         onSubmit={onSubmit}
       />

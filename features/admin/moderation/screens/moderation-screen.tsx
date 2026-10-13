@@ -46,6 +46,9 @@ export function ModerationScreen() {
               <RulesTable
                 query={rules.query}
                 surface={rules.surface}
+                where={rules.where}
+                whereOptions={screen.whereOptions}
+                countryNames={screen.countries.names}
                 categories={screen.categories.data ?? []}
                 onTune={tuning.open}
                 onSave={actions.saveRule}
@@ -53,7 +56,12 @@ export function ModerationScreen() {
                 toolbar={
                   <TableToolbar
                     onReset={
-                      rules.surface ? () => rules.setSurface(null) : undefined
+                      rules.surface || rules.where
+                        ? () => {
+                            rules.setSurface(null)
+                            rules.setWhere(null)
+                          }
+                        : undefined
                     }
                   >
                     <OptionSelect
@@ -63,6 +71,14 @@ export function ModerationScreen() {
                       options={SURFACE_OPTIONS}
                       allLabel="All surfaces"
                       className="w-48"
+                    />
+                    <OptionSelect
+                      label="Where"
+                      value={rules.where}
+                      onChange={rules.setWhere}
+                      options={screen.whereOptions}
+                      allLabel="Everywhere"
+                      className="w-64"
                     />
                   </TableToolbar>
                 }
@@ -96,6 +112,14 @@ export function ModerationScreen() {
                       options={VERDICT_OPTIONS}
                       allLabel="All verdicts"
                     />
+                    <OptionSelect
+                      label="Country"
+                      value={scans.list.values.country}
+                      onChange={(country) => scans.list.setFilter({ country })}
+                      options={screen.countries.options}
+                      allLabel="All countries"
+                      className="w-48"
+                    />
                   </TableToolbar>
                 }
               />
@@ -105,6 +129,7 @@ export function ModerationScreen() {
       )}
       <TuneSheet
         rule={tuning.rule}
+        countryNames={screen.countries.names}
         insight={tuning.insight}
         onClose={tuning.close}
       />

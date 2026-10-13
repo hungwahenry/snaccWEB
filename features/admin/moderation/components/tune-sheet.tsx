@@ -20,6 +20,7 @@ import {
   LoadingBlock,
   QueryView,
 } from "@/features/admin/shell/components/query-view"
+import { whereLabel } from "@/features/admin/shell/utils/where"
 import { formatNumber } from "@/lib/format"
 import type { CategoryInsight, ModerationRule } from "../types"
 import { catches, insightBars } from "../utils/insight"
@@ -27,9 +28,11 @@ import { catches, insightBars } from "../utils/insight"
 function Spread({
   insight,
   rule,
+  countryNames,
 }: {
   insight: CategoryInsight
   rule: ModerationRule | null
+  countryNames: ReadonlyMap<string, string>
 }) {
   if (insight.scans === 0) {
     return (
@@ -43,8 +46,11 @@ function Spread({
   return (
     <div className="flex flex-col gap-4">
       <p className="text-sm text-muted-foreground">
-        {formatNumber(insight.scans)} reviews scored for this category. The rule
-        currently fires at {rule?.threshold.toFixed(2)}.
+        {formatNumber(insight.scans)} reviews scored for this category
+        {rule?.country_code
+          ? ` in ${whereLabel(rule.country_code, countryNames)}`
+          : ""}
+        . The rule currently fires at {rule?.threshold.toFixed(2)}.
       </p>
 
       <div className="flex flex-col gap-1">
@@ -74,10 +80,12 @@ function Spread({
 
 export function TuneSheet({
   rule,
+  countryNames,
   insight,
   onClose,
 }: {
   rule: ModerationRule | null
+  countryNames: ReadonlyMap<string, string>
   insight: UseQueryResult<CategoryInsight>
   onClose: () => void
 }) {
@@ -95,7 +103,9 @@ export function TuneSheet({
           what="the score spread"
           loading={<LoadingBlock className="py-12" />}
         >
-          {(data) => <Spread insight={data} rule={rule} />}
+          {(data) => (
+            <Spread insight={data} rule={rule} countryNames={countryNames} />
+          )}
         </QueryView>
 
         <DialogFooter>

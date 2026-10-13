@@ -10,7 +10,8 @@ import {
 import { OptionSelect } from "@/features/admin/shell/components/option-select"
 import type { Option } from "@/features/admin/shell/types"
 import type { LegalKind } from "@/features/legal/types"
-import { DEFAULT_SET, KIND_OPTIONS } from "../utils/legal"
+import { DEFAULT_SET } from "@/features/admin/shell/utils/where"
+import { KIND_OPTIONS } from "../utils/legal"
 
 function NewVersionForm({
   whereOptions,

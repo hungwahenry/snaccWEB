@@ -13,6 +13,8 @@ import {
 } from "@/features/admin/shell/components/data-table"
 import { QueryTable } from "@/features/admin/shell/components/query-table"
 import { StatusBadge } from "@/features/admin/shell/components/status-badge"
+import type { Option } from "@/features/admin/shell/types"
+import { whereLabel } from "@/features/admin/shell/utils/where"
 import type {
   CategoryUsage,
   ModerationRule,
@@ -33,6 +35,9 @@ const SURFACE_COLUMN: Column<ModerationRule> = {
 export function RulesTable({
   query,
   surface,
+  where,
+  whereOptions,
+  countryNames,
   categories,
   toolbar,
   onTune,
@@ -41,6 +46,9 @@ export function RulesTable({
 }: {
   query: UseQueryResult<ModerationRule[]>
   surface: ModerationSurface | null
+  where: string | null
+  whereOptions: Option[]
+  countryNames: ReadonlyMap<string, string>
   categories: CategoryUsage[]
   toolbar: ReactNode
   onTune: (rule: ModerationRule) => void
@@ -59,6 +67,12 @@ export function RulesTable({
             {rule.retired ? <Badge variant="outline">retired</Badge> : null}
           </span>
         ),
+      },
+      {
+        id: "where",
+        header: "Where",
+        className: "text-sm",
+        cell: (rule) => whereLabel(rule.country_code, countryNames),
       },
       {
         id: "threshold",
@@ -91,6 +105,7 @@ export function RulesTable({
             <CanAct permission="moderation.write">
               <RuleDialog
                 rule={rule}
+                whereOptions={whereOptions}
                 categories={categories}
                 trigger={
                   <Button variant="outline" size="sm">
@@ -128,7 +143,15 @@ export function RulesTable({
     ]
 
     return surface === null ? [SURFACE_COLUMN, ...columns] : columns
-  }, [surface, categories, onTune, onSave, onSetRetired])
+  }, [
+    surface,
+    whereOptions,
+    countryNames,
+    categories,
+    onTune,
+    onSave,
+    onSetRetired,
+  ])
 
   return (
     <QueryTable
@@ -140,6 +163,8 @@ export function RulesTable({
         <CanAct permission="moderation.write">
           <RuleDialog
             surface={surface}
+            where={where}
+            whereOptions={whereOptions}
             categories={categories}
             trigger={
               <Button size="sm">

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import type { AdminLegalSummary } from "../types"
-import { standingOf, whereLabel } from "./legal"
+import { standingOf } from "./legal"
 
 const doc = (
   id: string,
@@ -34,15 +34,5 @@ describe("standingOf", () => {
 
   it("keeps each country's versions to themselves", () => {
     expect(standingOf(all[3], all)).toBe("in_force")
-  })
-})
-
-describe("whereLabel", () => {
-  it("names the country, or says the default set covers everywhere else", () => {
-    const countries = new Map([["GH", "Ghana"]])
-    expect(whereLabel("GH", countries)).toBe("Ghana")
-    expect(whereLabel(null, countries)).toBe(
-      "Default, everywhere without its own"
-    )
   })
 })

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+import { DEFAULT_SET } from "@/features/admin/shell/utils/where"
 import type { CategoryUsage, ModerationRule } from "../types"
 import {
   categoryOptions,
@@ -7,12 +8,14 @@ import {
   parseThreshold,
   rulesOn,
   toRuleInput,
+  toRuleLine,
 } from "./rules"
 
 const rule = (overrides: Partial<ModerationRule> = {}): ModerationRule => ({
   id: "r1",
   surface: "comment",
   category: "harassment",
+  country_code: null,
   threshold: 0.7,
   action: "hold",
   note: "Measured on a week of replies",
@@ -26,6 +29,7 @@ const rule = (overrides: Partial<ModerationRule> = {}): ModerationRule => ({
 describe("rule drafts", () => {
   it("starts a new rule as a flag at 0.85 on the surface being looked at", () => {
     expect(draftFrom()).toEqual({
+      where: DEFAULT_SET,
       surface: "snacc",
       category: "",
       threshold: "0.85",
@@ -33,10 +37,12 @@ describe("rule drafts", () => {
       note: "",
     })
     expect(draftFrom(undefined, "moment").surface).toBe("moment")
+    expect(draftFrom(undefined, null, "GH").where).toBe("GH")
   })
 
   it("fills in an existing rule", () => {
-    expect(draftFrom(rule(), "snacc")).toEqual({
+    expect(draftFrom(rule(), "snacc", "GH")).toEqual({
+      where: DEFAULT_SET,
       surface: "comment",
       category: "harassment",
       threshold: "0.7",
@@ -69,6 +75,12 @@ describe("rule drafts", () => {
       note: undefined,
     })
   })
+
+  it("names the country when the rule is made for one, and never changes it later", () => {
+    const draft = { ...draftFrom(rule()), where: "GH" }
+    expect(toRuleInput(draft).countryCode).toBe("GH")
+    expect(toRuleLine(draft)).not.toHaveProperty("countryCode")
+  })
 })
 
 describe("parseThreshold", () => {
@@ -83,10 +95,21 @@ describe("parseThreshold", () => {
 })
 
 describe("rulesOn", () => {
+  const rules = [
+    rule(),
+    rule({ id: "r2", surface: "snacc" }),
+    rule({ id: "r3", surface: "snacc", country_code: "GH" }),
+  ]
+  const ids = (picked: ModerationRule[]) => picked.map((each) => each.id)
+
   it("keeps every rule without a surface, or only that surface's", () => {
-    const rules = [rule(), rule({ id: "r2", surface: "snacc" })]
-    expect(rulesOn(rules, null)).toHaveLength(2)
-    expect(rulesOn(rules, "snacc").map((each) => each.id)).toEqual(["r2"])
+    expect(rulesOn(rules, null, null)).toHaveLength(3)
+    expect(ids(rulesOn(rules, "snacc", null))).toEqual(["r2", "r3"])
+  })
+
+  it("narrows to the default set or one country", () => {
+    expect(ids(rulesOn(rules, null, DEFAULT_SET))).toEqual(["r1", "r2"])
+    expect(ids(rulesOn(rules, "snacc", "GH"))).toEqual(["r3"])
   })
 })
 
