@@ -24,7 +24,7 @@ export function StreakIntroSheet({
           Keep a streak going
         </h2>
         <p className="text-base leading-6 text-muted-foreground">
-          Message someone back and forth on the same day and a 🔥 appears beside
+          Message someone back and forth within a day and a 🔥 appears beside
           their name. Keep it up daily and the number climbs.
         </p>
       </div>

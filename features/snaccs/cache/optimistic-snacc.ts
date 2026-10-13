@@ -10,6 +10,7 @@ import type {
 import { liveMatchCard } from "@/features/football/utils/card"
 import { attachmentOfPick, stickerFields } from "@/features/stickers/utils/pick"
 import { optimisticHangout } from "@/features/hangouts/utils/optimistic-hangout"
+import { deviceTimeZone } from "@/lib/device"
 import { toEmbedded } from "../utils/resnaccs"
 import { findSnacc } from "."
 
@@ -92,7 +93,11 @@ export function buildOptimisticSnacc(
       : null,
     poll: draft.poll ? optimisticPoll(id, draft.poll) : null,
     hangout: draft.hangout
-      ? optimisticHangout(draft.hangout, author.university?.id ?? "")
+      ? optimisticHangout(
+          draft.hangout,
+          author.university?.id ?? "",
+          deviceTimeZone() ?? "UTC"
+        )
       : null,
     hangout_tag: draft.hangoutTag ?? null,
     images: draft.images.map((image, position) => ({

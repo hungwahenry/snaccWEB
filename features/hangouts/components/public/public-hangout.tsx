@@ -1,5 +1,4 @@
 import { UsersIcon } from "lucide-react"
-import { WAT_TIME_ZONE } from "@/lib/format"
 import type { SnaccHangout } from "../../types"
 import { goingLine, whenLineFor } from "../../utils/hangouts"
 
@@ -18,7 +17,7 @@ export function PublicHangout({ hangout }: { hangout: SnaccHangout }) {
             {hangout.title}
           </span>
           <span className="text-sm text-muted-foreground">
-            {whenLineFor(hangout.state, hangout.starts_at, WAT_TIME_ZONE)}
+            {whenLineFor(hangout.state, hangout, undefined)}
           </span>
         </span>
       </div>

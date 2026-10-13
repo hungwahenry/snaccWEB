@@ -11,6 +11,7 @@ import {
   whenLineFor,
 } from "./hangouts"
 
+const HERE = Intl.DateTimeFormat().resolvedOptions().timeZone
 const NOW = new Date(2026, 9, 3, 12, 0).getTime()
 const at = (hours: number) => new Date(NOW + hours * 3_600_000).toISOString()
 
@@ -29,6 +30,7 @@ const hangout = (patch: Partial<SnaccHangout> = {}): SnaccHangout => ({
   join_state: "none",
   requests_count: null,
   university_id: "ui",
+  time_zone: HERE,
   ...patch,
 })
 
@@ -60,8 +62,29 @@ describe("canPostFrom", () => {
 
 describe("labels", () => {
   it("labels a state the server already worked out", () => {
-    expect(whenLineFor("over", at(-30))).toBe("Over · Fri 2 Oct")
-    expect(whenLineFor("upcoming", at(6))).toBe("Sat 3 Oct at 6:00 PM")
+    const placed = (hours: number) => ({
+      starts_at: at(hours),
+      time_zone: HERE,
+    })
+    expect(whenLineFor("over", placed(-30), HERE)).toBe("Over · Fri 2 Oct")
+    expect(whenLineFor("upcoming", placed(6), HERE)).toBe(
+      "Sat 3 Oct at 6:00 PM"
+    )
+  })
+
+  it("gives the time on campus, and says so when the viewer may be elsewhere", () => {
+    const upcoming = { starts_at: "2026-10-03T17:00:00.000Z" }
+    const london = { ...upcoming, time_zone: "Europe/London" }
+
+    expect(whenLineFor("upcoming", london, "Europe/London")).toBe(
+      "Sat 3 Oct at 6:00 PM"
+    )
+    expect(whenLineFor("upcoming", london, "Asia/Tokyo")).toBe(
+      "Sat 3 Oct at 6:00 PM campus time"
+    )
+    expect(whenLineFor("upcoming", london, undefined)).toBe(
+      "Sat 3 Oct at 6:00 PM campus time"
+    )
   })
 
   it("says when, or that it is on now, over or called off", () => {

@@ -22,7 +22,7 @@ export function DashboardScreen() {
     <>
       <PageHeader
         title="Dashboard"
-        description="Your platform at a glance."
+        description="Your platform at a glance. Days run midnight to midnight UTC."
         action={
           <div className="flex flex-wrap items-center gap-2">
             {campuses.length > 1 ? (

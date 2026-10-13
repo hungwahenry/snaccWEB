@@ -20,6 +20,7 @@ export interface SnaccHangout {
   join_state: JoinState
   requests_count: number | null
   university_id: string
+  time_zone: string
 }
 
 export interface HangoutTag {

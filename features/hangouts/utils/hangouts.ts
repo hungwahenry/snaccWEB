@@ -1,7 +1,9 @@
+import { deviceTimeZone } from "@/lib/device"
 import { dateAtTime, weekdayDate } from "@/lib/format"
 import type { HangoutState, SnaccHangout } from "../types"
 
 type Timed = Pick<SnaccHangout, "state" | "starts_at" | "wraps_at">
+type Placed = Pick<SnaccHangout, "starts_at" | "time_zone">
 
 export function hangoutTitle(
   hangout: Pick<SnaccHangout, "emoji" | "title">
@@ -28,25 +30,31 @@ export function canPostFrom(
   return hangout.join_state === "going" && stateAt(hangout, now) !== "cancelled"
 }
 
+function campusTime(hangout: Placed, viewerZone: string | undefined): string {
+  const there = dateAtTime(hangout.starts_at, hangout.time_zone)
+  const here = viewerZone && dateAtTime(hangout.starts_at, viewerZone)
+  return there === here ? there : `${there} campus time`
+}
+
 export function whenLineFor(
   state: HangoutState,
-  startsAt: string,
-  timeZone?: string
+  hangout: Placed,
+  viewerZone: string | undefined
 ): string {
   switch (state) {
     case "cancelled":
-      return `Called off · ${weekdayDate(startsAt, timeZone)}`
+      return `Called off · ${weekdayDate(hangout.starts_at, hangout.time_zone)}`
     case "upcoming":
-      return dateAtTime(startsAt, timeZone)
+      return campusTime(hangout, viewerZone)
     case "happening":
       return "Happening now"
     case "over":
-      return `Over · ${weekdayDate(startsAt, timeZone)}`
+      return `Over · ${weekdayDate(hangout.starts_at, hangout.time_zone)}`
   }
 }
 
-export function whenLine(hangout: Timed, now: number): string {
-  return whenLineFor(stateAt(hangout, now), hangout.starts_at)
+export function whenLine(hangout: Timed & Placed, now: number): string {
+  return whenLineFor(stateAt(hangout, now), hangout, deviceTimeZone())
 }
 
 export function goingLine(

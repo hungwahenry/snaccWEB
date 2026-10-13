@@ -10,7 +10,7 @@ import { PublicClip } from "@/features/clips/components/public-clip"
 import { PublicHangout } from "@/features/hangouts/components/public/public-hangout"
 import { StickerAttachmentView } from "@/features/stickers/components/sticker-attachment-view"
 import { LikeGlyph } from "@/features/likes/components/like-glyph"
-import { compactCount, timeAgo } from "@/lib/format"
+import { compactCount, relativeAge } from "@/lib/format"
 import { richText } from "@/lib/rich-text"
 import { AuthorBadges } from "@/features/users/components/public/author-badges"
 import { nameOf } from "@/features/users/utils/names"
@@ -60,7 +60,7 @@ export function PublicSnaccCard({
             ) : null}
             <span className="text-muted-foreground">·</span>
             <span className="shrink-0 text-muted-foreground">
-              {timeAgo(snacc.created_at)}
+              {relativeAge(snacc.created_at)}
             </span>
             <MoreHorizontalIcon
               className="ml-auto shrink-0 text-muted-foreground"

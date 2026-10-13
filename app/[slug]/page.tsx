@@ -38,7 +38,7 @@ export default async function DynamicPage({
         </h1>
         {page.published_at ? (
           <p className="mt-2 text-sm text-muted-foreground">
-            Updated {longDate(page.published_at)}
+            Updated {longDate(page.published_at, "UTC")}
           </p>
         ) : null}
         <article

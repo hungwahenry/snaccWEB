@@ -9,6 +9,7 @@ import {
   koboToInput,
   monthYear,
   nairaToKobo,
+  relativeAge,
   shortDate,
   timeAgo,
   utcHourToLocal,
@@ -30,8 +31,8 @@ describe("weekdayDate", () => {
   })
 
   it("reads the time on a given clock when asked, the day included", () => {
-    expect(dateAtTime("2026-10-14T23:30:00.000Z", "Africa/Lagos")).toBe(
-      "Thu 15 Oct at 12:30 AM"
+    expect(dateAtTime("2026-10-14T23:30:00.000Z", "Europe/Paris")).toBe(
+      "Thu 15 Oct at 1:30 AM"
     )
   })
 })
@@ -89,6 +90,20 @@ describe("timeAgo", () => {
     expect(timeAgo(ago(3 * 86_400_000))).toBe("3d")
     expect(timeAgo(ago(30 * 86_400_000))).toBe(shortDate(ago(30 * 86_400_000)))
     expect(timeAgo(new Date(Date.now() + 60_000).toISOString())).toBe("0s")
+    vi.useRealTimers()
+  })
+})
+
+describe("relativeAge", () => {
+  it("never falls back to a date, so it reads the same wherever it is drawn", () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-09-11T12:00:00Z"))
+    const ago = (days: number) =>
+      new Date(Date.now() - days * 86_400_000).toISOString()
+
+    expect(relativeAge(ago(3))).toBe("3d")
+    expect(relativeAge(ago(30))).toBe("4w")
+    expect(relativeAge(ago(800))).toBe("2y")
     vi.useRealTimers()
   })
 })

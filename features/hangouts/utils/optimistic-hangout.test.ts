@@ -13,7 +13,8 @@ describe("optimisticHangout", () => {
           capacity: 6,
           private: true,
         },
-        "ui"
+        "ui",
+        "Europe/London"
       )
     ).toMatchObject({
       going_count: 1,
@@ -21,6 +22,7 @@ describe("optimisticHangout", () => {
       join_state: "going",
       private: true,
       university_id: "ui",
+      time_zone: "Europe/London",
     })
   })
 })

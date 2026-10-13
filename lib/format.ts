@@ -1,13 +1,9 @@
-const LOCALE = "en-NG"
-
-export const WAT_TIME_ZONE = "Africa/Lagos"
-
 function upperMeridiem(value: string): string {
   return value.replace(/\b[ap]\.?m\.?\b/gi, (match) => match.toUpperCase())
 }
 
 export function formatNaira(kobo: number): string {
-  return `₦${(kobo / 100).toLocaleString(LOCALE, { maximumFractionDigits: 2 })}`
+  return `₦${(kobo / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })}`
 }
 
 export function koboToInput(kobo: number): string {
@@ -26,7 +22,7 @@ export function nairaToKobo(raw: string): number {
 }
 
 export function formatNumber(value: number): string {
-  return value.toLocaleString(LOCALE)
+  return value.toLocaleString(undefined)
 }
 
 export function compactCount(value: number): string {
@@ -53,22 +49,25 @@ export function shortDate(iso: string): string {
   const options: Intl.DateTimeFormatOptions = { day: "numeric", month: "short" }
   if (date.getFullYear() !== new Date().getFullYear()) options.year = "numeric"
 
-  return date.toLocaleDateString(LOCALE, options)
+  return date.toLocaleDateString(undefined, options)
 }
 
-export function longDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(LOCALE, {
+export function longDate(iso: string, timeZone?: string): string {
+  return new Date(iso).toLocaleDateString(undefined, {
     day: "numeric",
     month: "long",
     year: "numeric",
+    timeZone,
   })
 }
 
-export function timeAgo(iso: string): string {
-  const secs = Math.max(
-    0,
-    Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
-  )
+function secondsSince(iso: string): number {
+  return Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 1000))
+}
+
+const WEEK_SECS = 7 * 86_400
+
+function ageOf(secs: number): string {
   if (secs < 60) return `${secs}s`
   const mins = Math.floor(secs / 60)
   if (mins < 60) return `${mins}m`
@@ -76,14 +75,24 @@ export function timeAgo(iso: string): string {
   if (hrs < 24) return `${hrs}h`
   const days = Math.floor(hrs / 24)
   if (days < 7) return `${days}d`
-  return shortDate(iso)
+  if (days < 365) return `${Math.floor(days / 7)}w`
+  return `${Math.floor(days / 365)}y`
+}
+
+export function timeAgo(iso: string): string {
+  const secs = secondsSince(iso)
+  return secs < WEEK_SECS ? ageOf(secs) : shortDate(iso)
+}
+
+export function relativeAge(iso: string): string {
+  return ageOf(secondsSince(iso))
 }
 
 export function formatDate(iso: string | null): string {
   if (!iso) return "—"
 
   return upperMeridiem(
-    new Date(iso).toLocaleString(LOCALE, {
+    new Date(iso).toLocaleString(undefined, {
       day: "numeric",
       month: "short",
       year: "numeric",
@@ -120,7 +129,7 @@ export function sameDay(a: string, b: string): boolean {
 
 export function clockTime(iso: string, timeZone?: string): string {
   return upperMeridiem(
-    new Date(iso).toLocaleTimeString(LOCALE, {
+    new Date(iso).toLocaleTimeString(undefined, {
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
@@ -135,23 +144,23 @@ export function dayLabel(iso: string): string {
 
   if (days === 0) return "Today"
   if (days === 1) return "Yesterday"
-  if (days < 7) return date.toLocaleDateString(LOCALE, { weekday: "long" })
+  if (days < 7) return date.toLocaleDateString(undefined, { weekday: "long" })
 
   return shortDate(iso)
 }
 
 export function weekdayDay(iso: string, timeZone?: string): string {
   const date = new Date(iso)
-  const weekday = date.toLocaleDateString(LOCALE, {
+  const weekday = date.toLocaleDateString(undefined, {
     weekday: "short",
     timeZone,
   })
-  const day = date.toLocaleDateString(LOCALE, { day: "numeric", timeZone })
+  const day = date.toLocaleDateString(undefined, { day: "numeric", timeZone })
   return `${weekday} ${day}`
 }
 
 export function weekdayDate(iso: string, timeZone?: string): string {
-  const month = new Date(iso).toLocaleDateString(LOCALE, {
+  const month = new Date(iso).toLocaleDateString(undefined, {
     month: "short",
     timeZone,
   })
@@ -163,7 +172,7 @@ export function dateAtTime(iso: string, timeZone?: string): string {
 }
 
 export function monthYear(iso: string): string {
-  return new Date(iso).toLocaleDateString(LOCALE, {
+  return new Date(iso).toLocaleDateString(undefined, {
     month: "long",
     year: "numeric",
   })
@@ -182,7 +191,7 @@ export function formatDuration(seconds: number): string {
 }
 
 export function shortDay(isoDate: string): string {
-  return new Date(`${isoDate}T00:00:00`).toLocaleDateString(LOCALE, {
+  return new Date(`${isoDate}T00:00:00`).toLocaleDateString(undefined, {
     day: "numeric",
     month: "short",
   })
@@ -200,7 +209,9 @@ export function hourLabel(hour: number): string {
   const at = new Date()
   at.setHours(hour, 0, 0, 0)
 
-  return at.toLocaleTimeString(LOCALE, { hour: "numeric" }).replace(/\s/g, "")
+  return at
+    .toLocaleTimeString(undefined, { hour: "numeric" })
+    .replace(/\s/g, "")
 }
 
 /** An unread count on a badge: exact up to 99, then just "a lot". */

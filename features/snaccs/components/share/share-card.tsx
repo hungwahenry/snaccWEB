@@ -13,6 +13,7 @@ import { VoiceBars } from "@/features/voice/components/voice-bars"
 import { clock } from "@/features/voice/utils/clock"
 import { levelsFor } from "@/features/voice/utils/levels"
 import { barCount } from "@/features/voice/utils/wave"
+import { deviceTimeZone } from "@/lib/device"
 import { compactCount, timeAgo } from "@/lib/format"
 import { sameOriginMedia } from "@/lib/media-url"
 import type { Snacc } from "../../types"
@@ -120,8 +121,12 @@ export function ShareCard({ snacc }: { snacc: Snacc }) {
               {snacc.hangout.title}
             </span>
             <span className="text-sm text-muted-foreground">
-              {whenLineFor(snacc.hangout.state, snacc.hangout.starts_at)} ·{" "}
-              {goingLine(snacc.hangout)}
+              {whenLineFor(
+                snacc.hangout.state,
+                snacc.hangout,
+                deviceTimeZone()
+              )}{" "}
+              · {goingLine(snacc.hangout)}
             </span>
           </span>
         </div>

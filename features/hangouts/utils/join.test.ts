@@ -20,6 +20,7 @@ const hangout = (patch: Partial<SnaccHangout> = {}): SnaccHangout => ({
   join_state: "none",
   requests_count: null,
   university_id: "ui",
+  time_zone: "Europe/London",
   ...patch,
 })
 

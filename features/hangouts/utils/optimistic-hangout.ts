@@ -2,7 +2,8 @@ import type { HangoutPayload, SnaccHangout } from "../types"
 
 export function optimisticHangout(
   payload: HangoutPayload,
-  campusId: string
+  campusId: string,
+  timeZone: string
 ): SnaccHangout {
   return {
     title: payload.title,
@@ -19,5 +20,6 @@ export function optimisticHangout(
     join_state: "going",
     requests_count: 0,
     university_id: campusId,
+    time_zone: timeZone,
   }
 }
