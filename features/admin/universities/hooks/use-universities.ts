@@ -32,7 +32,6 @@ export function useUniversities(query: UniversityListQuery) {
   })
 }
 
-/** Every campus. Pickers offer the verified ones; acronyms and merges cover them all. */
 export function useCampuses() {
   const query = useQuery({
     queryKey: adminUniversityKeys.everything(),
