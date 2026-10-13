@@ -13,6 +13,7 @@ describe("shareLink", () => {
     expect(shareLink.snacc("01J")).toBe("https://snacc.fyi/snacc/01J")
     expect(shareLink.campus("unilag")).toBe("https://snacc.fyi/campus/unilag")
     expect(shareLink.pay("bola")).toBe("https://snacc.fyi/pay/bola")
+    expect(shareLink.sticker_pack("01K")).toBe("https://snacc.fyi/stickers/01K")
     expect(bareLink(shareLink.pay("bola"))).toBe("snacc.fyi/pay/bola")
   })
 })
@@ -20,12 +21,13 @@ describe("shareLink", () => {
 describe("findShareLinks", () => {
   it("finds every kind of Snacc link, with or without the scheme", () => {
     const body =
-      "see snacc.fyi/@bola and https://snacc.fyi/snacc/01ABC then snacc.fyi/campus/uni-lag or https://www.snacc.fyi/pay/bola"
+      "see snacc.fyi/@bola and https://snacc.fyi/snacc/01ABC then snacc.fyi/campus/uni-lag or https://www.snacc.fyi/pay/bola and snacc.fyi/stickers/01PACK"
     expect(findShareLinks(body).map(({ kind, ref }) => [kind, ref])).toEqual([
       ["profile", "bola"],
       ["snacc", "01ABC"],
       ["campus", "uni-lag"],
       ["pay", "bola"],
+      ["sticker_pack", "01PACK"],
     ])
   })
 

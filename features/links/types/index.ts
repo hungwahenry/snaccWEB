@@ -1,4 +1,5 @@
 import type { EmbeddedSnacc } from "@/features/snaccs/types"
+import type { StickerPack } from "@/features/stickers/types"
 import type { ShareKind } from "@/lib/share-links"
 
 export interface LinkPerson {
@@ -19,6 +20,7 @@ export type LinkTarget =
       acronym: string
       logo_url: string | null
     }
+  | { kind: "sticker_pack"; pack: StickerPack }
 
 export interface ResolvedLink {
   kind: ShareKind

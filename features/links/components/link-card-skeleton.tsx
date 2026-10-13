@@ -1,6 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { QuotedSnaccSkeleton } from "@/features/snaccs/components/card/quote/quoted-snacc-skeleton"
 import type { ShareRef } from "@/lib/share-links"
+import { cn } from "@/lib/utils"
 import { LINK_CARD, LinkFooter } from "./link-card-parts"
 
 export function LinkCardSkeleton({ link }: { link: ShareRef }) {
@@ -10,7 +11,14 @@ export function LinkCardSkeleton({ link }: { link: ShareRef }) {
         <QuotedSnaccSkeleton />
       ) : (
         <div className="flex items-center gap-3 p-3">
-          <Skeleton className="size-10 shrink-0 rounded-full" />
+          <Skeleton
+            className={cn(
+              "shrink-0",
+              link.kind === "sticker_pack"
+                ? "size-11 rounded-xl"
+                : "size-10 rounded-full"
+            )}
+          />
           <div className="flex min-w-0 flex-1 flex-col">
             <Skeleton className="my-[3px] h-3.5 w-28" />
             <Skeleton className="my-0.5 h-3 w-20" />

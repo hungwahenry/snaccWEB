@@ -5,6 +5,9 @@ import { UserAvatar } from "@/components/ui/user-avatar"
 import { campusPath } from "@/features/campus/routes"
 import { QuotedSnacc } from "@/features/snaccs/components/card/quote/quoted-snacc"
 import { snaccPath } from "@/features/snaccs/routes"
+import { PackSummary } from "@/features/stickers/components/pack-summary"
+import { stickerPackPath } from "@/features/stickers/routes"
+import { packDetails } from "@/features/stickers/utils/packs"
 import type { EmbeddedSnacc } from "@/features/snaccs/types"
 import { TierName } from "@/features/users/components/flair"
 import { profilePath } from "@/features/users/routes"
@@ -18,6 +21,7 @@ import { LinkCardSkeleton } from "./link-card-skeleton"
 function hrefOf(target: LinkTarget): string | null {
   if (target.kind === "snacc") return snaccPath(target.snacc.id)
   if (target.kind === "campus") return campusPath(target.slug)
+  if (target.kind === "sticker_pack") return stickerPackPath(target.pack.id)
   if (target.kind === "pay") return `/pay/${target.person.username ?? ""}`
   return target.person.username ? profilePath(target.person.username) : null
 }
@@ -113,6 +117,14 @@ export function LinkCard({
     <>
       {target.kind === "campus" ? (
         <CampusRow target={target} />
+      ) : target.kind === "sticker_pack" ? (
+        <div className="flex items-center gap-3 p-3">
+          <PackSummary
+            pack={target.pack}
+            details={packDetails(target.pack)}
+            compact
+          />
+        </div>
       ) : (
         <PersonRow person={target.person} pay={target.kind === "pay"} />
       )}
