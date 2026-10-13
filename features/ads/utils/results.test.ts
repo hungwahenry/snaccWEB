@@ -1,12 +1,15 @@
 import { describe, expect, it } from "vitest"
 import type { Campaign } from "../types"
 import { everyDay, resultStats } from "./results"
+import { money } from "@/lib/money"
+
+const naira = (amount: number) => money(amount, "NGN")
 
 describe("everyDay", () => {
   it("fills the quiet days between the first and the last", () => {
     const days = everyDay([
-      { day: "2026-10-30", views: 4, clicks: 1, spent_kobo: 400 },
-      { day: "2026-11-02", views: 2, clicks: 0, spent_kobo: 200 },
+      { day: "2026-10-30", views: 4, clicks: 1, spent: naira(400) },
+      { day: "2026-11-02", views: 2, clicks: 0, spent: naira(200) },
     ])
 
     expect(days.map((day) => day.day)).toEqual([
@@ -19,7 +22,7 @@ describe("everyDay", () => {
       day: "2026-10-31",
       views: 0,
       clicks: 0,
-      spent_kobo: 0,
+      spent: naira(0),
     })
     expect(days[3].views).toBe(2)
   })

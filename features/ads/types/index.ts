@@ -2,6 +2,7 @@ import type { Country, NamedPlace } from "@/features/places/types"
 import type { Snacc } from "@/features/snaccs/types"
 import type { University } from "@/features/universities/types"
 import type { Gender } from "@/features/users/types"
+import type { Money } from "@/lib/money"
 
 export type AdPlacement = "feed" | "clips" | "discover" | "lists"
 
@@ -99,8 +100,8 @@ export interface Campaign {
   status: CampaignStatus
   paused_by: CampaignPauser | null
   end_reason: CampaignEndReason | null
-  budget_kobo: number
-  spent_kobo: number
+  budget: Money
+  spent: Money
   views_count: number
   clicks_count: number
   starts_at: string
@@ -120,7 +121,7 @@ export interface CampaignDay {
   day: string
   views: number
   clicks: number
-  spent_kobo: number
+  spent: Money
 }
 
 export interface CampaignEngagement {
@@ -134,7 +135,7 @@ export interface CampaignEngagement {
 export interface CampaignCampusResult {
   university: CampusPick
   views: number
-  spent_kobo: number
+  spent: Money
 }
 
 export interface CampaignDetail extends Campaign {
@@ -144,13 +145,17 @@ export interface CampaignDetail extends Campaign {
 }
 
 export interface PriceRange {
-  min: number
-  max: number
+  min: Money
+  max: Money
+}
+
+export interface AdPrices {
+  price_per_thousand: PriceRange
+  min_budget: Money
 }
 
 export interface AdsInfo {
-  price_per_thousand_kobo: PriceRange
-  min_budget_kobo: number
+  prices: AdPrices[]
   max_days: number
   campuses: number
   prohibited: string[]
@@ -158,11 +163,16 @@ export interface AdsInfo {
 
 export interface AdReach {
   people: number
-  price_per_thousand_kobo: PriceRange
+  price_per_thousand: PriceRange
+}
+
+export interface AdBudget {
+  minimum: Money
+  presets: Money[]
 }
 
 export interface BudgetPreset {
-  kobo: number
+  amount: Money
   label: string
   views: string | null
 }
@@ -175,7 +185,7 @@ export interface ReachEstimate {
 
 export interface CreateCampaignInput {
   snaccId: string
-  budgetKobo: number
+  budget: Money
   startsAt: string
   endsAt: string
   placements: AdPlacement[]
@@ -211,10 +221,10 @@ export type DraftProblems = Partial<Record<DraftField, string>>
 
 export interface DraftLimits {
   now: number
-  minBudgetKobo: number
+  minBudget: Money
   maxDays: number
   maxLeadDays: number
-  balanceKobo: number | null
+  balance: Money | null
 }
 
 export type ScheduleEnd = "start" | "end"

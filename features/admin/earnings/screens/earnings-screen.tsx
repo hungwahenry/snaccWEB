@@ -28,6 +28,7 @@ export function EarningsScreen() {
             <CanAct permission="earnings.manage_funds">
               <FundDialog
                 campuses={provision.options}
+                currencies={provision.currencies}
                 disabled={provision.loading}
                 trigger={<Button size="sm">Provision fund</Button>}
                 onSubmit={actions.provision}

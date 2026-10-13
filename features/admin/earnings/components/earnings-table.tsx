@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/badge"
 import type { Column } from "@/features/admin/shell/components/data-table"
 import { QueryTable } from "@/features/admin/shell/components/query-table"
 import type { Paginated } from "@/lib/api/types"
-import { formatDate, formatNaira } from "@/lib/format"
+import { formatDate } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import type { AdminEarning } from "../types"
 import { earningCause, earningLabel, partyHandle } from "../utils/earnings"
 
@@ -19,7 +20,7 @@ const COLUMNS: Column<AdminEarning>[] = [
     header: "Amount",
     align: "end",
     className: "tabular-nums",
-    cell: (event) => formatNaira(event.amount),
+    cell: (event) => formatMoney(event.amount),
   },
   {
     id: "beneficiary",

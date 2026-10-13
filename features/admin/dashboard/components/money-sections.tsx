@@ -10,9 +10,9 @@ import {
   StatGrid,
 } from "@/features/admin/shell/components/detail"
 import { TableFrame } from "@/features/admin/shell/components/table-frame"
-import { formatNaira } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import type {
-  MoneyMetrics,
+  CurrencyMoneyMetrics,
   PremiumStoreRow,
   WithdrawalStatusCount,
 } from "../types"
@@ -31,7 +31,7 @@ const WITHDRAWAL_COLUMNS: Column<WithdrawalStatusCount>[] = [
     header: "Amount",
     align: "end",
     className: "tabular-nums",
-    cell: (row) => formatNaira(row.amount),
+    cell: (row) => formatMoney(row.amount),
   },
 ]
 
@@ -42,17 +42,17 @@ const PREMIUM_COLUMNS: Column<PremiumStoreRow>[] = [
   countColumn("lapsed", "Lapsed", (row) => row.lapsed),
 ]
 
-export function MoneyStats({ money }: { money: MoneyMetrics }) {
+export function MoneyStats({ money }: { money: CurrencyMoneyMetrics }) {
   return (
     <StatGrid columns={2}>
       <Stat
         label="Paid out in earnings"
-        value={formatNaira(money.total_distributed)}
+        value={formatMoney(money.total_distributed)}
         hint="all time"
       />
       <Stat
         label="Wallet liability"
-        value={formatNaira(money.wallet_liability)}
+        value={formatMoney(money.wallet_liability)}
         hint="balances people have not withdrawn"
       />
     </StatGrid>
@@ -77,7 +77,7 @@ export function PremiumSection({ premium }: { premium: PremiumStoreRow[] }) {
   )
 }
 
-export function WithdrawalsSection({ money }: { money: MoneyMetrics }) {
+export function WithdrawalsSection({ money }: { money: CurrencyMoneyMetrics }) {
   return (
     <Section title="All-time withdrawals">
       <TableFrame>
@@ -92,19 +92,19 @@ export function WithdrawalsSection({ money }: { money: MoneyMetrics }) {
   )
 }
 
-export function EarningsSection({ money }: { money: MoneyMetrics }) {
+export function EarningsSection({ money }: { money: CurrencyMoneyMetrics }) {
   return (
     <Section title="All-time earnings">
       <Facts>
         <Fact
           label="Total distributed"
-          value={formatNaira(money.total_distributed)}
+          value={formatMoney(money.total_distributed)}
         />
         {money.earnings_by_type.map((row) => (
           <Fact
             key={row.type}
             label={row.label}
-            value={formatNaira(row.amount)}
+            value={formatMoney(row.amount)}
           />
         ))}
       </Facts>

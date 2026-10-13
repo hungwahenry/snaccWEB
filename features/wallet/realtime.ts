@@ -5,8 +5,9 @@ import {
   requestsChanged,
   virtualAccountChanged,
 } from "./cache"
+import type { Money } from "@/lib/money"
 
-export function onWalletBalance({ balance }: { balance: number }): void {
+export function onWalletBalance({ balance }: { balance: Money }): void {
   balanceChanged(balance)
 }
 

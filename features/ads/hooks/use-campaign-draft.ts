@@ -19,7 +19,7 @@ import {
   HASHTAGS_MAX,
   newDraft,
   toggleIn,
-  wholeNaira,
+  wholeUnits,
 } from "../utils/draft"
 
 const yearOf = (value: string) => (value ? Number(value) : null)
@@ -157,7 +157,7 @@ export function useCampaignDraft(
     },
     budget: {
       value: draft.budget,
-      onChange: (value: string) => set({ budget: wholeNaira(value) }),
+      onChange: (value: string) => set({ budget: wholeUnits(value) }),
     },
   }
 }

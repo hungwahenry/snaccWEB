@@ -2,7 +2,7 @@ import { api } from "@/lib/api/client"
 import type {
   AdminLegalDocument,
   AdminLegalSummary,
-  LegalDraftInput,
+  LegalDraft,
   NewVersionInput,
 } from "../types"
 
@@ -15,7 +15,7 @@ export const getLegalDocument = (id: string) =>
 export const startLegalVersion = (input: NewVersionInput) =>
   api.post<AdminLegalDocument>("/admin/legal", input)
 
-export const saveLegalDraft = (id: string, input: LegalDraftInput) =>
+export const saveLegalDraft = (id: string, input: LegalDraft) =>
   api.patch<AdminLegalDocument>(`/admin/legal/${id}`, input)
 
 export const publishLegalDraft = (id: string) =>

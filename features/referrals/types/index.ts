@@ -1,17 +1,18 @@
 import type { Author } from "@/features/users/types"
+import type { Money } from "@/lib/money"
 
 export type InviteeStatus = "pending" | "paid" | "closed"
 
 export interface ReferralReward {
-  referrer_kobo: number
-  referee_kobo: number
+  referrer: Money
+  referee: Money
   score: number
 }
 
 export interface ReferralStats {
   invited: number
   paid: number
-  earned_kobo: number
+  earned: Money
 }
 
 export interface ReferralOverview {

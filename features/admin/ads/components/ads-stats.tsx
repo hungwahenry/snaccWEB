@@ -1,6 +1,6 @@
 import { Stat, StatGrid } from "@/features/admin/shell/components/detail"
 import { StatSkeleton } from "@/features/admin/shell/components/stat-skeleton"
-import { formatNaira } from "@/lib/format"
+import { formatTotals } from "@/lib/money"
 import type { AdStats } from "../types"
 
 export function AdsStats({
@@ -24,12 +24,12 @@ export function AdsStats({
     <StatGrid columns={2}>
       <Stat
         label="Held for promotions"
-        value={formatNaira(stats.held_kobo)}
+        value={formatTotals(stats.held)}
         hint="Budgets paid in and not settled yet"
       />
       <Stat
         label="Earned from promotions"
-        value={formatNaira(stats.earned_kobo)}
+        value={formatTotals(stats.earned)}
         hint="Spent on promotions that have settled"
       />
     </StatGrid>

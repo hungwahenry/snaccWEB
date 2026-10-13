@@ -30,7 +30,7 @@ const user = (patch: Partial<AdminUserRow> = {}): AdminUserRow => ({
   payouts_blocked_at: null,
   payouts_blocked_reason: null,
   created_at: "2026-01-01T00:00:00Z",
-  balance: 0,
+  balance: { amount: 0, currency: "NGN" },
   snaccs_count: 0,
   followers_count: 0,
   following_count: 0,

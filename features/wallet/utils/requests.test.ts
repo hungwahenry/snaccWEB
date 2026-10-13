@@ -14,6 +14,9 @@ import {
   requestLine,
   requestState,
 } from "./requests"
+import { money } from "@/lib/money"
+
+const naira = (amount: number) => money(amount, "NGN")
 
 function person(username: string): MoneyPerson {
   return {
@@ -33,7 +36,7 @@ const NOW = Date.parse("2026-05-10T12:00:00Z")
 
 const request: MoneyRequest = {
   id: "q1",
-  amount: 250000,
+  amount: naira(250000),
   note: null,
   status: "pending",
   requester: person("ada"),
@@ -103,7 +106,7 @@ describe("request copy", () => {
     expect(declineTitle(request)).toBe("Decline @ada?")
     expect(cancelTitle(request)).toBe("Cancel your ₦2,500 request?")
     expect(mutedMessage(request)).toBe("Declined. @ada can't ask you again.")
-    expect(cannotCoverMessage(250000, 100000)).toBe(
+    expect(cannotCoverMessage(naira(250000), naira(100000))).toBe(
       "That needs ₦2,500 — you have ₦1,000."
     )
   })

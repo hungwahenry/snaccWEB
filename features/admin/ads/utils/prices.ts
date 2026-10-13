@@ -1,17 +1,30 @@
-import { parseNaira } from "@/features/admin/shell/utils/money"
+import { parseAmount } from "@/features/admin/shell/utils/money"
+import { formatMoney, money, type Money } from "@/lib/money"
 
-export const PRICE_STEP_KOBO = 1000
+const PRICE_STEP = 1000
 
-export const PRICE_INVALID =
-  "Enter naira in steps of ₦10, like 1000 or 1250. The lowest is ₦10."
-
-export function toPriceKobo(raw: string): number | null {
-  const kobo = parseNaira(raw)
-  if (kobo === null || kobo < PRICE_STEP_KOBO) return null
-
-  return kobo % PRICE_STEP_KOBO === 0 ? kobo : null
+function step(currency: string): Money {
+  return money(PRICE_STEP, currency)
 }
 
-export function priceProblem(raw: string): string | null {
-  return raw.trim() !== "" && toPriceKobo(raw) === null ? PRICE_INVALID : null
+export function priceInvalid(currency: string): string {
+  const smallest = formatMoney(step(currency))
+  return `Enter an amount in steps of ${smallest}. The lowest is ${smallest}.`
+}
+
+export function priceHint(currency: string): string {
+  return `In steps of ${formatMoney(step(currency))}.`
+}
+
+export function toPrice(raw: string, currency: string): Money | null {
+  const price = parseAmount(raw, currency)
+  if (price === null || price.amount < PRICE_STEP) return null
+
+  return price.amount % PRICE_STEP === 0 ? price : null
+}
+
+export function priceProblem(raw: string, currency: string): string | null {
+  return raw.trim() !== "" && toPrice(raw, currency) === null
+    ? priceInvalid(currency)
+    : null
 }

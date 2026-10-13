@@ -16,8 +16,8 @@ const stats: AdStats = {
     { status: "active", count: 2 },
     { status: "ended", count: 10 },
   ],
-  held_kobo: 500_000,
-  earned_kobo: 120_000,
+  held: [{ amount: 500_000, currency: "NGN" }],
+  earned: [{ amount: 120_000, currency: "NGN" }],
 }
 
 describe("adStatus", () => {

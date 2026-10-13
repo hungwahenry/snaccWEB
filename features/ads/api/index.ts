@@ -3,6 +3,7 @@ import { api } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
 import type {
   AdAudience,
+  AdBudget,
   AdButtonOption,
   AdEvent,
   AdReach,
@@ -12,6 +13,7 @@ import type {
   PolicyReason,
   PromotedSnacc,
 } from "../types"
+import type { Money } from "@/lib/money"
 
 const hideUrl = (campaignId: string) =>
   `/ads/${encodeURIComponent(campaignId)}/hide`
@@ -43,6 +45,8 @@ export const getCampaignPolicy = () =>
 export const getAdButtons = () =>
   api.get<AdButtonOption[]>("/ads/campaigns/buttons")
 
+export const getAdBudget = () => api.get<AdBudget>("/ads/campaigns/budget")
+
 export const estimateReach = (audience: AdAudience) =>
   api.post<AdReach>("/ads/campaigns/reach", audience)
 
@@ -65,11 +69,11 @@ export const resumeCampaign = (id: string) =>
 
 export const addCampaignBudget = (
   id: string,
-  amountKobo: number,
+  amount: Money,
   credential: MoneyCredential
 ) =>
   api.post<CampaignDetail>(`${campaignUrl(id)}/budget`, {
-    amountKobo,
+    amount,
     ...credential,
   })
 

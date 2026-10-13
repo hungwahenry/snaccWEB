@@ -26,6 +26,7 @@ import type {
   WalletTransaction,
   WalletTransactionDetail,
 } from "../types"
+import type { Money } from "@/lib/money"
 
 export const getWalletOverview = () => api.get<WalletOverview>("/wallet")
 
@@ -93,8 +94,8 @@ export const sendToBank = (input: SendToBankInput) =>
 export const sendToUser = (input: SendToUserInput) =>
   api.post<WalletOverview>("/wallet/send", input)
 
-export const startDeposit = (amountKobo: number) =>
-  api.post<DepositAccount>("/wallet/deposits", { amountKobo })
+export const startDeposit = (amount: Money) =>
+  api.post<DepositAccount>("/wallet/deposits", { amount })
 
 export const verifyDeposit = (reference: string) =>
   api.post<DepositCheck>(

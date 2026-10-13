@@ -7,7 +7,8 @@ import { StatusBadge } from "@/features/admin/shell/components/status-badge"
 import { UserCell } from "@/features/admin/shell/components/user-cell"
 import { withdrawalPath } from "@/features/admin/shell/routes"
 import type { Paginated } from "@/lib/api/types"
-import { formatDate, formatNaira } from "@/lib/format"
+import { formatDate } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import type { AdminWithdrawal } from "../types"
 import { WITHDRAWAL_STATUS } from "../utils/status"
 
@@ -34,7 +35,7 @@ const COLUMNS: Column<AdminWithdrawal>[] = [
     header: "Amount",
     align: "end",
     className: "tabular-nums",
-    cell: (withdrawal) => formatNaira(withdrawal.amount),
+    cell: (withdrawal) => formatMoney(withdrawal.amount),
   },
   {
     id: "status",

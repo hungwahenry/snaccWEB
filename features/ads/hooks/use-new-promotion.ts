@@ -13,7 +13,13 @@ import type { Snacc } from "@/features/snaccs/types"
 import { toEmbedded } from "@/features/snaccs/utils/resnaccs"
 import { useWalletOverview } from "@/features/wallet/hooks/account/use-wallet-overview"
 import { useNow } from "@/hooks/use-now"
-import { formatNaira, nairaToKobo } from "@/lib/format"
+import {
+  currencySymbol,
+  formatMoney,
+  inputToMoney,
+  money,
+  type Money,
+} from "@/lib/money"
 import type { Campaign, DraftProblems, PromotionStep } from "../types"
 import {
   draftProblems,
@@ -21,6 +27,7 @@ import {
   placementChoices,
   reachProblem,
   reviewRows,
+  wholeUnitsOf,
 } from "../utils/draft"
 import { budgetPresets, estimateOf } from "../utils/estimate"
 import { promotedPreview } from "../utils/preview"
@@ -33,7 +40,7 @@ import {
   stepReady,
 } from "../utils/steps"
 import { useCampaignDraft } from "./use-campaign-draft"
-import { useAdButtons, useCampaignPolicy } from "./use-campaigns"
+import { useAdBudget, useAdButtons, useCampaignPolicy } from "./use-campaigns"
 import { useCampaignReach } from "./use-campaign-reach"
 import { useCampaignSchedule } from "./use-campaign-schedule"
 import { useCreateCampaign } from "./use-create-campaign"
@@ -43,12 +50,11 @@ const TICK_MS = 30_000
 export function useNewPromotion(
   snacc: Snacc,
   source: Campaign | null,
+  currency: string,
   onLeave: () => void
 ) {
   const maxDays = useConfigValue("ads.max_days")
   const maxLeadDays = useConfigValue("ads.max_lead_days")
-  const minBudgetKobo = useConfigValue("ads.min_budget_kobo")
-  const presetsKobo = useConfigValue("ads.budget_presets_kobo")
   const minAudience = useConfigValue("ads.min_audience")
   const now = useNow(TICK_MS)
   const [step, setStep] = useState<PromotionStep>("audience")
@@ -75,6 +81,7 @@ export function useNewPromotion(
   const reach = useCampaignReach(form.audience)
   const policy = useCampaignPolicy()
   const buttons = useAdButtons()
+  const adBudget = useAdBudget()
   const wallet = useWalletOverview()
   const schedule = useCampaignSchedule(
     draft,
@@ -83,22 +90,23 @@ export function useNewPromotion(
   )
   const create = useCreateCampaign(snacc.id, (field) => goTo(stepOf(field)))
 
-  const balanceKobo = wallet.data?.balance ?? null
-  const budgetKobo = nairaToKobo(draft.budget)
+  const balance = wallet.data?.balance ?? null
+  const minBudget = adBudget.data?.minimum ?? money(0, currency)
+  const budget = inputToMoney(draft.budget, currency)
   const refusal = create.refusal?.draft === draft ? create.refusal : null
 
   const problems: DraftProblems = draftProblems(draft, {
     now,
-    minBudgetKobo,
+    minBudget,
     maxDays,
     maxLeadDays,
-    balanceKobo,
+    balance,
   })
   const tooNarrow = reachProblem(reach.error, reach.data?.people, minAudience)
   if (tooNarrow && !problems.audience) problems.audience = tooNarrow
   if (refusal) problems[refusal.field] = refusal.message
 
-  const estimate = reach.data ? estimateOf(reach.data, budgetKobo) : null
+  const estimate = reach.data ? estimateOf(reach.data, budget) : null
   const buttonLabel =
     buttons.data?.find((button) => button.id === draft.buttonId)?.label ?? null
   const following = nextStep(step)
@@ -116,9 +124,9 @@ export function useNewPromotion(
     },
     next: {
       label: following === "review" ? "Review" : "Continue",
-      ready: stepReady(step, problems, budgetKobo),
+      ready: stepReady(step, problems, budget),
       onNext: () => {
-        if (following && stepReady(step, problems, budgetKobo)) goTo(following)
+        if (following && stepReady(step, problems, budget)) goTo(following)
       },
     },
     review: reviewRows({
@@ -128,6 +136,7 @@ export function useNewPromotion(
       start: schedule.fields.start,
       end: schedule.fields.end,
       estimate,
+      budget,
     }),
     preview: toEmbedded(snacc),
     card: promotedPreview(
@@ -184,15 +193,16 @@ export function useNewPromotion(
     timeSheet: schedule.sheet,
     presets: {
       presets: budgetPresets(
-        presetsKobo,
-        reach.data?.price_per_thousand_kobo ?? null
+        adBudget.data?.presets ?? [],
+        reach.data?.price_per_thousand ?? null
       ),
-      selectedKobo: budgetKobo,
-      onPick: (kobo: number) => form.budget.onChange(String(kobo / 100)),
+      selected: budget,
+      onPick: (amount: Money) => form.budget.onChange(wholeUnitsOf(amount)),
     },
     budget: {
       ...form.budget,
-      hint: `At least ${formatNaira(minBudgetKobo)}`,
+      symbol: currencySymbol(currency),
+      hint: adBudget.data ? `At least ${formatMoney(minBudget)}` : "",
     },
     reach: {
       estimate,
@@ -205,15 +215,15 @@ export function useNewPromotion(
       onRetry: () => void policy.refetch(),
     },
     pay: {
-      label: budgetKobo > 0 ? `Pay ${formatNaira(budgetKobo)}` : "Pay and send",
+      label: budget.amount > 0 ? `Pay ${formatMoney(budget)}` : "Pay and send",
       balance:
-        balanceKobo === null
+        balance === null
           ? null
-          : `From your Snacc balance of ${formatNaira(balanceKobo)}.`,
-      ready: isReady(draft, problems),
+          : `From your Snacc balance of ${formatMoney(balance)}.`,
+      ready: isReady(draft, problems) && adBudget.data !== undefined,
       problem: firstProblem(problems),
       paying: create.paying,
-      onPay: () => void create.pay(draft),
+      onPay: () => void create.pay(draft, currency),
     },
   }
 }

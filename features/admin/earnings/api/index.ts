@@ -6,6 +6,7 @@ import type {
   EarningListQuery,
   FundInput,
 } from "../types"
+import type { Money } from "@/lib/money"
 
 export function listEarnings(query: EarningListQuery) {
   return api.get<Paginated<AdminEarning>>("/admin/earnings", query)
@@ -19,6 +20,6 @@ export function provisionFund(input: FundInput) {
   return api.post<AdminFund>("/admin/earnings/funds", input)
 }
 
-export function adjustFund(universityId: string, cap: number) {
+export function adjustFund(universityId: string, cap: Money) {
   return api.patch<AdminFund>(`/admin/earnings/funds/${universityId}`, { cap })
 }

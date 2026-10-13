@@ -10,6 +10,7 @@ import type {
   WalletRecipient,
 } from "../types"
 import { walletKeys } from "../utils/keys"
+import type { Money } from "@/lib/money"
 
 /** Money moved: everything counted from the ledger refetches, a top-up being waited on included. */
 export function moneyMoved(): void {
@@ -35,7 +36,7 @@ export function walletChanged(overview?: WalletOverview): void {
 }
 
 /** A pushed balance: the number moves at once, and whatever is counted from it refetches. */
-export function balanceChanged(balance: number): void {
+export function balanceChanged(balance: Money): void {
   getQueryClient().setQueryData<WalletOverview>(walletKeys.overview(), (old) =>
     old ? { ...old, balance } : old
   )

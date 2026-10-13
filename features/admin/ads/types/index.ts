@@ -1,5 +1,6 @@
 import type { NamedPlace } from "@/features/places/types"
 import type { Snacc } from "@/features/snaccs/types"
+import type { Money } from "@/lib/money"
 
 export type AdStatus = "pending" | "active" | "paused" | "rejected" | "ended"
 
@@ -75,8 +76,8 @@ export interface AdminAd {
   status: AdStatus
   paused_by: "advertiser" | "admin" | null
   end_reason: AdEndReason | null
-  budget_kobo: number
-  spent_kobo: number
+  budget: Money
+  spent: Money
   views_count: number
   clicks_count: number
   starts_at: string
@@ -104,8 +105,8 @@ export type AdListQuery = {
 
 export interface AdStats {
   by_status: { status: AdStatus; count: number }[]
-  held_kobo: number
-  earned_kobo: number
+  held: Money[]
+  earned: Money[]
 }
 
 export interface AdStatusTab {
@@ -139,7 +140,7 @@ export interface RejectDraft {
 
 export interface CampusPrice {
   university: AdCampus
-  price_per_thousand_kobo: number
+  price_per_thousand: Money
   custom: boolean
 }
 

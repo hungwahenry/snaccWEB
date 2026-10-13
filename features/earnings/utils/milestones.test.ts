@@ -8,9 +8,17 @@ import {
   milestoneLook,
   progressPercent,
 } from "./milestones"
+import { money } from "@/lib/money"
+
+const naira = (amount: number) => money(amount, "NGN")
 
 const milestones: EarningsMilestone[] = [
-  { key: "balance", current: 250_000, target: 500_000, met: false },
+  {
+    key: "balance",
+    current: naira(250_000),
+    target: naira(500_000),
+    met: false,
+  },
   { key: "views", current: 12_400, target: 10_000, met: true },
   { key: "followers", current: 40, target: 100, met: false },
 ]
@@ -58,13 +66,13 @@ describe("cleared milestones", () => {
 describe("earningsLine", () => {
   it("invites a claim once earnings can move", () => {
     expect(
-      earningsLine({ balance: 150_000, claimable: true, milestones })
+      earningsLine({ balance: naira(150_000), claimable: true, milestones })
     ).toBe("₦1,500 ready to claim")
   })
 
   it("shows progress until then", () => {
     expect(
-      earningsLine({ balance: 150_000, claimable: false, milestones })
+      earningsLine({ balance: naira(150_000), claimable: false, milestones })
     ).toBe("₦1,500 earned — 1 of 3 milestones")
   })
 })

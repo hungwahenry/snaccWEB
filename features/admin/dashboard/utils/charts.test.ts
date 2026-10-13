@@ -6,7 +6,7 @@ import {
   breakdownTotals,
   CHART_COLORS,
   dateLabel,
-  inNaira,
+  inWholeUnits,
 } from "./charts"
 
 const BREAKDOWN: Breakdown = {
@@ -38,9 +38,9 @@ describe("breakdownTotals", () => {
   })
 })
 
-describe("inNaira", () => {
-  it("turns kobo into naira and keeps the days", () => {
-    expect(inNaira(BREAKDOWN).series).toEqual([
+describe("inWholeUnits", () => {
+  it("turns the smallest unit into whole units and keeps the days", () => {
+    expect(inWholeUnits(BREAKDOWN, "NGN").series).toEqual([
       { date: "2026-09-28", deposit: 50, transfer: 2.5 },
       { date: "2026-09-29", deposit: 10, transfer: 0 },
     ])

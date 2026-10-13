@@ -19,6 +19,7 @@ import { voiceSourceOf } from "../../utils/voice"
 import { DayBreak } from "./day-break"
 import { MessageBubble } from "./message-bubble"
 import { MessageMeta } from "./message-meta"
+import type { Money } from "@/lib/money"
 
 const TOOL =
   "size-8 text-muted-foreground hover:bg-accent hover:text-foreground"
@@ -33,7 +34,7 @@ export interface MessageRowHandlers {
   onOpenViewOnce: (message: Message, photo: MessageImage) => void
   onOpenImages: (message: Message, index: number) => void
   onOpenMoney?: (transactionId: string) => void
-  onPayRequest?: (request: { id: string; amount: number }) => void
+  onPayRequest?: (request: { id: string; amount: Money }) => void
 }
 
 export type MessageRowProps = {

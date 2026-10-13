@@ -1,25 +1,35 @@
-import { nairaToKobo } from "@/lib/format"
+import { inputToMoney, minorDigits, money, type Money } from "@/lib/money"
 
-/** The most the keypad will type: ₦10m. */
-export const AMOUNT_CAP_KOBO = 1_000_000_000
+export const AMOUNT_CAP_UNITS = 10_000_000
 
-/** Applies one keypad press to a typed naira amount, refusing anything that is not money. */
+export function keypadCap(
+  currency: string,
+  capUnits = AMOUNT_CAP_UNITS
+): Money {
+  return money(capUnits * 10 ** minorDigits(currency), currency)
+}
+
 export function typeAmount(
   current: string,
   key: string,
-  capKobo = AMOUNT_CAP_KOBO
+  currency: string,
+  capUnits = AMOUNT_CAP_UNITS
 ): string {
+  const digits = minorDigits(currency)
   if (key === "back") return current.slice(0, -1)
   if (key === ".") {
-    if (current.includes(".")) return current
+    if (digits === 0 || current.includes(".")) return current
     return current === "" ? "0." : `${current}.`
   }
   if (!/^\d$/.test(key)) return current
 
   const next = current === "0" ? key : current + key
   const [, decimals] = next.split(".")
-  if (decimals !== undefined && decimals.length > 2) return current
-  if (nairaToKobo(next) > capKobo) return current
+  if (decimals !== undefined && decimals.length > digits) return current
+  if (
+    inputToMoney(next, currency).amount > keypadCap(currency, capUnits).amount
+  )
+    return current
   return next
 }
 
@@ -35,9 +45,9 @@ export function groupAmount(raw: string): string {
 }
 
 /** Font sizes in px that keep a long amount on one line. */
-export function amountSize(shown: string): { amount: number; naira: number } {
-  if (shown.length <= 6) return { amount: 64, naira: 34 }
-  if (shown.length <= 9) return { amount: 52, naira: 28 }
-  if (shown.length <= 12) return { amount: 40, naira: 22 }
-  return { amount: 32, naira: 18 }
+export function amountSize(shown: string): { amount: number; symbol: number } {
+  if (shown.length <= 6) return { amount: 64, symbol: 34 }
+  if (shown.length <= 9) return { amount: 52, symbol: 28 }
+  if (shown.length <= 12) return { amount: 40, symbol: 22 }
+  return { amount: 32, symbol: 18 }
 }

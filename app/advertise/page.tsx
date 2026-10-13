@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 
 export default async function AdvertisePage() {
   const info = await getAdsInfo()
-  if (!info) notFound()
+  if (!info || info.prices.length === 0) notFound()
 
   const pricing = advertisePricing(info)
 

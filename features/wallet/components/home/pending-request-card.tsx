@@ -1,6 +1,6 @@
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { nameOf } from "@/features/users/utils/names"
-import { formatNaira } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import type { MoneyRequest } from "../../types"
 import {
   requestCounterparty,
@@ -49,7 +49,7 @@ export function PendingRequestCard({
           </span>
         </span>
         <span className="text-base font-extrabold text-foreground tabular-nums">
-          {formatNaira(request.amount)}
+          {formatMoney(request.amount)}
         </span>
       </button>
 

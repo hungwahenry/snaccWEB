@@ -1,5 +1,6 @@
 "use client"
 
+import { useMe } from "@/features/auth/hooks/use-me"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { AmountStep } from "../components/pay/amount-step"
 import { RecipientStep } from "../components/pay/recipient-step"
@@ -19,7 +20,18 @@ export function PayScreen({ prefill }: { prefill: PayPrefill }) {
 }
 
 function Flow({ prefill }: { prefill: PayPrefill }) {
-  const flow = usePayFlow(prefill)
+  const currency = useMe().data?.currency
+  return currency ? <Steps prefill={prefill} currency={currency} /> : null
+}
+
+function Steps({
+  prefill,
+  currency,
+}: {
+  prefill: PayPrefill
+  currency: string
+}) {
+  const flow = usePayFlow(prefill, currency)
 
   switch (flow.screen) {
     case "done":

@@ -4,10 +4,9 @@ import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useMemo } from "react"
 import { confirm } from "@/components/ui/confirm"
-import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { usePendingVariables } from "@/hooks/use-pending-variables"
 import { showErrorMessage, showSuccess, showUndo } from "@/lib/feedback"
-import { formatNaira, koboToInput } from "@/lib/format"
+import { formatMoney, moneyToInput, type Money } from "@/lib/money"
 import { cancelRequest, declineRequest, payRequest } from "../../api"
 import { markRequest, mutesChanged, walletChanged } from "../../cache"
 import { payPath } from "../../routes"
@@ -26,7 +25,7 @@ import { useUnmute } from "./use-mutes"
 
 interface PayableRequest {
   id: string
-  amount: number
+  amount: Money
 }
 
 interface Decline {
@@ -38,7 +37,6 @@ export function useRequestActions(options: { enabled?: boolean } = {}) {
   const router = useRouter()
   const moneyConfirm = useMoneyConfirm()
   const overview = useWalletOverview({ enabled: options.enabled })
-  const minTopUp = useConfigValue("wallet.deposit.min_kobo")
   const unmute = useUnmute()
 
   const paying = usePendingVariables<PayableRequest>(
@@ -60,24 +58,23 @@ export function useRequestActions(options: { enabled?: boolean } = {}) {
   const pay = useMutation({
     mutationKey: walletMutationKeys.payRequest(),
     mutationFn: async (request: PayableRequest) => {
-      const balance = overview.data?.balance
-      const shortfall =
-        balance === undefined ? null : requestShortfall(request.amount, balance)
-      if (balance !== undefined && shortfall !== null) {
-        showErrorMessage(cannotCoverMessage(request.amount, balance), {
+      const wallet = overview.data
+      const shortfall = wallet
+        ? requestShortfall(request.amount, wallet.balance)
+        : null
+      if (wallet && shortfall !== null) {
+        const topUp = topUpFor(shortfall, wallet.rules.deposit_minimum)
+        showErrorMessage(cannotCoverMessage(request.amount, wallet.balance), {
           label: "Add money",
           onClick: () =>
             router.push(
-              payPath({
-                mode: "topup",
-                amount: koboToInput(topUpFor(shortfall, minTopUp)),
-              })
+              payPath({ mode: "topup", amount: moneyToInput(topUp) })
             ),
         })
         return null
       }
       return moneyConfirm.run(
-        { amountKobo: request.amount, kind: "user" },
+        { amount: request.amount, kind: "user" },
         (credential) => payRequest({ id: request.id, ...credential })
       )
     },
@@ -85,7 +82,7 @@ export function useRequestActions(options: { enabled?: boolean } = {}) {
       if (!paid) return
       walletChanged(paid)
       markRequest(request.id, "paid")
-      showSuccess(`Paid ${formatNaira(request.amount)}.`)
+      showSuccess(`Paid ${formatMoney(request.amount)}.`)
     },
   })
 

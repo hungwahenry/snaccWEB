@@ -31,12 +31,6 @@ export interface NewVersionInput {
   countryCode?: string
 }
 
-export interface LegalDraftInput {
-  title: string
-  content: unknown
-  html: string
-}
-
 export interface LegalDraft {
   title: string
   content: unknown

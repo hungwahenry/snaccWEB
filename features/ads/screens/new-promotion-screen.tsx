@@ -28,11 +28,12 @@ export function NewPromotionScreen({
 }) {
   const screen = useNewPromotionScreen(snaccId, fromId)
 
-  if (screen.snacc && screen.enabled && !screen.loading) {
+  if (screen.snacc && screen.currency && screen.enabled && !screen.loading) {
     return (
       <Editor
         snacc={screen.snacc}
         source={screen.source}
+        currency={screen.currency}
         onLeave={screen.onBack}
       />
     )
@@ -68,13 +69,15 @@ export function NewPromotionScreen({
 function Editor({
   snacc,
   source,
+  currency,
   onLeave,
 }: {
   snacc: Snacc
   source: Campaign | null
+  currency: string
   onLeave: () => void
 }) {
-  const form = useNewPromotion(snacc, source, onLeave)
+  const form = useNewPromotion(snacc, source, currency, onLeave)
   const { handlers } = useSnaccActions()
   const openSiteLink = useOpenSiteLink()
 

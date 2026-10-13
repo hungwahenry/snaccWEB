@@ -7,7 +7,7 @@ import { AdPricesTable } from "../components/ad-prices-table"
 import { useAdPricesScreen } from "../hooks/use-ad-prices-screen"
 
 export function AdPricesScreen() {
-  const { list, query, actions, defaultKobo } = useAdPricesScreen()
+  const { list, query, actions } = useAdPricesScreen()
 
   return (
     <>
@@ -17,7 +17,6 @@ export function AdPricesScreen() {
       />
       <AdPricesTable
         query={query}
-        defaultKobo={defaultKobo}
         onPageChange={list.setPage}
         onSave={actions.save}
         onReset={actions.reset}

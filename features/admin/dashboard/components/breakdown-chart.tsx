@@ -14,7 +14,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { formatNaira, formatNumber } from "@/lib/format"
+import { formatNumber } from "@/lib/format"
+import { formatMoney, money } from "@/lib/money"
 import type { Breakdown } from "../types"
 import {
   breakdownConfig,
@@ -24,15 +25,15 @@ import {
   COUNT_AXIS,
   DATE_AXIS,
   dateLabel,
-  inNaira,
+  inWholeUnits,
 } from "../utils/charts"
 
 function Totals({
   breakdown,
-  money,
+  currency,
 }: {
   breakdown: Breakdown
-  money: boolean
+  currency: string | null
 }) {
   return (
     <ul className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs">
@@ -46,7 +47,9 @@ function Totals({
           />
           <span className="text-muted-foreground">{row.label}</span>
           <span className="font-medium tabular-nums">
-            {money ? formatNaira(row.total) : formatNumber(row.total)}
+            {currency
+              ? formatMoney(money(row.total, currency))
+              : formatNumber(row.total)}
           </span>
         </li>
       ))}
@@ -57,11 +60,11 @@ function Totals({
 export function BreakdownChart({
   breakdown,
   variant = "bars",
-  money = false,
+  currency = null,
 }: {
   breakdown: Breakdown
   variant?: "bars" | "lines"
-  money?: boolean
+  currency?: string | null
 }) {
   if (breakdown.keys.length === 0) {
     return (
@@ -71,7 +74,9 @@ export function BreakdownChart({
     )
   }
 
-  const data = money ? inNaira(breakdown).series : breakdown.series
+  const data = currency
+    ? inWholeUnits(breakdown, currency).series
+    : breakdown.series
   const last = breakdown.keys.length - 1
 
   return (
@@ -119,7 +124,7 @@ export function BreakdownChart({
           </LineChart>
         )}
       </ChartContainer>
-      <Totals breakdown={breakdown} money={money} />
+      <Totals breakdown={breakdown} currency={currency} />
     </div>
   )
 }

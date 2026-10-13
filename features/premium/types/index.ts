@@ -1,3 +1,5 @@
+import type { Money } from "@/lib/money"
+
 export interface PremiumBenefit {
   key: string
   label: string
@@ -10,7 +12,7 @@ export type PremiumPlan = "monthly" | "yearly"
 export interface PremiumWalletPlan {
   plan: PremiumPlan
   days: number
-  price_kobo: number
+  price: Money
 }
 
 export interface Premium {
@@ -27,7 +29,7 @@ export interface Premium {
 
 export interface PremiumPurchase {
   plan: PremiumPlan
-  price_kobo: number
+  price: Money
   until: string
   reference: string
 }

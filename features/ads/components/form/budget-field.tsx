@@ -3,13 +3,16 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { groupAmount } from "@/features/wallet/utils/amount"
 import { cn } from "@/lib/utils"
 import type { BudgetPreset, ReachEstimate } from "../../types"
+import type { Money } from "@/lib/money"
 
 export function BudgetField({
   value,
+  symbol,
   hint,
   onChange,
 }: {
   value: string
+  symbol: string
   hint: string
   onChange: (value: string) => void
 }) {
@@ -17,14 +20,14 @@ export function BudgetField({
     <div className="flex flex-col gap-1.5">
       <div className="relative">
         <span className="pointer-events-none absolute top-1/2 left-5 -translate-y-1/2 text-lg font-bold text-muted-foreground">
-          ₦
+          {symbol}
         </span>
         <Input
           value={value ? groupAmount(value) : ""}
           onChange={(event) => onChange(event.target.value)}
           inputMode="numeric"
           placeholder="0"
-          aria-label="Budget in naira"
+          aria-label="Budget"
           className="h-14 rounded-full pr-5 pl-10 text-lg font-bold tabular-nums md:text-lg"
         />
       </div>
@@ -72,25 +75,25 @@ export function ReachCard({
 
 export function BudgetPresets({
   presets,
-  selectedKobo,
+  selected,
   onPick,
 }: {
   presets: BudgetPreset[]
-  selectedKobo: number
-  onPick: (kobo: number) => void
+  selected: Money
+  onPick: (amount: Money) => void
 }) {
   if (presets.length === 0) return null
 
   return (
     <div className="grid grid-cols-3 gap-2">
       {presets.map((preset) => {
-        const active = preset.kobo === selectedKobo
+        const active = preset.amount.amount === selected.amount
         return (
           <button
-            key={preset.kobo}
+            key={preset.amount.amount}
             type="button"
             aria-pressed={active}
-            onClick={() => onPick(preset.kobo)}
+            onClick={() => onPick(preset.amount)}
             className={cn(
               "flex min-w-0 flex-col items-center gap-0.5 rounded-2xl px-2 py-3 transition-colors",
               active

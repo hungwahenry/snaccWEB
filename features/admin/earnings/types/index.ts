@@ -1,4 +1,5 @@
 import type { UserRefWithCampus } from "@/lib/api/types"
+import type { Money } from "@/lib/money"
 
 export type EarningParty = UserRefWithCampus
 
@@ -10,7 +11,7 @@ export interface AdminEarning {
   movement: EarningMovement
   /** The engagement that paid, when one did. Null on a claim or an admin adjustment. */
   type: string | null
-  amount: number
+  amount: Money
   note: string | null
   snacc_id: string | null
   beneficiary: EarningParty
@@ -24,8 +25,8 @@ export interface AdminEarning {
 export interface AdminFund {
   university_id: string
   university: { id: string; name: string; slug: string; acronym: string }
-  cap: number
-  distributed: number
+  cap: Money
+  distributed: Money
   created_at: string
 }
 
@@ -37,7 +38,7 @@ export type EarningListQuery = {
 
 export interface FundInput {
   universityId: string
-  cap: number
+  cap: Money
 }
 
 export interface FundDraft {

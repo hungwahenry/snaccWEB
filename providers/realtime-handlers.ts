@@ -55,6 +55,7 @@ import {
   onSnaccLike,
   onSnaccResnacc,
 } from "@/features/snaccs/realtime"
+import type { Money } from "@/lib/money"
 
 export const REALTIME_HANDLERS = {
   notification: onNotification,
@@ -103,7 +104,7 @@ export const REALTIME_HANDLERS = {
   "conversation.read": onConversationRead,
   "conversation.seen": onConversationSeen,
   "message.photo.opened": onPhotoOpened,
-  wallet: (payload: { balance: number }) => {
+  wallet: (payload: { balance: Money }) => {
     onEarningsWallet()
     onWalletBalance(payload)
   },

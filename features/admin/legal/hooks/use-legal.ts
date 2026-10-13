@@ -11,11 +11,7 @@ import {
   saveLegalDraft,
   startLegalVersion,
 } from "../api"
-import type {
-  AdminLegalDocument,
-  LegalDraftInput,
-  NewVersionInput,
-} from "../types"
+import type { AdminLegalDocument, LegalDraft, NewVersionInput } from "../types"
 import { adminLegalKeys } from "../utils/keys"
 
 export function useLegalDocuments() {
@@ -51,7 +47,7 @@ export function useLegalActions({
     onSuccess: onStarted,
   })
   const { run: save } = useAdminMutation({
-    mutationFn: ({ id, input }: { id: string; input: LegalDraftInput }) =>
+    mutationFn: ({ id, input }: { id: string; input: LegalDraft }) =>
       saveLegalDraft(id, input),
     success: "Draft saved.",
     invalidates: (_doc, { id }) => touched(id),
@@ -71,7 +67,7 @@ export function useLegalActions({
   return useMemo(
     () => ({
       start,
-      save: (id: string, input: LegalDraftInput) => save({ id, input }),
+      save: (id: string, input: LegalDraft) => save({ id, input }),
       publish,
       remove,
     }),

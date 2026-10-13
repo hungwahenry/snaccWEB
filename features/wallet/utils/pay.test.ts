@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+import { money } from "@/lib/money"
 import type { WalletLimits } from "../types"
 import {
   amountFix,
@@ -12,55 +13,67 @@ import {
   type AmountRules,
 } from "./pay"
 
+const naira = (amount: number) => money(amount, "NGN")
+
 const base: AmountRules = {
   mode: "send",
-  amountKobo: 50000,
-  minKobo: 10000,
-  maxKobo: 1_000_000_000,
-  feeKobo: 2500,
-  balance: 100000,
+  amount: naira(50000),
+  min: naira(10000),
+  max: naira(1_000_000_000),
+  fee: naira(2500),
+  balance: naira(100000),
   leftToday: null,
 }
 
 describe("checkAmount", () => {
   it("is ready for an amount within every rule", () => {
     const check = checkAmount(base)
-    expect(check).toMatchObject({ ready: true, problem: null, fee: 2500 })
-    expect(check.total).toBe(52500)
-    expect(check.balanceAfter).toBe(47500)
+    expect(check).toMatchObject({
+      ready: true,
+      problem: null,
+      fee: naira(2500),
+    })
+    expect(check.total).toEqual(naira(52500))
+    expect(check.balanceAfter).toEqual(naira(47500))
   })
 
   it("is not ready, without complaining, before anything is typed", () => {
-    expect(checkAmount({ ...base, amountKobo: 0 })).toMatchObject({
+    expect(checkAmount({ ...base, amount: naira(0) })).toMatchObject({
       ready: false,
       problem: null,
     })
   })
 
   it("flags too little and too much", () => {
-    expect(checkAmount({ ...base, amountKobo: 500 }).problem).toBe("below_min")
+    expect(checkAmount({ ...base, amount: naira(500) }).problem).toBe(
+      "below_min"
+    )
     expect(
-      checkAmount({ ...base, mode: "topup", maxKobo: 40000 }).problem
+      checkAmount({ ...base, mode: "topup", max: naira(40000) }).problem
     ).toBe("above_max")
   })
 
   it("counts the fee against the balance", () => {
-    const check = checkAmount({ ...base, amountKobo: 99000 })
+    const check = checkAmount({ ...base, amount: naira(99000) })
     expect(check.problem).toBe("insufficient")
-    expect(check.shortfall).toBe(1500)
+    expect(check.shortfall).toEqual(naira(1500))
   })
 
   it("only charges a fee, and only checks the balance, on a send", () => {
     const request = checkAmount({
       ...base,
       mode: "request",
-      amountKobo: 500000,
+      amount: naira(500000),
     })
-    expect(request).toMatchObject({ ready: true, fee: 0, balanceAfter: null })
+    expect(request).toMatchObject({
+      ready: true,
+      fee: naira(0),
+      balanceAfter: null,
+    })
   })
 
   it("flags going over the day's limit", () => {
-    expect(checkAmount({ ...base, leftToday: 20000 }).problem).toBe(
+    expect(checkAmount({ ...base, leftToday: naira(20000) }).problem).toBe(
       "over_limit"
     )
   })
@@ -78,14 +91,14 @@ describe("limitRail", () => {
 describe("leftToday", () => {
   const limits: WalletLimits = {
     tier: "basic",
-    send: { limit: 100, used: 30 },
-    bank_send: { limit: 50, used: 80 },
-    deposit: { limit: 10, used: 0 },
+    send: { limit: naira(100), used: naira(30) },
+    bank_send: { limit: naira(50), used: naira(80) },
+    deposit: { limit: naira(10), used: naira(0) },
   }
 
   it("is what the rail still allows, never below zero", () => {
-    expect(leftToday(limits, "send")).toBe(70)
-    expect(leftToday(limits, "bank_send")).toBe(0)
+    expect(leftToday(limits, "send")).toEqual(naira(70))
+    expect(leftToday(limits, "bank_send")).toEqual(naira(0))
   })
 
   it("is unknown without limits or a rail", () => {
@@ -112,17 +125,17 @@ describe("sendsToBank", () => {
 
 describe("amountHint", () => {
   it("says what is wrong first", () => {
-    const rules = { ...base, amountKobo: 500 }
+    const rules = { ...base, amount: naira(500) }
     expect(amountHint(rules, checkAmount(rules))).toBe("Sends start at ₦100.")
   })
 
   it("names the fee when it is what tips the balance over", () => {
-    const rules = { ...base, amountKobo: 99000 }
+    const rules = { ...base, amount: naira(99000) }
     expect(amountHint(rules, checkAmount(rules))).toContain("₦25 bank fee")
   })
 
   it("says what is left of the day's limit", () => {
-    const rules = { ...base, leftToday: 20000 }
+    const rules = { ...base, leftToday: naira(20000) }
     expect(amountHint(rules, checkAmount(rules))).toBe(
       "That is over your daily limit. ₦200 left today."
     )
@@ -134,44 +147,44 @@ describe("amountHint", () => {
     expect(amountHint(request, checkAmount(request))).toBe(
       "Nothing moves until they pay."
     )
-    const topup = { ...base, mode: "topup" as const, maxKobo: 5_000_000 }
+    const topup = { ...base, mode: "topup" as const, max: naira(5_000_000) }
     expect(amountHint(topup, checkAmount(topup))).toBe("From ₦100 to ₦50,000.")
   })
 })
 
 describe("topUpFor", () => {
   it("covers the shortfall but never goes under the smallest top-up", () => {
-    expect(topUpFor(500, 10000)).toBe(10000)
-    expect(topUpFor(25000, 10000)).toBe(25000)
+    expect(topUpFor(naira(500), naira(10000))).toEqual(naira(10000))
+    expect(topUpFor(naira(25000), naira(10000))).toEqual(naira(25000))
   })
 })
 
 describe("amountFix", () => {
   it("offers a top-up that covers a shortfall", () => {
-    const check = checkAmount({ ...base, amountKobo: 99000 })
-    expect(amountFix(check, 10000)).toEqual({
+    const check = checkAmount({ ...base, amount: naira(99000) })
+    expect(amountFix(check, naira(10000))).toEqual({
       kind: "topup",
       label: "Add ₦100 to cover it",
-      amountKobo: 10000,
+      amount: naira(10000),
     })
   })
 
   it("points at the limits when over them", () => {
-    const check = checkAmount({ ...base, leftToday: 0 })
-    expect(amountFix(check, 10000)).toEqual({
+    const check = checkAmount({ ...base, leftToday: naira(0) })
+    expect(amountFix(check, naira(10000))).toEqual({
       kind: "limits",
       label: "See your limits",
     })
   })
 
   it("offers nothing when all is well", () => {
-    expect(amountFix(checkAmount(base), 10000)).toBeNull()
+    expect(amountFix(checkAmount(base), naira(10000))).toBeNull()
   })
 })
 
 describe("requestShortfall", () => {
   it("is what the balance lacks, or null", () => {
-    expect(requestShortfall(5000, 2000)).toBe(3000)
-    expect(requestShortfall(2000, 2000)).toBeNull()
+    expect(requestShortfall(naira(5000), naira(2000))).toEqual(naira(3000))
+    expect(requestShortfall(naira(2000), naira(2000))).toBeNull()
   })
 })

@@ -1,27 +1,37 @@
 import type { LucideIcon } from "lucide-react"
 import type { WalletOverview } from "@/features/wallet/types"
+import type { Money } from "@/lib/money"
 
-export interface EarningsMilestone {
+export interface MoneyMilestone {
+  key: string
+  current: Money
+  target: Money
+  met: boolean
+}
+
+export interface CountMilestone {
   key: string
   current: number
   target: number
   met: boolean
 }
 
+export type EarningsMilestone = MoneyMilestone | CountMilestone
+
 export interface EarningsBalance {
-  balance: number
+  balance: Money
   eligible: boolean
   milestones: EarningsMilestone[]
 }
 
 export interface EarningsClaim extends WalletOverview {
-  claimed: number
+  claimed: Money
 }
 
 export interface CampusFund {
-  cap: number
-  distributed: number
-  you: number
+  cap: Money
+  distributed: Money
+  you: Money
   rank: number | null
   earners: number
 }
@@ -33,7 +43,7 @@ export interface SnaccPreview {
 
 export interface TopSnacc {
   snacc: SnaccPreview
-  total: number
+  total: Money
   events: number
 }
 

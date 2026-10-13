@@ -1,5 +1,6 @@
 "use client"
 
+import { useMe } from "@/features/auth/hooks/use-me"
 import { useFlagWhenKnown } from "@/features/config/hooks/use-flag"
 import { useSnacc } from "@/features/snaccs/hooks/use-snacc"
 import { useBack } from "@/hooks/use-back"
@@ -17,17 +18,20 @@ export function useNewPromotionScreen(
   const query = useSnacc(enabled ? snaccId : null)
   const source = useCampaign(fromId ?? "", enabled === true && fromId !== null)
   const snacc = query.data ?? null
+  const me = useMe()
 
   return {
     onBack,
     enabled,
     loading:
       enabled === null ||
+      me.isPending ||
       (snaccId !== null && query.isPending) ||
       (fromId !== null && source.isPending),
     failed: query.isError && !isNotFound(query.error),
     retry: () => void query.refetch(),
     snacc: snacc && isPromotable(snacc) ? snacc : null,
     source: source.data ?? null,
+    currency: me.data?.currency ?? null,
   }
 }

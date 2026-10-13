@@ -28,7 +28,6 @@ export interface Profile {
   snaccs_count: number
   followers_count: number
   following_count: number
-  balance: number
   allow_anonymous_messages: boolean
   money_requests_from: MoneyRequestPrivacy
   avatar_options: Record<string, string | number> | null
@@ -48,6 +47,7 @@ export interface User {
   email: string
   role: "user" | "admin"
   permissions: AdminPermissions
+  currency: string | null
   email_verified_at: string | null
   created_at: string
   profile: Profile | null

@@ -160,7 +160,6 @@ export function patchRule(
   return { ...rules, [platform]: { ...existing, ...patch } }
 }
 
-/** Gives a country its own rule, on until switched off, unless it has one already. */
 export function withCountry(
   countries: FlagCountryRule[],
   country: string
@@ -210,7 +209,6 @@ export function isDraftReady(draft: FlagDraft): boolean {
   )
 }
 
-/** The availability form as a save: both windows, and the whole sets of platform and country rules. */
 export function toFlagChanges(draft: FlagDraft): UpdateFlagInput {
   const overrides = PLATFORMS.flatMap((platform): FlagPlatformRuleInput[] => {
     const rule = draft.rules[platform]

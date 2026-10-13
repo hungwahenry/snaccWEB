@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation"
 import { useFlagWhenKnown } from "@/features/config/hooks/use-flag"
 import { useBack } from "@/hooks/use-back"
-import { formatNaira } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import { bareLink, copyLink, shareOrCopy } from "@/lib/share-links"
 import { inviteMessage, rewardBlurb } from "../utils/invite"
 import { useClaimForm } from "./use-claim-referral"
@@ -33,7 +33,7 @@ export function useInviteScreen() {
           stats: {
             invited: String(data.stats.invited),
             paid: String(data.stats.paid),
-            earned: formatNaira(data.stats.earned_kobo),
+            earned: formatMoney(data.stats.earned),
           },
           referredBy: data.referred_by,
           claim: data.can_claim

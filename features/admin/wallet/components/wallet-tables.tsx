@@ -4,8 +4,9 @@ import {
 } from "@/features/admin/shell/components/data-table"
 import { StatusBadge } from "@/features/admin/shell/components/status-badge"
 import { TableFrame } from "@/features/admin/shell/components/table-frame"
-import { humanize, signedNaira } from "@/features/admin/shell/utils/format"
-import { formatDate, formatNaira } from "@/lib/format"
+import { humanize, signedMoney } from "@/features/admin/shell/utils/format"
+import { formatDate } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import type {
   WalletDeposit,
   WalletDetail,
@@ -44,8 +45,10 @@ const ENTRIES: Column<WalletEntryRow>[] = [
     align: "end",
     className: "tabular-nums",
     cell: (entry) => (
-      <span className={entry.amount < 0 ? "text-destructive" : undefined}>
-        {signedNaira(entry.amount)}
+      <span
+        className={entry.amount.amount < 0 ? "text-destructive" : undefined}
+      >
+        {signedMoney(entry.amount)}
       </span>
     ),
   },
@@ -54,7 +57,7 @@ const ENTRIES: Column<WalletEntryRow>[] = [
     header: "Balance after",
     align: "end",
     className: "tabular-nums",
-    cell: (entry) => formatNaira(entry.balance_after),
+    cell: (entry) => formatMoney(entry.balance_after),
   },
 ]
 
@@ -79,7 +82,7 @@ const DEPOSITS: Column<WalletDeposit>[] = [
     header: "Amount",
     align: "end",
     className: "tabular-nums",
-    cell: (deposit) => formatNaira(deposit.amount),
+    cell: (deposit) => formatMoney(deposit.amount),
   },
 ]
 

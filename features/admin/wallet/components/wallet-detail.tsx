@@ -10,7 +10,8 @@ import {
   StatGrid,
 } from "@/features/admin/shell/components/detail"
 import { UserCell } from "@/features/admin/shell/components/user-cell"
-import { formatDate, formatNaira, formatNumber } from "@/lib/format"
+import { formatDate, formatNumber } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import type {
   AdjustWalletInput,
   WalletDetail as WalletDetailData,
@@ -44,7 +45,7 @@ export function WalletDetail({
   return (
     <div className="flex flex-col gap-6">
       <DetailHeader
-        title={formatNaira(wallet.balance)}
+        title={formatMoney(wallet.balance)}
         badges={
           <>
             {frozen ? <WalletStateBadge frozenAt={wallet.frozen_at} /> : null}
@@ -101,7 +102,7 @@ export function WalletDetail({
       ) : null}
 
       <StatGrid columns={4}>
-        <Stat label="Balance" value={formatNaira(wallet.balance)} />
+        <Stat label="Balance" value={formatMoney(wallet.balance)} />
         <Stat label="Movements" value={formatNumber(wallet.entries_count)} />
         <Stat label="Deposits" value={formatNumber(wallet.deposits.length)} />
         <Stat

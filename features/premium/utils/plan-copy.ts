@@ -1,4 +1,5 @@
-import { formatDate, formatNaira } from "@/lib/format"
+import { formatDate } from "@/lib/format"
+import { formatMoney, minorDigits, money } from "@/lib/money"
 import type { Premium, PremiumPlan, PremiumWalletPlan } from "../types"
 
 export interface PlanTerms {
@@ -15,18 +16,24 @@ const NAMES: Record<PremiumPlan, { title: string; per: string }> = {
   yearly: { title: "Yearly", per: "year" },
 }
 
+function monthOf(plan: PremiumWalletPlan) {
+  const unit = 10 ** minorDigits(plan.price.currency)
+  return money(
+    Math.round(plan.price.amount / (12 * unit)) * unit,
+    plan.price.currency
+  )
+}
+
 export function walletPlanTerms(plan: PremiumWalletPlan): PlanTerms {
   const name = NAMES[plan.plan]
 
   return {
     title: name.title,
-    price: formatNaira(plan.price_kobo),
+    price: formatMoney(plan.price),
     per: name.per,
     length: `${plan.days} days`,
     perMonth:
-      plan.plan === "yearly"
-        ? `${formatNaira(Math.round(plan.price_kobo / 1200) * 100)} a month`
-        : null,
+      plan.plan === "yearly" ? `${formatMoney(monthOf(plan))} a month` : null,
     summary: `Every Premium benefit for ${plan.days} days, paid once from your Snacc balance. Nothing renews.`,
   }
 }

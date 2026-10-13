@@ -1,4 +1,5 @@
 import type { UserRefWithCampus } from "@/lib/api/types"
+import type { Money } from "@/lib/money"
 
 export type TransactionType =
   | "earnings_claim"
@@ -20,7 +21,7 @@ export interface WalletAccountRow {
   id: string
   user_id: string | null
   user: UserRefWithCampus | null
-  balance: number
+  balance: Money
   frozen_at: string | null
   entries_count: number
   created_at: string
@@ -29,8 +30,8 @@ export interface WalletAccountRow {
 
 export interface WalletEntryRow {
   id: string
-  amount: number
-  balance_after: number
+  amount: Money
+  balance_after: Money
   transaction: {
     id: string
     type: TransactionType
@@ -42,8 +43,8 @@ export interface WalletEntryRow {
 
 export interface WalletLine {
   id: string
-  amount: number
-  balance_after: number
+  amount: Money
+  balance_after: Money
   account:
     | { kind: "system"; slug: string }
     | { kind: "user"; user: UserRefWithCampus | null }
@@ -53,7 +54,7 @@ export interface WalletTransactionRow {
   id: string
   type: TransactionType
   reference: string
-  amount: number
+  amount: Money
   note: string | null
   metadata: unknown
   user: UserRefWithCampus | null
@@ -63,7 +64,7 @@ export interface WalletTransactionRow {
 
 export interface WalletDeposit {
   id: string
-  amount: number
+  amount: Money
   status: DepositStatus
   reference: string
   channel: string | null
@@ -93,8 +94,9 @@ export interface WalletDetail extends WalletAccountRow {
 }
 
 export interface WalletSummary {
-  system: { slug: string; balance: number }[]
-  users: { accounts: number; balance: number; frozen: number }
+  currency: string
+  system: { slug: string; balance: Money }[]
+  users: { accounts: number; balance: Money; frozen: number }
 }
 
 export type WalletAccountListQuery = {
@@ -114,6 +116,6 @@ export type WalletTransactionListQuery = {
 }
 
 export interface AdjustWalletInput {
-  delta: number
+  delta: Money
   reason: string
 }

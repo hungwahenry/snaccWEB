@@ -10,6 +10,7 @@ import type {
 } from "../types"
 import { moneyChip } from "./money"
 import { SHARE_LABEL, splitShareLinks } from "./share"
+import type { Money } from "@/lib/money"
 
 const MAX_THUMBS = 3
 
@@ -26,7 +27,7 @@ export interface GlimpseSource {
   voice: VoiceNote | null
   gif: { url: string; preview_url: string | null } | null
   sticker: StickerAttachment | null
-  money: { kind: MoneyKind; amount: number } | null
+  money: { kind: MoneyKind; amount: Money } | null
   moment: QuotedMoment | null
 }
 
@@ -39,7 +40,7 @@ export interface ReplyFlags {
   has_sticker: boolean
   has_gif: boolean
   has_voice: boolean
-  money: { kind: MoneyKind; amount: number } | null
+  money: { kind: MoneyKind; amount: Money } | null
 }
 
 function wordsOf(body: string | null): {

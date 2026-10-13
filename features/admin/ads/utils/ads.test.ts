@@ -7,6 +7,7 @@ import {
   reviewFacts,
   toRejectInput,
 } from "./ads"
+import { money } from "@/lib/money"
 
 const person = {
   id: "u1",
@@ -15,9 +16,11 @@ const person = {
   campus: "UNILAG",
 }
 
-const money = {
-  budget_kobo: 500_000,
-  spent_kobo: 120_000,
+const naira = (amount: number) => money(amount, "NGN")
+
+const spend = {
+  budget: naira(500_000),
+  spent: naira(120_000),
   views_count: 2400,
   clicks_count: 31,
   reach: 1200,
@@ -43,7 +46,7 @@ describe("personNote", () => {
 
 describe("moneyFacts", () => {
   it("shows what is left while it runs", () => {
-    expect(moneyFacts(money)).toEqual([
+    expect(moneyFacts(spend)).toEqual([
       { label: "Budget", value: "₦5,000" },
       { label: "Spent", value: "₦1,200" },
       { label: "Left to spend", value: "₦3,800" },
@@ -55,7 +58,7 @@ describe("moneyFacts", () => {
 
   it("calls the rest sent back once it has settled", () => {
     expect(
-      moneyFacts({ ...money, settled_at: "2026-10-05T00:00:00Z" })[2]
+      moneyFacts({ ...spend, settled_at: "2026-10-05T00:00:00Z" })[2]
     ).toEqual({ label: "Sent back to them", value: "₦3,800" })
   })
 })

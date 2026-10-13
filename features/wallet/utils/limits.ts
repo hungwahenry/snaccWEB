@@ -1,4 +1,4 @@
-import { formatNaira } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import type { LimitRail, LimitTier, RailUsage, WalletLimits } from "../types"
 
 export const RAIL_LABELS: Record<LimitRail, string> = {
@@ -24,9 +24,11 @@ export function railLine(rail: LimitRail, usage: RailUsage): RailLine {
   return {
     rail,
     label: RAIL_LABELS[rail],
-    usage: `${formatNaira(usage.used)} of ${formatNaira(usage.limit)}`,
+    usage: `${formatMoney(usage.used)} of ${formatMoney(usage.limit)}`,
     percent:
-      usage.limit > 0 ? Math.min(100, (usage.used / usage.limit) * 100) : 0,
+      usage.limit.amount > 0
+        ? Math.min(100, (usage.used.amount / usage.limit.amount) * 100)
+        : 0,
   }
 }
 

@@ -5,6 +5,7 @@ import type { SnaccAuthor } from "@/features/snaccs/types"
 import type { StickerAttachment, StickerPick } from "@/features/stickers/types"
 import type { VoiceDraft, VoiceNote, VoiceSource } from "@/features/voice/types"
 import type { PickedImage } from "@/lib/media"
+import type { Money } from "@/lib/money"
 
 export type { VoiceNote }
 
@@ -40,7 +41,7 @@ export interface ReplyPreview {
   has_sticker: boolean
   has_gif: boolean
   has_voice: boolean
-  money: { kind: MoneyKind; amount: number } | null
+  money: { kind: MoneyKind; amount: Money } | null
 }
 
 export interface QuotedMoment {
@@ -69,7 +70,7 @@ export interface MessageGif {
 
 export interface MessageMoney {
   kind: MoneyKind
-  amount: number
+  amount: Money
   transaction_id: string | null
   request: { id: string; status: string } | null
 }

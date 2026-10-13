@@ -16,14 +16,17 @@ import {
   transactionStatus,
   transactionSubtitle,
 } from "./transaction-look"
+import { money } from "@/lib/money"
+
+const naira = (amount: number) => money(amount, "NGN")
 
 const transaction: WalletTransaction = {
   id: "t1",
   type: "transfer",
   label: "To @ada",
-  amount: 150000,
+  amount: naira(150000),
   direction: "out",
-  balance_after: 50000,
+  balance_after: naira(50000),
   note: null,
   created_at: "2026-03-04T09:05:00",
 }
@@ -31,8 +34,8 @@ const transaction: WalletTransaction = {
 const detail: WalletTransactionDetail = {
   ...transaction,
   reference: "ref_1",
-  fee: 0,
-  total: 150000,
+  fee: naira(0),
+  total: naira(150000),
   status: "success",
   channel: null,
   counterparty: null,
@@ -73,8 +76,8 @@ describe("transactionLook", () => {
 
 describe("transaction copy", () => {
   it("signs amounts", () => {
-    expect(signedAmount("in", 150000)).toBe("+₦1,500")
-    expect(signedAmount("out", 150000)).toBe("−₦1,500")
+    expect(signedAmount("in", naira(150000))).toBe("+₦1,500")
+    expect(signedAmount("out", naira(150000))).toBe("−₦1,500")
   })
 
   it("puts the note before the time", () => {
@@ -121,8 +124,8 @@ describe("transactionRows", () => {
   it("adds the fee, total, channel and context when they apply", () => {
     const rows = transactionRows({
       ...detail,
-      fee: 2500,
-      total: 152500,
+      fee: naira(2500),
+      total: naira(152500),
       channel: "bank_transfer",
       context: { kind: "request", note: null },
     })

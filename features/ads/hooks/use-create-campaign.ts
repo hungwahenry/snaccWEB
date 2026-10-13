@@ -28,14 +28,14 @@ export function useCreateCampaign(
   const [paying, setPaying] = useState(false)
   const [refusal, setRefusal] = useState<Refusal | null>(null)
 
-  async function pay(draft: CampaignDraft) {
+  async function pay(draft: CampaignDraft, currency: string) {
     if (paying) return
-    const input = campaignInput(snaccId, draft, Date.now())
+    const input = campaignInput(snaccId, draft, currency, Date.now())
     setPaying(true)
     setRefusal(null)
     try {
       const campaign = await confirm.run(
-        { amountKobo: input.budgetKobo, kind: "user" },
+        { amount: input.budget, kind: "user" },
         (credential) => createCampaign(input, credential)
       )
       if (!campaign) return

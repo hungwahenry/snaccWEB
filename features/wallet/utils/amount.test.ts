@@ -3,33 +3,34 @@ import { amountSize, groupAmount, typeAmount } from "./amount"
 
 describe("typeAmount", () => {
   it("appends digits and replaces a lone zero", () => {
-    expect(typeAmount("", "5")).toBe("5")
-    expect(typeAmount("0", "5")).toBe("5")
-    expect(typeAmount("12", "3")).toBe("123")
+    expect(typeAmount("", "5", "USD")).toBe("5")
+    expect(typeAmount("0", "5", "USD")).toBe("5")
+    expect(typeAmount("12", "3", "USD")).toBe("123")
   })
 
   it("deletes the last character", () => {
-    expect(typeAmount("123", "back")).toBe("12")
-    expect(typeAmount("", "back")).toBe("")
+    expect(typeAmount("123", "back", "USD")).toBe("12")
+    expect(typeAmount("", "back", "USD")).toBe("")
   })
 
   it("starts decimals with a leading zero and allows only one point", () => {
-    expect(typeAmount("", ".")).toBe("0.")
-    expect(typeAmount("5", ".")).toBe("5.")
-    expect(typeAmount("5.2", ".")).toBe("5.2")
+    expect(typeAmount("", ".", "USD")).toBe("0.")
+    expect(typeAmount("5", ".", "USD")).toBe("5.")
+    expect(typeAmount("5.2", ".", "USD")).toBe("5.2")
   })
 
-  it("stops at kobo", () => {
-    expect(typeAmount("5.25", "1")).toBe("5.25")
+  it("stops at the decimals the currency has", () => {
+    expect(typeAmount("5.25", "1", "USD")).toBe("5.25")
+    expect(typeAmount("5", ".", "JPY")).toBe("5")
   })
 
   it("refuses to pass the cap", () => {
-    expect(typeAmount("10000000", "0")).toBe("10000000")
-    expect(typeAmount("999", "9", 100_000)).toBe("999")
+    expect(typeAmount("10000000", "0", "USD")).toBe("10000000")
+    expect(typeAmount("999", "9", "USD", 1_000)).toBe("999")
   })
 
   it("ignores keys that are not digits", () => {
-    expect(typeAmount("12", "x")).toBe("12")
+    expect(typeAmount("12", "x", "USD")).toBe("12")
   })
 })
 

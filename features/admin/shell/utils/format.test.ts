@@ -6,9 +6,10 @@ import {
   humanize,
   plural,
   shortId,
-  signedNaira,
+  signedMoney,
   uptime,
 } from "./format"
+import { money } from "@/lib/money"
 
 describe("plural", () => {
   it("picks the singular only for exactly one", () => {
@@ -69,10 +70,10 @@ describe("daysSince", () => {
   })
 })
 
-describe("signedNaira", () => {
+describe("signedMoney", () => {
   it("puts the sign in front of the currency", () => {
-    expect(signedNaira(50_000)).toBe("+₦500")
-    expect(signedNaira(-50_050)).toBe("−₦500.5")
-    expect(signedNaira(0)).toBe("₦0")
+    expect(signedMoney(money(50_000, "NGN"))).toBe("+₦500")
+    expect(signedMoney(money(-50_050, "NGN"))).toBe("−₦500.50")
+    expect(signedMoney(money(0, "NGN"))).toBe("₦0")
   })
 })

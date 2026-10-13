@@ -3,7 +3,8 @@ import type { Snacc } from "@/features/snaccs/types"
 import { GENDER_OPTIONS } from "@/features/users/utils/gender"
 import type { StatusLook } from "@/features/wallet/types"
 import { DAY_MS, MINUTE_MS } from "@/lib/duration"
-import { dateAtTime, formatNaira, shortDate } from "@/lib/format"
+import { dateAtTime, shortDate } from "@/lib/format"
+import { formatMoney, money, subtractMoney } from "@/lib/money"
 import type {
   AdPlacement,
   AdPlatform,
@@ -141,24 +142,25 @@ export function canPromoteAgain(campaign: Pick<Campaign, "status">): boolean {
 }
 
 export function spendLine(
-  campaign: Pick<Campaign, "spent_kobo" | "budget_kobo">
+  campaign: Pick<Campaign, "spent" | "budget">
 ): string {
-  return `${formatNaira(campaign.spent_kobo)} of ${formatNaira(campaign.budget_kobo)} spent`
+  return `${formatMoney(campaign.spent)} of ${formatMoney(campaign.budget)} spent`
 }
 
 export function budgetLeftLine(
-  campaign: Pick<Campaign, "spent_kobo" | "budget_kobo">
+  campaign: Pick<Campaign, "spent" | "budget">
 ): string {
-  return `${formatNaira(Math.max(0, campaign.budget_kobo - campaign.spent_kobo))} left`
+  const left = subtractMoney(campaign.budget, campaign.spent)
+  return `${formatMoney(money(Math.max(0, left.amount), left.currency))} left`
 }
 
 export function spentPercent(
-  campaign: Pick<Campaign, "spent_kobo" | "budget_kobo">
+  campaign: Pick<Campaign, "spent" | "budget">
 ): number {
-  if (campaign.budget_kobo <= 0) return 0
+  if (campaign.budget.amount <= 0) return 0
   return Math.min(
     100,
-    Math.round((campaign.spent_kobo / campaign.budget_kobo) * 100)
+    Math.round((campaign.spent.amount / campaign.budget.amount) * 100)
   )
 }
 

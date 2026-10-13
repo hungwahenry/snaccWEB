@@ -7,6 +7,9 @@ import {
   stepOf,
   stepReady,
 } from "./steps"
+import { money } from "@/lib/money"
+
+const naira = (amount: number) => money(amount, "NGN")
 
 describe("promotion steps", () => {
   it("walks forwards and backwards through the four steps", () => {
@@ -30,13 +33,13 @@ describe("promotion steps", () => {
 
   it("holds a step back only on its own problems", () => {
     const problems = { budget: "Too small." }
-    expect(stepReady("audience", problems, 0)).toBe(true)
-    expect(stepReady("budget", problems, 50_000)).toBe(false)
+    expect(stepReady("audience", problems, naira(0))).toBe(true)
+    expect(stepReady("budget", problems, naira(50_000))).toBe(false)
   })
 
   it("needs a budget before leaving the budget step", () => {
-    expect(stepReady("budget", {}, 0)).toBe(false)
-    expect(stepReady("budget", {}, 200_000)).toBe(true)
+    expect(stepReady("budget", {}, naira(0))).toBe(false)
+    expect(stepReady("budget", {}, naira(200_000))).toBe(true)
   })
 
   it("names the first thing in the way, in step order", () => {

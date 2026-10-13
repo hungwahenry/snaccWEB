@@ -1,6 +1,7 @@
 "use client"
 
 import { useMutation } from "@tanstack/react-query"
+import type { Money } from "@/lib/money"
 import { signal } from "@/features/signals/utils/queue"
 import { createRequest, sendToBank, sendToUser } from "../../api"
 import { requestsChanged, walletChanged } from "../../cache"
@@ -10,7 +11,7 @@ import { useMoneyConfirm } from "../pin/use-money-confirm"
 
 interface Submission {
   target: SendTarget
-  amountKobo: number
+  amount: Money
   note: string
 }
 
@@ -23,7 +24,7 @@ export function usePaySubmit(
   return useMutation({
     mutationFn: async ({
       target,
-      amountKobo,
+      amount,
       note,
     }: Submission): Promise<string | null> => {
       const to = targetName(target)
@@ -33,7 +34,7 @@ export function usePaySubmit(
         if (target.kind !== "user" || !target.user.username) return null
         await createRequest({
           username: target.user.username,
-          amountKobo,
+          amount,
           note: trimmedNote,
           conversationId,
         })
@@ -43,10 +44,8 @@ export function usePaySubmit(
       }
 
       if (target.kind === "bank") {
-        const sent = await confirm.run(
-          { amountKobo, kind: "bank" },
-          (credential) =>
-            sendToBank({ amountKobo, ...target.source, ...credential })
+        const sent = await confirm.run({ amount, kind: "bank" }, (credential) =>
+          sendToBank({ amount, ...target.source, ...credential })
         )
         if (!sent) return null
         walletChanged(sent)
@@ -56,16 +55,14 @@ export function usePaySubmit(
 
       const username = target.user.username
       if (!username) return null
-      const sent = await confirm.run(
-        { amountKobo, kind: "user" },
-        (credential) =>
-          sendToUser({
-            username,
-            amountKobo,
-            conversationId,
-            note: trimmedNote,
-            ...credential,
-          })
+      const sent = await confirm.run({ amount, kind: "user" }, (credential) =>
+        sendToUser({
+          username,
+          amount,
+          conversationId,
+          note: trimmedNote,
+          ...credential,
+        })
       )
       if (!sent) return null
       walletChanged(sent)

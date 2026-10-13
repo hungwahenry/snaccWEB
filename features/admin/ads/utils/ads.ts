@@ -1,6 +1,7 @@
 import { plural } from "@/features/admin/shell/utils/format"
 import { userHandle, userName } from "@/features/admin/shell/utils/user"
-import { formatDate, formatNaira, formatNumber } from "@/lib/format"
+import { formatDate, formatNumber } from "@/lib/format"
+import { formatMoney, money, subtractMoney } from "@/lib/money"
 import type {
   AdFact,
   AdminAd,
@@ -23,22 +24,18 @@ export function personNote(person: AdPerson): string {
 export function moneyFacts(
   ad: Pick<
     AdminAd,
-    | "budget_kobo"
-    | "spent_kobo"
-    | "views_count"
-    | "clicks_count"
-    | "reach"
-    | "settled_at"
+    "budget" | "spent" | "views_count" | "clicks_count" | "reach" | "settled_at"
   >
 ): AdFact[] {
-  const unspent = Math.max(0, ad.budget_kobo - ad.spent_kobo)
+  const left = subtractMoney(ad.budget, ad.spent)
+  const unspent = money(Math.max(0, left.amount), left.currency)
 
   return [
-    { label: "Budget", value: formatNaira(ad.budget_kobo) },
-    { label: "Spent", value: formatNaira(ad.spent_kobo) },
+    { label: "Budget", value: formatMoney(ad.budget) },
+    { label: "Spent", value: formatMoney(ad.spent) },
     {
       label: ad.settled_at ? "Sent back to them" : "Left to spend",
-      value: formatNaira(unspent),
+      value: formatMoney(unspent),
     },
     { label: "Views", value: formatNumber(ad.views_count) },
     { label: "Clicks", value: formatNumber(ad.clicks_count) },

@@ -5,7 +5,8 @@ import { useMemo } from "react"
 import { useListParams } from "@/features/admin/shell/hooks/use-list-params"
 import { PAGE_SIZE } from "@/features/admin/shell/utils/list-params"
 import { useCampuses } from "@/features/admin/universities/hooks/use-universities"
-import { unfundedOptions } from "../utils/earnings"
+import { useCountries } from "@/features/places/hooks/use-places"
+import { campusCurrencies, unfundedOptions } from "../utils/earnings"
 import {
   useEarningTypes,
   useEarnings,
@@ -24,14 +25,23 @@ export function useEarningsScreen() {
   })
   const funds = useFunds()
   const campuses = useCampuses()
+  const countries = useCountries()
 
   const fundList = funds.data
   const provision = useMemo(
     () => ({
       options: unfundedOptions(campuses.verified, fundList ?? []),
-      loading: campuses.loading || fundList === undefined,
+      currencies: campusCurrencies(campuses.verified, countries.data ?? []),
+      loading:
+        campuses.loading || fundList === undefined || countries.isPending,
     }),
-    [campuses.verified, campuses.loading, fundList]
+    [
+      campuses.verified,
+      campuses.loading,
+      fundList,
+      countries.data,
+      countries.isPending,
+    ]
   )
 
   return {

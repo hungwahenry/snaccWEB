@@ -1,12 +1,15 @@
 import { describe, expect, it } from "vitest"
 import { standingLine, walletPlanTerms } from "./plan-copy"
+import { money } from "@/lib/money"
+
+const naira = (amount: number) => money(amount, "NGN")
 
 describe("walletPlanTerms", () => {
   it("prices a month plainly", () => {
     const terms = walletPlanTerms({
       plan: "monthly",
       days: 30,
-      price_kobo: 350000,
+      price: naira(350000),
     })
 
     expect(terms).toMatchObject({
@@ -22,7 +25,7 @@ describe("walletPlanTerms", () => {
     const terms = walletPlanTerms({
       plan: "yearly",
       days: 365,
-      price_kobo: 3200000,
+      price: naira(3200000),
     })
 
     expect(terms.per).toBe("year")

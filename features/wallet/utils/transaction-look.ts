@@ -10,7 +10,8 @@ import {
   Undo2Icon,
   type LucideIcon,
 } from "lucide-react"
-import { clockTime, formatNaira, shortDate } from "@/lib/format"
+import { clockTime, shortDate } from "@/lib/format"
+import { formatMoney, type Money } from "@/lib/money"
 import type {
   MoneyDirection,
   PayoutDelivery,
@@ -65,11 +66,8 @@ export function transactionLook(
       }
 }
 
-export function signedAmount(
-  direction: MoneyDirection,
-  amount: number
-): string {
-  return `${direction === "in" ? "+" : "−"}${formatNaira(amount)}`
+export function signedAmount(direction: MoneyDirection, amount: Money): string {
+  return `${direction === "in" ? "+" : "−"}${formatMoney(amount)}`
 }
 
 export function transactionSubtitle(transaction: WalletTransaction): string {
@@ -118,13 +116,13 @@ export function transactionRows(detail: WalletTransactionDetail): DetailRow[] {
       value: CHANNELS[detail.channel] ?? detail.channel,
     })
   }
-  if (detail.fee > 0) {
-    rows.push({ label: "Fee", value: formatNaira(detail.fee) })
-    rows.push({ label: "Total", value: formatNaira(detail.total) })
+  if (detail.fee.amount > 0) {
+    rows.push({ label: "Fee", value: formatMoney(detail.fee) })
+    rows.push({ label: "Total", value: formatMoney(detail.total) })
   }
   rows.push({
     label: "Balance after",
-    value: formatNaira(detail.balance_after),
+    value: formatMoney(detail.balance_after),
   })
   rows.push({ label: "Reference", value: detail.reference, mono: true })
 

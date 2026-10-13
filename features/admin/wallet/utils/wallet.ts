@@ -1,7 +1,8 @@
 import type { Option, StatusMeta } from "@/features/admin/shell/types"
 import { plural } from "@/features/admin/shell/utils/format"
 import type { BalanceChange } from "@/features/admin/shell/utils/money"
-import { formatNaira, formatNumber } from "@/lib/format"
+import { formatNumber } from "@/lib/format"
+import { formatMoney, type Money } from "@/lib/money"
 import type {
   AdjustWalletInput,
   DepositStatus,
@@ -94,11 +95,11 @@ export function recipientKey(recipient: WalletRecipient): string {
 
 /** The line under the amount: what the balance becomes, or why it can't be posted. */
 export function adjustHint(
-  balance: number,
+  balance: Money,
   preview: BalanceChange
 ): string | null {
   if (preview.ok) {
-    return `Their balance goes from ${formatNaira(balance)} to ${formatNaira(preview.next)}.`
+    return `Their balance goes from ${formatMoney(balance)} to ${formatMoney(preview.next)}.`
   }
 
   return preview.message

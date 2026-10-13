@@ -1,5 +1,6 @@
 import type { DraftField, DraftProblems, PromotionStep } from "../types"
 import { FORM_SECTIONS } from "./campaigns"
+import type { Money } from "@/lib/money"
 
 export const PROMOTION_STEPS: PromotionStep[] = [
   "audience",
@@ -42,10 +43,10 @@ export function firstProblem(problems: DraftProblems): string | null {
 export function stepReady(
   step: PromotionStep,
   problems: DraftProblems,
-  budgetKobo: number
+  budget: Money
 ): boolean {
   if (STEP_FIELDS[step].some((field) => problems[field])) return false
-  return step !== "budget" || budgetKobo > 0
+  return step !== "budget" || budget.amount > 0
 }
 
 export function stepLabel(step: PromotionStep): string {

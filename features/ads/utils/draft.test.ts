@@ -18,17 +18,20 @@ import {
   submitProblem,
   toggleIn,
   topUpProblem,
-  wholeNaira,
+  wholeUnits,
 } from "./draft"
+import { money } from "@/lib/money"
 
 const NOW = Date.parse("2026-10-12T09:00:00.000Z")
 
+const naira = (amount: number) => money(amount, "NGN")
+
 const limits: DraftLimits = {
   now: NOW,
-  minBudgetKobo: 200_000,
+  minBudget: naira(200_000),
   maxDays: 30,
   maxLeadDays: 30,
-  balanceKobo: 1_000_000,
+  balance: naira(1_000_000),
 }
 
 const KENYA: CountryPlaces = {
@@ -83,9 +86,9 @@ describe("small edits", () => {
   })
 
   it("keeps whole naira only", () => {
-    expect(wholeNaira("₦5,000")).toBe("5000")
-    expect(wholeNaira("0050")).toBe("50")
-    expect(wholeNaira("12.50")).toBe("1250")
+    expect(wholeUnits("₦5,000")).toBe("5000")
+    expect(wholeUnits("0050")).toBe("50")
+    expect(wholeUnits("12.50")).toBe("1250")
   })
 
   it("adds a tag once, without the #, up to the limit", () => {
@@ -99,7 +102,7 @@ describe("small edits", () => {
 })
 
 describe("campaignInput", () => {
-  it("sends kobo, a start of now when none was picked, and the audience as ids", () => {
+  it("sends the budget with its currency, a start of now when none was picked, and the audience as ids", () => {
     const input = campaignInput(
       "01SNACC",
       draft({
@@ -111,11 +114,12 @@ describe("campaignInput", () => {
         buttonId: "01BUTTON00000000000000000A",
         buttonUrl: " https://shop.example/x ",
       }),
+      "NGN",
       NOW
     )
 
     expect(input.snaccId).toBe("01SNACC")
-    expect(input.budgetKobo).toBe(250_000)
+    expect(input.budget).toEqual(naira(250_000))
     expect(input.startsAt).toBe(new Date(NOW).toISOString())
     expect(input.buttonId).toBe("01BUTTON00000000000000000A")
     expect(input.buttonUrl).toBe("https://shop.example/x")
@@ -126,7 +130,7 @@ describe("campaignInput", () => {
   })
 
   it("sends no link when the button is left off", () => {
-    expect(campaignInput("01SNACC", draft(), NOW).buttonUrl).toBeNull()
+    expect(campaignInput("01SNACC", draft(), "NGN", NOW).buttonUrl).toBeNull()
   })
 })
 
@@ -191,7 +195,7 @@ describe("draftProblems", () => {
     expect(
       draftProblems(draft({ budget: "20000" }), {
         ...limits,
-        balanceKobo: null,
+        balance: null,
       }).budget
     ).toBeUndefined()
   })
@@ -239,7 +243,7 @@ describe("submitProblem", () => {
     expect(
       submitProblem(
         new ApiError(422, "Too small", "budget_too_small", {
-          minimum_kobo: 300_000,
+          minimum: { amount: 300_000, currency: "NGN" },
         } as unknown as Record<string, string[]>)
       )
     ).toEqual({ field: "budget", message: "The smallest budget is ₦3,000." })
@@ -297,6 +301,7 @@ describe("reviewRows", () => {
       start: "Right away",
       end: "Mon 19 Oct, 9:00",
       estimate: null,
+      budget: naira(500_000),
     })
 
     expect(rows.map((row) => row.label)).toEqual([
@@ -327,21 +332,22 @@ describe("reviewRows", () => {
       start: "Right away",
       end: "later",
       estimate: null,
+      budget: naira(0),
     })
     expect(rows[2].lines).toEqual(["No button"])
   })
 })
 
 describe("topUpProblem", () => {
-  const money = { minBudgetKobo: 200_000, balanceKobo: 500_000 }
+  const wallet = { minBudget: naira(200_000), balance: naira(500_000) }
 
   it("waits for an amount, then checks the floor and the balance", () => {
-    expect(topUpProblem("", money)).toBeNull()
-    expect(topUpProblem("500", money)).toBe("Add at least ₦2,000.")
-    expect(topUpProblem("6000", money)).toBe(
+    expect(topUpProblem("", wallet)).toBeNull()
+    expect(topUpProblem("500", wallet)).toBe("Add at least ₦2,000.")
+    expect(topUpProblem("6000", wallet)).toBe(
       "That's more than your Snacc balance of ₦5,000."
     )
-    expect(topUpProblem("3000", money)).toBeNull()
+    expect(topUpProblem("3000", wallet)).toBeNull()
   })
 })
 
@@ -356,7 +362,7 @@ describe("draftFromCampaign", () => {
         label: "Shop now",
         url: "https://a.example",
       },
-      budget_kobo: 500_000,
+      budget: naira(500_000),
       audience: {
         country: { code: "KE", name: "Kenya" },
         campuses: [],

@@ -1,4 +1,5 @@
-import { formatNaira, formatNumber } from "@/lib/format"
+import { formatNumber } from "@/lib/format"
+import { formatMoney, money, type Money } from "@/lib/money"
 import { DAY_MS } from "@/lib/duration"
 
 /** "1 report", "3 reports". The plural is the singular plus "s" unless given. */
@@ -55,9 +56,9 @@ export function daysSince(iso: string, now = Date.now()): number {
   return Math.max(0, Math.floor((now - Date.parse(iso)) / DAY_MS))
 }
 
-/** A money movement with its direction: "+₦500" or "−₦500". */
-export function signedNaira(kobo: number): string {
-  if (kobo === 0) return formatNaira(0)
+export function signedMoney(value: Money): string {
+  if (value.amount === 0) return formatMoney(value)
 
-  return `${kobo > 0 ? "+" : "−"}${formatNaira(Math.abs(kobo))}`
+  const size = formatMoney(money(Math.abs(value.amount), value.currency))
+  return `${value.amount > 0 ? "+" : "−"}${size}`
 }

@@ -11,7 +11,8 @@ import {
   type LucideIcon,
 } from "lucide-react"
 import { DAY_MS } from "@/lib/duration"
-import { compactCount, formatNaira } from "@/lib/format"
+import { compactCount } from "@/lib/format"
+import { formatMoney, money } from "@/lib/money"
 import type { Campaign, CampaignDay, CampaignEngagement } from "../types"
 
 const BUTTON_TAPS = "Button taps"
@@ -36,7 +37,7 @@ export const RESULT_STATS: ResultStat[] = [
   {
     icon: WalletIcon,
     label: "Spent",
-    value: (campaign) => formatNaira(campaign.spent_kobo),
+    value: (campaign) => formatMoney(campaign.spent),
   },
   {
     icon: UsersRoundIcon,
@@ -110,7 +111,12 @@ export function everyDay(days: CampaignDay[]): CampaignDay[] {
   ) {
     const key = dayKey(time)
     filled.push(
-      known.get(key) ?? { day: key, views: 0, clicks: 0, spent_kobo: 0 }
+      known.get(key) ?? {
+        day: key,
+        views: 0,
+        clicks: 0,
+        spent: money(0, first.spent.currency),
+      }
     )
   }
   return filled

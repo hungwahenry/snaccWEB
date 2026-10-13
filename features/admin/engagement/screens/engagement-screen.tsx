@@ -12,7 +12,7 @@ export function EngagementScreen() {
     <>
       <PageHeader
         title="Engagement weights"
-        description="What each act on a snacc is worth: to Snacc Score, to the feed, and in kobo. One catalog, so they can never disagree. Changes apply within about 30 seconds."
+        description="What each act on a snacc is worth: to Snacc Score, to the feed, and in earnings. One catalog, so they can never disagree. Changes apply within about 30 seconds."
       />
       <QueryView query={query} what="the catalog">
         {(groups) => (

@@ -1,11 +1,9 @@
 import { describe, expect, it } from "vitest"
 import type { VirtualAccount } from "../types"
-import {
-  accountShareText,
-  balanceText,
-  groupAccountNumber,
-  HIDDEN_BALANCE,
-} from "./format"
+import { accountShareText, balanceText, groupAccountNumber } from "./format"
+import { money } from "@/lib/money"
+
+const naira = (amount: number) => money(amount, "NGN")
 
 const account: VirtualAccount = {
   status: "active",
@@ -39,10 +37,10 @@ describe("accountShareText", () => {
 
 describe("balanceText", () => {
   it("masks the balance when hidden", () => {
-    expect(balanceText(150000, true)).toBe(HIDDEN_BALANCE)
+    expect(balanceText(naira(150000), true)).toBe("₦••••")
   })
 
-  it("shows naira otherwise", () => {
-    expect(balanceText(150000, false)).toBe("₦1,500")
+  it("shows the amount otherwise", () => {
+    expect(balanceText(naira(150000), false)).toBe("₦1,500")
   })
 })

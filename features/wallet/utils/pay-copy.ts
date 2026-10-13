@@ -1,4 +1,4 @@
-import { formatNaira } from "@/lib/format"
+import { formatMoney, type Money } from "@/lib/money"
 import type { PayMode, SendTarget } from "../types"
 
 export const PAY_TITLES: Record<PayMode, string> = {
@@ -7,16 +7,16 @@ export const PAY_TITLES: Record<PayMode, string> = {
   topup: "Add money",
 }
 
-export function recipientTitle(mode: PayMode, amountKobo: number): string {
-  return `${PAY_TITLES[mode]} ${formatNaira(amountKobo)}`
+export function recipientTitle(mode: PayMode, amount: Money): string {
+  return `${PAY_TITLES[mode]} ${formatMoney(amount)}`
 }
 
 export function recipientPlaceholder(mode: PayMode): string {
   return mode === "send" ? "@username or account number" : "@username on Snacc"
 }
 
-export function bankFeeNote(feeKobo: number): string | null {
-  return feeKobo > 0 ? `Bank sends carry a ${formatNaira(feeKobo)} fee.` : null
+export function bankFeeNote(fee: Money): string | null {
+  return fee.amount > 0 ? `Bank sends carry a ${formatMoney(fee)} fee.` : null
 }
 
 export function reviewAmountLabel(mode: PayMode): string {
@@ -31,24 +31,24 @@ export interface ReviewLine {
 
 export function reviewLines(
   mode: PayMode,
-  amountKobo: number,
-  totals: { fee: number; total: number; balanceAfter: number | null }
+  amount: Money,
+  totals: { fee: Money; total: Money; balanceAfter: Money | null }
 ): ReviewLine[] {
   const lines: ReviewLine[] = [
     {
       label: reviewAmountLabel(mode),
-      value: formatNaira(amountKobo),
+      value: formatMoney(amount),
       hero: true,
     },
   ]
-  if (totals.fee > 0) {
-    lines.push({ label: "Bank fee", value: formatNaira(totals.fee) })
-    lines.push({ label: "Total", value: formatNaira(totals.total) })
+  if (totals.fee.amount > 0) {
+    lines.push({ label: "Bank fee", value: formatMoney(totals.fee) })
+    lines.push({ label: "Total", value: formatMoney(totals.total) })
   }
   if (totals.balanceAfter !== null) {
     lines.push({
       label: "Balance after",
-      value: formatNaira(totals.balanceAfter),
+      value: formatMoney(totals.balanceAfter),
     })
   }
   return lines
@@ -76,12 +76,12 @@ export function reviewNote(mode: PayMode, target: SendTarget): string {
 
 export function submitLabel(
   mode: PayMode,
-  amountKobo: number,
-  totalKobo: number
+  amount: Money,
+  total: Money
 ): string {
   return mode === "request"
-    ? `Request ${formatNaira(amountKobo)}`
-    : `Send ${formatNaira(totalKobo)}`
+    ? `Request ${formatMoney(amount)}`
+    : `Send ${formatMoney(total)}`
 }
 
 /** Said under the amount once it has gone through. `to` names who it went to. */

@@ -11,6 +11,9 @@ import {
   toFundInput,
   unfundedOptions,
 } from "./earnings"
+import { money } from "@/lib/money"
+
+const naira = (amount: number) => money(amount, "NGN")
 
 const party = (patch: Partial<EarningParty> = {}): EarningParty => ({
   id: "u1",
@@ -25,7 +28,7 @@ const earning = (patch: Partial<AdminEarning> = {}): AdminEarning => ({
   id: "e1",
   movement: "credit",
   type: "like",
-  amount: 500,
+  amount: naira(500),
   note: null,
   snacc_id: "s1",
   beneficiary: party(),
@@ -38,8 +41,8 @@ const earning = (patch: Partial<AdminEarning> = {}): AdminEarning => ({
 const fund: AdminFund = {
   university_id: "uni1",
   university: { id: "uni1", name: "Lagos", slug: "unilag", acronym: "UNILAG" },
-  cap: 250_050,
-  distributed: 1_000,
+  cap: naira(250_050),
+  distributed: naira(1_000),
   created_at: "2026-09-01T00:00:00Z",
 }
 
@@ -116,17 +119,20 @@ describe("fund drafts", () => {
   })
 
   it("needs a campus and a real amount", () => {
-    expect(toFundInput({ universityId: "", cap: "500" })).toBeNull()
-    expect(toFundInput({ universityId: "uni1", cap: "abc" })).toBeNull()
-    expect(toFundInput({ universityId: "uni1", cap: "1,500.5" })).toEqual({
+    expect(toFundInput({ universityId: "", cap: "500" }, "NGN")).toBeNull()
+    expect(toFundInput({ universityId: "uni1", cap: "abc" }, "NGN")).toBeNull()
+    expect(toFundInput({ universityId: "uni1", cap: "500" }, null)).toBeNull()
+    expect(
+      toFundInput({ universityId: "uni1", cap: "1,500.5" }, "NGN")
+    ).toEqual({
       universityId: "uni1",
-      cap: 150_050,
+      cap: naira(150_050),
     })
   })
 
   it("only complains once something has been typed", () => {
-    expect(capProblem("")).toBeNull()
-    expect(capProblem("5000")).toBeNull()
-    expect(capProblem("-5")).toBe(CAP_INVALID)
+    expect(capProblem("", "NGN")).toBeNull()
+    expect(capProblem("5000", "NGN")).toBeNull()
+    expect(capProblem("-5", "NGN")).toBe(CAP_INVALID)
   })
 })

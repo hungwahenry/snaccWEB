@@ -5,5 +5,6 @@ export const adKeys = {
   campaign: (id: string) => ["ads", "campaign", id] as const,
   policy: () => ["ads", "policy"] as const,
   buttons: () => ["ads", "buttons"] as const,
+  budget: () => ["ads", "budget"] as const,
   reach: (audience: AdAudience) => ["ads", "reach", audience] as const,
 }

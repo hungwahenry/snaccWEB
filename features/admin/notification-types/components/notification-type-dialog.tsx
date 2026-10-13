@@ -92,7 +92,7 @@ export function NotificationTypeDialog({
       trigger={trigger}
       disabled={disabled}
       title={row.label}
-      description="Wording supports placeholders like {actor} and {amount|naira}."
+      description="Wording supports placeholders like {actor} and {amount|money}."
     >
       <NotificationTypeForm row={row} onSubmit={onSubmit} />
     </FormDialog>

@@ -1,4 +1,10 @@
-import { formatNaira } from "@/lib/format"
+import {
+  addMoney,
+  formatMoney,
+  money,
+  subtractMoney,
+  type Money,
+} from "@/lib/money"
 import type { LimitRail, PayMode, SendTarget, WalletLimits } from "../types"
 
 export type AmountProblem =
@@ -6,52 +12,54 @@ export type AmountProblem =
 
 export interface AmountRules {
   mode: PayMode
-  amountKobo: number
-  minKobo: number
-  maxKobo: number
-  feeKobo: number
-  balance: number
+  amount: Money
+  min: Money
+  max: Money
+  fee: Money
+  balance: Money
   /** What the day's limit still allows on this rail, when known. */
-  leftToday: number | null
+  leftToday: Money | null
 }
 
 export interface AmountCheck {
   ready: boolean
   problem: AmountProblem | null
-  fee: number
-  total: number
-  shortfall: number
+  fee: Money
+  total: Money
+  shortfall: Money
   /** Only a send spends the balance, so only a send has one after. */
-  balanceAfter: number | null
+  balanceAfter: Money | null
 }
 
-function problemOf(
-  rules: AmountRules,
-  shortfall: number
-): AmountProblem | null {
-  if (rules.amountKobo <= 0) return null
-  if (rules.amountKobo < rules.minKobo) return "below_min"
-  if (rules.amountKobo > rules.maxKobo) return "above_max"
-  if (shortfall > 0) return "insufficient"
-  if (rules.leftToday !== null && rules.amountKobo > rules.leftToday)
+function problemOf(rules: AmountRules, shortfall: Money): AmountProblem | null {
+  const { amount } = rules.amount
+  if (amount <= 0) return null
+  if (amount < rules.min.amount) return "below_min"
+  if (amount > rules.max.amount) return "above_max"
+  if (shortfall.amount > 0) return "insufficient"
+  if (rules.leftToday !== null && amount > rules.leftToday.amount)
     return "over_limit"
   return null
 }
 
 export function checkAmount(rules: AmountRules): AmountCheck {
+  const { currency } = rules.amount
   const spends = rules.mode === "send"
-  const fee = spends ? rules.feeKobo : 0
-  const total = rules.amountKobo + fee
-  const shortfall = spends ? Math.max(0, total - rules.balance) : 0
+  const fee = spends ? rules.fee : money(0, currency)
+  const total = addMoney(rules.amount, fee)
+  const shortfall = money(
+    spends ? Math.max(0, total.amount - rules.balance.amount) : 0,
+    currency
+  )
   const problem = problemOf(rules, shortfall)
 
   return {
-    ready: rules.amountKobo > 0 && problem === null,
+    ready: rules.amount.amount > 0 && problem === null,
     problem,
     fee,
     total,
     shortfall,
-    balanceAfter: spends ? rules.balance - total : null,
+    balanceAfter: spends ? subtractMoney(rules.balance, total) : null,
   }
 }
 
@@ -65,9 +73,10 @@ export function limitRail(mode: PayMode, toBank: boolean): LimitRail | null {
 export function leftToday(
   limits: WalletLimits | undefined,
   rail: LimitRail | null
-): number | null {
+): Money | null {
   if (!limits || !rail) return null
-  return Math.max(0, limits[rail].limit - limits[rail].used)
+  const { limit, used } = limits[rail]
+  return money(Math.max(0, limit.amount - used.amount), limit.currency)
 }
 
 export function sendsToBank(
@@ -88,46 +97,46 @@ const STARTS_AT: Record<PayMode, string> = {
 export function amountHint(rules: AmountRules, check: AmountCheck): string {
   switch (check.problem) {
     case "below_min":
-      return `${STARTS_AT[rules.mode]} ${formatNaira(rules.minKobo)}.`
+      return `${STARTS_AT[rules.mode]} ${formatMoney(rules.min)}.`
     case "above_max":
-      return `Top-ups go up to ${formatNaira(rules.maxKobo)}.`
+      return `Top-ups go up to ${formatMoney(rules.max)}.`
     case "insufficient":
-      return check.fee > 0
-        ? `With the ${formatNaira(check.fee)} bank fee, that is more than your wallet holds.`
+      return check.fee.amount > 0
+        ? `With the ${formatMoney(check.fee)} bank fee, that is more than your wallet holds.`
         : "That is more than your wallet holds."
     case "over_limit":
-      return rules.leftToday
-        ? `That is over your daily limit. ${formatNaira(rules.leftToday)} left today.`
+      return rules.leftToday && rules.leftToday.amount > 0
+        ? `That is over your daily limit. ${formatMoney(rules.leftToday)} left today.`
         : "You have hit your daily limit. It frees up over the next 24 hours."
     default:
       if (rules.mode === "topup") {
-        return `From ${formatNaira(rules.minKobo)} to ${formatNaira(rules.maxKobo)}.`
+        return `From ${formatMoney(rules.min)} to ${formatMoney(rules.max)}.`
       }
       if (rules.mode === "request") return "Nothing moves until they pay."
-      return `You have ${formatNaira(rules.balance)}.`
+      return `You have ${formatMoney(rules.balance)}.`
   }
 }
 
 /** A top-up big enough to cover a shortfall, and never below the smallest top-up allowed. */
-export function topUpFor(shortfall: number, minTopUpKobo: number): number {
-  return Math.max(shortfall, minTopUpKobo)
+export function topUpFor(shortfall: Money, minTopUp: Money): Money {
+  return shortfall.amount > minTopUp.amount ? shortfall : minTopUp
 }
 
 export type AmountFix =
-  | { kind: "topup"; label: string; amountKobo: number }
+  | { kind: "topup"; label: string; amount: Money }
   | { kind: "limits"; label: string }
 
 /** The one-tap way out of a problem, when there is one. */
 export function amountFix(
   check: AmountCheck,
-  minTopUpKobo: number
+  minTopUp: Money
 ): AmountFix | null {
   if (check.problem === "insufficient") {
-    const amountKobo = topUpFor(check.shortfall, minTopUpKobo)
+    const amount = topUpFor(check.shortfall, minTopUp)
     return {
       kind: "topup",
-      label: `Add ${formatNaira(amountKobo)} to cover it`,
-      amountKobo,
+      label: `Add ${formatMoney(amount)} to cover it`,
+      amount,
     }
   }
   if (check.problem === "over_limit")
@@ -136,9 +145,6 @@ export function amountFix(
 }
 
 /** What paying a request would leave short, or null when the balance covers it. */
-export function requestShortfall(
-  amount: number,
-  balance: number
-): number | null {
-  return amount > balance ? amount - balance : null
+export function requestShortfall(amount: Money, balance: Money): Money | null {
+  return amount.amount > balance.amount ? subtractMoney(amount, balance) : null
 }

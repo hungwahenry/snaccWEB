@@ -6,6 +6,7 @@ import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutatio
 import { clearAdPrice, listAdPrices, setAdPrice } from "../api"
 import type { PriceListQuery } from "../types"
 import { adminAdKeys } from "../utils/keys"
+import type { Money } from "@/lib/money"
 
 export function useAdPrices(query: PriceListQuery) {
   return useQuery({
@@ -21,11 +22,11 @@ export function useAdPriceActions() {
   const { run: save } = useAdminMutation({
     mutationFn: ({
       universityId,
-      kobo,
+      price,
     }: {
       universityId: string
-      kobo: number
-    }) => setAdPrice(universityId, kobo),
+      price: Money
+    }) => setAdPrice(universityId, price),
     success: "Price saved.",
     invalidates,
   })
@@ -37,8 +38,8 @@ export function useAdPriceActions() {
 
   return useMemo(
     () => ({
-      save: (universityId: string, kobo: number) =>
-        save({ universityId, kobo }),
+      save: (universityId: string, price: Money) =>
+        save({ universityId, price }),
       reset: (universityId: string) => reset(universityId),
     }),
     [save, reset]

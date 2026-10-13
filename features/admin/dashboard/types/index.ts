@@ -1,3 +1,5 @@
+import type { Money } from "@/lib/money"
+
 export type DashboardPeriod = "7" | "30" | "90"
 
 export type DashboardTab =
@@ -189,14 +191,14 @@ export interface ContentMetrics {
 export interface WithdrawalStatusCount {
   status: "pending" | "success" | "failed" | "reversed"
   count: number
-  amount: number
+  amount: Money
 }
 
 export interface EarningTypeTotal {
   type: string
   label: string
   count: number
-  amount: number
+  amount: Money
 }
 
 export interface PremiumStoreRow {
@@ -207,14 +209,19 @@ export interface PremiumStoreRow {
   lapsed: number
 }
 
-export interface MoneyMetrics {
-  total_distributed: number
-  wallet_liability: number
+export interface CurrencyMoneyMetrics {
+  currency: string
+  total_distributed: Money
+  wallet_liability: Money
   withdrawals_by_status: WithdrawalStatusCount[]
   earnings_by_type: EarningTypeTotal[]
   earnings: Breakdown
   wallet: Breakdown
   withdrawals: Breakdown
+}
+
+export interface MoneyMetrics {
+  currencies: CurrencyMoneyMetrics[]
   premium: PremiumStoreRow[]
 }
 

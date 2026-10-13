@@ -6,7 +6,8 @@ import { QueryTable } from "@/features/admin/shell/components/query-table"
 import { UserCell } from "@/features/admin/shell/components/user-cell"
 import { walletPath } from "@/features/admin/shell/routes"
 import type { Paginated } from "@/lib/api/types"
-import { formatNaira, formatNumber } from "@/lib/format"
+import { formatNumber } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import type { WalletAccountRow } from "../types"
 import { WalletStateBadge } from "./wallet-state-badge"
 
@@ -30,7 +31,7 @@ const COLUMNS: Column<WalletAccountRow>[] = [
     id: "balance",
     header: "Balance",
     className: "font-medium tabular-nums",
-    cell: (wallet) => formatNaira(wallet.balance),
+    cell: (wallet) => formatMoney(wallet.balance),
   },
   {
     id: "movements",

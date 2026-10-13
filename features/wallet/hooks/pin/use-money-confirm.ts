@@ -1,13 +1,13 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { isApiError } from "@/lib/api/errors"
 import { showError } from "@/lib/feedback"
 import { usePinPrompt } from "@/providers/pin-prompt-provider"
 import { useStepUp } from "@/providers/step-up-provider"
 import { WALLET_LIMITS_PATH, WALLET_PIN_PATH } from "../../routes"
 import type { MoneyCredential, MoneyMove } from "../../types"
+import { useWalletOverview } from "../account/use-wallet-overview"
 
 /**
  * Confirms a money move with the wallet PIN, or an emailed code above the amount that needs one,
@@ -17,17 +17,12 @@ export function useMoneyConfirm() {
   const router = useRouter()
   const stepUp = useStepUp()
   const promptPin = usePinPrompt()
-  const userThreshold = useConfigValue(
-    "wallet.confirm.user_stepup_threshold_kobo"
-  )
-  const bankThreshold = useConfigValue(
-    "wallet.confirm.bank_stepup_threshold_kobo"
-  )
+  const thresholds = useWalletOverview().data?.rules.step_up_above
 
   function needsStepUp(move: MoneyMove): boolean {
-    return (
-      move.amountKobo > (move.kind === "bank" ? bankThreshold : userThreshold)
-    )
+    return thresholds
+      ? move.amount.amount > thresholds[move.kind].amount
+      : false
   }
 
   async function viaStepUp(): Promise<MoneyCredential | null> {

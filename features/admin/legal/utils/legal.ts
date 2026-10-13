@@ -9,14 +9,9 @@ import type {
 
 export const DEFAULT_SET = "default"
 
-export const KIND_LABEL: Record<LegalKind, string> = {
-  terms: "Terms of Use",
-  privacy: "Privacy Policy",
-}
-
 export const KIND_OPTIONS: Option<LegalKind>[] = [
-  { value: "terms", label: KIND_LABEL.terms },
-  { value: "privacy", label: KIND_LABEL.privacy },
+  { value: "terms", label: "Terms of Use" },
+  { value: "privacy", label: "Privacy Policy" },
 ]
 
 export const STANDING: Record<LegalStanding, StatusMeta> = {

@@ -1,4 +1,4 @@
-import { formatNaira } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import type { InviteeStatus, ReferralReward } from "../types"
 
 export const CODE_MIN = 4
@@ -26,9 +26,9 @@ export function rewardBlurb(
 ): string {
   const yours =
     reward.score > 0
-      ? `${formatNaira(reward.referrer_kobo)} and ${reward.score} Snacc Score`
-      : formatNaira(reward.referrer_kobo)
-  return `Every friend who joins with your code and uses Snacc for ${qualifySpan(qualifyDays)} gets you ${yours}. They get ${formatNaira(reward.referee_kobo)} too.`
+      ? `${formatMoney(reward.referrer)} and ${reward.score} Snacc Score`
+      : formatMoney(reward.referrer)
+  return `Every friend who joins with your code and uses Snacc for ${qualifySpan(qualifyDays)} gets you ${yours}. They get ${formatMoney(reward.referee)} too.`
 }
 
 export type InviteCodeStatus =

@@ -8,7 +8,8 @@ import { QueryTable } from "@/features/admin/shell/components/query-table"
 import { StatusBadge } from "@/features/admin/shell/components/status-badge"
 import { UserCell } from "@/features/admin/shell/components/user-cell"
 import type { Paginated } from "@/lib/api/types"
-import { formatDate, formatNaira } from "@/lib/format"
+import { formatDate } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import type { AdminUserRow } from "../types"
 import { accountStatus, userSubtitle } from "../utils/users"
 
@@ -29,7 +30,7 @@ const COLUMNS: Column<AdminUserRow>[] = [
     header: "Unclaimed",
     align: "end",
     className: "tabular-nums",
-    cell: (user) => formatNaira(user.balance),
+    cell: (user) => (user.balance ? formatMoney(user.balance) : "—"),
   },
   {
     id: "status",

@@ -1,6 +1,7 @@
 import type { UserRefWithCampus } from "@/lib/api/types"
 import type { SuspensionDraft } from "@/features/admin/suspension-reasons/types"
 import type { WithdrawalStatus } from "@/features/admin/withdrawals/types"
+import type { Money } from "@/lib/money"
 
 export type AccountRole = "user" | "admin"
 
@@ -19,8 +20,7 @@ export interface AdminUserRow extends UserRefWithCampus {
   payouts_blocked_at: string | null
   payouts_blocked_reason: string | null
   created_at: string
-  /** Unclaimed earnings in kobo. The spendable wallet is separate. */
-  balance: number
+  balance: Money | null
   snaccs_count: number
   followers_count: number
   following_count: number
@@ -32,7 +32,7 @@ export interface UserBooster {
   username: string | null
   email: string
   events: number
-  kobo: number
+  earned: Money
 }
 
 export interface UserEngager {
@@ -82,8 +82,7 @@ export interface AdminUserDetail extends AdminUserRow {
     received: Record<string, number>
   }
   earnings: {
-    balance: number
-    by_type: { type: string; events: number; kobo: number }[]
+    by_type: { type: string; events: number; earned: Money }[]
     top_boosters: UserBooster[]
   }
   top_engagers: UserEngager[]
@@ -111,7 +110,7 @@ export interface AdminUserDetail extends AdminUserRow {
   }[]
   recent_withdrawals: {
     id: string
-    amount: number
+    amount: Money
     status: WithdrawalStatus
     reference: string
     created_at: string
@@ -136,7 +135,7 @@ export type UserListQuery = {
 }
 
 export interface AdjustEarningsInput {
-  delta: number
+  delta: Money
   reason?: string
 }
 

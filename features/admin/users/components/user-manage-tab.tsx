@@ -19,7 +19,7 @@ import { StatusBadge } from "@/features/admin/shell/components/status-badge"
 import { walletPath } from "@/features/admin/shell/routes"
 import type { Option } from "@/features/admin/shell/types"
 import type { SuspensionReason } from "@/features/admin/suspension-reasons/types"
-import { formatNaira } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import { cn } from "@/lib/utils"
 import type { AdminUserDetail, UserActions } from "../types"
 import {
@@ -209,22 +209,24 @@ export function UserManageTab({
           label="Unclaimed earnings"
           state={
             <span className="text-sm font-semibold tabular-nums">
-              {formatNaira(user.earnings.balance)}
+              {user.balance ? formatMoney(user.balance) : "—"}
             </span>
           }
           description="Not spendable until they claim it, which their milestones have to allow."
           action={
-            <CanAct permission="users.adjust_balance">
-              <AdjustEarningsDialog
-                balance={user.earnings.balance}
-                trigger={
-                  <Button variant="outline" size="sm">
-                    Adjust
-                  </Button>
-                }
-                onSubmit={actions.adjust}
-              />
-            </CanAct>
+            user.balance ? (
+              <CanAct permission="users.adjust_balance">
+                <AdjustEarningsDialog
+                  balance={user.balance}
+                  trigger={
+                    <Button variant="outline" size="sm">
+                      Adjust
+                    </Button>
+                  }
+                  onSubmit={actions.adjust}
+                />
+              </CanAct>
+            ) : null
           }
         />
         <SettingRow

@@ -76,11 +76,11 @@ export function EngagementTables({
         cell: (kind) => weightLabel(kind.feed_weight),
       },
       {
-        id: "kobo",
-        header: "Kobo",
+        id: "earns",
+        header: "Earns",
         align: "end",
         className: NUMBER_CLASS,
-        cell: (kind) => weightLabel(kind.earn_kobo),
+        cell: (kind) => weightLabel(kind.earn_amount),
       },
       {
         id: "actions",

@@ -1,4 +1,5 @@
-import { countLabel, formatNaira } from "@/lib/format"
+import { countLabel } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import { nameOf } from "@/features/users/utils/names"
 import type { Conversation, Message, ReplyPreview } from "../types"
 import { SHARE_LABEL, splitShareLinks } from "./share"
@@ -16,9 +17,9 @@ function bodyPreview(body: string): string {
 /** One line of text for a message, as a list row shows it. */
 export function messagePreview(message: Message): string {
   if (message.money?.kind === "request")
-    return `🙏 Asked for ${formatNaira(message.money.amount)}`
+    return `🙏 Asked for ${formatMoney(message.money.amount)}`
   if (message.body) return bodyPreview(message.body)
-  if (message.money) return `💸 ${formatNaira(message.money.amount)}`
+  if (message.money) return `💸 ${formatMoney(message.money.amount)}`
   if (message.voice) return "🎤 Voice note"
   if (message.sticker) return "✨ Sticker"
   if (message.gif) return "🎞️ GIF"

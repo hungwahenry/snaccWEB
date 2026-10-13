@@ -6,15 +6,18 @@ import {
   monthBars,
   toHistoryRows,
 } from "./history"
+import { money } from "@/lib/money"
+
+const naira = (amount: number) => money(amount, "NGN")
 
 function transaction(id: string, createdAt: string): WalletTransaction {
   return {
     id,
     type: "transfer",
     label: "To @ada",
-    amount: 1000,
+    amount: naira(1000),
     direction: "out",
-    balance_after: 0,
+    balance_after: naira(0),
     note: null,
     created_at: createdAt,
   }
@@ -28,9 +31,11 @@ describe("historyFilter", () => {
 })
 
 describe("currentMonth", () => {
-  it("counts the month in West Africa Time", () => {
-    expect(currentMonth(Date.parse("2026-08-31T23:30:00Z"))).toBe("2026-09")
-    expect(currentMonth(Date.parse("2026-08-31T22:30:00Z"))).toBe("2026-08")
+  it("counts the month on the device, the clock the server reads it on", () => {
+    expect(currentMonth(new Date(2026, 7, 31, 23, 30).getTime())).toBe(
+      "2026-08"
+    )
+    expect(currentMonth(new Date(2026, 8, 1, 0, 30).getTime())).toBe("2026-09")
   })
 })
 
@@ -61,15 +66,20 @@ describe("monthBars", () => {
   it("is nothing for a still month", () => {
     expect(monthBars(null)).toBeNull()
     expect(
-      monthBars({ month: "2026-01", in: 0, out: 0, by_type: {} })
+      monthBars({
+        month: "2026-01",
+        in: naira(0),
+        out: naira(0),
+        by_type: {},
+      })
     ).toBeNull()
   })
 
   it("sizes against the bigger side, with a sliver for any movement", () => {
     const bars = monthBars({
       month: "2026-01",
-      in: 100000,
-      out: 1,
+      in: naira(100000),
+      out: naira(1),
       by_type: {},
     })
     expect(bars?.in.width).toBe(100)
@@ -77,7 +87,12 @@ describe("monthBars", () => {
   })
 
   it("leaves a side with no movement empty", () => {
-    const bars = monthBars({ month: "2026-01", in: 500, out: 0, by_type: {} })
+    const bars = monthBars({
+      month: "2026-01",
+      in: naira(500),
+      out: naira(0),
+      by_type: {},
+    })
     expect(bars?.out.width).toBe(0)
   })
 })

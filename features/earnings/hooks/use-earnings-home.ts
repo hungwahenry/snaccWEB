@@ -1,7 +1,7 @@
 "use client"
 
 import { useFlag } from "@/features/config/hooks/use-flag"
-import { formatNaira } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import { useClaimEarnings } from "./use-claim-earnings"
 import { useCampusFund, useEarningsBalance, useTopSnaccs } from "./use-earnings"
 
@@ -16,18 +16,21 @@ export function useEarningsHome() {
 
   const data = balance.data
   const claimable =
-    walletEnabled && data !== undefined && data.eligible && data.balance > 0
+    walletEnabled &&
+    data !== undefined &&
+    data.eligible &&
+    data.balance.amount > 0
 
   return {
     loading: balance.isLoading || fund.isLoading || topSnaccs.isLoading,
     retry: () => void balance.refetch(),
     summary: data
       ? {
-          balance: formatNaira(data.balance),
+          balance: formatMoney(data.balance),
           milestones: data.milestones,
           claim: claimable
             ? {
-                label: `Claim ${formatNaira(data.balance)}`,
+                label: `Claim ${formatMoney(data.balance)}`,
                 busy: claim.isPending,
                 onClaim: () => {
                   if (!claim.isPending) claim.mutate()

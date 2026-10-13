@@ -1,4 +1,4 @@
-import { formatNaira } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import type { CampusFund, FundLook } from "../types"
 import { progressPercent } from "./milestones"
 
@@ -7,9 +7,9 @@ export function fundLook(fund: CampusFund): FundLook {
     standing: fund.rank
       ? `#${fund.rank} of ${fund.earners} earners`
       : `${fund.earners} earning`,
-    shared: `${formatNaira(fund.distributed)} shared`,
-    cap: `of ${formatNaira(fund.cap)}`,
-    percent: progressPercent(fund.distributed, fund.cap),
+    shared: `${formatMoney(fund.distributed)} shared`,
+    cap: `of ${formatMoney(fund.cap)}`,
+    percent: progressPercent(fund.distributed.amount, fund.cap.amount),
   }
 }
 

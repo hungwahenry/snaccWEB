@@ -20,7 +20,7 @@ export function useBuyPremium() {
     setBuying(plan.plan)
     try {
       const bought = await confirm.run(
-        { amountKobo: plan.price_kobo, kind: "user" },
+        { amount: plan.price, kind: "user" },
         (credential) => buyPremium(plan.plan, credential)
       )
       if (!bought) return

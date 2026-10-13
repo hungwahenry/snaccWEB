@@ -6,6 +6,7 @@ import type {
   BreakdownPoint,
   BreakdownTotal,
 } from "../types"
+import { minorDigits } from "@/lib/money"
 
 export const CHART_COLORS = [
   "var(--resnacc)",
@@ -60,13 +61,17 @@ export function breakdownTotals(breakdown: Breakdown): BreakdownTotal[] {
   }))
 }
 
-export function inNaira(breakdown: Breakdown): Breakdown {
+export function inWholeUnits(
+  breakdown: Breakdown,
+  currency: string
+): Breakdown {
+  const unit = 10 ** minorDigits(currency)
   return {
     keys: breakdown.keys,
     series: breakdown.series.map((point) => {
       const next: BreakdownPoint = { date: point.date }
       for (const key of breakdown.keys) {
-        next[key.key] = Number(point[key.key] ?? 0) / 100
+        next[key.key] = Number(point[key.key] ?? 0) / unit
       }
       return next
     }),

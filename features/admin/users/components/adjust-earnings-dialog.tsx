@@ -6,7 +6,7 @@ import {
   FormDialog,
 } from "@/features/admin/shell/components/form-dialog"
 import { TextField } from "@/features/admin/shell/components/form-fields"
-import { formatNaira } from "@/lib/format"
+import { formatMoney, type Money } from "@/lib/money"
 import type { AdjustEarningsInput } from "../types"
 import { previewAdjustment } from "@/features/admin/shell/utils/money"
 import { ADJUST_REASON_MAX } from "../utils/users"
@@ -15,7 +15,7 @@ function AdjustForm({
   balance,
   onSubmit,
 }: {
-  balance: number
+  balance: Money
   onSubmit: (input: AdjustEarningsInput) => Promise<unknown>
 }) {
   const [amount, setAmount] = useState("")
@@ -36,16 +36,16 @@ function AdjustForm({
       }
     >
       <TextField
-        label="Amount in naira"
+        label="Amount"
         inputMode="decimal"
         placeholder="500, or -250 to take some back"
         value={amount}
         onChange={(event) => setAmount(event.target.value)}
         hint={
           preview.ok
-            ? `Unclaimed earnings go from ${formatNaira(balance)} to ${formatNaira(preview.next)}.`
+            ? `Unclaimed earnings go from ${formatMoney(balance)} to ${formatMoney(preview.next)}.`
             : (preview.message ??
-              `They have ${formatNaira(balance)} unclaimed.`)
+              `They have ${formatMoney(balance)} unclaimed.`)
         }
       />
       <TextField
@@ -65,7 +65,7 @@ export function AdjustEarningsDialog({
   disabled,
   onSubmit,
 }: {
-  balance: number
+  balance: Money
   trigger: ReactElement
   disabled?: boolean
   onSubmit: (input: AdjustEarningsInput) => Promise<unknown>

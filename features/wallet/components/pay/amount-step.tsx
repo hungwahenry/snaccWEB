@@ -10,6 +10,7 @@ import { TargetLineSkeleton } from "./target-line-skeleton"
 
 export function AmountStep({
   raw,
+  symbol,
   target,
   resolvingTarget,
   hint,
@@ -24,7 +25,7 @@ export function AmountStep({
   return (
     <div className="flex min-h-[calc(100dvh-3.5rem-var(--now-playing-height))] flex-col md:min-h-0">
       <div className="flex flex-1 flex-col justify-center gap-2 py-10">
-        <AmountDisplay raw={raw} />
+        <AmountDisplay raw={raw} symbol={symbol} />
         {target ? (
           <TargetLine target={target.target} label={target.label} />
         ) : resolvingTarget ? (

@@ -6,14 +6,12 @@ import {
   UsersRoundIcon,
   type LucideIcon,
 } from "lucide-react"
-import { compactCount, formatNaira } from "@/lib/format"
-import type { EarningsMilestone, MilestoneLook } from "../types"
+import { compactCount } from "@/lib/format"
+import { formatMoney, type Money } from "@/lib/money"
+import type { EarningsMilestone, MilestoneLook, MoneyMilestone } from "../types"
 
-const META: Record<
-  string,
-  { label: string; icon: LucideIcon; money?: boolean }
-> = {
-  balance: { label: "Minimum earnings", icon: BanknoteIcon, money: true },
+const META: Record<string, { label: string; icon: LucideIcon }> = {
+  balance: { label: "Minimum earnings", icon: BanknoteIcon },
   views: { label: "Total views", icon: EyeIcon },
   followers: { label: "Followers", icon: UsersRoundIcon },
   account_age_days: { label: "Days on Snacc", icon: CalendarDaysIcon },
@@ -28,15 +26,26 @@ export function milestoneLook(milestone: EarningsMilestone): MilestoneLook {
     label: milestone.key,
     icon: CircleDashedIcon,
   }
-  const format = (value: number) =>
-    meta.money ? formatNaira(value) : compactCount(value)
+  const look = { label: meta.label, icon: meta.icon }
 
-  return {
-    label: meta.label,
-    icon: meta.icon,
-    progress: `${format(milestone.current)} / ${format(milestone.target)}`,
-    percent: progressPercent(milestone.current, milestone.target),
-  }
+  return isMoney(milestone)
+    ? {
+        ...look,
+        progress: `${formatMoney(milestone.current)} / ${formatMoney(milestone.target)}`,
+        percent: progressPercent(
+          milestone.current.amount,
+          milestone.target.amount
+        ),
+      }
+    : {
+        ...look,
+        progress: `${compactCount(milestone.current)} / ${compactCount(milestone.target)}`,
+        percent: progressPercent(milestone.current, milestone.target),
+      }
+}
+
+function isMoney(milestone: EarningsMilestone): milestone is MoneyMilestone {
+  return typeof milestone.current !== "number"
 }
 
 export function clearedCount(milestones: EarningsMilestone[]): number {
@@ -48,11 +57,11 @@ export function clearedLabel(milestones: EarningsMilestone[]): string {
 }
 
 export function earningsLine(earnings: {
-  balance: number
+  balance: Money
   claimable: boolean
   milestones: EarningsMilestone[]
 }): string {
-  const amount = formatNaira(earnings.balance)
+  const amount = formatMoney(earnings.balance)
   if (earnings.claimable) return `${amount} ready to claim`
   return `${amount} earned — ${clearedCount(earnings.milestones)} of ${earnings.milestones.length} milestones`
 }

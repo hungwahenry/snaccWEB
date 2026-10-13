@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Eyebrow } from "@/components/ui/eyebrow"
 import { Spinner } from "@/components/ui/spinner"
-import { formatNaira } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import type { CampusFund, EarningsMilestone, TopSnacc } from "../types"
 import { EARNINGS_COPY } from "../utils/earnings-copy"
 import { snaccPreviewText } from "../utils/fund"
@@ -68,7 +68,7 @@ export function EarningsSummary({
                 {snaccPreviewText(row.snacc)}
               </span>
               <span className="text-sm font-extrabold text-foreground tabular-nums">
-                {formatNaira(row.total)}
+                {formatMoney(row.total)}
               </span>
             </div>
           ))}

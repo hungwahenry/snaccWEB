@@ -7,7 +7,8 @@ import {
   StatCard,
 } from "@/features/insights/components/insight-cards"
 import { dailyBars } from "@/features/insights/utils/charts"
-import { compactCount, formatNaira, shortDay } from "@/lib/format"
+import { compactCount, shortDay } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import type { CampaignDetail } from "../../types"
 import {
   ENGAGEMENT_SECTION,
@@ -95,7 +96,7 @@ export function CampaignResults({ campaign }: { campaign: CampaignDetail }) {
                           {compactCount(row.views)}
                         </td>
                         <td className="px-4 py-2.5 text-right text-foreground">
-                          {formatNaira(row.spent_kobo)}
+                          {formatMoney(row.spent)}
                         </td>
                       </tr>
                     ))}
@@ -140,7 +141,7 @@ export function CampaignResults({ campaign }: { campaign: CampaignDetail }) {
                         </td>
                       ) : null}
                       <td className="px-4 py-2.5 text-right text-foreground">
-                        {formatNaira(day.spent_kobo)}
+                        {formatMoney(day.spent)}
                       </td>
                     </tr>
                   ))}

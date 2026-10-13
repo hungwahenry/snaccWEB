@@ -18,6 +18,9 @@ import {
   statusNote,
   TARGET_GENDERS,
 } from "./campaigns"
+import { money } from "@/lib/money"
+
+const naira = (amount: number) => money(amount, "NGN")
 
 const NOW = Date.parse("2026-10-12T09:00:00.000Z")
 const LATER = "2026-10-14T09:00:00.000Z"
@@ -133,14 +136,16 @@ describe("campaignStatus", () => {
 
 describe("campaign copy", () => {
   it("counts spend against the budget", () => {
-    expect(spendLine({ spent_kobo: 120_000, budget_kobo: 500_000 })).toBe(
+    expect(spendLine({ spent: naira(120_000), budget: naira(500_000) })).toBe(
       "₦1,200 of ₦5,000 spent"
     )
-    expect(spentPercent({ spent_kobo: 120_000, budget_kobo: 500_000 })).toBe(24)
-    expect(spentPercent({ spent_kobo: 9, budget_kobo: 0 })).toBe(0)
-    expect(budgetLeftLine({ spent_kobo: 120_000, budget_kobo: 500_000 })).toBe(
-      "₦3,800 left"
-    )
+    expect(
+      spentPercent({ spent: naira(120_000), budget: naira(500_000) })
+    ).toBe(24)
+    expect(spentPercent({ spent: naira(9), budget: naira(0) })).toBe(0)
+    expect(
+      budgetLeftLine({ spent: naira(120_000), budget: naira(500_000) })
+    ).toBe("₦3,800 left")
   })
 
   it("names the snacc by its words, else by what it carries", () => {

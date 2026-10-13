@@ -13,6 +13,9 @@ import {
   reviewNote,
   submitLabel,
 } from "./pay-copy"
+import { money } from "@/lib/money"
+
+const naira = (amount: number) => money(amount, "NGN")
 
 const user: SendTarget = {
   kind: "user",
@@ -28,8 +31,8 @@ const bank: SendTarget = {
 
 describe("pay copy", () => {
   it("titles the recipient step with the amount", () => {
-    expect(recipientTitle("send", 500000)).toBe("Send ₦5,000")
-    expect(recipientTitle("request", 100)).toBe("Request ₦1")
+    expect(recipientTitle("send", naira(500000))).toBe("Send ₦5,000")
+    expect(recipientTitle("request", naira(100))).toBe("Request ₦1")
   })
 
   it("only offers account numbers on a send", () => {
@@ -46,16 +49,16 @@ describe("pay copy", () => {
   })
 
   it("notes the bank fee only when there is one", () => {
-    expect(bankFeeNote(2500)).toBe("Bank sends carry a ₦25 fee.")
-    expect(bankFeeNote(0)).toBeNull()
+    expect(bankFeeNote(naira(2500))).toBe("Bank sends carry a ₦25 fee.")
+    expect(bankFeeNote(naira(0))).toBeNull()
   })
 
   it("lists the fee, total and balance after only when they apply", () => {
     expect(
-      reviewLines("send", 100000, {
-        fee: 2500,
-        total: 102500,
-        balanceAfter: 47500,
+      reviewLines("send", naira(100000), {
+        fee: naira(2500),
+        total: naira(102500),
+        balanceAfter: naira(47500),
       })
     ).toEqual([
       { label: "You are sending", value: "₦1,000", hero: true },
@@ -64,9 +67,9 @@ describe("pay copy", () => {
       { label: "Balance after", value: "₦475" },
     ])
     expect(
-      reviewLines("request", 100000, {
-        fee: 0,
-        total: 100000,
+      reviewLines("request", naira(100000), {
+        fee: naira(0),
+        total: naira(100000),
         balanceAfter: null,
       })
     ).toEqual([{ label: "You are asking for", value: "₦1,000", hero: true }])
@@ -79,8 +82,12 @@ describe("pay copy", () => {
   })
 
   it("puts the total, fee included, on the send button", () => {
-    expect(submitLabel("send", 100000, 102500)).toBe("Send ₦1,025")
-    expect(submitLabel("request", 100000, 100000)).toBe("Request ₦1,000")
+    expect(submitLabel("send", naira(100000), naira(102500))).toBe(
+      "Send ₦1,025"
+    )
+    expect(submitLabel("request", naira(100000), naira(100000))).toBe(
+      "Request ₦1,000"
+    )
   })
 
   it("says where it went", () => {

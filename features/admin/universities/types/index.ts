@@ -1,5 +1,6 @@
 import type { NamedPlace } from "@/features/places/types"
 import type { CampusStatus } from "@/features/universities/types"
+import type { Money } from "@/lib/money"
 
 export type { CampusStatus }
 
@@ -22,7 +23,7 @@ export interface AdminUniversity {
   added_by: { id: string; username: string | null } | null
   created_at: string
   stats: { profiles: number; snaccs: number }
-  fund: { cap: number; distributed: number } | null
+  fund: { cap: Money; distributed: Money } | null
 }
 
 export type UniversityListQuery = {

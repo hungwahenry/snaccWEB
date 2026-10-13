@@ -1,4 +1,5 @@
 import type { UserRefWithCampus } from "@/lib/api/types"
+import type { Money } from "@/lib/money"
 
 export type WithdrawalStatus = "pending" | "success" | "failed" | "reversed"
 
@@ -11,7 +12,7 @@ export interface WithdrawalEvent {
 export interface AdminWithdrawal {
   id: string
   reference: string
-  amount: number
+  amount: Money
   status: WithdrawalStatus
   bank_name: string
   account_last4: string
@@ -19,8 +20,8 @@ export interface AdminWithdrawal {
   /** Only on the detail and after a retry. */
   account_number?: string | null
   recipient_code: string
-  balance_before: number
-  balance_after: number
+  balance_before: Money
+  balance_after: Money
   transfer_code: string | null
   failure_reason: string | null
   completed_at: string | null
@@ -37,6 +38,6 @@ export type WithdrawalListQuery = {
 }
 
 export interface WithdrawalSummary {
-  pending: { count: number; total: number; oldest_at: string | null }
-  paid: { days: number; count: number; total: number }
+  pending: { count: number; totals: Money[]; oldest_at: string | null }
+  paid: { days: number; count: number; totals: Money[] }
 }

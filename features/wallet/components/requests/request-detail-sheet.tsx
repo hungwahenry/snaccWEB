@@ -2,7 +2,8 @@ import { HandCoinsIcon } from "lucide-react"
 import { ActionSheet } from "@/components/ui/action-sheet"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { nameOf } from "@/features/users/utils/names"
-import { formatNaira, shortDate } from "@/lib/format"
+import { shortDate } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import type { MoneyRequest, RequestBox } from "../../types"
 import {
   requestCounterparty,
@@ -75,7 +76,7 @@ function Detail({
 
         <div className="flex flex-col items-center gap-0.5">
           <p className="text-4xl font-extrabold text-foreground tabular-nums">
-            {formatNaira(request.amount)}
+            {formatMoney(request.amount)}
           </p>
           <p className="font-bold text-foreground">
             {requestHeadline(request, box)}

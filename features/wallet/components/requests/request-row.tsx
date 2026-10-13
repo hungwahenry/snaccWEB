@@ -1,7 +1,8 @@
 import { Spinner } from "@/components/ui/spinner"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { nameOf } from "@/features/users/utils/names"
-import { formatNaira, shortDate } from "@/lib/format"
+import { shortDate } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import { cn } from "@/lib/utils"
 import type { MoneyRequest, RequestBox } from "../../types"
 import {
@@ -53,7 +54,7 @@ export function RequestRow({
             state.tone === "good" ? "text-success" : "text-foreground"
           )}
         >
-          {formatNaira(request.amount)}
+          {formatMoney(request.amount)}
         </span>
         {busy ? (
           <Spinner className="text-muted-foreground" />

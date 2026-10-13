@@ -11,7 +11,8 @@ import {
 } from "@/features/admin/shell/components/detail"
 import { StatusBadge } from "@/features/admin/shell/components/status-badge"
 import { UserCell } from "@/features/admin/shell/components/user-cell"
-import { formatDate, formatNaira } from "@/lib/format"
+import { formatDate } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import type { AdminWithdrawal } from "../types"
 import { WITHDRAWAL_STATUS } from "../utils/status"
 import { accountLine, canRetry } from "../utils/withdrawals"
@@ -26,7 +27,7 @@ export function WithdrawalDetail({
   return (
     <div className="flex flex-col gap-6">
       <DetailHeader
-        title={formatNaira(withdrawal.amount)}
+        title={formatMoney(withdrawal.amount)}
         badges={<StatusBadge status={WITHDRAWAL_STATUS[withdrawal.status]} />}
         meta={
           <>
@@ -93,11 +94,11 @@ export function WithdrawalDetail({
           <Facts>
             <Fact
               label="Balance before"
-              value={formatNaira(withdrawal.balance_before)}
+              value={formatMoney(withdrawal.balance_before)}
             />
             <Fact
               label="Balance after"
-              value={formatNaira(withdrawal.balance_after)}
+              value={formatMoney(withdrawal.balance_after)}
             />
             {withdrawal.events.length === 0 ? (
               <Fact label="Steps" value="None recorded" />

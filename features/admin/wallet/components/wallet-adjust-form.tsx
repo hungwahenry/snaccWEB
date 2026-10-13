@@ -8,12 +8,13 @@ import { TextField } from "@/features/admin/shell/components/form-fields"
 import { previewAdjustment } from "@/features/admin/shell/utils/money"
 import type { AdjustWalletInput } from "../types"
 import { ADJUST_REASON_MAX, adjustHint, toAdjustInput } from "../utils/wallet"
+import type { Money } from "@/lib/money"
 
 export function WalletAdjustForm({
   balance,
   onSubmit,
 }: {
-  balance: number
+  balance: Money
   onSubmit: (input: AdjustWalletInput) => Promise<unknown>
 }) {
   const [amount, setAmount] = useState("")
@@ -35,7 +36,7 @@ export function WalletAdjustForm({
     >
       <div className="flex flex-col gap-3 rounded-lg border p-4">
         <TextField
-          label="Amount in naira"
+          label="Amount"
           inputMode="decimal"
           placeholder="-500 to take money back"
           value={amount}

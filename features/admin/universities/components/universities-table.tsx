@@ -12,7 +12,8 @@ import {
 } from "@/features/admin/shell/components/data-table"
 import { QueryTable } from "@/features/admin/shell/components/query-table"
 import { StatusBadge } from "@/features/admin/shell/components/status-badge"
-import { formatNaira, formatNumber } from "@/lib/format"
+import { formatNumber } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import type { Paginated } from "@/lib/api/types"
 import type { AdminUniversity, UniversityDraft } from "../types"
 import { addedBy, CAMPUS_STATUS } from "../utils/status"
@@ -91,7 +92,7 @@ export function UniversitiesTable({
         cell: (university) =>
           university.fund ? (
             <Badge variant="secondary">
-              {formatNaira(university.fund.cap)} cap
+              {formatMoney(university.fund.cap)} cap
             </Badge>
           ) : (
             <Badge variant="outline">Unpaid</Badge>

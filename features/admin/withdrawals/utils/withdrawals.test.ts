@@ -1,19 +1,22 @@
 import { describe, expect, it } from "vitest"
+import { money } from "@/lib/money"
 import type { AdminWithdrawal } from "../types"
+
+const naira = (amount: number) => money(amount, "NGN")
 import { STATUS_OPTIONS, WITHDRAWAL_STATUS } from "./status"
 import { accountLine, canRetry, waitingNote } from "./withdrawals"
 
 const withdrawal = (patch: Partial<AdminWithdrawal> = {}): AdminWithdrawal => ({
   id: "w1",
   reference: "WD-1",
-  amount: 100_000,
+  amount: naira(100_000),
   status: "pending",
   bank_name: "GTBank",
   account_last4: "1234",
   account_name: "Bola A",
   recipient_code: "RCP_1",
-  balance_before: 200_000,
-  balance_after: 100_000,
+  balance_before: naira(200_000),
+  balance_after: naira(100_000),
   transfer_code: null,
   failure_reason: null,
   completed_at: null,
@@ -33,7 +36,7 @@ describe("waitingNote", () => {
   const now = Date.parse("2026-09-10T12:00:00Z")
 
   it("says when nothing is waiting", () => {
-    expect(waitingNote({ count: 0, total: 0, oldest_at: null }, now)).toBe(
+    expect(waitingNote({ count: 0, totals: [], oldest_at: null }, now)).toBe(
       "Nothing waiting"
     )
   })
@@ -41,13 +44,13 @@ describe("waitingNote", () => {
   it("counts what is waiting and how old the oldest is", () => {
     expect(
       waitingNote(
-        { count: 2, total: 5_000, oldest_at: "2026-09-10T08:00:00Z" },
+        { count: 2, totals: [naira(5_000)], oldest_at: "2026-09-10T08:00:00Z" },
         now
       )
     ).toBe("2 withdrawals · oldest from today")
     expect(
       waitingNote(
-        { count: 1, total: 5_000, oldest_at: "2026-09-07T08:00:00Z" },
+        { count: 1, totals: [naira(5_000)], oldest_at: "2026-09-07T08:00:00Z" },
         now
       )
     ).toBe("1 withdrawal · oldest 3 days old")

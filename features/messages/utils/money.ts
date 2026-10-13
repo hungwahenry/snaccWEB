@@ -1,5 +1,5 @@
 import { estimatedRequestExpiry } from "@/features/wallet/utils/requests"
-import { formatNaira } from "@/lib/format"
+import { formatMoney, type Money } from "@/lib/money"
 import type { AttachmentChip, MessageMoney, MoneyKind } from "../types"
 
 const REQUEST_STATUS: Record<string, string> = {
@@ -20,12 +20,12 @@ export function requestStatusLabel(status: string): string {
 }
 
 export function moneyChip(
-  money: { kind: MoneyKind; amount: number },
+  money: { kind: MoneyKind; amount: Money },
   mine: boolean
 ): AttachmentChip {
   return {
     kind: money.kind === "request" ? "money_request" : "money_sent",
-    label: `${moneyLabel(money.kind, mine)} ${formatNaira(money.amount)}`,
+    label: `${moneyLabel(money.kind, mine)} ${formatMoney(money.amount)}`,
   }
 }
 
@@ -60,7 +60,7 @@ export function moneyCard(
 
   return {
     label: moneyLabel(money.kind, mine),
-    amount: formatNaira(money.amount),
+    amount: formatMoney(money.amount),
     request,
     received: !request && !mine,
     status: asked

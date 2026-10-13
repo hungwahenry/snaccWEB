@@ -18,7 +18,8 @@ import { TableFrame } from "@/features/admin/shell/components/table-frame"
 import { walletPath, withdrawalPath } from "@/features/admin/shell/routes"
 import { humanize, plural } from "@/features/admin/shell/utils/format"
 import { WITHDRAWAL_STATUS } from "@/features/admin/withdrawals/utils/status"
-import { formatDate, formatNaira, formatNumber } from "@/lib/format"
+import { formatDate, formatNumber } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import type { AdminUserDetail, BankRecipient, UserBooster } from "../types"
 
 type Withdrawal = AdminUserDetail["recent_withdrawals"][number]
@@ -42,7 +43,7 @@ const BOOSTERS: Column<UserBooster>[] = [
     header: "Paid them",
     align: "end",
     className: "tabular-nums",
-    cell: (booster) => formatNaira(booster.kobo),
+    cell: (booster) => formatMoney(booster.earned),
   },
 ]
 
@@ -80,7 +81,7 @@ const WITHDRAWALS: Column<Withdrawal>[] = [
     header: "Amount",
     align: "end",
     className: "tabular-nums",
-    cell: (withdrawal) => formatNaira(withdrawal.amount),
+    cell: (withdrawal) => formatMoney(withdrawal.amount),
   },
   {
     id: "status",
@@ -105,12 +106,15 @@ export function UserMoneyTab({ user }: { user: AdminUserDetail }) {
         description="Paid for engagement but not spendable yet. It becomes wallet money only when they claim it, and their milestones have to allow that."
       >
         <Facts>
-          <Fact label="Balance" value={formatNaira(user.earnings.balance)} />
+          <Fact
+            label="Balance"
+            value={user.balance ? formatMoney(user.balance) : "—"}
+          />
           {user.earnings.by_type.map((entry) => (
             <Fact
               key={entry.type}
               label={`${humanize(entry.type)}, ${plural(entry.events, "time")}`}
-              value={formatNaira(entry.kobo)}
+              value={formatMoney(entry.earned)}
             />
           ))}
         </Facts>

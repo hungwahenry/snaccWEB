@@ -6,7 +6,8 @@ import {
   StatGrid,
 } from "@/features/admin/shell/components/detail"
 import { humanize } from "@/features/admin/shell/utils/format"
-import { formatDate, formatNaira, formatNumber } from "@/lib/format"
+import { formatDate, formatNumber } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import type { AdminUserDetail } from "../types"
 import { birthDateLabel } from "../utils/users"
 
@@ -16,7 +17,10 @@ export function UserOverviewTab({ user }: { user: AdminUserDetail }) {
   return (
     <div className="flex flex-col gap-6">
       <StatGrid columns={5}>
-        <Stat label="Unclaimed earnings" value={formatNaira(user.balance)} />
+        <Stat
+          label="Unclaimed earnings"
+          value={user.balance ? formatMoney(user.balance) : "—"}
+        />
         <Stat label="Snaccs" value={formatNumber(user.snaccs_count)} />
         <Stat label="Followers" value={formatNumber(user.followers_count)} />
         <Stat label="Following" value={formatNumber(user.following_count)} />

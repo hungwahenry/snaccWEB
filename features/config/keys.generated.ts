@@ -108,28 +108,13 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly "avatar.format": string
   readonly "discovery.popular_hashtags.limit": number
   readonly "views.record.max_batch": number
-  readonly "earn.withdrawal.balance": number
   readonly "earn.withdrawal.views": number
   readonly "earn.withdrawal.followers": number
   readonly "earn.withdrawal.account_age_days": number
   readonly "referral.claim_window_days": number
   readonly "referral.monthly_cap": number
-  readonly "wallet.send.min_kobo": number
-  readonly "wallet.send.bank_fee_kobo": number
-  readonly "wallet.confirm.user_stepup_threshold_kobo": number
-  readonly "wallet.confirm.bank_stepup_threshold_kobo": number
   readonly "wallet.request.expiry_days": number
-  readonly "wallet.deposit.min_kobo": number
-  readonly "wallet.deposit.max_kobo": number
-  readonly "wallet.limits.basic.daily_send_kobo": number
-  readonly "wallet.limits.basic.daily_bank_send_kobo": number
-  readonly "wallet.limits.basic.daily_deposit_kobo": number
-  readonly "wallet.limits.verified.daily_send_kobo": number
-  readonly "wallet.limits.verified.daily_bank_send_kobo": number
-  readonly "wallet.limits.verified.daily_deposit_kobo": number
   readonly "wallet.dva.requires_identity": boolean
-  readonly "premium.wallet.monthly_kobo": number
-  readonly "premium.wallet.yearly_kobo": number
   readonly "premium.rc_ios_key": string
   readonly "premium.rc_android_key": string
   readonly "premium.offering_id": string
@@ -149,9 +134,6 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly "score.daily.half_posts": number
   readonly "score.actor.daily_cap": number
   readonly "eggs.burst_counts": Readonly<Record<string, number>>
-  readonly "ads.price_per_thousand_kobo": number
-  readonly "ads.min_budget_kobo": number
-  readonly "ads.budget_presets_kobo": readonly string[]
   readonly "ads.max_days": number
   readonly "ads.max_lead_days": number
   readonly "ads.active_days": number
@@ -207,28 +189,13 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   "avatar.format": "png",
   "discovery.popular_hashtags.limit": 15,
   "views.record.max_batch": 50,
-  "earn.withdrawal.balance": 100000,
   "earn.withdrawal.views": 5000,
   "earn.withdrawal.followers": 50,
   "earn.withdrawal.account_age_days": 14,
   "referral.claim_window_days": 7,
   "referral.monthly_cap": 20,
-  "wallet.send.min_kobo": 10000,
-  "wallet.send.bank_fee_kobo": 2500,
-  "wallet.confirm.user_stepup_threshold_kobo": 500000,
-  "wallet.confirm.bank_stepup_threshold_kobo": 2000000,
   "wallet.request.expiry_days": 7,
-  "wallet.deposit.min_kobo": 10000,
-  "wallet.deposit.max_kobo": 5000000,
-  "wallet.limits.basic.daily_send_kobo": 5000000,
-  "wallet.limits.basic.daily_bank_send_kobo": 2000000,
-  "wallet.limits.basic.daily_deposit_kobo": 10000000,
-  "wallet.limits.verified.daily_send_kobo": 50000000,
-  "wallet.limits.verified.daily_bank_send_kobo": 20000000,
-  "wallet.limits.verified.daily_deposit_kobo": 100000000,
   "wallet.dva.requires_identity": true,
-  "premium.wallet.monthly_kobo": 350000,
-  "premium.wallet.yearly_kobo": 3200000,
   "premium.rc_ios_key": "",
   "premium.rc_android_key": "",
   "premium.offering_id": "",
@@ -254,9 +221,6 @@ export const PUBLIC_CONFIG_DEFAULTS: {
     epic: 28,
     legendary: 36,
   },
-  "ads.price_per_thousand_kobo": 100000,
-  "ads.min_budget_kobo": 200000,
-  "ads.budget_presets_kobo": ["200000", "500000", "1000000"],
   "ads.max_days": 30,
   "ads.max_lead_days": 30,
   "ads.active_days": 30,

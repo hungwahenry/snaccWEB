@@ -1,5 +1,5 @@
-import { formatNaira } from "@/lib/format"
-import type { AdsInfo } from "../types"
+import { formatMoney } from "@/lib/money"
+import type { AdsInfo, PriceRange } from "../types"
 import { viewsRange } from "./estimate"
 
 export const HOW_IT_WORKS_ID = "how-it-works"
@@ -15,17 +15,33 @@ export interface AdvertiseQuestion {
   a: string
 }
 
-function rateLine({ min, max }: AdsInfo["price_per_thousand_kobo"]): string {
-  return min === max
-    ? `${formatNaira(min)} per 1,000 views`
-    : `${formatNaira(min)}–${formatNaira(max)} per 1,000 views, depending on the campus`
+function rateLine({ min, max }: PriceRange): string {
+  return min.amount === max.amount
+    ? `${formatMoney(min)} per 1,000 views`
+    : `${formatMoney(min)}–${formatMoney(max)} per 1,000 views, depending on the campus`
+}
+
+function startLine(info: AdsInfo): string {
+  return info.prices
+    .map((prices) => formatMoney(prices.min_budget))
+    .join(" or ")
+}
+
+function ratesLine(info: AdsInfo): string {
+  return info.prices
+    .map((prices) => rateLine(prices.price_per_thousand))
+    .join("; ")
 }
 
 export function advertisePricing(info: AdsInfo): AdvertisePricing {
+  const [only, ...others] = info.prices
   return {
-    start: formatNaira(info.min_budget_kobo),
-    views: viewsRange(info.min_budget_kobo, info.price_per_thousand_kobo),
-    rate: rateLine(info.price_per_thousand_kobo),
+    start: startLine(info),
+    views:
+      only && others.length === 0
+        ? viewsRange(only.min_budget, only.price_per_thousand)
+        : null,
+    rate: ratesLine(info),
   }
 }
 
@@ -37,7 +53,7 @@ export function advertiseQuestions(info: AdsInfo): AdvertiseQuestion[] {
     },
     {
       q: "How much does it cost?",
-      a: `You choose the budget, starting from ${formatNaira(info.min_budget_kobo)}. It costs ${rateLine(info.price_per_thousand_kobo)}, and whatever isn't spent goes back to your wallet.`,
+      a: `You choose the budget, starting from ${startLine(info)}. It costs ${ratesLine(info)}, and whatever isn't spent goes back to your wallet.`,
     },
     {
       q: "What counts as a view?",

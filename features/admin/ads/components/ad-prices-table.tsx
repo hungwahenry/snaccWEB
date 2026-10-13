@@ -14,23 +14,21 @@ import {
 import { QueryTable } from "@/features/admin/shell/components/query-table"
 import { CONFIG_PATH } from "@/features/admin/shell/routes"
 import type { Paginated } from "@/lib/api/types"
-import { formatNaira } from "@/lib/format"
+import { formatMoney, type Money } from "@/lib/money"
 import type { CampusPrice } from "../types"
 import { PriceDialog } from "./price-dialog"
 
 export function AdPricesTable({
   query,
-  defaultKobo,
   toolbar,
   onPageChange,
   onSave,
   onReset,
 }: {
   query: UseQueryResult<Paginated<CampusPrice>>
-  defaultKobo: number
   toolbar: ReactNode
   onPageChange: (page: number) => void
-  onSave: (universityId: string, kobo: number) => Promise<unknown>
+  onSave: (universityId: string, price: Money) => Promise<unknown>
   onReset: (universityId: string) => Promise<unknown>
 }) {
   const columns = useMemo<Column<CampusPrice>[]>(
@@ -55,7 +53,7 @@ export function AdPricesTable({
         cell: (price) => (
           <div className="flex items-center justify-end gap-2">
             {price.custom ? <Badge variant="secondary">Custom</Badge> : null}
-            {formatNaira(price.price_per_thousand_kobo)}
+            {formatMoney(price.price_per_thousand)}
           </div>
         ),
       },
@@ -73,7 +71,7 @@ export function AdPricesTable({
                     Set price
                   </Button>
                 }
-                onSubmit={(kobo) => onSave(price.university.id, kobo)}
+                onSubmit={(next) => onSave(price.university.id, next)}
               />
             </CanAct>
             {price.custom ? (
@@ -86,7 +84,7 @@ export function AdPricesTable({
                   }
                   tone="default"
                   title={`Put ${price.university.acronym} back on the default?`}
-                  description={`Its views go back to costing ${formatNaira(defaultKobo)} per 1,000, the price set on the Config page.`}
+                  description="Its views go back to costing the default per 1,000, the price set on the Config page."
                   confirmLabel="Use default"
                   onConfirm={() => onReset(price.university.id)}
                 />
@@ -96,7 +94,7 @@ export function AdPricesTable({
         ),
       },
     ],
-    [defaultKobo, onSave, onReset]
+    [onSave, onReset]
   )
 
   return (
@@ -107,8 +105,8 @@ export function AdPricesTable({
       rowKey={(price) => price.university.id}
       description={
         <>
-          A campus without a price of its own costs the default,{" "}
-          {formatNaira(defaultKobo)} per 1,000 views. Change it on the{" "}
+          A campus without a price of its own costs the default per 1,000 views.
+          Change it on the{" "}
           <Link href={CONFIG_PATH} className="underline underline-offset-4">
             Config page
           </Link>{" "}

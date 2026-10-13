@@ -1,13 +1,16 @@
 import { describe, expect, it } from "vitest"
 import { fundLook, snaccPreviewText } from "./fund"
+import { money } from "@/lib/money"
+
+const naira = (amount: number) => money(amount, "NGN")
 
 describe("fundLook", () => {
   it("says where you rank and how much is shared", () => {
     expect(
       fundLook({
-        cap: 1_000_000,
-        distributed: 250_000,
-        you: 5_000,
+        cap: naira(1_000_000),
+        distributed: naira(250_000),
+        you: naira(5_000),
         rank: 3,
         earners: 40,
       })
@@ -21,8 +24,13 @@ describe("fundLook", () => {
 
   it("counts earners when you have no rank yet", () => {
     expect(
-      fundLook({ cap: 1_000, distributed: 0, you: 0, rank: null, earners: 12 })
-        .standing
+      fundLook({
+        cap: naira(1_000),
+        distributed: naira(0),
+        you: naira(0),
+        rank: null,
+        earners: 12,
+      }).standing
     ).toBe("12 earning")
   })
 })

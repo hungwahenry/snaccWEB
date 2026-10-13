@@ -9,7 +9,7 @@ import {
   type Column,
 } from "@/features/admin/shell/components/data-table"
 import { QueryTable } from "@/features/admin/shell/components/query-table"
-import { formatNaira } from "@/lib/format"
+import { formatMoney, subtractMoney } from "@/lib/money"
 import type { AdminFund, FundInput } from "../types"
 import { FundDialog } from "./fund-dialog"
 
@@ -35,21 +35,21 @@ export function FundsTable({
         header: "Cap",
         align: "end",
         className: "tabular-nums",
-        cell: (fund) => formatNaira(fund.cap),
+        cell: (fund) => formatMoney(fund.cap),
       },
       {
         id: "distributed",
         header: "Distributed",
         align: "end",
         className: "tabular-nums",
-        cell: (fund) => formatNaira(fund.distributed),
+        cell: (fund) => formatMoney(fund.distributed),
       },
       {
         id: "remaining",
         header: "Remaining",
         align: "end",
         className: "tabular-nums",
-        cell: (fund) => formatNaira(fund.cap - fund.distributed),
+        cell: (fund) => formatMoney(subtractMoney(fund.cap, fund.distributed)),
       },
       {
         id: "actions",

@@ -2,12 +2,17 @@
 
 import { useRouter } from "next/navigation"
 import { useCallback, useState } from "react"
-import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { useBack } from "@/hooks/use-back"
-import { formatNaira, koboToInput, nairaToKobo } from "@/lib/format"
+import {
+  currencySymbol,
+  formatMoney,
+  inputToMoney,
+  money,
+  moneyToInput,
+} from "@/lib/money"
 import { payPath, WALLET_LIMITS_PATH, WALLET_PATH } from "../../routes"
 import type { PayPrefill, PayStep, WalletRecipient } from "../../types"
-import { AMOUNT_CAP_KOBO, typeAmount } from "../../utils/amount"
+import { keypadCap, typeAmount } from "../../utils/amount"
 import {
   amountFix,
   amountHint,
@@ -38,16 +43,15 @@ import { usePayRecipient } from "./use-pay-recipient"
 import { usePaySubmit } from "./use-pay-submit"
 import { useTopUp } from "./use-top-up"
 
-export function usePayFlow(prefill: PayPrefill) {
+export function usePayFlow(prefill: PayPrefill, currency: string) {
   const { mode } = prefill
   const router = useRouter()
   const back = useBack(WALLET_PATH)
   const overview = useWalletOverview()
   const limits = useLimits({ enabled: mode !== "request" })
-  const minSend = useConfigValue("wallet.send.min_kobo")
-  const bankFee = useConfigValue("wallet.send.bank_fee_kobo")
-  const depositMin = useConfigValue("wallet.deposit.min_kobo")
-  const depositMax = useConfigValue("wallet.deposit.max_kobo")
+  const wallet = overview.data?.rules
+  const nothing = money(0, currency)
+  const depositMin = wallet?.deposit_minimum ?? nothing
 
   const [amount, setAmount] = useState(prefill.amount ?? "")
   const [note, setNote] = useState("")
@@ -56,21 +60,26 @@ export function usePayFlow(prefill: PayPrefill) {
 
   const recipient = usePayRecipient(mode, prefill, step === "recipient")
   const submit = usePaySubmit(mode, prefill.conversationId)
-  const amountKobo = nairaToKobo(amount)
-  const topUp = useTopUp(amountKobo, () => setDoneTo("your wallet"))
+  const value = inputToMoney(amount, currency)
+  const topUp = useTopUp(value, () => setDoneTo("your wallet"))
 
   const { target, pinned } = recipient
   const toBank = sendsToBank(mode, recipient.bankMode, target)
   const rules: AmountRules = {
     mode,
-    amountKobo,
-    minKobo: mode === "topup" ? depositMin : minSend,
-    maxKobo: mode === "topup" ? depositMax : AMOUNT_CAP_KOBO,
-    feeKobo: toBank ? bankFee : 0,
-    balance: overview.data?.balance ?? 0,
+    amount: value,
+    min:
+      (mode === "topup" ? wallet?.deposit_minimum : wallet?.send_minimum) ??
+      nothing,
+    max:
+      (mode === "topup" ? wallet?.deposit_maximum : undefined) ??
+      keypadCap(currency),
+    fee: toBank ? (wallet?.bank_fee ?? nothing) : nothing,
+    balance: overview.data?.balance ?? nothing,
     leftToday: leftToday(limits.data, limitRail(mode, toBank)),
   }
   const check = checkAmount(rules)
+  const ready = check.ready && wallet !== undefined
   const hint = amountHint(rules, check)
   const recipientReady =
     target !== null && (mode !== "request" || target.kind === "user")
@@ -85,7 +94,7 @@ export function usePayFlow(prefill: PayPrefill) {
               router.push(
                 payPath({
                   mode: "topup",
-                  amount: koboToInput(found.amountKobo),
+                  amount: moneyToInput(found.amount),
                 })
               )
           : () => router.push(WALLET_LIMITS_PATH),
@@ -94,12 +103,12 @@ export function usePayFlow(prefill: PayPrefill) {
   const fix = fixAction(amountFix(check, depositMin))
 
   const press = useCallback(
-    (key: string) => setAmount((current) => typeAmount(current, key)),
-    []
+    (key: string) => setAmount((current) => typeAmount(current, key, currency)),
+    [currency]
   )
 
   function next() {
-    if (!check.ready || (pinned && !target)) return
+    if (!ready || (pinned && !target)) return
     if (mode === "topup") topUp.start()
     else setStep(pinned ? "review" : "recipient")
   }
@@ -122,9 +131,9 @@ export function usePayFlow(prefill: PayPrefill) {
   }
 
   function send() {
-    if (!target || !check.ready || submit.isPending) return
+    if (!target || !ready || submit.isPending) return
     submit.mutate(
-      { target, amountKobo, note },
+      { target, amount: value, note },
       {
         onSuccess: (to) => {
           if (to) setDoneTo(to)
@@ -145,6 +154,7 @@ export function usePayFlow(prefill: PayPrefill) {
     onBack: back,
     amount: {
       raw: amount,
+      symbol: currencySymbol(currency),
       target: pinned && target ? { target, label: targetLabel(target) } : null,
       resolvingTarget: pinned && target === null,
       hint,
@@ -152,16 +162,17 @@ export function usePayFlow(prefill: PayPrefill) {
       warning: check.problem !== null && check.problem !== "below_min",
       fix,
       action: PAY_TITLES[mode],
-      ready: check.ready && (!pinned || target !== null),
+      ready: ready && (!pinned || target !== null),
       busy: topUp.starting,
       onKey: press,
       onNext: next,
     },
     recipient: {
       ...recipient.step,
-      title: recipientTitle(mode, amountKobo),
+      title: recipientTitle(mode, value),
       placeholder: recipientPlaceholder(mode),
-      feeNote: recipient.bankMode ? bankFeeNote(bankFee) : null,
+      feeNote:
+        recipient.bankMode && wallet ? bankFeeNote(wallet.bank_fee) : null,
       ready: recipientReady,
       onPickRecent: pickRecent,
       onBack: () => setStep("amount"),
@@ -172,7 +183,7 @@ export function usePayFlow(prefill: PayPrefill) {
           target,
           label: targetLabel(target),
           requesting: mode === "request",
-          lines: reviewLines(mode, amountKobo, check),
+          lines: reviewLines(mode, value, check),
           showNote: target.kind === "user",
           note,
           setNote,
@@ -181,8 +192,8 @@ export function usePayFlow(prefill: PayPrefill) {
           footnote: reviewNote(mode, target),
           problem: check.problem ? hint : null,
           fix,
-          submitLabel: submitLabel(mode, amountKobo, check.total),
-          ready: check.ready,
+          submitLabel: submitLabel(mode, value, check.total),
+          ready,
           submitting: submit.isPending,
           onBack: backFromReview,
           onSubmit: send,
@@ -191,7 +202,7 @@ export function usePayFlow(prefill: PayPrefill) {
     transfer: topUp.transfer
       ? {
           transfer: topUp.transfer,
-          amount: formatNaira(amountKobo),
+          amount: formatMoney(value),
           starting: topUp.starting,
           onRestart: topUp.start,
           checking: topUp.checking,
@@ -201,7 +212,7 @@ export function usePayFlow(prefill: PayPrefill) {
       : null,
     done: {
       target: mode === "topup" ? null : target,
-      amount: formatNaira(amountKobo),
+      amount: formatMoney(value),
       requesting: mode === "request",
       line: doneLine(mode, doneTo ?? ""),
       againLabel: againLabel(mode),

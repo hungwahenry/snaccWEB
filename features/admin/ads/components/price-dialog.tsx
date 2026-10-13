@@ -6,37 +6,36 @@ import {
   FormDialog,
 } from "@/features/admin/shell/components/form-dialog"
 import { TextField } from "@/features/admin/shell/components/form-fields"
-import { formatNaira, koboToInput } from "@/lib/format"
+import { formatMoney, moneyToInput, type Money } from "@/lib/money"
 import type { CampusPrice } from "../types"
-import { priceProblem, toPriceKobo } from "../utils/prices"
+import { priceHint, priceProblem, toPrice } from "../utils/prices"
 
 function PriceForm({
   price,
   onSubmit,
 }: {
   price: CampusPrice
-  onSubmit: (kobo: number) => Promise<unknown>
+  onSubmit: (price: Money) => Promise<unknown>
 }) {
-  const [raw, setRaw] = useState(() =>
-    koboToInput(price.price_per_thousand_kobo)
-  )
-  const kobo = toPriceKobo(raw)
-  const problem = priceProblem(raw)
+  const { currency } = price.price_per_thousand
+  const [raw, setRaw] = useState(() => moneyToInput(price.price_per_thousand))
+  const typed = toPrice(raw, currency)
+  const problem = priceProblem(raw, currency)
 
   return (
     <DialogForm
       submitLabel="Save price"
-      canSubmit={kobo !== null}
-      onSubmit={() => (kobo !== null ? onSubmit(kobo) : undefined)}
+      canSubmit={typed !== null}
+      onSubmit={() => (typed !== null ? onSubmit(typed) : undefined)}
     >
       <TextField
-        label="Price per 1,000 views (₦)"
+        label="Price per 1,000 views"
         inputMode="decimal"
         hint={
           problem ? (
             <span className="text-destructive">{problem}</span>
           ) : (
-            "In steps of ₦10."
+            priceHint(currency)
           )
         }
         value={raw}
@@ -55,14 +54,14 @@ export function PriceDialog({
   price: CampusPrice
   trigger: ReactElement
   disabled?: boolean
-  onSubmit: (kobo: number) => Promise<unknown>
+  onSubmit: (price: Money) => Promise<unknown>
 }) {
   return (
     <FormDialog
       trigger={trigger}
       disabled={disabled}
       title={price.university.name}
-      description={`Now ${formatNaira(price.price_per_thousand_kobo)} per 1,000 views${price.custom ? "" : ", the default"}. Each view is charged at the price when it happens, so running promotions pay the new price from their next view.`}
+      description={`Now ${formatMoney(price.price_per_thousand)} per 1,000 views${price.custom ? "" : ", the default"}. Each view is charged at the price when it happens, so running promotions pay the new price from their next view.`}
     >
       <PriceForm price={price} onSubmit={onSubmit} />
     </FormDialog>

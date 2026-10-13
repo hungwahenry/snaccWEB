@@ -9,7 +9,7 @@ import { useFlagWhenKnown } from "@/features/config/hooks/use-flag"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { useWalletOverview } from "@/features/wallet/hooks/account/use-wallet-overview"
 import { useBack } from "@/hooks/use-back"
-import { formatNaira } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import { useLegalLinks } from "@/features/legal/hooks/use-legal-links"
 import { BenefitGrid } from "../components/benefit-grid"
 import { PlanCard } from "../components/plan-card"
@@ -32,7 +32,7 @@ export function PremiumScreen() {
 
   const premium = query.data
   const plans = premium?.lifetime ? null : premium?.wallet_plans
-  const balance = wallet.data?.balance ?? 0
+  const balance = wallet.data?.balance
 
   return (
     <div className="premium-sky min-h-dvh">
@@ -88,7 +88,9 @@ export function PremiumScreen() {
                   key={plan.plan}
                   terms={walletPlanTerms(plan)}
                   featured={index === 0}
-                  affordable={balance >= plan.price_kobo}
+                  affordable={
+                    balance !== undefined && balance.amount >= plan.price.amount
+                  }
                   busy={buying !== null}
                   loading={buying === plan.plan}
                   onBuy={() => buy(plan)}
@@ -96,9 +98,10 @@ export function PremiumScreen() {
               ))}
 
               <p className="text-center text-xs leading-[17px] text-muted-foreground">
-                Paid from your Snacc balance, which is {formatNaira(balance)}.
-                Premium doesn&apos;t renew on its own, so buy again whenever you
-                want more.
+                Paid from your Snacc balance
+                {balance ? `, which is ${formatMoney(balance)}` : ""}. Premium
+                doesn&apos;t renew on its own, so buy again whenever you want
+                more.
               </p>
 
               <div className="flex items-center justify-center gap-4 text-[13px] text-muted-foreground">

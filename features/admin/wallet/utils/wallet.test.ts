@@ -16,6 +16,9 @@ import {
   WALLET_TABS,
   walletState,
 } from "./wallet"
+import { money } from "@/lib/money"
+
+const naira = (amount: number) => money(amount, "NGN")
 
 const recipient = (patch: Partial<WalletRecipient> = {}): WalletRecipient => ({
   kind: "bank",
@@ -66,10 +69,10 @@ describe("poolNote", () => {
 
 describe("holdersNote", () => {
   it("counts wallets and how many are frozen", () => {
-    expect(holdersNote({ accounts: 1200, balance: 0, frozen: 3 })).toBe(
+    expect(holdersNote({ accounts: 1200, balance: naira(0), frozen: 3 })).toBe(
       "1,200 wallets · 3 frozen"
     )
-    expect(holdersNote({ accounts: 1, balance: 0, frozen: 0 })).toBe(
+    expect(holdersNote({ accounts: 1, balance: naira(0), frozen: 0 })).toBe(
       "1 wallet · 0 frozen"
     )
   })
@@ -137,26 +140,30 @@ describe("recipientKey", () => {
 
 describe("adjustHint", () => {
   it("shows where the balance lands", () => {
-    expect(adjustHint(100_000, previewAdjustment(100_000, "-250"))).toBe(
-      "Their balance goes from ₦1,000 to ₦750."
-    )
+    expect(
+      adjustHint(naira(100_000), previewAdjustment(naira(100_000), "-250"))
+    ).toBe("Their balance goes from ₦1,000 to ₦750.")
   })
 
   it("explains an amount that can't be posted, and stays quiet when empty", () => {
-    expect(adjustHint(0, previewAdjustment(0, "-5"))).toBe(
+    expect(adjustHint(naira(0), previewAdjustment(naira(0), "-5"))).toBe(
       "That would take them below zero."
     )
-    expect(adjustHint(0, previewAdjustment(0, ""))).toBeNull()
+    expect(adjustHint(naira(0), previewAdjustment(naira(0), ""))).toBeNull()
   })
 })
 
 describe("toAdjustInput", () => {
   it("needs a usable amount and a reason", () => {
-    expect(toAdjustInput(previewAdjustment(0, "500"), "  Refund  ")).toEqual({
-      delta: 50_000,
+    expect(
+      toAdjustInput(previewAdjustment(naira(0), "500"), "  Refund  ")
+    ).toEqual({
+      delta: naira(50_000),
       reason: "Refund",
     })
-    expect(toAdjustInput(previewAdjustment(0, "500"), "   ")).toBeNull()
-    expect(toAdjustInput(previewAdjustment(0, "abc"), "Refund")).toBeNull()
+    expect(toAdjustInput(previewAdjustment(naira(0), "500"), "   ")).toBeNull()
+    expect(
+      toAdjustInput(previewAdjustment(naira(0), "abc"), "Refund")
+    ).toBeNull()
   })
 })

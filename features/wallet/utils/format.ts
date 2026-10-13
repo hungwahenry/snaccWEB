@@ -1,4 +1,4 @@
-import { formatNaira } from "@/lib/format"
+import { currencySymbol, formatMoney, type Money } from "@/lib/money"
 import type { VirtualAccount } from "../types"
 
 export function groupAccountNumber(accountNumber: string): string {
@@ -12,8 +12,8 @@ export function accountShareText(account: VirtualAccount): string {
     .join("\n")
 }
 
-export const HIDDEN_BALANCE = "₦••••"
-
-export function balanceText(balance: number, hidden: boolean): string {
-  return hidden ? HIDDEN_BALANCE : formatNaira(balance)
+export function balanceText(balance: Money, hidden: boolean): string {
+  return hidden
+    ? `${currencySymbol(balance.currency)}••••`
+    : formatMoney(balance)
 }

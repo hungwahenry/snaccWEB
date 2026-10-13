@@ -1,26 +1,28 @@
 import { describe, expect, it } from "vitest"
-import { PRICE_INVALID, priceProblem, toPriceKobo } from "./prices"
+import { money } from "@/lib/money"
+import { priceInvalid, priceProblem, toPrice } from "./prices"
 
-describe("toPriceKobo", () => {
-  it("takes naira in steps of ₦10", () => {
-    expect(toPriceKobo("1000")).toBe(100_000)
-    expect(toPriceKobo("1,250")).toBe(125_000)
-    expect(toPriceKobo("10")).toBe(1000)
+describe("toPrice", () => {
+  it("takes whole steps of the smallest price, in the campus currency", () => {
+    expect(toPrice("1000", "USD")).toEqual(money(100_000, "USD"))
+    expect(toPrice("1,250", "USD")).toEqual(money(125_000, "USD"))
+    expect(toPrice("10", "USD")).toEqual(money(1000, "USD"))
+    expect(toPrice("1000", "JPY")).toEqual(money(1000, "JPY"))
   })
 
-  it("refuses kobo, odd steps, zero and junk", () => {
-    expect(toPriceKobo("1005")).toBeNull()
-    expect(toPriceKobo("1000.50")).toBeNull()
-    expect(toPriceKobo("0")).toBeNull()
-    expect(toPriceKobo("-1000")).toBeNull()
-    expect(toPriceKobo("abc")).toBeNull()
+  it("refuses anything off the step or below it", () => {
+    expect(toPrice("1005", "USD")).toBeNull()
+    expect(toPrice("1000.50", "USD")).toBeNull()
+    expect(toPrice("0", "USD")).toBeNull()
+    expect(toPrice("-1000", "USD")).toBeNull()
+    expect(toPrice("abc", "USD")).toBeNull()
   })
 })
 
 describe("priceProblem", () => {
-  it("stays quiet until something is typed", () => {
-    expect(priceProblem("")).toBeNull()
-    expect(priceProblem("1000")).toBeNull()
-    expect(priceProblem("15")).toBe(PRICE_INVALID)
+  it("says nothing until something unusable is typed", () => {
+    expect(priceProblem("", "USD")).toBeNull()
+    expect(priceProblem("1000", "USD")).toBeNull()
+    expect(priceProblem("15", "USD")).toBe(priceInvalid("USD"))
   })
 })

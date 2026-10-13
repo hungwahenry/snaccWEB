@@ -1,11 +1,11 @@
 import { dayLabel } from "@/lib/format"
-import { HOUR_MS } from "@/lib/duration"
 import type {
   HistoryChip,
   HistoryFilter,
   WalletMonthSummary,
   WalletTransaction,
 } from "../types"
+import type { Money } from "@/lib/money"
 
 export const HISTORY_CHIPS: { value: HistoryChip; label: string }[] = [
   { value: "all", label: "All" },
@@ -19,10 +19,9 @@ export function historyFilter(chip: HistoryChip): HistoryFilter {
   return chip === "all" ? {} : { kind: chip }
 }
 
-/** The server counts months in West Africa Time (UTC+1, no daylight saving). */
 export function currentMonth(now = Date.now()): string {
-  const wat = new Date(now + HOUR_MS)
-  return `${wat.getUTCFullYear()}-${String(wat.getUTCMonth() + 1).padStart(2, "0")}`
+  const date = new Date(now)
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`
 }
 
 export type HistoryRow =
@@ -47,7 +46,7 @@ export function toHistoryRows(transactions: WalletTransaction[]): HistoryRow[] {
 }
 
 export interface MonthBar {
-  amount: number
+  amount: Money
   /** Bar width in percent. Any movement at all gets a sliver so it never reads as none. */
   width: number
 }
@@ -55,12 +54,13 @@ export interface MonthBar {
 export function monthBars(
   summary: WalletMonthSummary | null | undefined
 ): { in: MonthBar; out: MonthBar } | null {
-  if (!summary || (summary.in === 0 && summary.out === 0)) return null
+  if (!summary || (summary.in.amount === 0 && summary.out.amount === 0))
+    return null
 
-  const most = Math.max(summary.in, summary.out)
-  const bar = (amount: number): MonthBar => ({
+  const most = Math.max(summary.in.amount, summary.out.amount)
+  const bar = (amount: Money): MonthBar => ({
     amount,
-    width: amount > 0 ? Math.max(4, (amount / most) * 100) : 0,
+    width: amount.amount > 0 ? Math.max(4, (amount.amount / most) * 100) : 0,
   })
   return { in: bar(summary.in), out: bar(summary.out) }
 }

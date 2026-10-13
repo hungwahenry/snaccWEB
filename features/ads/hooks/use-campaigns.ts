@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { useInfiniteList } from "@/hooks/use-infinite-list"
 import {
+  getAdBudget,
   getAdButtons,
   getCampaign,
   getCampaignPolicy,
@@ -26,6 +27,13 @@ export function useCampaignPolicy() {
   return useQuery({
     queryKey: adKeys.policy(),
     queryFn: getCampaignPolicy,
+  })
+}
+
+export function useAdBudget() {
+  return useQuery({
+    queryKey: adKeys.budget(),
+    queryFn: getAdBudget,
   })
 }
 

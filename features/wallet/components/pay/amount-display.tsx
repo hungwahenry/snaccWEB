@@ -1,6 +1,12 @@
 import { amountSize, groupAmount } from "../../utils/amount"
 
-export function AmountDisplay({ raw }: { raw: string }) {
+export function AmountDisplay({
+  raw,
+  symbol,
+}: {
+  raw: string
+  symbol: string
+}) {
   const shown = groupAmount(raw)
   const size = amountSize(shown)
 
@@ -9,12 +15,12 @@ export function AmountDisplay({ raw }: { raw: string }) {
       <span
         className="font-extrabold text-foreground"
         style={{
-          fontSize: size.naira,
+          fontSize: size.symbol,
           lineHeight: 1.1,
           marginTop: size.amount * 0.12,
         }}
       >
-        ₦
+        {symbol}
       </span>
       <span
         className="truncate font-extrabold text-foreground tabular-nums"

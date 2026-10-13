@@ -6,9 +6,7 @@ import {
   dateAtTime,
   dayLabel,
   formatDuration,
-  koboToInput,
   monthYear,
-  nairaToKobo,
   relativeAge,
   shortDate,
   timeAgo,
@@ -59,15 +57,6 @@ describe("countLabel", () => {
     expect(countLabel(1, "reply", "replies")).toBe("1 reply")
     expect(countLabel(0, "reply", "replies")).toBe("0 replies")
     expect(countLabel(1200, "snacc")).toBe("1.2k snaccs")
-  })
-})
-
-describe("money", () => {
-  it("round-trips kobo through what someone types", () => {
-    expect(koboToInput(150_000)).toBe("1500")
-    expect(koboToInput(150_050)).toBe("1500.50")
-    expect(nairaToKobo("1500.5")).toBe(150_050)
-    expect(nairaToKobo("12a")).toBe(0)
   })
 })
 

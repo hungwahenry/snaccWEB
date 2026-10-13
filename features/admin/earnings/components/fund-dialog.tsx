@@ -11,7 +11,7 @@ import {
 } from "@/features/admin/shell/components/form-fields"
 import { useDraft } from "@/features/admin/shell/hooks/use-draft"
 import type { Option } from "@/features/admin/shell/types"
-import { formatNaira } from "@/lib/format"
+import { currencySymbol, formatMoney } from "@/lib/money"
 import type { AdminFund, FundInput } from "../types"
 import { capProblem, fundDraft, toFundInput } from "../utils/earnings"
 
@@ -22,14 +22,17 @@ function problem(message: string | null): ReactNode {
 function FundForm({
   fund,
   campuses,
+  currencies,
   onSubmit,
 }: {
   fund?: AdminFund
   campuses: Option[]
+  currencies: Record<string, string>
   onSubmit: (input: FundInput) => Promise<unknown>
 }) {
   const { draft, set, text } = useDraft(() => fundDraft(fund))
-  const input = toFundInput(draft)
+  const currency = fund?.cap.currency ?? currencies[draft.universityId] ?? null
+  const input = toFundInput(draft, currency)
 
   return (
     <DialogForm
@@ -47,9 +50,9 @@ function FundForm({
         />
       )}
       <TextField
-        label="Cap (₦)"
+        label={currency ? `Cap (${currencySymbol(currency)})` : "Cap"}
         inputMode="decimal"
-        hint={problem(capProblem(draft.cap))}
+        hint={problem(capProblem(draft.cap, currency))}
         {...text("cap")}
       />
     </DialogForm>
@@ -60,12 +63,14 @@ function FundForm({
 export function FundDialog({
   fund,
   campuses = [],
+  currencies = {},
   trigger,
   disabled,
   onSubmit,
 }: {
   fund?: AdminFund
   campuses?: Option[]
+  currencies?: Record<string, string>
   trigger: ReactElement
   disabled?: boolean
   onSubmit: (input: FundInput) => Promise<unknown>
@@ -77,11 +82,16 @@ export function FundDialog({
       title={fund ? fund.university.name : "Provision campus fund"}
       description={
         fund
-          ? `Distributed so far ${formatNaira(fund.distributed)}.`
+          ? `Distributed so far ${formatMoney(fund.distributed)}.`
           : "Creating a fund switches the campus into paid mode."
       }
     >
-      <FundForm fund={fund} campuses={campuses} onSubmit={onSubmit} />
+      <FundForm
+        fund={fund}
+        campuses={campuses}
+        currencies={currencies}
+        onSubmit={onSubmit}
+      />
     </FormDialog>
   )
 }

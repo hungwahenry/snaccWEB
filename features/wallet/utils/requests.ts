@@ -1,7 +1,7 @@
 import { decodeTime, isValid } from "ulid"
 import { handleOf } from "@/features/users/utils/names"
 import { DAY_MS } from "@/lib/duration"
-import { formatNaira } from "@/lib/format"
+import { formatMoney, type Money } from "@/lib/money"
 import type {
   MoneyPerson,
   MoneyRequest,
@@ -94,13 +94,13 @@ export function declineTitle(request: MoneyRequest): string {
 }
 
 export function cancelTitle(request: MoneyRequest): string {
-  return `Cancel your ${formatNaira(request.amount)} request?`
+  return `Cancel your ${formatMoney(request.amount)} request?`
 }
 
 export function mutedMessage(request: MoneyRequest): string {
   return `Declined. ${handleOf(request.requester) ?? "They"} can't ask you again.`
 }
 
-export function cannotCoverMessage(amount: number, balance: number): string {
-  return `That needs ${formatNaira(amount)} — you have ${formatNaira(balance)}.`
+export function cannotCoverMessage(amount: Money, balance: Money): string {
+  return `That needs ${formatMoney(amount)} — you have ${formatMoney(balance)}.`
 }

@@ -14,6 +14,7 @@ import type {
   UpdateAdButtonInput,
   UpdateAdReasonInput,
 } from "../types"
+import type { Money } from "@/lib/money"
 
 export function listAds(query: AdListQuery) {
   return api.get<Paginated<AdminAd>>("/admin/ads", query)
@@ -51,9 +52,9 @@ export function listAdPrices(query: PriceListQuery) {
   return api.get<Paginated<CampusPrice>>("/admin/ads/prices", query)
 }
 
-export function setAdPrice(universityId: string, pricePerThousandKobo: number) {
+export function setAdPrice(universityId: string, pricePerThousand: Money) {
   return api.put<null>(`/admin/ads/prices/${universityId}`, {
-    pricePerThousandKobo,
+    pricePerThousand,
   })
 }
 

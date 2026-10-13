@@ -1,56 +1,53 @@
-import { formatNaira, formatNumber } from "@/lib/format"
+import { formatNumber } from "@/lib/format"
+import { formatMoney, type Money } from "@/lib/money"
 import type { AdReach, BudgetPreset, PriceRange, ReachEstimate } from "../types"
 
 const PER = 1000
 
-export function viewsFor(budgetKobo: number, pricePerThousand: number): number {
-  if (budgetKobo <= 0 || pricePerThousand <= 0) return 0
-  return Math.floor((budgetKobo / pricePerThousand) * PER)
+export function viewsFor(budget: Money, pricePerThousand: Money): number {
+  if (budget.amount <= 0 || pricePerThousand.amount <= 0) return 0
+  return Math.floor((budget.amount / pricePerThousand.amount) * PER)
 }
 
 function priceLine(price: PriceRange): string {
   const range =
-    price.min === price.max
-      ? formatNaira(price.min)
-      : `${formatNaira(price.min)}–${formatNaira(price.max)}`
+    price.min.amount === price.max.amount
+      ? formatMoney(price.min)
+      : `${formatMoney(price.min)}–${formatMoney(price.max)}`
   return `${range} per 1,000 views`
 }
 
-export function viewsRange(
-  budgetKobo: number,
-  price: PriceRange
-): string | null {
-  const fewest = viewsFor(budgetKobo, price.max)
-  const most = viewsFor(budgetKobo, price.min)
+export function viewsRange(budget: Money, price: PriceRange): string | null {
+  const fewest = viewsFor(budget, price.max)
+  const most = viewsFor(budget, price.min)
   if (most === 0) return null
   return fewest === most
     ? formatNumber(most)
     : `${formatNumber(fewest)}–${formatNumber(most)}`
 }
 
-function viewsLine(budgetKobo: number, price: PriceRange): string | null {
-  const range = viewsRange(budgetKobo, price)
+function viewsLine(budget: Money, price: PriceRange): string | null {
+  const range = viewsRange(budget, price)
   return range ? `About ${range} views` : null
 }
 
-export function estimateOf(reach: AdReach, budgetKobo: number): ReachEstimate {
+export function estimateOf(reach: AdReach, budget: Money): ReachEstimate {
   return {
     people: `Reaches about ${formatNumber(reach.people)} ${reach.people === 1 ? "person" : "people"} active this month`,
-    price: priceLine(reach.price_per_thousand_kobo),
-    views: viewsLine(budgetKobo, reach.price_per_thousand_kobo),
+    price: priceLine(reach.price_per_thousand),
+    views: viewsLine(budget, reach.price_per_thousand),
   }
 }
 
 export function budgetPresets(
-  presetsKobo: readonly string[],
+  presets: Money[],
   price: PriceRange | null
 ): BudgetPreset[] {
-  return presetsKobo
-    .map(Number)
-    .filter((kobo) => Number.isInteger(kobo) && kobo > 0)
-    .map((kobo) => ({
-      kobo,
-      label: formatNaira(kobo),
-      views: price ? viewsLine(kobo, price) : null,
+  return presets
+    .filter((preset) => preset.amount > 0)
+    .map((amount) => ({
+      amount,
+      label: formatMoney(amount),
+      views: price ? viewsLine(amount, price) : null,
     }))
 }

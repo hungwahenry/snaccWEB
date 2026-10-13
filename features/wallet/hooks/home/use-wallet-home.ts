@@ -122,7 +122,7 @@ export function useWalletHome() {
       rows,
       loading: listLoading,
       more: transactions.hasMore || transactions.items.length > RECENT,
-      firstRun: rows.length === 0 && !listLoading && data?.balance === 0,
+      firstRun: rows.length === 0 && !listLoading && data?.balance.amount === 0,
       onOpen: transactionSheet.open,
       onTopUp: () => pay("topup"),
     },

@@ -8,6 +8,7 @@ import { startDeposit, verifyDeposit } from "../../api"
 import { walletChanged } from "../../cache"
 import type { DepositAccount } from "../../types"
 import { walletKeys } from "../../utils/keys"
+import type { Money } from "@/lib/money"
 
 const CHECK_EVERY_MS = 10_000
 
@@ -15,7 +16,7 @@ const CHECK_EVERY_MS = 10_000
  * A top-up by bank transfer: get an account number to send to, then watch for the money. It is
  * checked every few seconds, at once when a balance push arrives, and whenever they tap to check.
  */
-export function useTopUp(amountKobo: number, onLanded: () => void) {
+export function useTopUp(amount: Money, onLanded: () => void) {
   const [transfer, setTransfer] = useState<DepositAccount | null>(null)
   const [landed, setLanded] = useState(false)
   const [checking, setChecking] = useState(false)
@@ -23,7 +24,7 @@ export function useTopUp(amountKobo: number, onLanded: () => void) {
   const landing = useRef(false)
 
   const starting = useMutation({
-    mutationFn: () => startDeposit(amountKobo),
+    mutationFn: () => startDeposit(amount),
     onSuccess: (account) => {
       setTransfer(account)
       setNothingYet(false)

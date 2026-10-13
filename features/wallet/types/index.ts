@@ -1,6 +1,7 @@
 import type { EarningsMilestone } from "@/features/earnings/types"
 import type { UserScore } from "@/features/score/types"
 import type { MoneyRequestPrivacy } from "@/features/users/types"
+import type { Money } from "@/lib/money"
 
 /** A person on a money record, as the server's `author` shape sends them. */
 export interface MoneyPerson {
@@ -20,15 +21,24 @@ export interface Bank {
   code: string
 }
 
+export interface WalletRules {
+  send_minimum: Money
+  bank_fee: Money
+  deposit_minimum: Money
+  deposit_maximum: Money
+  step_up_above: { user: Money; bank: Money }
+}
+
 export interface WalletOverview {
-  balance: number
+  balance: Money
   frozen: boolean
   pin_set: boolean
   earnings: {
-    balance: number
+    balance: Money
     claimable: boolean
     milestones: EarningsMilestone[]
   }
+  rules: WalletRules
 }
 
 export interface WalletSettings {
@@ -53,9 +63,9 @@ export interface WalletTransaction {
   id: string
   type: WalletTransactionType
   label: string
-  amount: number
+  amount: Money
   direction: MoneyDirection
-  balance_after: number
+  balance_after: Money
   note: string | null
   created_at: string
 }
@@ -71,9 +81,9 @@ export interface HistoryFilter {
 
 export interface WalletMonthSummary {
   month: string
-  in: number
-  out: number
-  by_type: Partial<Record<WalletTransactionType, number>>
+  in: Money
+  out: Money
+  by_type: Partial<Record<WalletTransactionType, Money>>
 }
 
 export type LimitTier = "basic" | "verified"
@@ -81,8 +91,8 @@ export type LimitTier = "basic" | "verified"
 export type LimitRail = "send" | "bank_send" | "deposit"
 
 export interface RailUsage {
-  limit: number
-  used: number
+  limit: Money
+  used: Money
 }
 
 export type WalletLimits = { tier: LimitTier } & Record<LimitRail, RailUsage>
@@ -99,8 +109,8 @@ export interface PayoutDelivery {
 
 export interface WalletTransactionDetail extends WalletTransaction {
   reference: string
-  fee: number
-  total: number
+  fee: Money
+  total: Money
   status: PayoutStatus
   channel: string | null
   counterparty: MoneyPerson | null
@@ -132,7 +142,7 @@ export type RequestBox = "incoming" | "outgoing"
 
 export interface MoneyRequest {
   id: string
-  amount: number
+  amount: Money
   note: string | null
   status: MoneyRequestStatus
   requester: MoneyPerson
@@ -166,7 +176,7 @@ export interface VirtualAccount {
 
 export interface DepositAccount {
   reference: string
-  amount: number
+  amount: Money
   account_number: string
   account_name: string
   bank_name: string
@@ -176,7 +186,7 @@ export interface DepositAccount {
 export interface DepositCheck extends WalletOverview {
   reference: string
   status: "pending" | "success" | "abandoned"
-  amount: number
+  amount: Money
 }
 
 export interface BankAccountRef {
@@ -195,25 +205,25 @@ export interface MoneyCredential {
 }
 
 export interface MoneyMove {
-  amountKobo: number
+  amount: Money
   kind: "user" | "bank"
 }
 
 export interface CreateRequestInput {
   username: string
-  amountKobo: number
+  amount: Money
   note?: string
   conversationId?: string
 }
 
 export type SendToUserInput = MoneyCredential & {
   username: string
-  amountKobo: number
+  amount: Money
   conversationId?: string
   note?: string
 }
 
-export type SendToBankInput = MoneyCredential & { amountKobo: number } & (
+export type SendToBankInput = MoneyCredential & { amount: Money } & (
     { recipientId: string } | BankAccountRef
   )
 

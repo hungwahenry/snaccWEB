@@ -1,8 +1,9 @@
 import type { AdminEngagementKind } from "@/features/admin/engagement/types"
 import type { Option } from "@/features/admin/shell/types"
-import { parseNaira } from "@/features/admin/shell/utils/money"
+import { parseAmount } from "@/features/admin/shell/utils/money"
 import type { AdminUniversity } from "@/features/admin/universities/types"
-import { koboToInput } from "@/lib/format"
+import type { Country } from "@/features/places/types"
+import { moneyToInput } from "@/lib/money"
 import type {
   AdminEarning,
   AdminFund,
@@ -59,24 +60,47 @@ export function unfundedOptions(
     .map((university) => ({ value: university.id, label: university.name }))
 }
 
-export const CAP_INVALID = "Enter an amount in naira, like 5000 or 2500.50."
+export const CAP_INVALID = "Enter an amount, like 5000 or 2500.50."
+
+export function campusCurrencies(
+  universities: Pick<AdminUniversity, "id" | "country">[],
+  countries: Pick<Country, "code" | "currency">[]
+): Record<string, string> {
+  const byCountry = new Map(
+    countries.map((country) => [country.code, country.currency])
+  )
+
+  return Object.fromEntries(
+    universities.flatMap((university) => {
+      const currency = byCountry.get(university.country.code)
+      return currency ? [[university.id, currency]] : []
+    })
+  )
+}
 
 export function fundDraft(fund?: AdminFund): FundDraft {
   return {
     universityId: fund?.university_id ?? "",
-    cap: fund ? koboToInput(fund.cap) : "",
+    cap: fund ? moneyToInput(fund.cap) : "",
   }
 }
 
 /** The fund to save, or null until a campus is picked and the cap is a real amount. */
-export function toFundInput(draft: FundDraft): FundInput | null {
-  const cap = parseNaira(draft.cap)
-  if (draft.universityId === "" || cap === null) return null
+export function toFundInput(
+  draft: FundDraft,
+  currency: string | null
+): FundInput | null {
+  if (draft.universityId === "" || currency === null) return null
+  const cap = parseAmount(draft.cap, currency)
 
-  return { universityId: draft.universityId, cap }
+  return cap === null ? null : { universityId: draft.universityId, cap }
 }
 
 /** What is wrong with a typed cap, once something has been typed. */
-export function capProblem(raw: string): string | null {
-  return raw.trim() !== "" && parseNaira(raw) === null ? CAP_INVALID : null
+export function capProblem(
+  raw: string,
+  currency: string | null
+): string | null {
+  if (currency === null || raw.trim() === "") return null
+  return parseAmount(raw, currency) === null ? CAP_INVALID : null
 }

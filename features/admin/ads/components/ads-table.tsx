@@ -7,7 +7,8 @@ import { StatusBadge } from "@/features/admin/shell/components/status-badge"
 import { adPath } from "@/features/admin/shell/routes"
 import { snaccPreview } from "@/features/admin/snaccs/utils/snaccs"
 import type { Paginated } from "@/lib/api/types"
-import { formatDate, formatNaira, formatNumber, shortDate } from "@/lib/format"
+import { formatDate, formatNumber, shortDate } from "@/lib/format"
+import { formatMoney } from "@/lib/money"
 import type { AdminAd } from "../types"
 import { adStatus } from "../utils/status"
 import { PersonCell } from "./person-cell"
@@ -44,9 +45,9 @@ const COLUMNS: Column<AdminAd>[] = [
     className: "tabular-nums",
     cell: (ad) => (
       <>
-        <p>{formatNaira(ad.budget_kobo)}</p>
+        <p>{formatMoney(ad.budget)}</p>
         <p className="text-xs text-muted-foreground">
-          {formatNaira(ad.spent_kobo)} spent
+          {formatMoney(ad.spent)} spent
         </p>
       </>
     ),

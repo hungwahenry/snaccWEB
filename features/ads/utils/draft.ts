@@ -3,7 +3,8 @@ import { namedRegions } from "@/features/places/utils/regions"
 import { isApiError } from "@/lib/api/errors"
 import { roundUpToStep } from "@/lib/calendar"
 import { DAY_MS, MINUTE_MS } from "@/lib/duration"
-import { formatNaira, formatNumber, nairaToKobo } from "@/lib/format"
+import { formatNumber } from "@/lib/format"
+import { formatMoney, inputToMoney, minorDigits, type Money } from "@/lib/money"
 import type {
   AdAudience,
   AdPlacement,
@@ -100,11 +101,15 @@ export function draftFromCampaign(
       new Date(now + days * DAY_MS),
       SLOT_MINUTES
     ).toISOString(),
-    budget: String(Math.round(campaign.budget_kobo / 100)),
+    budget: wholeUnitsOf(campaign.budget),
   }
 }
 
-export function wholeNaira(raw: string): string {
+export function wholeUnitsOf(amount: Money): string {
+  return String(Math.round(amount.amount / 10 ** minorDigits(amount.currency)))
+}
+
+export function wholeUnits(raw: string): string {
   return raw.replace(/\D/g, "").replace(/^0+(?=\d)/, "")
 }
 
@@ -159,6 +164,7 @@ export function reviewRows({
   start,
   end,
   estimate,
+  budget,
 }: {
   draft: CampaignDraft
   places: CountryPlaces | null
@@ -166,6 +172,7 @@ export function reviewRows({
   start: string
   end: string
   estimate: ReachEstimate | null
+  budget: Money
 }): SetupRow[] {
   const link = draft.buttonUrl.trim()
 
@@ -179,7 +186,7 @@ export function reviewRows({
     {
       label: "Budget",
       lines: [
-        formatNaira(nairaToKobo(draft.budget)),
+        formatMoney(budget),
         ...(estimate?.views ? [estimate.views] : []),
       ],
     },
@@ -189,13 +196,14 @@ export function reviewRows({
 export function campaignInput(
   snaccId: string,
   draft: CampaignDraft,
+  currency: string,
   now: number
 ): CreateCampaignInput {
   const link = draft.buttonUrl.trim()
 
   return {
     snaccId,
-    budgetKobo: nairaToKobo(draft.budget),
+    budget: inputToMoney(draft.budget, currency),
     startsAt: draft.startsAt ?? new Date(now).toISOString(),
     endsAt: draft.endsAt,
     placements: draft.placements,
@@ -257,33 +265,34 @@ function scheduleProblem(
   return null
 }
 
-type MoneyLimits = Pick<DraftLimits, "minBudgetKobo" | "balanceKobo">
+type MoneyLimits = Pick<DraftLimits, "minBudget" | "balance">
 
-function balanceProblem(kobo: number, balanceKobo: number | null) {
-  return balanceKobo !== null && kobo > balanceKobo
-    ? `That's more than your Snacc balance of ${formatNaira(balanceKobo)}.`
+function balanceProblem(amount: Money, balance: Money | null) {
+  return balance !== null && amount.amount > balance.amount
+    ? `That's more than your Snacc balance of ${formatMoney(balance)}.`
     : null
 }
 
 function budgetProblem(
   raw: string,
-  { minBudgetKobo, balanceKobo }: MoneyLimits
+  { minBudget, balance }: MoneyLimits
 ): string | null {
   if (!raw) return null
-  const kobo = nairaToKobo(raw)
-  if (kobo < minBudgetKobo)
-    return `The smallest budget is ${formatNaira(minBudgetKobo)}.`
-  return balanceProblem(kobo, balanceKobo)
+  const amount = inputToMoney(raw, minBudget.currency)
+  if (amount.amount < minBudget.amount)
+    return `The smallest budget is ${formatMoney(minBudget)}.`
+  return balanceProblem(amount, balance)
 }
 
 export function topUpProblem(
   raw: string,
-  { minBudgetKobo, balanceKobo }: MoneyLimits
+  { minBudget, balance }: MoneyLimits
 ): string | null {
   if (!raw) return null
-  const kobo = nairaToKobo(raw)
-  if (kobo < minBudgetKobo) return `Add at least ${formatNaira(minBudgetKobo)}.`
-  return balanceProblem(kobo, balanceKobo)
+  const amount = inputToMoney(raw, minBudget.currency)
+  if (amount.amount < minBudget.amount)
+    return `Add at least ${formatMoney(minBudget)}.`
+  return balanceProblem(amount, balance)
 }
 
 export function draftProblems(
@@ -316,7 +325,7 @@ export function isReady(
   draft: CampaignDraft,
   problems: DraftProblems
 ): boolean {
-  return Object.keys(problems).length === 0 && nairaToKobo(draft.budget) > 0
+  return Object.keys(problems).length === 0 && Number(draft.budget) > 0
 }
 
 const FIELD_BY_CODE: Partial<Record<string, DraftField>> = {
@@ -337,11 +346,11 @@ export function submitProblem(
   if (!field) return null
 
   const errors: Record<string, unknown> = error.errors ?? {}
-  const minimum = errors.minimum_kobo
-  if (error.code === "budget_too_small" && typeof minimum === "number")
+  const minimum = errors.minimum as Money | undefined
+  if (error.code === "budget_too_small" && minimum)
     return {
       field,
-      message: `The smallest budget is ${formatNaira(minimum)}.`,
+      message: `The smallest budget is ${formatMoney(minimum)}.`,
     }
 
   return { field, message: error.message }

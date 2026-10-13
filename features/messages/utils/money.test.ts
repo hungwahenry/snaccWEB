@@ -2,6 +2,9 @@ import { ulid } from "ulid"
 import { describe, expect, it } from "vitest"
 import type { MessageMoney } from "../types"
 import { moneyCard } from "./money"
+import { money } from "@/lib/money"
+
+const naira = (amount: number) => money(amount, "NGN")
 
 const DAY = 86_400_000
 const made = Date.UTC(2026, 8, 1)
@@ -9,7 +12,7 @@ const made = Date.UTC(2026, 8, 1)
 const request = (status: string) =>
   ({
     kind: "request",
-    amount: 250_000,
+    amount: naira(250_000),
     transaction_id: null,
     request: { id: ulid(made), status },
   }) as MessageMoney
@@ -41,7 +44,7 @@ describe("moneyCard", () => {
   it("opens the receipt behind a transfer", () => {
     const sent = {
       kind: "sent",
-      amount: 100,
+      amount: naira(100),
       transaction_id: "t1",
       request: null,
     } as MessageMoney

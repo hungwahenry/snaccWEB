@@ -1,10 +1,17 @@
 import { describe, expect, it } from "vitest"
+import { money } from "@/lib/money"
 import type { AdsInfo } from "../types"
 import { advertisePricing, advertiseQuestions } from "./advertise"
 
+const naira = (amount: number) => money(amount, "NGN")
+
 const info: AdsInfo = {
-  price_per_thousand_kobo: { min: 100_000, max: 100_000 },
-  min_budget_kobo: 200_000,
+  prices: [
+    {
+      price_per_thousand: { min: naira(100_000), max: naira(100_000) },
+      min_budget: naira(200_000),
+    },
+  ],
   max_days: 30,
   campuses: 429,
   prohibited: ["Alcohol", "Weapons"],
@@ -23,9 +30,32 @@ describe("advertisePricing", () => {
     expect(
       advertisePricing({
         ...info,
-        price_per_thousand_kobo: { min: 100_000, max: 200_000 },
+        prices: [
+          {
+            price_per_thousand: { min: naira(100_000), max: naira(200_000) },
+            min_budget: naira(200_000),
+          },
+        ],
       }).rate
     ).toBe("₦1,000–₦2,000 per 1,000 views, depending on the campus")
+  })
+
+  it("names each currency's start, and no single view count, when there are several", () => {
+    expect(
+      advertisePricing({
+        ...info,
+        prices: [
+          ...info.prices,
+          {
+            price_per_thousand: {
+              min: money(1_000, "GHS"),
+              max: money(1_000, "GHS"),
+            },
+            min_budget: money(2_000, "GHS"),
+          },
+        ],
+      })
+    ).toMatchObject({ start: "₦2,000 or GH₵20", views: null })
   })
 })
 

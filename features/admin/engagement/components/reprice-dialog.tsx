@@ -55,15 +55,15 @@ function RepriceForm({
         {...text("feedWeight")}
       />
       <TextField
-        label="Kobo paid to the author"
+        label="Paid to the author, in the smallest unit"
         optional
         inputMode="numeric"
         placeholder="Empty earns no money"
-        hint={hint(errors.earnKobo, kind.default_earn_kobo)}
-        {...text("earnKobo")}
+        hint={hint(errors.earnAmount, kind.default_earn_amount)}
+        {...text("earnAmount")}
       />
       <FormNote>
-        Points and kobo are frozen into each credit when it is earned, so a
+        Points and earnings are frozen into each credit when it is earned, so a
         change here prices new engagement only and never restates anyone&apos;s
         score or balance. The feed weight is read live.
       </FormNote>
