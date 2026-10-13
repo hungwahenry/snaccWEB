@@ -3,6 +3,7 @@ import { plural } from "@/features/admin/shell/utils/format"
 import type {
   AdminFeatureFlag,
   FlagAudience,
+  FlagCountryRule,
   FlagDraft,
   FlagGroup,
   FlagPlatform,
@@ -79,6 +80,9 @@ export function described(flag: AdminFeatureFlag): string {
   if (flag.overrides.length > 0) {
     return `${flag.key} saved, with ${plural(flag.overrides.length, "platform rule")}.`
   }
+  if (flag.countries.length > 0) {
+    return `${flag.key} saved, with ${plural(flag.countries.length, "country rule")}.`
+  }
   if (flag.min_version && flag.max_version) {
     return `${flag.key} on for ${flag.min_version} to ${flag.max_version}.`
   }
@@ -128,6 +132,7 @@ export function draftFrom(flag: AdminFeatureFlag): FlagDraft {
         },
       ])
     ),
+    countries: flag.countries,
   }
 }
 
@@ -155,6 +160,33 @@ export function patchRule(
   return { ...rules, [platform]: { ...existing, ...patch } }
 }
 
+/** Gives a country its own rule, on until switched off, unless it has one already. */
+export function withCountry(
+  countries: FlagCountryRule[],
+  country: string
+): FlagCountryRule[] {
+  if (countries.some((rule) => rule.country === country)) return countries
+
+  return [...countries, { country, enabled: true }]
+}
+
+export function withoutCountry(
+  countries: FlagCountryRule[],
+  country: string
+): FlagCountryRule[] {
+  return countries.filter((rule) => rule.country !== country)
+}
+
+export function patchCountry(
+  countries: FlagCountryRule[],
+  country: string,
+  enabled: boolean
+): FlagCountryRule[] {
+  return countries.map((rule) =>
+    rule.country === country ? { ...rule, enabled } : rule
+  )
+}
+
 export function draftErrors(draft: FlagDraft): {
   window: WindowErrors
   rules: Partial<Record<FlagPlatform, WindowErrors>>
@@ -178,7 +210,7 @@ export function isDraftReady(draft: FlagDraft): boolean {
   )
 }
 
-/** The availability form as a save: both windows, and the whole set of platform rules. */
+/** The availability form as a save: both windows, and the whole sets of platform and country rules. */
 export function toFlagChanges(draft: FlagDraft): UpdateFlagInput {
   const overrides = PLATFORMS.flatMap((platform): FlagPlatformRuleInput[] => {
     const rule = draft.rules[platform]
@@ -202,6 +234,7 @@ export function toFlagChanges(draft: FlagDraft): UpdateFlagInput {
     minVersion: draft.min.trim() || null,
     maxVersion: draft.max.trim() || null,
     overrides,
+    countries: draft.countries,
   }
 }
 

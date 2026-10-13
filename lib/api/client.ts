@@ -1,3 +1,4 @@
+import { deviceTimeZone } from "@/lib/device"
 import { ApiError } from "./errors"
 import type { ApiResponse } from "./types"
 
@@ -41,8 +42,16 @@ async function parse<T>(res: Response, fallback: string): Promise<T> {
     )
   }
 
-  // A 204 has no body to read `data` out of: the route had nothing to say.
   return (json as ApiResponse<T> | null)?.data as T
+}
+
+function headersFor(json: boolean): HeadersInit {
+  const zone = deviceTimeZone()
+
+  return {
+    ...(json ? { "Content-Type": "application/json" } : {}),
+    ...(zone ? { "X-Time-Zone": zone } : {}),
+  }
 }
 
 async function request<T>(
@@ -54,10 +63,7 @@ async function request<T>(
   try {
     res = await fetch(buildUrl(path, options.params), {
       method,
-      headers:
-        options.body !== undefined
-          ? { "Content-Type": "application/json" }
-          : undefined,
+      headers: headersFor(options.body !== undefined),
       body:
         options.body !== undefined ? JSON.stringify(options.body) : undefined,
       credentials: "same-origin",
@@ -78,6 +84,7 @@ async function upload<T>(
   try {
     res = await fetch(buildUrl(path), {
       method,
+      headers: headersFor(false),
       body: form,
       credentials: "same-origin",
     })

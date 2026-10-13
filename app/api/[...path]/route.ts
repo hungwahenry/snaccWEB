@@ -9,7 +9,7 @@ import {
   WEB_CLIENT_INFO,
 } from "@/lib/session"
 
-const FORWARDED = ["content-type", "accept-language"]
+const FORWARDED = ["content-type", "accept-language", "x-time-zone"]
 const SAFE = new Set(["GET", "HEAD"])
 
 function badPath(path: string[]): boolean {

@@ -7,12 +7,15 @@ import {
   draftFrom,
   groupByCategory,
   isDraftReady,
+  patchCountry,
   patchRule,
   reachLabel,
   ruleFor,
   toFlagChanges,
   windowErrors,
   windowLabel,
+  withCountry,
+  withoutCountry,
   withRule,
 } from "./flags"
 
@@ -27,6 +30,7 @@ const flag = (overrides: Partial<AdminFeatureFlag> = {}): AdminFeatureFlag => ({
   min_version: null,
   max_version: null,
   overrides: [],
+  countries: [],
   updated_at: "2026-09-01T00:00:00Z",
   ...overrides,
 })
@@ -91,6 +95,9 @@ describe("described", () => {
     expect(described(flag({ overrides: [rule("ios")] }))).toBe(
       "voice_snaccs saved, with 1 platform rule."
     )
+    expect(
+      described(flag({ countries: [{ country: "XT", enabled: true }] }))
+    ).toBe("voice_snaccs saved, with 1 country rule.")
     expect(described(flag({ overrides: [rule("ios"), rule("web")] }))).toBe(
       "voice_snaccs saved, with 2 platform rules."
     )
@@ -168,7 +175,18 @@ describe("drafts", () => {
       min: "1.2.0",
       max: "",
       rules: { android: { enabled: false, min: "", max: "1.5.0" } },
+      countries: [],
     })
+  })
+
+  it("adds a country on, switches it and drops it", () => {
+    const countries = withCountry([], "XT")
+    expect(countries).toEqual([{ country: "XT", enabled: true }])
+    expect(withCountry(countries, "XT")).toBe(countries)
+    expect(patchCountry(countries, "XT", false)).toEqual([
+      { country: "XT", enabled: false },
+    ])
+    expect(withoutCountry(countries, "XT")).toEqual([])
   })
 
   it("adds and drops a platform's rule", () => {
@@ -192,6 +210,7 @@ describe("drafts", () => {
         ios: { enabled: true, min: "2.0.0", max: "1.0.0" },
         web: { enabled: true, min: "junk", max: "" },
       },
+      countries: [],
     }
     const errors = draftErrors(draft)
     expect(errors.window.min).not.toBeNull()
@@ -210,6 +229,7 @@ describe("drafts", () => {
         web: { enabled: false, min: "", max: "" },
         ios: { enabled: true, min: "", max: "1.5" },
       },
+      countries: [{ country: "XT", enabled: true }],
     }
     expect(toFlagChanges(draft)).toEqual({
       audience: "listed",
@@ -219,13 +239,19 @@ describe("drafts", () => {
         { platform: "ios", enabled: true, minVersion: null, maxVersion: "1.5" },
         { platform: "web", enabled: false },
       ],
+      countries: [{ country: "XT", enabled: true }],
     })
   })
 
   it("sends an empty rule set to clear every platform rule", () => {
     expect(
-      toFlagChanges({ audience: "everyone", min: "", max: "", rules: {} })
-        .overrides
+      toFlagChanges({
+        audience: "everyone",
+        min: "",
+        max: "",
+        rules: {},
+        countries: [],
+      }).overrides
     ).toEqual([])
   })
 })

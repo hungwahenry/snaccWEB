@@ -12,6 +12,7 @@ import {
 } from "@/features/admin/shell/components/data-table"
 import { EmptyNote } from "@/features/admin/shell/components/detail"
 import { TableFrame } from "@/features/admin/shell/components/table-frame"
+import type { Option } from "@/features/admin/shell/types"
 import { humanize } from "@/features/admin/shell/utils/format"
 import type { AdminFeatureFlag, FlagDraft, FlagGroup } from "../types"
 import {
@@ -62,12 +63,42 @@ function Reach({ flag }: { flag: AdminFeatureFlag }) {
   )
 }
 
+function CountryReach({
+  flag,
+  countries,
+}: {
+  flag: AdminFeatureFlag
+  countries: Option[]
+}) {
+  if (flag.countries.length === 0) return null
+
+  const names = new Map(
+    countries.map((country) => [country.value, country.label])
+  )
+
+  return (
+    <div className="flex flex-wrap gap-1">
+      {flag.countries.map((rule) => (
+        <Badge
+          key={rule.country}
+          variant={rule.enabled ? "outline" : "secondary"}
+        >
+          {names.get(rule.country) ?? rule.country}{" "}
+          {rule.enabled ? "on" : "off"}
+        </Badge>
+      ))}
+    </div>
+  )
+}
+
 export function FlagsTables({
   groups,
+  countries,
   onSetEnabled,
   onSaveAvailability,
 }: {
   groups: FlagGroup[]
+  countries: Option[]
   onSetEnabled: (key: string, enabled: boolean) => Promise<unknown>
   onSaveAvailability: (key: string, draft: FlagDraft) => Promise<unknown>
 }) {
@@ -106,7 +137,12 @@ export function FlagsTables({
       {
         id: "reach",
         header: "Reaches",
-        cell: (flag) => <Reach flag={flag} />,
+        cell: (flag) => (
+          <div className="flex flex-col gap-2">
+            <Reach flag={flag} />
+            <CountryReach flag={flag} countries={countries} />
+          </div>
+        ),
       },
       {
         id: "actions",
@@ -128,6 +164,7 @@ export function FlagsTables({
             <CanAct permission="flags.write">
               <AvailabilityDialog
                 flag={flag}
+                countries={countries}
                 trigger={
                   <Button variant="outline" size="sm">
                     Who gets it
@@ -147,7 +184,7 @@ export function FlagsTables({
         ),
       },
     ],
-    [onSetEnabled, onSaveAvailability]
+    [countries, onSetEnabled, onSaveAvailability]
   )
 
   if (groups.length === 0) return <EmptyNote>No flags yet.</EmptyNote>

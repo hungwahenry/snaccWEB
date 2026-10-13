@@ -11,6 +11,11 @@ export interface FlagPlatformRule {
   max_version: string | null
 }
 
+export interface FlagCountryRule {
+  country: string
+  enabled: boolean
+}
+
 export interface AdminFeatureFlag {
   key: string
   enabled: boolean
@@ -22,6 +27,7 @@ export interface AdminFeatureFlag {
   min_version: string | null
   max_version: string | null
   overrides: FlagPlatformRule[]
+  countries: FlagCountryRule[]
   updated_at: string
 }
 
@@ -43,6 +49,7 @@ export interface UpdateFlagInput {
   minVersion?: string | null
   maxVersion?: string | null
   overrides?: FlagPlatformRuleInput[]
+  countries?: FlagCountryRule[]
 }
 
 export interface VersionWindow {
@@ -61,6 +68,7 @@ export interface FlagDraft {
   min: string
   max: string
   rules: Partial<Record<FlagPlatform, FlagRuleDraft>>
+  countries: FlagCountryRule[]
 }
 
 export interface WindowErrors {

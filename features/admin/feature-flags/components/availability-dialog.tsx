@@ -1,26 +1,32 @@
 "use client"
 
-import type { ReactElement, ReactNode } from "react"
+import { useMemo, type ReactElement, type ReactNode } from "react"
+import { Button } from "@/components/ui/button"
 import {
   DialogForm,
   FormDialog,
   FormNote,
 } from "@/features/admin/shell/components/form-dialog"
 import {
+  SearchSelectField,
   SelectField,
   SwitchField,
   TextField,
 } from "@/features/admin/shell/components/form-fields"
 import { useDraft } from "@/features/admin/shell/hooks/use-draft"
+import type { Option } from "@/features/admin/shell/types"
 import type { AdminFeatureFlag, FlagDraft } from "../types"
 import {
   AUDIENCE_OPTIONS,
   draftErrors,
   draftFrom,
   isDraftReady,
+  patchCountry,
   patchRule,
   PLATFORM_LABELS,
   PLATFORMS,
+  withCountry,
+  withoutCountry,
   withRule,
 } from "../utils/flags"
 
@@ -30,13 +36,22 @@ function problem(message: string | null): ReactNode {
 
 function AvailabilityForm({
   flag,
+  countries,
   onSubmit,
 }: {
   flag: AdminFeatureFlag
+  countries: Option[]
   onSubmit: (draft: FlagDraft) => Promise<unknown>
 }) {
   const { draft, set, text } = useDraft(() => draftFrom(flag))
   const errors = draftErrors(draft)
+  const names = useMemo(
+    () => new Map(countries.map((country) => [country.value, country.label])),
+    [countries]
+  )
+  const addable = countries.filter(
+    (country) => !draft.countries.some((rule) => rule.country === country.value)
+  )
 
   return (
     <DialogForm
@@ -158,6 +173,60 @@ function AvailabilityForm({
         })}
       </fieldset>
 
+      <fieldset className="flex flex-col gap-3 rounded-lg border p-3">
+        <legend className="px-1 text-sm font-medium">Country rules</legend>
+        <FormNote>
+          A country with its own rule follows it, whatever the switch says, for
+          the people who live there. To open a feature one country at a time,
+          leave the switch off and turn each country on here.
+        </FormNote>
+
+        {draft.countries.map((rule) => {
+          const name = names.get(rule.country) ?? rule.country
+
+          return (
+            <div key={rule.country} className="flex items-center gap-3">
+              <div className="flex-1">
+                <SwitchField
+                  label={`On in ${name}`}
+                  checked={rule.enabled}
+                  onChange={(enabled) =>
+                    set(
+                      "countries",
+                      patchCountry(draft.countries, rule.country, enabled)
+                    )
+                  }
+                />
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() =>
+                  set(
+                    "countries",
+                    withoutCountry(draft.countries, rule.country)
+                  )
+                }
+              >
+                Remove
+              </Button>
+            </div>
+          )
+        })}
+
+        <SearchSelectField
+          label="Add a country"
+          value={null}
+          onChange={(country) =>
+            set("countries", withCountry(draft.countries, country))
+          }
+          options={addable}
+          placeholder="Search countries"
+          empty="No country by that name."
+        />
+      </fieldset>
+
       <FormNote>
         A build only changes when someone installs from a store, so an update
         sent over the air never moves anyone past these. Anything that does not
@@ -169,11 +238,13 @@ function AvailabilityForm({
 
 export function AvailabilityDialog({
   flag,
+  countries,
   trigger,
   disabled,
   onSubmit,
 }: {
   flag: AdminFeatureFlag
+  countries: Option[]
   trigger: ReactElement
   disabled?: boolean
   onSubmit: (draft: FlagDraft) => Promise<unknown>
@@ -187,9 +258,9 @@ export function AvailabilityDialog({
           Who gets <span className="font-mono">{flag.key}</span>
         </>
       }
-      description="Who gets it, and on which app builds. Leave a build empty for no limit."
+      description="Who gets it, on which app builds and in which countries. Leave a build empty for no limit."
     >
-      <AvailabilityForm flag={flag} onSubmit={onSubmit} />
+      <AvailabilityForm flag={flag} countries={countries} onSubmit={onSubmit} />
     </FormDialog>
   )
 }
