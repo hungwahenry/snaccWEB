@@ -51,3 +51,11 @@ export function isSuspended(error: unknown): boolean {
 export function isWaiting(error: unknown): boolean {
   return isApiError(error) && error.code === "campus_not_open"
 }
+
+export function mustAgree(error: unknown): boolean {
+  return isApiError(error) && error.code === "legal_agreement_required"
+}
+
+export function needsBirthDate(error: unknown): boolean {
+  return isApiError(error) && error.code === "birth_date_required"
+}

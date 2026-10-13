@@ -7,3 +7,9 @@ export const setCountryOpen = (code: string, open: boolean) =>
   api.patch<AdminCountry>(`/admin/countries/${encodeURIComponent(code)}`, {
     open,
   })
+
+export const setCountryMinAge = (code: string, minAge: number) =>
+  api.patch<AdminCountry>(
+    `/admin/countries/${encodeURIComponent(code)}/min-age`,
+    { minAge }
+  )

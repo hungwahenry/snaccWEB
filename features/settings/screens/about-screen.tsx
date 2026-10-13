@@ -5,10 +5,11 @@ import { Wordmark } from "@/components/marketing/wordmark"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { useBack } from "@/hooks/use-back"
 import { HOME_PATH } from "@/features/feed/routes"
-import { PRIVACY_PATH, TERMS_PATH } from "@/lib/routes"
+import { useLegalLinks } from "@/features/legal/hooks/use-legal-links"
 
 export function AboutScreen() {
   const back = useBack("/settings")
+  const legal = useLegalLinks()
 
   return (
     <>
@@ -30,14 +31,14 @@ export function AboutScreen() {
         <div className="flex flex-col items-center gap-3 pb-6">
           <div className="flex items-center gap-4">
             <Link
-              href={TERMS_PATH}
+              href={legal.terms}
               className="text-base text-foreground active:opacity-60"
             >
               Terms of Use
             </Link>
             <span className="size-1 rounded-full bg-muted-foreground/40" />
             <Link
-              href={PRIVACY_PATH}
+              href={legal.privacy}
               className="text-base text-foreground active:opacity-60"
             >
               Privacy Policy

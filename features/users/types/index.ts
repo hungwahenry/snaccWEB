@@ -33,6 +33,7 @@ export interface Profile {
   money_requests_from: MoneyRequestPrivacy
   avatar_options: Record<string, string | number> | null
   completed_at: string | null
+  country_code: string | null
   official: boolean
   premium: boolean
   premium_badge: boolean

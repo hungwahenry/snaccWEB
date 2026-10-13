@@ -9,7 +9,7 @@ import { ConfirmAction } from "@/features/admin/shell/components/confirm-action"
 import { TextField } from "@/features/admin/shell/components/form-fields"
 import type { AdminPage, PageDraft, PageTextKey } from "../types"
 import { PAGE_LIMITS, STATUS_CHANGE } from "../utils/page"
-import { RichTextEditor } from "./rich-text-editor"
+import { RichTextEditor } from "@/features/admin/shell/components/rich-text-editor"
 
 type TextBinding = {
   value: string

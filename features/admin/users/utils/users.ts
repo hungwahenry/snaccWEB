@@ -1,4 +1,5 @@
 import type { Option, StatusMeta } from "@/features/admin/shell/types"
+import { birthdayLabel } from "@/features/birthdays/utils/birth-date"
 import { formatDate } from "@/lib/format"
 import type { AccountRole, AdminUserRow } from "../types"
 
@@ -93,4 +94,12 @@ export function payoutSummary(user: AdminUserRow): string {
     `Blocked ${formatDate(user.payouts_blocked_at)}`,
     user.payouts_blocked_reason
   )
+}
+
+export function birthDateLabel(
+  date: { day: number; month: number; year: number | null } | null
+): string {
+  if (!date) return "—"
+  const birthday = birthdayLabel(date)
+  return date.year ? `${birthday} ${date.year}` : `${birthday}, no year yet`
 }

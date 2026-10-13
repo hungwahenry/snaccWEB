@@ -8,8 +8,8 @@ describe("campusCountLabel", () => {
   })
 
   it("falls back when the count is missing or too small to brag about", () => {
-    expect(campusCountLabel(null)).toBe("Campuses across Nigeria")
-    expect(campusCountLabel(0)).toBe("Campuses across Nigeria")
-    expect(campusCountLabel(9)).toBe("Campuses across Nigeria")
+    expect(campusCountLabel(null)).toBe("Made for campuses")
+    expect(campusCountLabel(0)).toBe("Made for campuses")
+    expect(campusCountLabel(9)).toBe("Made for campuses")
   })
 })

@@ -18,3 +18,9 @@ export function openMessage(country: AdminCountry): string {
     ? `${country.name} is open. Anyone waiting there gets an email.`
     : `${country.name} is closed. People there wait until it opens again.`
 }
+
+export function isMinAge(value: string): boolean {
+  if (!/^\d{1,2}$/.test(value)) return false
+  const age = Number(value)
+  return age >= 0 && age <= 30
+}

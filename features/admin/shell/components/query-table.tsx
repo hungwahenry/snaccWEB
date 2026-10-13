@@ -56,7 +56,11 @@ export function QueryTable<T>({
         ) : null
       }
     >
-      <QueryView query={query} what={what} loading={<TableSkeleton columns={columns} />}>
+      <QueryView
+        query={query}
+        what={what}
+        loading={<TableSkeleton columns={columns} />}
+      >
         {(result) => (
           <DataTable
             columns={columns}

@@ -18,6 +18,7 @@ export function CountriesScreen() {
       <CountriesTable
         query={query}
         onSetOpen={actions.setOpen}
+        onSetMinAge={actions.setMinAge}
         toolbar={
           <TableToolbar>
             <SearchField

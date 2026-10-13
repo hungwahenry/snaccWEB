@@ -8,15 +8,18 @@ import type { Column } from "@/features/admin/shell/components/data-table"
 import { QueryTable } from "@/features/admin/shell/components/query-table"
 import { formatNumber } from "@/lib/format"
 import type { AdminCountry } from "../types"
+import { MinAgeDialog } from "./min-age-dialog"
 
 export function CountriesTable({
   query,
   toolbar,
   onSetOpen,
+  onSetMinAge,
 }: {
   query: UseQueryResult<AdminCountry[]>
   toolbar: ReactNode
   onSetOpen: (code: string, open: boolean) => Promise<unknown>
+  onSetMinAge: (code: string, minAge: number) => Promise<unknown>
 }) {
   const columns = useMemo<Column<AdminCountry>[]>(
     () => [
@@ -40,6 +43,20 @@ export function CountriesTable({
         cell: (country) => formatNumber(country.campuses),
       },
       {
+        id: "minAge",
+        header: "Minimum age",
+        align: "end",
+        className: "tabular-nums",
+        cell: (country) => (
+          <CanAct permission="countries.write">
+            <MinAgeDialog
+              country={country}
+              onSave={(minAge) => onSetMinAge(country.code, minAge)}
+            />
+          </CanAct>
+        ),
+      },
+      {
         id: "open",
         header: "Open",
         align: "end",
@@ -55,7 +72,7 @@ export function CountriesTable({
         ),
       },
     ],
-    [onSetOpen]
+    [onSetOpen, onSetMinAge]
   )
 
   return (

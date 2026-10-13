@@ -4,6 +4,7 @@ import { Eyebrow } from "@/components/ui/eyebrow"
 import { getAdsInfo } from "@/features/ads/api/public"
 import { ADVERTISE_PATH } from "@/features/ads/routes"
 import { loginPath } from "@/features/auth/routes"
+import { legalPath } from "@/features/legal/routes"
 import { getPublicPages } from "@/lib/pages"
 import { DOWNLOAD_PATH, FEATURES_PATH, sitePagePath } from "@/lib/routes"
 import { APP_STORE_URL, PLAY_STORE_URL } from "./store-links"
@@ -11,9 +12,9 @@ import { Wordmark } from "./wordmark"
 
 type FooterLink = { href: string; label: string; external?: boolean }
 
-const FALLBACK_PAGES = [
-  { slug: "terms", title: "Terms of Use" },
-  { slug: "privacy", title: "Privacy Policy" },
+const LEGAL: FooterLink[] = [
+  { href: legalPath("terms"), label: "Terms of Use" },
+  { href: legalPath("privacy"), label: "Privacy Policy" },
 ]
 
 const PRODUCT: FooterLink[] = [
@@ -29,10 +30,13 @@ const STORES: FooterLink[] = [
 
 export async function SiteFooter() {
   const [pages, ads] = await Promise.all([getPublicPages(), getAdsInfo()])
-  const legal = (pages.length > 0 ? pages : FALLBACK_PAGES).map((page) => ({
-    href: sitePagePath(page.slug),
-    label: page.title,
-  }))
+  const legal = [
+    ...LEGAL,
+    ...pages.map((page) => ({
+      href: sitePagePath(page.slug),
+      label: page.title,
+    })),
+  ]
 
   return (
     <footer className="mt-16 border-t border-border">
@@ -79,7 +83,7 @@ export async function SiteFooter() {
       <div className="border-t border-border">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 px-6 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <span>© {new Date().getFullYear()} Snacc</span>
-          <span>Made for campuses across Nigeria</span>
+          <span>Made for campuses</span>
         </div>
       </div>
     </footer>

@@ -18,14 +18,7 @@ export const metadata: Metadata = {
   title: { default: TITLE, template: "%s · Snacc" },
   description: DESCRIPTION,
   applicationName: "Snacc",
-  keywords: [
-    "Snacc",
-    "campus",
-    "university",
-    "students",
-    "social app",
-    "Nigeria",
-  ],
+  keywords: ["Snacc", "campus", "university", "students", "social app"],
   robots: { index: true, follow: true },
   openGraph: {
     type: "website",

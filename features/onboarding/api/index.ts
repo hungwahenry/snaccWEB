@@ -17,6 +17,9 @@ export interface CompleteProfileInput {
   username: string
   displayName: string
   universityId: string
+  birthDay: number
+  birthMonth: number
+  birthYear: number
   avatar?: PickedImage | null
   graduated?: boolean
   graduationYear?: number
@@ -28,6 +31,9 @@ export function completeProfile(input: CompleteProfileInput): Promise<User> {
   form.append("username", input.username)
   form.append("displayName", input.displayName)
   form.append("universityId", input.universityId)
+  form.append("birthDay", String(input.birthDay))
+  form.append("birthMonth", String(input.birthMonth))
+  form.append("birthYear", String(input.birthYear))
   if (input.graduated) form.append("graduated", "true")
   if (input.graduationYear !== undefined)
     form.append("graduationYear", String(input.graduationYear))

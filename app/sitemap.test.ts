@@ -24,7 +24,7 @@ describe("sitemap", () => {
 
   it("lists every campus, however many pages they come in", async () => {
     api({
-      "/pages": [{ slug: "terms" }],
+      "/pages": [{ slug: "about" }],
       "/universities?verified=true&perPage=100&page=1": {
         items: [{ slug: "unilag" }, { slug: "ui" }],
         page: 1,
@@ -40,10 +40,12 @@ describe("sitemap", () => {
     expect(await urls()).toEqual([
       "https://snacc.fyi",
       "https://snacc.fyi/download",
+      "https://snacc.fyi/terms",
+      "https://snacc.fyi/privacy",
       "https://snacc.fyi/campus/unilag",
       "https://snacc.fyi/campus/ui",
       "https://snacc.fyi/campus/oau",
-      "https://snacc.fyi/terms",
+      "https://snacc.fyi/about",
     ])
   })
 
@@ -56,6 +58,8 @@ describe("sitemap", () => {
     expect(await urls()).toEqual([
       "https://snacc.fyi",
       "https://snacc.fyi/download",
+      "https://snacc.fyi/terms",
+      "https://snacc.fyi/privacy",
     ])
   })
 

@@ -31,9 +31,7 @@ function Editor({ profile }: { profile: Profile }) {
 
   return (
     <BirthdayForm
-      locked={form.locked}
       birthday={form.birthday}
-      onChangeBirthday={form.setBirthday}
       celebrate={form.celebrate}
       onChangeCelebrate={form.setCelebrate}
       valid={form.valid}

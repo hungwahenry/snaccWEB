@@ -24,11 +24,13 @@ import { cn } from "@/lib/utils"
 import type { AdminUserDetail, UserActions } from "../types"
 import {
   accountStatus,
+  birthDateLabel,
   earningSummary,
   payoutSummary,
   suspensionSummary,
 } from "../utils/users"
 import { AdjustEarningsDialog } from "./adjust-earnings-dialog"
+import { BirthDateDialog } from "./birth-date-dialog"
 import { CampusDialog } from "./campus-dialog"
 import { RolesDialog } from "./roles-dialog"
 import { SuspendDialog } from "./suspend-dialog"
@@ -173,6 +175,26 @@ export function UserManageTab({
                   </Button>
                 }
                 onSubmit={actions.moveCampus}
+              />
+            </CanAct>
+          }
+        />
+        <SettingRow
+          label="Date of birth"
+          state={
+            <Badge variant="outline">{birthDateLabel(user.birth_date)}</Badge>
+          }
+          description="Set once by the person. Only an admin can correct it."
+          action={
+            <CanAct permission="users.set_birth_date">
+              <BirthDateDialog
+                current={user.birth_date}
+                trigger={
+                  <Button variant="outline" size="sm">
+                    Correct
+                  </Button>
+                }
+                onSubmit={actions.correctBirthDate}
               />
             </CanAct>
           }

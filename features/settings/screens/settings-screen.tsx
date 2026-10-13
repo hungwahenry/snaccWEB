@@ -55,7 +55,8 @@ import {
   EDIT_PROFILE_PATH,
   EXPORT_DATA_PATH,
 } from "@/features/account/routes"
-import { ADMIN_PATH, PRIVACY_PATH, TERMS_PATH } from "@/lib/routes"
+import { ADMIN_PATH } from "@/lib/routes"
+import { useLegalLinks } from "@/features/legal/hooks/use-legal-links"
 import { BLOCKED_PATH } from "@/features/blocks/routes"
 import { MY_REPORTS_PATH } from "@/features/reports/routes"
 import { NOTIFICATION_SETTINGS_PATH } from "@/features/notifications/routes"
@@ -68,6 +69,7 @@ export function SettingsScreen() {
   const back = useBack()
   const logout = useLogout()
   const moderator = hasAdminAccess(useMe().data?.permissions)
+  const legal = useLegalLinks()
   const messagesEnabled = useFlag("anon_messages")
   const privateAccountsEnabled = useFlag("private_accounts")
   const accentsEnabled = usePremiumFeature("accent_colors")
@@ -216,11 +218,11 @@ export function SettingsScreen() {
 
         <Section title="About">
           <Row icon={InfoIcon} label="About Snacc" href={ABOUT_PATH} />
-          <Row icon={FileTextIcon} label="Terms of Use" href={TERMS_PATH} />
+          <Row icon={FileTextIcon} label="Terms of Use" href={legal.terms} />
           <Row
             icon={ShieldCheckIcon}
             label="Privacy Policy"
-            href={PRIVACY_PATH}
+            href={legal.privacy}
           />
         </Section>
 

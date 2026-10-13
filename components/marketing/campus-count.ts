@@ -1,4 +1,4 @@
-const FALLBACK = "Campuses across Nigeria"
+const FALLBACK = "Made for campuses"
 
 export function campusCountLabel(total: number | null): string {
   if (!total || total < 10) return FALLBACK

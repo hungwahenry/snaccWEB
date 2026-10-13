@@ -1,4 +1,5 @@
 import { ChevronRightIcon } from "lucide-react"
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -181,20 +182,21 @@ export function EditProfileForm(form: EditProfileFormProps) {
       </div>
 
       <Field label="Gender">
-        <select
+        <NativeSelect
+          size="lg"
+          className="w-full"
           value={form.gender}
           onChange={(event) =>
             form.setGender(event.target.value as Gender | "")
           }
-          className="h-14 w-full appearance-none rounded-full bg-input px-5 text-base text-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/30"
         >
-          <option value="">Select</option>
+          <NativeSelectOption value="">Select</NativeSelectOption>
           {GENDER_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
+            <NativeSelectOption key={option.value} value={option.value}>
               {option.label}
-            </option>
+            </NativeSelectOption>
           ))}
-        </select>
+        </NativeSelect>
       </Field>
 
       <div className="flex flex-col gap-2">

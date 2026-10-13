@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest"
 import type { AdminCountry } from "../types"
-import { filterCountries, openMessage } from "./countries"
+import { filterCountries, isMinAge, openMessage } from "./countries"
 
 const country = (code: string, name: string, open = false): AdminCountry => ({
   code,
   name,
   currency: "XXX",
   open,
+  min_age: 13,
   campuses: 0,
 })
 
@@ -32,5 +33,14 @@ describe("openMessage", () => {
     expect(openMessage(country("GH", "Ghana"))).toBe(
       "Ghana is closed. People there wait until it opens again."
     )
+  })
+})
+
+describe("isMinAge", () => {
+  it("takes a whole number of years up to 30", () => {
+    expect(isMinAge("16")).toBe(true)
+    expect(isMinAge("")).toBe(false)
+    expect(isMinAge("13.5")).toBe(false)
+    expect(isMinAge("31")).toBe(false)
   })
 })

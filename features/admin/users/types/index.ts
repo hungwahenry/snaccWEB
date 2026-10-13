@@ -74,6 +74,8 @@ export interface BankRecipient {
 }
 
 export interface AdminUserDetail extends AdminUserRow {
+  birth_date: { day: number; month: number; year: number | null } | null
+  legal_country: string | null
   engagement: {
     score: number
     tier: string | null
@@ -139,6 +141,12 @@ export interface AdjustEarningsInput {
 }
 
 /** Everything an admin can do to one account. Each resolves once the page shows the result. */
+export interface BirthDateInput {
+  birthDay: number
+  birthMonth: number
+  birthYear: number
+}
+
 export interface UserActions {
   suspend: (draft: SuspensionDraft, note?: string) => Promise<unknown>
   unsuspend: () => Promise<unknown>
@@ -149,6 +157,7 @@ export interface UserActions {
   postEverywhere: () => Promise<unknown>
   bindToCampus: () => Promise<unknown>
   moveCampus: (universityId: string) => Promise<unknown>
+  correctBirthDate: (input: BirthDateInput) => Promise<unknown>
   adjust: (input: AdjustEarningsInput) => Promise<unknown>
   signOut: () => Promise<unknown>
   remove: (confirmEmail: string) => Promise<unknown>

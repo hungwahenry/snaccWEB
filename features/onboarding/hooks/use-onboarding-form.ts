@@ -16,12 +16,21 @@ import {
   rewardBlurb,
 } from "@/features/referrals/utils/invite"
 import { useCampusPicker } from "@/features/universities/hooks/use-campus-picker"
+import type { BirthDateDraft } from "@/features/birthdays/types"
+import {
+  birthDateCheck,
+  EMPTY_BIRTH_DATE,
+  isWholeDate,
+} from "@/features/birthdays/utils/birth-date"
+import { confirm } from "@/components/ui/confirm"
 import { pickImage, type PickedImage } from "@/lib/media"
 import { copyLink, shareOrCopy } from "@/lib/share-links"
 import { useCompleteProfile } from "./use-complete-profile"
 import { useUsernameField } from "./use-username-field"
 import { showErrorMessage } from "@/lib/feedback"
 import { HOME_PATH } from "@/features/feed/routes"
+
+const BIRTHDAY_STEP = 1
 
 export function useOnboardingForm() {
   const router = useRouter()
@@ -32,6 +41,7 @@ export function useOnboardingForm() {
   const [step, setStep] = useState(0)
   const [avatar, setAvatar] = useState<PickedImage | null>(null)
   const [displayName, setDisplayName] = useState("")
+  const [birthDate, setBirthDate] = useState<BirthDateDraft>(EMPTY_BIRTH_DATE)
   const usernameField = useUsernameField()
   const [graduated, setGraduated] = useState(false)
   const [graduationYear, setGraduationYear] = useState<number | null>(null)
@@ -71,9 +81,10 @@ export function useOnboardingForm() {
     if (!next) setGraduationYear(null)
   }
 
-  const totalSteps = invitesOn ? 3 : 2
+  const totalSteps = invitesOn ? 4 : 3
   const stepValid = [
     displayName.trim().length > 0 && usernameField.status === "available",
+    isWholeDate(birthDate),
     university !== null && (!graduated || graduationYear !== null),
     inviteCodeSettled(invite.status),
   ][step]
@@ -87,11 +98,20 @@ export function useOnboardingForm() {
   function next() {
     if (!stepValid || complete.isPending) return
 
+    if (step === BIRTHDAY_STEP && isWholeDate(birthDate)) {
+      confirm({
+        ...birthDateCheck(birthDate, new Date()),
+        cancelLabel: "Change it",
+        actions: [{ label: "That's right", onPress: () => setStep(step + 1) }],
+      })
+      return
+    }
+
     if (!isLast) {
       setStep(step + 1)
       return
     }
-    if (!university) return
+    if (!university || !isWholeDate(birthDate)) return
 
     complete.mutate(
       {
@@ -101,6 +121,9 @@ export function useOnboardingForm() {
         avatar,
         graduated,
         graduationYear: graduationYear ?? undefined,
+        birthDay: birthDate.day,
+        birthMonth: birthDate.month,
+        birthYear: birthDate.year,
       },
       {
         onSuccess: () => {
@@ -131,6 +154,9 @@ export function useOnboardingForm() {
     username: usernameField.username,
     changeUsername: usernameField.change,
     usernameStatus: usernameField.status,
+
+    birthDate,
+    setBirthDate,
 
     campus,
     graduated,

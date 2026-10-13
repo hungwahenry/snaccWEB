@@ -1,0 +1,69 @@
+import type { Option, StatusMeta } from "@/features/admin/shell/types"
+import type { LegalKind } from "@/features/legal/types"
+import type {
+  AdminLegalDocument,
+  AdminLegalSummary,
+  LegalDraft,
+  LegalStanding,
+} from "../types"
+
+export const DEFAULT_SET = "default"
+
+export const KIND_LABEL: Record<LegalKind, string> = {
+  terms: "Terms of Use",
+  privacy: "Privacy Policy",
+}
+
+export const KIND_OPTIONS: Option<LegalKind>[] = [
+  { value: "terms", label: KIND_LABEL.terms },
+  { value: "privacy", label: KIND_LABEL.privacy },
+]
+
+export const STANDING: Record<LegalStanding, StatusMeta> = {
+  draft: { label: "draft", variant: "outline" },
+  in_force: { label: "in force", variant: "secondary" },
+  replaced: { label: "replaced", variant: "outline" },
+}
+
+export function standingOf(
+  doc: Pick<AdminLegalSummary, "id" | "kind" | "country_code" | "published_at">,
+  all: AdminLegalSummary[]
+): LegalStanding {
+  if (!doc.published_at) return "draft"
+
+  const newest = all
+    .filter(
+      (other) =>
+        other.kind === doc.kind &&
+        other.country_code === doc.country_code &&
+        other.published_at
+    )
+    .reduce<AdminLegalSummary | null>(
+      (best, other) => (!best || other.version > best.version ? other : best),
+      null
+    )
+  return newest?.id === doc.id ? "in_force" : "replaced"
+}
+
+export function whereLabel(
+  countryCode: string | null,
+  countries: ReadonlyMap<string, string>
+): string {
+  if (!countryCode) return "Default, everywhere without its own"
+  return countries.get(countryCode) ?? countryCode
+}
+
+export function whereOptions(countries: Option[]): Option[] {
+  return [
+    { value: DEFAULT_SET, label: "Default, everywhere without its own" },
+    ...countries,
+  ]
+}
+
+export function draftFrom(doc: AdminLegalDocument): LegalDraft {
+  return { title: doc.title, content: doc.content, html: doc.html }
+}
+
+export function isDraftReady(draft: LegalDraft): boolean {
+  return draft.title.trim().length > 0
+}

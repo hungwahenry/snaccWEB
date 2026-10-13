@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { FieldError } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
-import { PRIVACY_PATH, TERMS_PATH } from "@/lib/routes"
+import { legalPath } from "@/features/legal/routes"
 
 type SignInFormProps = {
   email: string
@@ -70,11 +70,14 @@ export function SignInForm({
 
       <p className="px-2 text-center text-xs leading-5 text-muted-foreground">
         By signing up to Snacc, you accept our{" "}
-        <Link href={TERMS_PATH} className="font-medium text-foreground">
+        <Link href={legalPath("terms")} className="font-medium text-foreground">
           Terms of Use
         </Link>{" "}
         and{" "}
-        <Link href={PRIVACY_PATH} className="font-medium text-foreground">
+        <Link
+          href={legalPath("privacy")}
+          className="font-medium text-foreground"
+        >
           Privacy Policy
         </Link>
         .

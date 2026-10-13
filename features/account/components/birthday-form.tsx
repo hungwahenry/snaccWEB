@@ -1,24 +1,17 @@
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { Switch } from "@/components/ui/switch"
-import {
-  BirthdayFields,
-  type BirthdayDraft,
-} from "@/features/birthdays/components/birthday-fields"
+import { birthdayLabel } from "@/features/birthdays/utils/birth-date"
 
 export function BirthdayForm({
-  locked,
   birthday,
-  onChangeBirthday,
   celebrate,
   onChangeCelebrate,
   valid,
   submitting,
   onSubmit,
 }: {
-  locked: boolean
-  birthday: BirthdayDraft
-  onChangeBirthday: (next: BirthdayDraft) => void
+  birthday: { day: number; month: number } | null
   celebrate: boolean
   onChangeCelebrate: (next: boolean) => void
   valid: boolean
@@ -33,17 +26,13 @@ export function BirthdayForm({
         onSubmit()
       }}
     >
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1">
         <p className="text-sm font-semibold text-foreground">Your birthday</p>
-        <BirthdayFields
-          value={birthday}
-          onChange={onChangeBirthday}
-          disabled={locked}
-        />
+        <p className="text-2xl text-foreground">
+          {birthday ? birthdayLabel(birthday) : "—"}
+        </p>
         <p className="text-xs text-muted-foreground">
-          {locked
-            ? "Your birthday is set. Contact support if it needs changing."
-            : "No year — just the day. You can only set this once."}
+          Set when you joined. Contact support if it needs changing.
         </p>
       </div>
 

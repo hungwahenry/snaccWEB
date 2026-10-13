@@ -1,7 +1,6 @@
 "use client"
 
 import { useMe } from "@/features/auth/hooks/use-me"
-import { useBirthdayNudge } from "@/features/birthdays/hooks/use-birthday-nudge"
 import { useBirthdayWish } from "@/features/birthdays/hooks/use-birthday-wish"
 import { useFirstPostPrompt } from "@/features/first-post/hooks/use-first-post"
 import { useMomentsStrip } from "@/features/moments/hooks/use-moments-strip"
@@ -13,8 +12,7 @@ export function useHomeScreen() {
   const profile = useMe().data?.profile
   const firstPost = useFirstPostPrompt()
   const moments = useMomentsStrip()
-  const birthdayNudge = useBirthdayNudge()
-  const birthdayWish = useBirthdayWish({ blocked: !birthdayNudge.resolved })
+  const birthdayWish = useBirthdayWish()
   const chrome = useHomeChrome()
 
   return {
@@ -26,7 +24,6 @@ export function useHomeScreen() {
     },
     firstPost,
     moments,
-    birthdayNudge: birthdayNudge.sheet,
     birthdayWish: {
       open: birthdayWish.open,
       onOpenChange: birthdayWish.onOpenChange,

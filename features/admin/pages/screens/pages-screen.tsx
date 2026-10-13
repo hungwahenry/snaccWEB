@@ -15,7 +15,7 @@ export function PagesScreen() {
     <>
       <PageHeader
         title="Pages"
-        description="Custom pages like Terms and Privacy."
+        description="Custom pages, like the community guidelines."
         action={
           <CanAct permission="pages.write">
             <Button size="sm" render={<Link href={NEW_PAGE_PATH} />}>

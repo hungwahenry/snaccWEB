@@ -10,7 +10,7 @@ import { BackHeader } from "@/features/navigation/components/back-header"
 import { useWalletOverview } from "@/features/wallet/hooks/account/use-wallet-overview"
 import { useBack } from "@/hooks/use-back"
 import { formatNaira } from "@/lib/format"
-import { PRIVACY_PATH, TERMS_PATH } from "@/lib/routes"
+import { useLegalLinks } from "@/features/legal/hooks/use-legal-links"
 import { BenefitGrid } from "../components/benefit-grid"
 import { PlanCard } from "../components/plan-card"
 import { PremiumHeadline } from "../components/premium-headline"
@@ -23,6 +23,7 @@ import { standingLine, walletPlanTerms } from "../utils/plan-copy"
 
 export function PremiumScreen() {
   const back = useBack()
+  const legal = useLegalLinks()
   const enabled = useFlagWhenKnown("premium")
   const query = usePremium()
   const wallet = useWalletOverview()
@@ -101,10 +102,10 @@ export function PremiumScreen() {
               </p>
 
               <div className="flex items-center justify-center gap-4 text-[13px] text-muted-foreground">
-                <Link href={TERMS_PATH} className="underline">
+                <Link href={legal.terms} className="underline">
                   Terms of Use
                 </Link>
-                <Link href={PRIVACY_PATH} className="underline">
+                <Link href={legal.privacy} className="underline">
                   Privacy Policy
                 </Link>
               </div>

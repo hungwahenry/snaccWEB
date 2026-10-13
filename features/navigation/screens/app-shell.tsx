@@ -12,7 +12,13 @@ import { DiscoverRail } from "@/features/search/screens/discover-rail"
 import { useHiddenOnScroll } from "@/hooks/use-hidden-on-scroll"
 import { useFileDropGuard } from "@/hooks/use-image-drop"
 import { useOfflineNotice } from "@/hooks/use-offline-notice"
-import { isSuspended, isUnauthenticated, isWaiting } from "@/lib/api/errors"
+import {
+  isSuspended,
+  isUnauthenticated,
+  isWaiting,
+  mustAgree,
+  needsBirthDate,
+} from "@/lib/api/errors"
 import { AppProviders } from "@/providers/app-providers"
 import { AppFrame } from "../components/app-frame"
 import { BottomTabBar } from "../components/bottom-tab-bar"
@@ -22,6 +28,8 @@ import { useAppNav } from "../hooks/use-app-nav"
 import { useUnreadTitle } from "../hooks/use-unread-title"
 import { emitNavReselect } from "../reselect"
 import { WAITING_PATH } from "@/features/availability/routes"
+import { AGREE_PATH } from "@/features/legal/routes"
+import { BIRTH_DATE_PATH } from "@/features/birthdays/routes"
 import { SUSPENDED_PATH } from "@/features/suspensions/routes"
 import { COMPLETE_PROFILE_PATH } from "@/features/onboarding/routes"
 import { COMPOSE_PATH } from "@/features/snaccs/routes"
@@ -47,16 +55,37 @@ function Gate({ children }: { children: ReactNode }) {
   const signedOut = me.isError && isUnauthenticated(me.error)
   const suspended = me.isError && isSuspended(me.error)
   const waiting = me.isError && isWaiting(me.error)
+  const agreeing = me.isError && mustAgree(me.error)
+  const missingBirthDate = me.isError && needsBirthDate(me.error)
   const incomplete = !!me.data && !me.data.profile?.completed_at
 
   useEffect(() => {
     if (signedOut) router.replace(`/login?next=${encodeURIComponent(pathname)}`)
     else if (suspended) router.replace(SUSPENDED_PATH)
     else if (waiting) router.replace(WAITING_PATH)
+    else if (agreeing) router.replace(AGREE_PATH)
+    else if (missingBirthDate) router.replace(BIRTH_DATE_PATH)
     else if (incomplete) router.replace(COMPLETE_PROFILE_PATH)
-  }, [signedOut, suspended, waiting, incomplete, pathname, router])
+  }, [
+    signedOut,
+    suspended,
+    waiting,
+    agreeing,
+    missingBirthDate,
+    incomplete,
+    pathname,
+    router,
+  ])
 
-  if (me.isPending || signedOut || suspended || waiting || incomplete) {
+  if (
+    me.isPending ||
+    signedOut ||
+    suspended ||
+    waiting ||
+    agreeing ||
+    missingBirthDate ||
+    incomplete
+  ) {
     return (
       <div className="flex min-h-dvh items-center justify-center">
         <Spinner className="size-6 text-muted-foreground" />

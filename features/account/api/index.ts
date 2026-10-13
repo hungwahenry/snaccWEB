@@ -14,8 +14,6 @@ export interface UpdateProfileInput {
   cover?: PickedImage | null
   /** Only sent when taking one down. Silence leaves whatever is there alone. */
   removeCover?: boolean
-  birthDay?: number
-  birthMonth?: number
   celebrateBirthday?: boolean
 }
 
@@ -31,10 +29,6 @@ export function updateProfile(input: UpdateProfileInput): Promise<User> {
   form.append("graduated", input.graduated ? "true" : "false")
   if (input.graduationYear !== undefined)
     form.append("graduationYear", String(input.graduationYear))
-  if (input.birthDay !== undefined)
-    form.append("birthDay", String(input.birthDay))
-  if (input.birthMonth !== undefined)
-    form.append("birthMonth", String(input.birthMonth))
   if (input.celebrateBirthday !== undefined)
     form.append("celebrateBirthday", input.celebrateBirthday ? "true" : "false")
   if (input.avatar) appendImage(form, "avatar", input.avatar, input.username)

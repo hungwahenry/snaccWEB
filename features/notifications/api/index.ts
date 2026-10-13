@@ -36,3 +36,14 @@ export interface UpdatePreferenceInput {
 
 export const updateNotificationPreference = (input: UpdatePreferenceInput) =>
   api.put<NotificationPreference[]>("/notifications/preferences", input)
+
+export interface UnsubscribeSubject {
+  everything: boolean
+  label: string
+}
+
+export const describeUnsubscribe = (token: string) =>
+  api.get<UnsubscribeSubject>("/email/unsubscribe", { token })
+
+export const unsubscribe = (token: string) =>
+  api.post<null>(`/email/unsubscribe?token=${encodeURIComponent(token)}`)

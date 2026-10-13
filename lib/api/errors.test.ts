@@ -5,6 +5,8 @@ import {
   isNotFound,
   isSuspended,
   isWaiting,
+  mustAgree,
+  needsBirthDate,
 } from "./errors"
 
 const withErrors = (errors: Record<string, unknown>) =>
@@ -39,5 +41,12 @@ describe("error checks", () => {
     expect(isSuspended(new ApiError(403, "No", "account_suspended"))).toBe(true)
     expect(isWaiting(new ApiError(403, "Soon", "campus_not_open"))).toBe(true)
     expect(isWaiting(new ApiError(403, "No", "account_suspended"))).toBe(false)
+    expect(
+      mustAgree(new ApiError(403, "Agree", "legal_agreement_required"))
+    ).toBe(true)
+    expect(mustAgree(new ApiError(403, "Soon", "campus_not_open"))).toBe(false)
+    expect(
+      needsBirthDate(new ApiError(403, "Add it", "birth_date_required"))
+    ).toBe(true)
   })
 })

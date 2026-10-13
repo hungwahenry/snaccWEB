@@ -3,7 +3,7 @@ import type { FaqQuestion } from "./faq"
 export const LANDING_QUESTIONS: FaqQuestion[] = [
   {
     q: "Who can use Snacc?",
-    a: "Students and recent graduates at Nigerian universities. You pick your campus when you sign up, and if you've graduated you can say so and keep it.",
+    a: "Students and recent graduates at universities where Snacc is open. You pick your campus when you sign up, and if you've graduated you can say so and keep it.",
   },
   {
     q: "Is it free?",

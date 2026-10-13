@@ -6,6 +6,7 @@ import { Suspense, useState, type ReactNode } from "react"
 import { ConsoleEgg } from "@/components/console-egg"
 import { NavigationProgress } from "@/components/navigation-progress"
 import { ThemeProvider } from "./theme-provider"
+import { ConfirmHost } from "@/components/ui/confirm"
 import { Toaster } from "@/components/ui/sonner"
 import { VoiceNoteHost } from "@/features/voice/containers/voice-note-host"
 import { getQueryClient } from "@/lib/query/client"
@@ -19,6 +20,7 @@ export function Providers({ children }: { children: ReactNode }) {
         <QueryClientProvider client={queryClient}>
           {children}
           <Toaster position="top-center" />
+          <ConfirmHost />
           <VoiceNoteHost />
           <ConsoleEgg />
           <Suspense>

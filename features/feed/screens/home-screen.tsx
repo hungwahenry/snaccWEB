@@ -5,7 +5,6 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { FeedAnnouncement } from "@/features/announcements/containers/feed-announcement"
 import { BirthdayFab } from "@/features/birthdays/components/birthday-fab"
-import { BirthdayNudgeSheet } from "@/features/birthdays/components/birthday-nudge-sheet"
 import { BirthdayWishDialog } from "@/features/birthdays/components/birthday-wish-dialog"
 import { FirstPostCard } from "@/features/first-post/components/first-post-card"
 import { CampusHangouts } from "@/features/hangouts/containers/campus-hangouts"
@@ -97,7 +96,6 @@ export function HomeScreen() {
       />
 
       <SnaccSheets {...sheets} />
-      <BirthdayNudgeSheet {...screen.birthdayNudge} />
       <BirthdayWishDialog {...screen.birthdayWish} />
       {screen.birthdayFab ? <BirthdayFab onPress={screen.birthdayFab} /> : null}
     </>

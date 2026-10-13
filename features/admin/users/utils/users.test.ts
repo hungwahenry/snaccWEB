@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import type { AdminUserRow } from "../types"
 import {
+  birthDateLabel,
   accountStatus,
   earningSummary,
   payoutSummary,
@@ -101,5 +102,15 @@ describe("summaries", () => {
     expect(
       payoutSummary(user({ payouts_blocked_at: "2026-09-01T10:00:00Z" }))
     ).toMatch(/^Blocked /)
+  })
+})
+
+describe("birthDateLabel", () => {
+  it("writes the whole date, and says when the year is still missing", () => {
+    expect(birthDateLabel({ day: 9, month: 11, year: 2004 })).toBe("9 Nov 2004")
+    expect(birthDateLabel({ day: 9, month: 11, year: null })).toBe(
+      "9 Nov, no year yet"
+    )
+    expect(birthDateLabel(null)).toBe("—")
   })
 })

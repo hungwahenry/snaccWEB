@@ -43,6 +43,7 @@ export const PROMPTS_PATH = "/admin/prompts"
 
 export const PAGES_PATH = "/admin/pages"
 export const NEW_PAGE_PATH = "/admin/pages/new"
+export const LEGAL_PATH = "/admin/legal"
 export const ANNOUNCEMENTS_PATH = "/admin/announcements"
 export const NEW_ANNOUNCEMENT_PATH = "/admin/announcements/new"
 
@@ -56,6 +57,7 @@ export const userPath = (id: string) => `${USERS_PATH}/${id}`
 export const walletPath = (userId: string) => `${WALLETS_PATH}/${userId}`
 export const withdrawalPath = (id: string) => `${WITHDRAWALS_PATH}/${id}`
 export const pagePath = (id: string) => `${PAGES_PATH}/${id}`
+export const legalDocumentPath = (id: string) => `${LEGAL_PATH}/${id}`
 export const announcementPath = (id: string) => `${ANNOUNCEMENTS_PATH}/${id}`
 export const stickerPackPath = (id: string) => `${STICKER_PACKS_PATH}/${id}`
 export const adPath = (id: string) => `${ADS_PATH}/${id}`

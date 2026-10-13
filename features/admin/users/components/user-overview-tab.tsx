@@ -8,6 +8,7 @@ import {
 import { humanize } from "@/features/admin/shell/utils/format"
 import { formatDate, formatNaira, formatNumber } from "@/lib/format"
 import type { AdminUserDetail } from "../types"
+import { birthDateLabel } from "../utils/users"
 
 export function UserOverviewTab({ user }: { user: AdminUserDetail }) {
   const received = Object.entries(user.engagement.received)
@@ -60,6 +61,11 @@ export function UserOverviewTab({ user }: { user: AdminUserDetail }) {
               value={user.completed_at ? formatDate(user.completed_at) : "No"}
             />
             <Fact label="Joined" value={formatDate(user.created_at)} />
+            <Fact
+              label="Date of birth"
+              value={birthDateLabel(user.birth_date)}
+            />
+            <Fact label="Legal country" value={user.legal_country ?? "—"} />
             <Fact label="Likes given" value={formatNumber(user.counts.likes)} />
             <Fact
               label="Reports they filed"

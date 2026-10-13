@@ -2,6 +2,7 @@
 
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { useFlag } from "@/features/config/hooks/use-flag"
+import { BirthdayStep } from "../components/birthday-step"
 import { InviteStep } from "../components/invite-step"
 import { OnboardingFooter } from "../components/onboarding-footer"
 import { OnboardingHeader } from "../components/onboarding-header"
@@ -15,7 +16,7 @@ export function CompleteProfileScreen() {
   const usernameMax = useConfigValue("profile.username.max_length")
   const canUploadPhoto = useFlag("profile_photo_upload")
 
-  const showFooter = !(form.step === 1 && !form.campus.selected)
+  const showFooter = !(form.step === 2 && !form.campus.selected)
 
   return (
     <main className="flex min-h-dvh flex-col bg-background">
@@ -42,7 +43,9 @@ export function CompleteProfileScreen() {
               onChangeUsername={form.changeUsername}
               usernameStatus={form.usernameStatus}
             />
-          ) : form.step === 1 || !form.invite ? (
+          ) : form.step === 1 ? (
+            <BirthdayStep value={form.birthDate} onChange={form.setBirthDate} />
+          ) : form.step === 2 || !form.invite ? (
             <UniversityStep
               campus={form.campus}
               graduated={form.graduated}

@@ -1,7 +1,6 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { ConfirmHost } from "@/components/ui/confirm"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { AnnouncementHost } from "@/features/announcements/containers/announcement-host"
 import { AccentStyle } from "@/features/appearance/components/accent-style"
@@ -29,7 +28,6 @@ export function AppProviders({ children }: { children: ReactNode }) {
                     <AccentStyle />
                     {children}
                     <AnnouncementHost />
-                    <ConfirmHost />
                   </LightboxProvider>
                 </StickerStudioProvider>
               </HangoutGateProvider>

@@ -30,7 +30,7 @@ const ADVERTISERS: Feature[] = [
   {
     icon: MegaphoneIcon,
     name: "Brands",
-    line: "Reach students all over Nigeria, or only the campuses and states that matter to you.",
+    line: "Reach students across the country, or only the campuses and regions that matter to you.",
     color: FEATURE_COLORS.feed,
   },
 ]

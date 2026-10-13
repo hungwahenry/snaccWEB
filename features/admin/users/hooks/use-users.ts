@@ -17,12 +17,18 @@ import {
   pauseEarnings,
   resumeEarnings,
   revokeSessions,
+  setUserBirthDate,
   setUserUniversity,
   suspendUser,
   unblockPayouts,
   unsuspendUser,
 } from "../api"
-import type { AdjustEarningsInput, UserActions, UserListQuery } from "../types"
+import type {
+  AdjustEarningsInput,
+  BirthDateInput,
+  UserActions,
+  UserListQuery,
+} from "../types"
 import { adminUserKeys } from "../utils/keys"
 
 export function useUsers(query: UserListQuery) {
@@ -89,6 +95,11 @@ export function useUserActions(id: string, onDeleted: () => void): UserActions {
     success: "Campus changed.",
     invalidates,
   })
+  const { run: correctBirthDate } = useAdminMutation({
+    mutationFn: (input: BirthDateInput) => setUserBirthDate(id, input),
+    success: "Date of birth corrected.",
+    invalidates,
+  })
   const { run: adjust } = useAdminMutation({
     mutationFn: (input: AdjustEarningsInput) => adjustEarnings(id, input),
     success: "Unclaimed earnings adjusted.",
@@ -118,6 +129,7 @@ export function useUserActions(id: string, onDeleted: () => void): UserActions {
       postEverywhere,
       bindToCampus,
       moveCampus,
+      correctBirthDate,
       adjust,
       signOut,
       remove,
@@ -132,6 +144,7 @@ export function useUserActions(id: string, onDeleted: () => void): UserActions {
       postEverywhere,
       bindToCampus,
       moveCampus,
+      correctBirthDate,
       adjust,
       signOut,
       remove,

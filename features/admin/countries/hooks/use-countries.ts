@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
 import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
-import { listCountries, setCountryOpen } from "../api"
+import { listCountries, setCountryMinAge, setCountryOpen } from "../api"
 import { filterCountries, openMessage } from "../utils/countries"
 import { adminCountryKeys } from "../utils/keys"
 
@@ -23,10 +23,19 @@ export function useCountryActions() {
     invalidates: [adminCountryKeys.all()],
   })
 
+  const { run: setMinAge } = useAdminMutation({
+    mutationFn: ({ code, minAge }: { code: string; minAge: number }) =>
+      setCountryMinAge(code, minAge),
+    success: (country) =>
+      `${country.name} now needs people to be ${country.min_age} or older.`,
+    invalidates: [adminCountryKeys.all()],
+  })
+
   return useMemo(
     () => ({
       setOpen: (code: string, open: boolean) => setOpen({ code, open }),
+      setMinAge: (code: string, minAge: number) => setMinAge({ code, minAge }),
     }),
-    [setOpen]
+    [setOpen, setMinAge]
   )
 }

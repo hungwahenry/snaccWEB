@@ -2,6 +2,7 @@ import { api } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
 import type { SuspendInput } from "@/features/admin/suspension-reasons/types"
 import type {
+  BirthDateInput,
   AdjustEarningsInput,
   AdminUserDetail,
   AdminUserRow,
@@ -52,6 +53,10 @@ export function setUserUniversity(id: string, universityId: string) {
   return api.patch<AdminUserRow>(`/admin/users/${id}/university`, {
     universityId,
   })
+}
+
+export function setUserBirthDate(id: string, input: BirthDateInput) {
+  return api.patch<AdminUserRow>(`/admin/users/${id}/birth-date`, input)
 }
 
 /** Moves unclaimed earnings, not the wallet. Wallet corrections live under Wallets. */

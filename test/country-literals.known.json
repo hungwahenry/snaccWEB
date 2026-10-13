@@ -1,10 +1,7 @@
 [
-  "app/layout.tsx",
-  "components/marketing/campus-count.ts",
   "components/marketing/hero-deck.tsx",
   "components/marketing/landing-questions.ts",
   "components/marketing/money-spotlight.tsx",
-  "components/marketing/site-footer.tsx",
   "features/admin/ads/api/index.ts",
   "features/admin/ads/components/ad-prices-table.tsx",
   "features/admin/ads/components/ads-stats.tsx",
@@ -50,7 +47,6 @@
   "features/admin/withdrawals/components/withdrawals-table.tsx",
   "features/ads/api/index.ts",
   "features/ads/components/advertise/advertise-deck.tsx",
-  "features/ads/components/advertise/advertiser-grid.tsx",
   "features/ads/components/detail/campaign-results.tsx",
   "features/ads/components/form/budget-field.tsx",
   "features/ads/hooks/use-campaign-draft.ts",

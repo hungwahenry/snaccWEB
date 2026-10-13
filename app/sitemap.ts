@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next"
 import { campusPath } from "@/features/campus/routes"
+import { legalPath } from "@/features/legal/routes"
 import { absoluteUrl, SITE_URL } from "@/lib/site"
 
 const API_URL = process.env.SNACC_API_URL ?? "http://localhost:3000"
@@ -50,6 +51,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     { url: SITE_URL, lastModified: now, priority: 1 },
     { url: absoluteUrl("/download"), lastModified: now, priority: 0.8 },
+    { url: absoluteUrl(legalPath("terms")), lastModified: now, priority: 0.5 },
+    {
+      url: absoluteUrl(legalPath("privacy")),
+      lastModified: now,
+      priority: 0.5,
+    },
     ...campuses.map((slug) => ({
       url: absoluteUrl(campusPath(slug)),
       lastModified: now,
