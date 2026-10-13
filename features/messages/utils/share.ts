@@ -9,6 +9,7 @@ export const SHARE_LABEL: Record<ShareKind, string> = {
   profile: "Shared a profile",
   campus: "Shared a campus",
   pay: "Shared a pay link",
+  sticker_pack: "Shared a sticker pack",
 }
 
 /** A body's own words, with the Snacc links in it taken out, and the kind of the first link. */

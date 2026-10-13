@@ -50,7 +50,7 @@ export function useStickerPackScreen(id: string) {
 
   function onMenu(choice: PackMenuId) {
     if (!pack) return
-    const link = shareLink.stickerPack(pack.id)
+    const link = shareLink.sticker_pack(pack.id)
     if (choice === "share") void shareOrCopy(link, pack.title, "Pack link")
     if (choice === "copy") void copyLink(link, "Pack link")
     if (choice === "rename") rename.start()

@@ -12,7 +12,7 @@ export const shareLink = {
   snacc: (id: string) => SITE_URL + snaccPath(id),
   campus: (slug: string) => SITE_URL + campusPath(slug),
   pay: (username: string) => `${SITE_URL}/pay/${encodeURIComponent(username)}`,
-  stickerPack: (id: string) => SITE_URL + stickerPackPath(id),
+  sticker_pack: (id: string) => SITE_URL + stickerPackPath(id),
 }
 
 export function bareLink(url: string): string {
@@ -44,7 +44,7 @@ export async function shareOrCopy(
   await copyLink(url, what)
 }
 
-export type ShareKind = "profile" | "snacc" | "campus" | "pay"
+export type ShareKind = "profile" | "snacc" | "campus" | "pay" | "sticker_pack"
 
 export interface ShareRef {
   kind: ShareKind
@@ -64,17 +64,18 @@ const HOST = SITE_URL.replace(/^https?:\/\//, "").replace(/\/+$/, "")
 
 const LINK_PATTERN = new RegExp(
   `(?<![\\w.@/])(?:https?://)?(?:www\\.)?${escapeForPattern(HOST)}/` +
-    `(?:@([A-Za-z][A-Za-z0-9_]{2,29})|snacc/([A-Za-z0-9]+)|campus/([A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)|pay/([A-Za-z][A-Za-z0-9_]{2,29}))`,
+    `(?:@([A-Za-z][A-Za-z0-9_]{2,29})|snacc/([A-Za-z0-9]+)|campus/([A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)|pay/([A-Za-z][A-Za-z0-9_]{2,29})|stickers/([A-Za-z0-9]+))`,
   "gi"
 )
 
 function refFrom(match: RegExpExecArray): ShareRef | null {
-  const [, profile, snacc, campus, pay] = match
+  const [, profile, snacc, campus, pay, stickerPack] = match
 
   if (profile) return { kind: "profile", ref: profile }
   if (snacc) return { kind: "snacc", ref: snacc }
   if (campus) return { kind: "campus", ref: campus }
   if (pay) return { kind: "pay", ref: pay }
+  if (stickerPack) return { kind: "sticker_pack", ref: stickerPack }
 
   return null
 }
