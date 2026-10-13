@@ -102,12 +102,16 @@ describe("useViewTracker", () => {
     beforeEach(() => vi.useFakeTimers())
     afterEach(() => vi.useRealTimers())
 
-    const show = (node: Element, ratio: number) =>
+    const SCREEN = 1000
+
+    const show = (node: Element, ratio: number, screenCover = 0.1) =>
       fire(
         [
           {
             target: node,
             intersectionRatio: ratio,
+            intersectionRect: { height: screenCover * SCREEN },
+            rootBounds: { height: SCREEN },
           } as IntersectionObserverEntry,
         ],
         {} as IntersectionObserver
@@ -151,6 +155,15 @@ describe("useViewTracker", () => {
       show(node, 0.65)
       expect(onVisible).toHaveBeenLastCalledWith(["s1"])
       show(node, 0.55)
+      expect(onVisible).toHaveBeenLastCalledWith([])
+    })
+
+    it("counts a card too tall to fit once it fills half the screen", () => {
+      const { node, onVisible } = mount(null)
+
+      show(node, 0.3, 0.6)
+      expect(onVisible).toHaveBeenLastCalledWith(["s1"])
+      show(node, 0.2, 0.4)
       expect(onVisible).toHaveBeenLastCalledWith([])
     })
   })

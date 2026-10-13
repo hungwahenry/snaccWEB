@@ -80,6 +80,7 @@ const DRIFT_LABELS: Record<string, string> = {
   "snaccs.resnaccs_count": "Resnaccs per snacc",
   "snaccs.views_count": "Views per snacc",
   "snaccs.comments_count": "Comments per snacc",
+  "snaccs.commenters_count": "Commenters per post",
   "snaccs.quotes_count": "Quotes per snacc",
   "snaccs.bookmarks_count": "Bookmarks per snacc",
   "snaccs.shares_count": "Shares per snacc",
