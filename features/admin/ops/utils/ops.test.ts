@@ -22,6 +22,7 @@ const clean: OpsDrift = {
     resnaccs_count: 0,
     views_count: 0,
     comments_count: 0,
+    commenters_count: 0,
     quotes_count: 0,
     bookmarks_count: 0,
     shares_count: 0,

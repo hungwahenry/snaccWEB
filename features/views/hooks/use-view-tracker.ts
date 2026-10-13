@@ -6,7 +6,8 @@ import { trackViewFlush } from "@/features/views/utils/flush"
 import {
   BILLED_SHARE,
   BILLED_VIEW_MS,
-  VISIBLE_SHARE,
+  isSeen,
+  VISIBILITY_STEPS,
 } from "@/features/views/utils/visible"
 
 const FLUSH_INTERVAL_MS = 5000
@@ -136,7 +137,13 @@ export function useViewTracker({
             continue
           }
 
-          if (ratio >= VISIBLE_SHARE) {
+          const seen = isSeen({
+            ratio,
+            height: entry.intersectionRect.height,
+            screen: entry.rootBounds?.height ?? null,
+          })
+
+          if (seen) {
             visible.current.add(id)
             if (!since.current.has(id)) since.current.set(id, now)
             if (!pending.current.has(id) && !sent.current.has(id))
@@ -148,7 +155,7 @@ export function useViewTracker({
         }
         announce()
       },
-      { threshold: [BILLED_SHARE, VISIBLE_SHARE] }
+      { threshold: VISIBILITY_STEPS }
     )
     for (const node of ids.current.keys()) observer.current.observe(node)
 

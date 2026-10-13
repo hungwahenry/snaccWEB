@@ -38,6 +38,7 @@ export interface SnaccCounterDrift {
   resnaccs_count: number
   views_count: number
   comments_count: number
+  commenters_count: number
   quotes_count: number
   bookmarks_count: number
   shares_count: number
