@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button"
 export function AgeRefused({
   onLogout,
   loggingOut,
+  onDevClear,
 }: {
   onLogout: () => void
   loggingOut: boolean
+  onDevClear: () => void
 }) {
   return (
     <main className="flex min-h-dvh flex-col bg-background">
@@ -23,14 +25,21 @@ export function AgeRefused({
             be set up. Thanks for being honest about your birthday.
           </p>
         </div>
-        <Button
-          variant="outline"
-          size="lg"
-          disabled={loggingOut}
-          onClick={onLogout}
-        >
-          Sign out
-        </Button>
+        <div className="flex flex-col gap-2">
+          <Button
+            variant="outline"
+            size="lg"
+            disabled={loggingOut}
+            onClick={onLogout}
+          >
+            Sign out
+          </Button>
+          {process.env.NODE_ENV !== "production" ? (
+            <Button variant="ghost" size="lg" onClick={onDevClear}>
+              Clear this browser (dev only)
+            </Button>
+          ) : null}
+        </div>
       </div>
     </main>
   )

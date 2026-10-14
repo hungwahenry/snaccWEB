@@ -20,7 +20,13 @@ export function CompleteProfileScreen() {
   const showFooter = !(form.step === 2 && !form.campus.selected)
 
   if (form.refused) {
-    return <AgeRefused onLogout={form.logout} loggingOut={form.loggingOut} />
+    return (
+      <AgeRefused
+        onLogout={form.logout}
+        loggingOut={form.loggingOut}
+        onDevClear={form.clearRefusal}
+      />
+    )
   }
 
   return (

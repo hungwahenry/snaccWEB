@@ -1,10 +1,10 @@
 "use client"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useLogout } from "@/features/auth/hooks/use-logout"
-import { authKeys } from "@/features/auth/utils/keys"
+import { resetMe } from "@/features/auth/cache"
 import { HOME_PATH } from "@/features/feed/routes"
 import { getErrorMessage, isSuspended } from "@/lib/api/errors"
 import { SUSPENDED_PATH } from "@/features/suspensions/routes"
@@ -19,7 +19,6 @@ import {
 
 export function useBirthDateScreen() {
   const router = useRouter()
-  const queryClient = useQueryClient()
   const logout = useLogout()
   const known = useQuery({
     queryKey: ["profile", "birth-date"],
@@ -42,7 +41,7 @@ export function useBirthDateScreen() {
       })
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: authKeys.me() })
+      void resetMe()
       router.replace(HOME_PATH)
     },
     onError: (error) => {

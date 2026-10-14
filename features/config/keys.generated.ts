@@ -64,6 +64,7 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly "client.min_version_android": string
   readonly "client.store_url_android": string
   readonly "client.store_url_ios": string
+  readonly "onboarding.age_refusal_cooldown_hours": number
   readonly "content.snacc.body_max_length": number
   readonly "content.snacc.max_images": number
   readonly "content.snacc.max_mentions": number
@@ -144,6 +145,7 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   "client.store_url_android":
     "https://play.google.com/store/apps/details?id=com.snacc.fyi",
   "client.store_url_ios": "",
+  "onboarding.age_refusal_cooldown_hours": 24,
   "content.snacc.body_max_length": 500,
   "content.snacc.max_images": 10,
   "content.snacc.max_mentions": 3,

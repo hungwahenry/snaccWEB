@@ -1,10 +1,10 @@
 "use client"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { useLogout } from "@/features/auth/hooks/use-logout"
-import { authKeys } from "@/features/auth/utils/keys"
+import { resetMe } from "@/features/auth/cache"
 import { HOME_PATH } from "@/features/feed/routes"
 import { getErrorMessage } from "@/lib/api/errors"
 import { acceptDocuments, getPendingDocuments } from "../api"
@@ -13,7 +13,6 @@ const PENDING_KEY = ["legal", "pending"]
 
 export function useAgreeScreen() {
   const router = useRouter()
-  const queryClient = useQueryClient()
   const logout = useLogout()
   const pending = useQuery({
     queryKey: PENDING_KEY,
@@ -25,9 +24,9 @@ export function useAgreeScreen() {
   const nothingLeft = pending.isSuccess && documents.length === 0
   useEffect(() => {
     if (!nothingLeft) return
-    void queryClient.invalidateQueries({ queryKey: authKeys.me() })
+    void resetMe()
     router.replace(HOME_PATH)
-  }, [nothingLeft, queryClient, router])
+  }, [nothingLeft, router])
 
   const accept = useMutation({
     mutationFn: () => acceptDocuments(documents.map((doc) => doc.id)),

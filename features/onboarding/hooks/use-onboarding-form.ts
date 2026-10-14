@@ -2,10 +2,12 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { resetMe } from "@/features/auth/cache"
 import { useLogout } from "@/features/auth/hooks/use-logout"
 import { useMe } from "@/features/auth/hooks/use-me"
 import { buildAvatarUrl } from "@/features/avatar/utils/dicebear"
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
+import { HOUR_MS } from "@/lib/duration"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { useClaimReferral } from "@/features/referrals/hooks/use-claim-referral"
 import { useInviteCodeField } from "@/features/referrals/hooks/use-invite-code-field"
@@ -39,7 +41,9 @@ export function useOnboardingForm() {
   const me = useMe()
   const complete = useCompleteProfile()
   const logout = useLogout()
-  const age = useAgeRefusal()
+  const age = useAgeRefusal(
+    useConfigValue("onboarding.age_refusal_cooldown_hours") * HOUR_MS
+  )
 
   const [step, setStep] = useState(0)
   const [avatar, setAvatar] = useState<PickedImage | null>(null)
@@ -130,6 +134,7 @@ export function useOnboardingForm() {
       },
       {
         onSuccess: () => {
+          void resetMe()
           router.replace(HOME_PATH)
           if (invitesOn && invite.value) claimInvite.mutate(invite.value)
         },
@@ -157,6 +162,7 @@ export function useOnboardingForm() {
     next,
     logout: () => logout.mutate(),
     loggingOut: logout.isPending,
+    clearRefusal: age.clear,
 
     avatarUri,
     pickAvatar,

@@ -77,3 +77,7 @@ export function meChanged(user: User): void {
 export function refreshMe(): Promise<void> {
   return client().invalidateQueries({ queryKey: authKeys.me() })
 }
+
+export function resetMe(): Promise<void> {
+  return client().resetQueries({ queryKey: authKeys.me() })
+}
