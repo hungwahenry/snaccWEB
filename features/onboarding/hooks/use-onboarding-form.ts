@@ -8,15 +8,6 @@ import { useMe } from "@/features/auth/hooks/use-me"
 import { buildAvatarUrl } from "@/features/avatar/utils/dicebear"
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { HOUR_MS } from "@/lib/duration"
-import { useFlag } from "@/features/config/hooks/use-flag"
-import { useClaimReferral } from "@/features/referrals/hooks/use-claim-referral"
-import { useInviteCodeField } from "@/features/referrals/hooks/use-invite-code-field"
-import { useReferralOverview } from "@/features/referrals/hooks/use-referrals"
-import {
-  inviteCodeSettled,
-  inviteMessage,
-  rewardBlurb,
-} from "@/features/referrals/utils/invite"
 import { useCampusPicker } from "@/features/universities/hooks/use-campus-picker"
 import type { BirthDateDraft } from "@/features/birthdays/types"
 import {
@@ -26,7 +17,6 @@ import {
 } from "@/features/birthdays/utils/birth-date"
 import { confirm } from "@/components/ui/confirm"
 import { pickImage, type PickedImage } from "@/lib/media"
-import { copyLink, shareOrCopy } from "@/lib/share-links"
 import { useCompleteProfile } from "./use-complete-profile"
 import { useUsernameField } from "./use-username-field"
 import { isApiError } from "@/lib/api/errors"
@@ -35,6 +25,7 @@ import { useAgeRefusal } from "./use-age-refusal"
 import { HOME_PATH } from "@/features/feed/routes"
 
 const BIRTHDAY_STEP = 1
+const TOTAL_STEPS = 3
 
 export function useOnboardingForm() {
   const router = useRouter()
@@ -54,10 +45,6 @@ export function useOnboardingForm() {
   const [graduationYear, setGraduationYear] = useState<number | null>(null)
   const campus = useCampusPicker()
   const university = campus.selected
-  const invitesOn = useFlag("referrals")
-  const invite = useInviteCodeField()
-  const claimInvite = useClaimReferral()
-  const own = useReferralOverview(invitesOn)
 
   const avatarBase = useConfigValue("avatar.base")
   const avatarStyle = useConfigValue("avatar.style")
@@ -88,15 +75,13 @@ export function useOnboardingForm() {
     if (!next) setGraduationYear(null)
   }
 
-  const totalSteps = invitesOn ? 4 : 3
   const stepValid = [
     displayName.trim().length > 0 && usernameField.status === "available",
     isWholeDate(birthDate),
     university !== null && (!graduated || graduationYear !== null),
-    inviteCodeSettled(invite.status),
   ][step]
 
-  const isLast = step === totalSteps - 1
+  const isLast = step === TOTAL_STEPS - 1
 
   function back() {
     if (step > 0) setStep(step - 1)
@@ -136,7 +121,6 @@ export function useOnboardingForm() {
         onSuccess: () => {
           void resetMe()
           router.replace(HOME_PATH)
-          if (invitesOn && invite.value) claimInvite.mutate(invite.value)
         },
         onError: (error) => {
           if (isApiError(error) && error.code === "under_minimum_age") {
@@ -149,11 +133,9 @@ export function useOnboardingForm() {
     )
   }
 
-  const ownCode = own.data
-
   return {
     step,
-    totalSteps,
+    totalSteps: TOTAL_STEPS,
     isLast,
     stepValid,
     submitting: complete.isPending,
@@ -180,28 +162,5 @@ export function useOnboardingForm() {
     toggleGraduated,
     graduationYear,
     selectGraduationYear: setGraduationYear,
-
-    invite: invitesOn
-      ? {
-          field: invite,
-          own: ownCode
-            ? {
-                code: ownCode.code,
-                blurb: rewardBlurb(ownCode.reward, ownCode.qualify_days),
-                onShare: () =>
-                  void shareOrCopy(
-                    ownCode.link,
-                    inviteMessage(ownCode.code),
-                    "Your invite link"
-                  ),
-                onCopy: () => void copyLink(ownCode.link, "Your invite link"),
-              }
-            : null,
-        }
-      : null,
   }
 }
-
-export type OnboardingInvite = NonNullable<
-  ReturnType<typeof useOnboardingForm>["invite"]
->

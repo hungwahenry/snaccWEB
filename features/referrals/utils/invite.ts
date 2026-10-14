@@ -35,29 +35,6 @@ export function rewardBlurb(
   return `Every friend who joins with your code and uses Snacc for ${qualifySpan(qualifyDays)} gets you ${yours.join(" and ")}.${welcome}`
 }
 
-export type InviteCodeStatus =
-  "idle" | "typing" | "checking" | "valid" | "invalid"
-
-export function inviteCodeStatus(field: {
-  typed: string
-  settled: string
-  checking: boolean
-  found: boolean
-  missing: boolean
-}): InviteCodeStatus {
-  if (field.typed.length === 0) return "idle"
-  if (field.typed !== field.settled || !isCompleteInviteCode(field.typed))
-    return "typing"
-  if (field.checking) return "checking"
-  if (field.found) return "valid"
-  if (field.missing) return "invalid"
-  return "checking"
-}
-
-export function inviteCodeSettled(status: InviteCodeStatus): boolean {
-  return status === "idle" || status === "valid"
-}
-
 export const INVITEE_STATUS: Record<
   InviteeStatus,
   { label: string; className: string }

@@ -4,7 +4,6 @@ import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { AgeRefused } from "../components/age-refused"
 import { BirthdayStep } from "../components/birthday-step"
-import { InviteStep } from "../components/invite-step"
 import { OnboardingFooter } from "../components/onboarding-footer"
 import { OnboardingHeader } from "../components/onboarding-header"
 import { ProfileStep } from "../components/profile-step"
@@ -56,7 +55,7 @@ export function CompleteProfileScreen() {
             />
           ) : form.step === 1 ? (
             <BirthdayStep value={form.birthDate} onChange={form.setBirthDate} />
-          ) : form.step === 2 || !form.invite ? (
+          ) : (
             <UniversityStep
               campus={form.campus}
               graduated={form.graduated}
@@ -64,8 +63,6 @@ export function CompleteProfileScreen() {
               graduationYear={form.graduationYear}
               onSelectGraduationYear={form.selectGraduationYear}
             />
-          ) : (
-            <InviteStep form={form.invite} />
           )}
         </div>
 

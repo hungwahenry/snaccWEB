@@ -1,7 +1,5 @@
 import { describe, expect, it } from "vitest"
 import {
-  inviteCodeSettled,
-  inviteCodeStatus,
   inviteMessage,
   isCompleteInviteCode,
   normalizeInviteCode,
@@ -31,38 +29,6 @@ describe("isCompleteInviteCode", () => {
 describe("inviteMessage", () => {
   it("carries the code", () => {
     expect(inviteMessage("K7PQ2MX9")).toContain("K7PQ2MX9")
-  })
-})
-
-describe("inviteCodeStatus", () => {
-  const quiet = { checking: false, found: false, missing: false }
-
-  it("is idle while empty and typing until the code settles", () => {
-    expect(inviteCodeStatus({ typed: "", settled: "", ...quiet })).toBe("idle")
-    expect(inviteCodeStatus({ typed: "K7P", settled: "K7P", ...quiet })).toBe(
-      "typing"
-    )
-    expect(
-      inviteCodeStatus({ typed: "K7PQ2MX9", settled: "K7PQ", ...quiet })
-    ).toBe("typing")
-  })
-
-  it("checks a settled code, then says whether it exists", () => {
-    const settled = { typed: "K7PQ2MX9", settled: "K7PQ2MX9" }
-    expect(inviteCodeStatus({ ...settled, ...quiet })).toBe("checking")
-    expect(inviteCodeStatus({ ...settled, ...quiet, found: true })).toBe(
-      "valid"
-    )
-    expect(inviteCodeStatus({ ...settled, ...quiet, missing: true })).toBe(
-      "invalid"
-    )
-  })
-
-  it("only lets onboarding finish with no code or a real one", () => {
-    expect(inviteCodeSettled("idle")).toBe(true)
-    expect(inviteCodeSettled("valid")).toBe(true)
-    expect(inviteCodeSettled("typing")).toBe(false)
-    expect(inviteCodeSettled("invalid")).toBe(false)
   })
 })
 

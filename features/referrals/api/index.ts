@@ -9,8 +9,5 @@ export const getReferralOverview = () =>
 export const listInvitees = (page: number) =>
   api.get<Paginated<Invitee>>("/referrals", { page })
 
-export const lookupInviteCode = (code: string) =>
-  api.get<Author>(`/referrals/code/${encodeURIComponent(code)}`)
-
 export const claimReferral = (code: string) =>
   api.post<Author>("/referrals/claim", { code })
