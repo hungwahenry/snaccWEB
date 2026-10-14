@@ -18,7 +18,7 @@ export function useClaimReferral() {
   })
 }
 
-export function useClaimForm(initial = "") {
+export function useClaimForm(initial = "", onClaimed?: () => void) {
   const [value, setValue] = useState(() => normalizeInviteCode(initial))
   const claim = useClaimReferral()
   const ready = isCompleteInviteCode(value) && !claim.isPending
@@ -30,7 +30,12 @@ export function useClaimForm(initial = "") {
     busy: claim.isPending,
     submit: () => {
       if (!ready) return
-      claim.mutate(value, { onSuccess: () => setValue("") })
+      claim.mutate(value, {
+        onSuccess: () => {
+          setValue("")
+          onClaimed?.()
+        },
+      })
     },
   }
 }

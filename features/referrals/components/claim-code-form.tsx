@@ -1,9 +1,8 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import type { ClaimForm } from "../hooks/use-claim-referral"
-import { CODE_MAX } from "../utils/invite"
+import { InviteCodeInput } from "./invite-code-input"
 
 export function ClaimCodeForm({
   form,
@@ -26,17 +25,7 @@ export function ClaimCodeForm({
       </div>
 
       <div className="flex gap-3">
-        <Input
-          value={form.value}
-          onChange={(event) => form.change(event.target.value)}
-          placeholder="K7PQ2MX9"
-          autoCapitalize="characters"
-          autoCorrect="off"
-          spellCheck={false}
-          maxLength={CODE_MAX}
-          aria-label="Invite code"
-          className="h-12 flex-1 font-bold tracking-widest"
-        />
+        <InviteCodeInput form={form} className="flex-1" />
         <Button
           type="submit"
           size="lg"

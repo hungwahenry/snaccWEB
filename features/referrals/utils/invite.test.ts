@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest"
 import {
+  claimWindow,
   inviteMessage,
+  inviteNote,
   isCompleteInviteCode,
   normalizeInviteCode,
   rewardBlurb,
+  welcomeLine,
 } from "./invite"
-import { money } from "@/lib/money"
+import { formatMoney, money } from "@/lib/money"
 
 const naira = (amount: number) => money(amount, "NGN")
 
@@ -57,5 +60,59 @@ describe("rewardBlurb", () => {
         14
       )
     ).toContain("for 14 days")
+  })
+})
+
+describe("welcomeLine", () => {
+  const none = { referrer: naira(0), referee: naira(0), score: 0 }
+
+  it("leads with the welcome reward when there is one", () => {
+    expect(welcomeLine({ ...none, referee: naira(50000) }, 7)).toBe(
+      `Enter their code and get ${formatMoney(naira(50000))} after a week on Snacc.`
+    )
+  })
+
+  it("says the friend is rewarded when only they are", () => {
+    expect(welcomeLine({ ...none, referrer: naira(50000) }, 7)).toBe(
+      "Enter their code so they get rewarded for bringing you."
+    )
+    expect(welcomeLine({ ...none, score: 10 }, 7)).toBe(
+      "Enter their code so they get rewarded for bringing you."
+    )
+  })
+
+  it("still has something to say with no rewards at all", () => {
+    expect(welcomeLine(none, 7)).toBe(
+      "Enter their code so they know you made it."
+    )
+  })
+})
+
+describe("inviteNote", () => {
+  const ada = { display_name: "Ada", username: "ada" }
+
+  it("names the inviter by username once the code is found", () => {
+    expect(inviteNote(ada, false, 7)).toEqual({
+      text: "@ada invited you",
+      tone: "found",
+    })
+    expect(
+      inviteNote({ display_name: "Ada", username: null }, false, 7).text
+    ).toBe("Ada invited you")
+  })
+
+  it("says when a code does not exist", () => {
+    expect(inviteNote(null, true, 7)).toEqual({
+      text: "That code doesn’t exist.",
+      tone: "missing",
+    })
+  })
+
+  it("otherwise says how long codes work", () => {
+    expect(inviteNote(null, false, 7)).toEqual({
+      text: claimWindow(7),
+      tone: "quiet",
+    })
+    expect(claimWindow(7)).toBe("Codes work for 7 days after you join.")
   })
 })

@@ -4,6 +4,7 @@ import { useMe } from "@/features/auth/hooks/use-me"
 import { useBirthdayWish } from "@/features/birthdays/hooks/use-birthday-wish"
 import { useFirstPostPrompt } from "@/features/first-post/hooks/use-first-post"
 import { useMomentsStrip } from "@/features/moments/hooks/use-moments-strip"
+import { useInviteNudge } from "@/features/referrals/hooks/use-invite-nudge"
 import { useFeedScreen } from "./use-feed-screen"
 import { useHomeChrome } from "./use-home-chrome"
 
@@ -12,6 +13,7 @@ export function useHomeScreen() {
   const profile = useMe().data?.profile
   const firstPost = useFirstPostPrompt()
   const moments = useMomentsStrip()
+  const inviteNudge = useInviteNudge()
   const birthdayWish = useBirthdayWish()
   const chrome = useHomeChrome()
 
@@ -24,6 +26,7 @@ export function useHomeScreen() {
     },
     firstPost,
     moments,
+    inviteNudge,
     birthdayWish: {
       open: birthdayWish.open,
       onOpenChange: birthdayWish.onOpenChange,

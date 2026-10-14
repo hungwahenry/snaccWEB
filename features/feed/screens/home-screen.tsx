@@ -12,6 +12,7 @@ import { MomentTray } from "@/features/moments/components/moment-tray"
 import { MomentTraySkeleton } from "@/features/moments/components/moment-tray-skeleton"
 import { AppHeader } from "@/features/navigation/components/app-header"
 import { HeaderLink } from "@/features/navigation/components/header-link"
+import { InviteNudgeSheet } from "@/features/referrals/components/invite-nudge-sheet"
 import { SEARCH_PATH } from "@/features/search/routes"
 import { SnaccSheets } from "@/features/snaccs/components/sheets/snacc-sheets"
 import { SnaccList } from "@/features/snaccs/components/snacc-list"
@@ -96,6 +97,7 @@ export function HomeScreen() {
       />
 
       <SnaccSheets {...sheets} />
+      <InviteNudgeSheet {...screen.inviteNudge} />
       <BirthdayWishDialog {...screen.birthdayWish} />
       {screen.birthdayFab ? <BirthdayFab onPress={screen.birthdayFab} /> : null}
     </>
