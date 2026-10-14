@@ -1,10 +1,6 @@
-import type { LightboxImage } from "@/components/ui/lightbox-viewer"
+import { toLightboxImage, type LightboxImage } from "@/lib/lightbox/images"
 import type { ConversationPhoto } from "../types"
 
 export function lightboxImagesOf(photos: ConversationPhoto[]): LightboxImage[] {
-  return photos.map(({ image }) => ({
-    url: image.url,
-    width: image.width,
-    height: image.height,
-  }))
+  return photos.map(({ image }) => toLightboxImage(image))
 }

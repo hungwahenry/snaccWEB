@@ -10,10 +10,8 @@ import {
   type ReactNode,
 } from "react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
-import {
-  LightboxViewer,
-  type LightboxImage,
-} from "@/components/ui/lightbox-viewer"
+import { LightboxViewer } from "@/components/ui/lightbox-viewer"
+import type { LightboxImage } from "@/lib/lightbox/images"
 import { PayCodePill } from "@/features/pay/components/pay-code-pill"
 import { payPath } from "@/features/wallet/routes"
 import { useSaveImage } from "@/hooks/use-save-image"
@@ -46,13 +44,17 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
   const studio = useStickerStudio()
   const { saving, save } = useSaveImage()
   const [request, setRequest] = useState<LightboxRequest | null>(null)
+  const [shown, setShown] = useState(false)
+  const [opening, setOpening] = useState(0)
   const [index, setIndex] = useState(0)
 
   const open = useCallback((next: LightboxRequest) => {
     setRequest(next)
     setIndex(next.index)
+    setOpening((count) => count + 1)
+    setShown(true)
   }, [])
-  const close = useCallback(() => setRequest(null), [])
+  const close = useCallback(() => setShown(false), [])
   const api = useMemo(() => ({ open, close }), [open, close])
 
   const image = request?.images[index]
@@ -71,14 +73,19 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
   return (
     <LightboxContext.Provider value={api}>
       {children}
-      <Dialog open={request !== null} onOpenChange={(next) => !next && close()}>
+      <Dialog
+        open={shown}
+        onOpenChange={(next) => !next && close()}
+        onOpenChangeComplete={(next) => !next && setRequest(null)}
+      >
         <DialogContent
           showCloseButton={false}
-          className="flex h-dvh max-h-dvh w-screen max-w-none items-center justify-center overflow-hidden rounded-none border-0 bg-black/95 p-0 shadow-none ring-0 sm:max-w-none"
+          className="flex h-dvh max-h-dvh w-screen max-w-none items-center justify-center overflow-hidden rounded-none border-0 bg-transparent p-0 shadow-none ring-0 sm:max-w-none"
         >
           <DialogTitle className="sr-only">Image</DialogTitle>
           {request ? (
             <LightboxViewer
+              key={opening}
               images={request.images}
               index={index}
               onIndex={setIndex}
