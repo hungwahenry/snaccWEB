@@ -5,6 +5,7 @@ import { createElement, useEffect, useMemo, useRef } from "react"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { signal } from "@/features/signals/utils/queue"
 import { useConfirmKeepSticker } from "@/features/stickers/hooks/use-keep-sticker"
+import { toLightboxImage } from "@/lib/lightbox/images"
 import { useStickerStudio } from "@/providers/sticker-studio-provider"
 import { useLightbox } from "@/providers/lightbox-provider"
 import { discardSnacc, retrySnacc } from "../cache/pending-snaccs"
@@ -118,7 +119,11 @@ export function useSnaccActions(overrides: Overrides = {}) {
                   : undefined,
               })
             : undefined
-        lightbox.open({ images: snacc.images, index, footer })
+        lightbox.open({
+          images: snacc.images.map(toLightboxImage),
+          index,
+          footer,
+        })
       },
       onVote: (snacc, optionId) => latest.current.poll.vote(snacc.id, optionId),
       onOpenPollImage: (snacc, option: SnaccPollOption) => {
@@ -127,11 +132,7 @@ export function useSnaccActions(overrides: Overrides = {}) {
         const index = gallery.findIndex((entry) => entry.id === option.id)
         if (index >= 0) {
           latest.current.lightbox.open({
-            images: gallery.map((entry) => ({
-              url: entry.image!.url,
-              width: entry.image!.width,
-              height: entry.image!.height,
-            })),
+            images: gallery.map((entry) => toLightboxImage(entry.image!)),
             index,
           })
         }

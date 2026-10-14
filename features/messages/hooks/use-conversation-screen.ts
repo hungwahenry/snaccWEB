@@ -7,6 +7,7 @@ import { paintOf } from "@/features/chat-themes/utils/paint"
 import { pictureFor } from "@/features/chat-themes/utils/picker"
 import { useReportSheet } from "@/features/reports/hooks/use-report-sheet"
 import { isNotFound } from "@/lib/api/errors"
+import { toLightboxImage } from "@/lib/lightbox/images"
 import { useLightbox } from "@/providers/lightbox-provider"
 import type { MessageRowHandlers } from "../components/thread/message-row"
 import { discardMessage, retryMessage } from "../cache/pending-messages"
@@ -108,7 +109,10 @@ export function useConversationScreen(
       onOpenViewOnce: (message, image) =>
         latest.current.photo.open({ messageId: message.id, photo: image }),
       onOpenImages: (message, index) =>
-        latest.current.lightbox.open({ images: shownImagesOf(message), index }),
+        latest.current.lightbox.open({
+          images: shownImagesOf(message).map(toLightboxImage),
+          index,
+        }),
       onOpenMoney: (transactionId) =>
         latest.current.money.openReceipt(transactionId),
       onPayRequest: (request) => latest.current.money.payRequest(request),

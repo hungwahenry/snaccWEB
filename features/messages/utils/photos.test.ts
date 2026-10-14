@@ -3,7 +3,7 @@ import type { ConversationPhoto } from "../types"
 import { lightboxImagesOf } from "./photos"
 
 describe("lightboxImagesOf", () => {
-  it("opens the full photos, not their thumbnails", () => {
+  it("opens the full photos, showing their thumbnails while they load", () => {
     const photo = {
       id: "m1",
       image: {
@@ -15,7 +15,7 @@ describe("lightboxImagesOf", () => {
       },
     } as ConversationPhoto
     expect(lightboxImagesOf([photo])).toEqual([
-      { url: "full.jpg", width: 800, height: 600 },
+      { url: "full.jpg", thumbUrl: "thumb.jpg", width: 800, height: 600 },
     ])
   })
 })

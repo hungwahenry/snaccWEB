@@ -7,22 +7,18 @@ import {
   StickerIcon,
   XIcon,
 } from "lucide-react"
-import { useCallback, useEffect, type ReactNode } from "react"
+import { useEffect, useEffectEvent, useState, type ReactNode } from "react"
 import { IconButton } from "@/components/ui/icon-button"
+import { LightboxSlide } from "@/components/ui/lightbox-slide"
 import { Spinner } from "@/components/ui/spinner"
-import { useImageZoom } from "@/hooks/use-image-zoom"
+import { useLightboxGestures } from "@/hooks/use-lightbox-gestures"
+import type { Size } from "@/lib/aspect"
+import type { LightboxImage } from "@/lib/lightbox/images"
 import { cn } from "@/lib/utils"
-
-export interface LightboxImage {
-  url: string
-  width?: number
-  height?: number
-}
 
 const OVERLAY_BUTTON =
   "bg-black/40 text-white hover:bg-black/60 disabled:opacity-50"
 
-/** One picture at a time, full screen: arrows or keys to move, double click or wheel to zoom. */
 export function LightboxViewer({
   images,
   index,
@@ -46,58 +42,90 @@ export function LightboxViewer({
 }) {
   const count = images.length
   const image = images[index]
-  const neighbour = (by: number) =>
-    count === 0 ? 0 : (index + by + count) % count
+  const [loaded, setLoaded] = useState<Record<string, Size>>({})
+  const size =
+    image?.width && image.height
+      ? { width: image.width, height: image.height }
+      : (loaded[image?.url ?? ""] ?? null)
 
-  const { attach, reset, style, zoomed, handlers } = useImageZoom((swipe) => {
-    if (swipe === "close") onClose()
-    else if (count > 1) onIndex(neighbour(swipe === "next" ? 1 : -1))
+  const {
+    attach,
+    attachImage,
+    handlers,
+    reset,
+    chromeShown,
+    backdropStyle,
+    chromeStyle,
+    pagerStyle,
+    imageStyle,
+  } = useLightboxGestures({
+    size,
+    hasPrevious: index > 0,
+    hasNext: index < count - 1,
+    onTurn: (by) => onIndex(index + by),
+    onClose,
   })
 
-  const step = useCallback(
-    (by: number) => {
-      reset()
-      onIndex(count === 0 ? 0 : (index + by + count) % count)
-    },
-    [count, index, onIndex, reset]
-  )
+  function step(by: number) {
+    reset()
+    onIndex(count === 0 ? 0 : (index + by + count) % count)
+  }
+
+  const onKey = useEffectEvent((event: KeyboardEvent) => {
+    if (event.key === "ArrowRight") step(1)
+    if (event.key === "ArrowLeft") step(-1)
+  })
 
   useEffect(() => {
     if (count < 2) return
-    function onKey(event: KeyboardEvent) {
-      if (event.key === "ArrowRight") step(1)
-      if (event.key === "ArrowLeft") step(-1)
-    }
-    window.addEventListener("keydown", onKey)
-    return () => window.removeEventListener("keydown", onKey)
-  }, [count, step])
+    const listener = (event: KeyboardEvent) => onKey(event)
+    window.addEventListener("keydown", listener)
+    return () => window.removeEventListener("keydown", listener)
+  }, [count])
 
   const canMakeSticker = !!onMakeSticker && !!image?.width && !!image.height
+  const slots = [-1, 0, 1]
+    .map((at) => ({ at, slot: index + at }))
+    .filter(({ slot }) => slot >= 0 && slot < count)
+  const chrome = { inert: !chromeShown, style: chromeStyle }
 
   return (
     <>
       <div
+        aria-hidden
+        className="absolute inset-0 bg-black/95"
+        style={backdropStyle}
+      />
+
+      <div
         ref={attach}
         {...handlers}
-        className="flex size-full touch-none items-center justify-center overflow-hidden"
+        className="absolute inset-0 touch-none overflow-hidden select-none"
       >
-        {image ? (
-          <img
-            src={image.url}
-            alt={count > 1 ? `Image ${index + 1} of ${count}` : "Image"}
-            draggable={false}
-            style={style}
-            className={cn(
-              "object-contain select-none",
-              zoomed
-                ? "max-h-dvh max-w-full cursor-grab active:cursor-grabbing"
-                : "max-h-[92dvh] max-w-[96vw]"
-            )}
-          />
-        ) : null}
+        <div className="absolute inset-0" style={pagerStyle}>
+          {slots.map(({ at, slot }) => (
+            <LightboxSlide
+              key={`${slot}:${images[slot].url}`}
+              image={images[slot]}
+              at={at}
+              alt={count > 1 ? `Image ${slot + 1} of ${count}` : "Image"}
+              layerRef={at === 0 ? attachImage : undefined}
+              style={at === 0 ? imageStyle : undefined}
+              onLoaded={(loadedSize) =>
+                setLoaded((current) => ({
+                  ...current,
+                  [images[slot].url]: loadedSize,
+                }))
+              }
+            />
+          ))}
+        </div>
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between px-4 pt-[max(env(safe-area-inset-top),1rem)]">
+      <div
+        {...chrome}
+        className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between px-4 pt-[max(env(safe-area-inset-top),1rem)]"
+      >
         <IconButton
           icon={XIcon}
           label="Close"
@@ -143,13 +171,13 @@ export function LightboxViewer({
       </div>
 
       {count > 1 ? (
-        <>
+        <div {...chrome} className="pointer-events-none absolute inset-0">
           <IconButton
             icon={ChevronLeftIcon}
             label="Previous image"
             onClick={() => step(-1)}
             className={cn(
-              "absolute top-1/2 left-4 -translate-y-1/2",
+              "pointer-events-auto absolute top-1/2 left-4 -translate-y-1/2",
               OVERLAY_BUTTON
             )}
           />
@@ -158,14 +186,17 @@ export function LightboxViewer({
             label="Next image"
             onClick={() => step(1)}
             className={cn(
-              "absolute top-1/2 right-4 -translate-y-1/2",
+              "pointer-events-auto absolute top-1/2 right-4 -translate-y-1/2",
               OVERLAY_BUTTON
             )}
           />
-        </>
+        </div>
       ) : null}
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col">
+      <div
+        {...chrome}
+        className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col"
+      >
         {payCode ? (
           <div className="pointer-events-auto flex justify-center px-4 pb-3">
             {payCode}

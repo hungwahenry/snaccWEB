@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, type RefObject } from "react"
 import { useThreadScroll } from "@/features/messages/hooks/use-thread-scroll"
 import { useReportSheet } from "@/features/reports/hooks/use-report-sheet"
 import { useNow } from "@/hooks/use-now"
+import { toLightboxImage } from "@/lib/lightbox/images"
 import { useLightbox } from "@/providers/lightbox-provider"
 import {
   discardChatMessage,
@@ -74,7 +75,10 @@ export function useChatRoomScreen(
       onRetry: (message) => retryChatMessage(roomId, message.id),
       onDiscard: (message) => discardChatMessage(roomId, message.id),
       onOpenImages: (message, index) =>
-        latest.current.lightbox.open({ images: message.images, index }),
+        latest.current.lightbox.open({
+          images: message.images.map(toLightboxImage),
+          index,
+        }),
     }),
     [roomId]
   )
