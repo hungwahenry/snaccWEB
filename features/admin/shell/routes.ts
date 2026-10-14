@@ -25,6 +25,8 @@ export const ADS_PATH = "/admin/ads"
 export const AD_PRICES_PATH = "/admin/ad-prices"
 export const AD_REASONS_PATH = "/admin/ad-reasons"
 export const AD_BUTTONS_PATH = "/admin/ad-buttons"
+export const CURRENCIES_PATH = "/admin/currencies"
+export const PAYMENT_MARKETS_PATH = "/admin/payment-markets"
 
 export const CONFIG_PATH = "/admin/config"
 export const FLAGS_PATH = "/admin/flags"
@@ -62,3 +64,4 @@ export const announcementPath = (id: string) => `${ANNOUNCEMENTS_PATH}/${id}`
 export const stickerPackPath = (id: string) => `${STICKER_PACKS_PATH}/${id}`
 export const adPath = (id: string) => `${ADS_PATH}/${id}`
 export const campusImportPath = (id: string) => `${CAMPUS_IMPORTS_PATH}/${id}`
+export const currencyPath = (code: string) => `${CURRENCIES_PATH}/${code}`

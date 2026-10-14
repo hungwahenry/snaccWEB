@@ -48,7 +48,7 @@ export function AdvertiseDeck() {
             campus="LASU"
             time="Promoted"
             seed="lit"
-            body="Freshers' Night this Friday 🎉 DJ, food and games till late. Early bird tickets ₦3,000 🎟️"
+            body="Freshers' Night this Friday 🎉 DJ, food and games till late. Early bird tickets on sale now 🎟️"
             lines={4}
             button="Book now"
             likes={96}
@@ -64,7 +64,7 @@ export function AdvertiseDeck() {
             campus="UNILAG"
             time="Promoted"
             seed="kemi"
-            body="Jollof, chicken and plantain for ₦2,500 🍗 Delivered to any hostel in 30 minutes. Order before 8pm!"
+            body="Jollof, chicken and plantain 🍗 Delivered to any hostel in 30 minutes. Order before 8pm!"
             lines={4}
             button="Order now"
             likes={132}

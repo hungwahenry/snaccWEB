@@ -117,6 +117,15 @@ export function FlagsTables({
                   Server only
                 </Badge>
               )}
+              {flag.money ? (
+                <Badge
+                  variant="outline"
+                  className="font-sans"
+                  title="Reaches only people whose currency is switched on, on the Currencies page."
+                >
+                  Money
+                </Badge>
+              ) : null}
             </p>
             <p className="mt-1 text-xs text-pretty text-muted-foreground">
               {flag.description}

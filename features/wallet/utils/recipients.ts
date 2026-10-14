@@ -8,12 +8,6 @@ import type {
   WalletRecipient,
 } from "../types"
 
-const ACCOUNT_NUMBER = /^\d{10}$/
-
-export function isAccountNumber(value: string): boolean {
-  return ACCOUNT_NUMBER.test(value.trim())
-}
-
 /** Only people can be asked for money; a bank account can only be sent to. */
 export function canTarget(
   mode: PayMode,

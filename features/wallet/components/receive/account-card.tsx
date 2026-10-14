@@ -75,7 +75,7 @@ export function AccountCard({
         <PerkRow
           icon={BanknoteArrowDownIcon}
           title="From any bank or app"
-          text="Transfers from every Nigerian bank land in this account."
+          text="Transfers from any local bank land in this account."
         />
         <PerkRow
           icon={ZapIcon}

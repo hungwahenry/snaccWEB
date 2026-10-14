@@ -19,7 +19,7 @@ export const LANDING_QUESTIONS: FaqQuestion[] = [
   },
   {
     q: "Is my money safe?",
-    a: "Your balance is held with Paystack, the payment provider behind most of Nigeria's online payments, and you can move it to your bank account whenever you want.",
+    a: "Your balance is held with a licensed payment provider, and you can move it to your bank account whenever you want.",
   },
   {
     q: "Who sees what I post?",

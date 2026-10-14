@@ -54,18 +54,11 @@ function RepriceForm({
         hint={hint(errors.feedWeight, kind.default_feed_weight)}
         {...text("feedWeight")}
       />
-      <TextField
-        label="Paid to the author, in the smallest unit"
-        optional
-        inputMode="numeric"
-        placeholder="Empty earns no money"
-        hint={hint(errors.earnAmount, kind.default_earn_amount)}
-        {...text("earnAmount")}
-      />
       <FormNote>
-        Points and earnings are frozen into each credit when it is earned, so a
-        change here prices new engagement only and never restates anyone&apos;s
-        score or balance. The feed weight is read live.
+        Points are frozen into each credit when it is earned, so a change here
+        prices new engagement only and never restates anyone&apos;s score. The
+        feed weight is read live. What an act pays is set per currency on the
+        Currencies page.
       </FormNote>
     </DialogForm>
   )

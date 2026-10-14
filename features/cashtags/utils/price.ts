@@ -1,3 +1,6 @@
+import { currencySymbol, minorDigits } from "@/lib/money"
+import type { Cashtag } from "../types"
+
 export type ChangeTone = "up" | "down" | "flat"
 
 function grouped(whole: string): string {
@@ -19,13 +22,21 @@ export function formatUsdCompact(value: number | null): string {
   return formatUsd(value)
 }
 
-export function formatNgnPrice(price: number | null): string {
-  if (price === null) return "—"
-  if (price >= 1e9) return `₦${trimmed(price / 1e9)}B`
-  if (price >= 1e6) return `₦${trimmed(price / 1e6)}M`
-  if (price >= 1000) return `₦${grouped(String(Math.round(price)))}`
-  if (price >= 1) return `₦${price.toFixed(2)}`
-  return `₦${Number(price.toPrecision(3))}`
+export function formatPrice(price: number, currency: string): string {
+  const symbol = currencySymbol(currency)
+  if (price >= 1e9) return `${symbol}${trimmed(price / 1e9)}B`
+  if (price >= 1e6) return `${symbol}${trimmed(price / 1e6)}M`
+  if (price >= 1000) return `${symbol}${grouped(String(Math.round(price)))}`
+  if (price >= 1) return `${symbol}${price.toFixed(minorDigits(currency))}`
+  return `${symbol}${Number(price.toPrecision(3))}`
+}
+
+export function localPrice(
+  cashtag: Pick<Cashtag, "prices">,
+  currency: string | null | undefined
+): string | null {
+  const quote = cashtag.prices.find((each) => each.currency === currency)
+  return quote ? formatPrice(quote.price, quote.currency) : null
 }
 
 function trimmed(value: number): string {

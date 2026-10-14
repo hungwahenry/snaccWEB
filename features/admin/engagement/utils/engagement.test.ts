@@ -21,10 +21,9 @@ const kind = (
   source: "server",
   score_weight: 2,
   feed_weight: 1.5,
-  earn_amount: null,
+  earn_amounts: [],
   default_score_weight: 2,
   default_feed_weight: 1.5,
-  default_earn_amount: null,
   is_default: true,
   enabled: true,
   position: 0,
@@ -35,7 +34,6 @@ describe("parseWeight", () => {
   it("reads a blank field as null", () => {
     expect(parseWeight("scoreWeight", "  ")).toEqual({ ok: true, value: null })
     expect(parseWeight("feedWeight", "")).toEqual({ ok: true, value: null })
-    expect(parseWeight("earnAmount", "")).toEqual({ ok: true, value: null })
   })
 
   it("holds score points to whole numbers from -1000 to 1000", () => {
@@ -66,19 +64,6 @@ describe("parseWeight", () => {
     expect(parseWeight("feedWeight", "10000").ok).toBe(false)
     expect(parseWeight("feedWeight", "1e2").ok).toBe(false)
   })
-
-  it("holds earnings to whole numbers from 0 to a million", () => {
-    expect(parseWeight("earnAmount", "1000000")).toEqual({
-      ok: true,
-      value: 1_000_000,
-    })
-    expect(parseWeight("earnAmount", "-1")).toEqual({
-      ok: false,
-      message:
-        "Use a whole number from 0 to 1,000,000, in the smallest unit of the currency.",
-    })
-    expect(parseWeight("earnAmount", "0.5").ok).toBe(false)
-  })
 })
 
 describe("drafts", () => {
@@ -86,32 +71,30 @@ describe("drafts", () => {
     expect(draftFrom(kind("like"))).toEqual({
       scoreWeight: "2",
       feedWeight: "1.5",
-      earnAmount: "",
     })
   })
 
   it("names what is wrong with each field", () => {
-    const draft = { scoreWeight: "x", feedWeight: "1", earnAmount: "-5" }
+    const draft = { scoreWeight: "x", feedWeight: "1" }
     expect(draftErrors(draft)).toEqual({
       scoreWeight: "Use a whole number from -1,000 to 1,000.",
       feedWeight: null,
-      earnAmount:
-        "Use a whole number from 0 to 1,000,000, in the smallest unit of the currency.",
     })
     expect(isDraftReady(draft)).toBe(false)
     expect(isDraftReady(draftFrom(kind("like")))).toBe(true)
   })
 
   it("sends numbers, and null for a cleared field", () => {
-    expect(
-      toUpdateInput({ scoreWeight: " 3 ", feedWeight: "", earnAmount: "50" })
-    ).toEqual({ scoreWeight: 3, feedWeight: null, earnAmount: 50 })
+    expect(toUpdateInput({ scoreWeight: " 3 ", feedWeight: "" })).toEqual({
+      scoreWeight: 3,
+      feedWeight: null,
+    })
   })
 
   it("refuses to build an update from a bad field", () => {
-    expect(() =>
-      toUpdateInput({ scoreWeight: "1.5", feedWeight: "", earnAmount: "" })
-    ).toThrow("Use a whole number from -1,000 to 1,000.")
+    expect(() => toUpdateInput({ scoreWeight: "1.5", feedWeight: "" })).toThrow(
+      "Use a whole number from -1,000 to 1,000."
+    )
   })
 })
 
@@ -126,17 +109,13 @@ describe("weightLabel", () => {
 describe("shippedSummary", () => {
   it("says the shipped prices in words", () => {
     expect(shippedSummary(kind("like"))).toBe(
-      "2 points, a feed weight of 1.5 and no earnings"
+      "2 points and a feed weight of 1.5"
     )
     expect(
       shippedSummary(
-        kind("tip", {
-          default_score_weight: 1,
-          default_feed_weight: null,
-          default_earn_amount: 50,
-        })
+        kind("tip", { default_score_weight: 1, default_feed_weight: null })
       )
-    ).toBe("1 point, no feed weight and 50 in earnings")
+    ).toBe("1 point and no feed weight")
   })
 })
 

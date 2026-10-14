@@ -10,15 +10,15 @@ const INPUT = "h-14 rounded-full px-5 text-base md:text-base"
 
 export function ActivationForm({
   failureReason,
-  identityRequired,
+  id,
   firstName,
   setFirstName,
   lastName,
   setLastName,
   phone,
   setPhone,
-  bvn,
-  setBvn,
+  idNumber,
+  setIdNumber,
   accountNumber,
   setAccountNumber,
   bankName,
@@ -45,8 +45,8 @@ export function ActivationForm({
           <p className="text-sm leading-6 text-muted-foreground">
             A real bank account in your name — anyone transfers to it, your
             wallet gets it.
-            {identityRequired
-              ? " We verify who you are with your BVN once, as the law asks."
+            {id
+              ? ` We verify who you are with your ${id.name} once, as the law asks.`
               : ""}
           </p>
         </div>
@@ -76,12 +76,12 @@ export function ActivationForm({
           className={INPUT}
         />
 
-        {identityRequired ? (
+        {id ? (
           <>
             <Input
-              value={bvn}
-              onChange={(event) => setBvn(event.target.value)}
-              placeholder="BVN"
+              value={idNumber}
+              onChange={(event) => setIdNumber(event.target.value)}
+              placeholder={id.name}
               inputMode="numeric"
               className={INPUT}
             />

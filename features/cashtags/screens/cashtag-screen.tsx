@@ -1,6 +1,7 @@
 "use client"
 
 import { CoinsIcon } from "lucide-react"
+import { useMe } from "@/features/auth/hooks/use-me"
 import { SnaccListScreen } from "@/features/snaccs/screens/snacc-list-screen"
 import { CashtagHeader } from "../components/cashtag-header"
 import { CashtagHeaderSkeleton } from "../components/cashtag-header-skeleton"
@@ -12,6 +13,7 @@ export function CashtagScreen({ symbol }: { symbol: string }) {
   const coin = useCashtag(symbol)
   const list = useCashtagSnaccs(symbol)
   const label = cashtagLabel(symbol)
+  const currency = useMe().data?.currency ?? null
 
   return (
     <SnaccListScreen
@@ -26,7 +28,7 @@ export function CashtagScreen({ symbol }: { symbol: string }) {
       }}
       header={
         coin.data ? (
-          <CashtagHeader cashtag={coin.data} />
+          <CashtagHeader cashtag={coin.data} currency={currency} />
         ) : coin.isPending ? (
           <CashtagHeaderSkeleton />
         ) : null

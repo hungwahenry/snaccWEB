@@ -4,7 +4,6 @@ import {
   bankTarget,
   canTarget,
   forgetRecipientTitle,
-  isAccountNumber,
   recipientLabel,
   recipientsFor,
   targetFromRecipient,
@@ -47,14 +46,6 @@ const bankRecipient: WalletRecipient = {
     account_name: "Ada Obi",
   },
 }
-
-describe("isAccountNumber", () => {
-  it("is exactly ten digits", () => {
-    expect(isAccountNumber(" 0123456789 ")).toBe(true)
-    expect(isAccountNumber("012345678")).toBe(false)
-    expect(isAccountNumber("@ada")).toBe(false)
-  })
-})
 
 describe("canTarget and recipientsFor", () => {
   it("never asks a bank account for money", () => {

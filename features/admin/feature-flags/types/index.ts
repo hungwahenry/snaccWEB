@@ -22,6 +22,7 @@ export interface AdminFeatureFlag {
   category: string
   description: string
   is_public: boolean
+  money: boolean
   audience: FlagAudience
   member_count: number
   min_version: string | null

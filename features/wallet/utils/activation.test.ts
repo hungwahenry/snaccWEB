@@ -11,10 +11,10 @@ import {
 const ready: ActivationFields = {
   firstName: " Ada ",
   lastName: "Obi",
-  phone: "0803 123 4567",
-  bvn: "12345678901",
-  accountNumber: "0123456789",
-  bank: { name: "GTBank", code: "058" },
+  phone: "555 010 9999",
+  idNumber: "123456",
+  accountNumber: "12345678",
+  bank: { name: "First Test Bank", code: "001" },
 }
 
 describe("digitsOnly and cleanPhone", () => {
@@ -23,13 +23,17 @@ describe("digitsOnly and cleanPhone", () => {
   })
 
   it("drops spaces, brackets and dashes from a phone number", () => {
-    expect(cleanPhone("(0803) 123-4567")).toBe("08031234567")
+    expect(cleanPhone("(555) 010-9999")).toBe("5550109999")
   })
 })
 
 describe("activationMissing", () => {
-  const off = { required: false, resolved: false }
-  const on = { required: true, resolved: true }
+  const off = { id: null, accountNumberLength: 8, resolved: false }
+  const on = {
+    id: { name: "Tax number", length: 6 },
+    accountNumberLength: 8,
+    resolved: true,
+  }
 
   it("asks for things in the order the form does", () => {
     expect(activationMissing(EMPTY_ACTIVATION, off)).toBe("first name")
@@ -41,17 +45,19 @@ describe("activationMissing", () => {
     )
   })
 
-  it("stops at the phone number when identity is not needed", () => {
-    expect(activationMissing({ ...ready, bvn: "" }, off)).toBeNull()
+  it("stops at the phone number where no ID is checked", () => {
+    expect(activationMissing({ ...ready, idNumber: "" }, off)).toBeNull()
   })
 
-  it("needs the BVN, an account, its bank and a resolved name otherwise", () => {
-    expect(activationMissing({ ...ready, bvn: "1" }, on)).toBe("BVN")
+  it("needs the country's ID, an account, its bank and a resolved name otherwise", () => {
+    expect(activationMissing({ ...ready, idNumber: "1" }, on)).toBe(
+      "Tax number"
+    )
     expect(activationMissing({ ...ready, accountNumber: "1" }, on)).toBe(
       "an account you own"
     )
     expect(activationMissing({ ...ready, bank: null }, on)).toBe("its bank")
-    expect(activationMissing(ready, { required: true, resolved: false })).toBe(
+    expect(activationMissing(ready, { ...on, resolved: false })).toBe(
       "a valid account"
     )
     expect(activationMissing(ready, on)).toBeNull()
@@ -63,15 +69,15 @@ describe("activationInput", () => {
     expect(activationInput(ready, false)).toEqual({
       firstName: "Ada",
       lastName: "Obi",
-      phone: "08031234567",
+      phone: "5550109999",
     })
   })
 
-  it("adds identity details only when they are needed", () => {
+  it("adds identity details only when they are checked", () => {
     expect(activationInput(ready, true)).toMatchObject({
-      bvn: "12345678901",
-      accountNumber: "0123456789",
-      bankCode: "058",
+      idNumber: "123456",
+      accountNumber: "12345678",
+      bankCode: "001",
     })
   })
 })

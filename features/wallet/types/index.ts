@@ -29,6 +29,18 @@ export interface WalletRules {
   step_up_above: { user: Money; bank: Money }
 }
 
+export type DepositMethod = "bank_transfer" | "dedicated_account"
+
+export type PayoutMethod = "bank_account"
+
+export interface Banking {
+  country: string
+  deposit_methods: DepositMethod[]
+  payout_methods: PayoutMethod[]
+  account_number_length: number
+  id: { name: string; length: number } | null
+}
+
 export interface WalletOverview {
   balance: Money
   frozen: boolean
@@ -39,6 +51,7 @@ export interface WalletOverview {
     milestones: EarningsMilestone[]
   }
   rules: WalletRules
+  banking: Banking | null
 }
 
 export interface WalletSettings {
@@ -243,7 +256,7 @@ export interface ActivateVirtualAccountInput {
   firstName: string
   lastName: string
   phone: string
-  bvn?: string
+  idNumber?: string
   accountNumber?: string
   bankCode?: string
 }

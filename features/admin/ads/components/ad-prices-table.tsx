@@ -12,7 +12,7 @@ import {
   type Column,
 } from "@/features/admin/shell/components/data-table"
 import { QueryTable } from "@/features/admin/shell/components/query-table"
-import { CONFIG_PATH } from "@/features/admin/shell/routes"
+import { CURRENCIES_PATH } from "@/features/admin/shell/routes"
 import type { Paginated } from "@/lib/api/types"
 import { formatMoney, type Money } from "@/lib/money"
 import type { CampusPrice } from "../types"
@@ -107,12 +107,11 @@ export function AdPricesTable({
         <>
           A campus without a price of its own costs the default per 1,000 views.
           Change it on the{" "}
-          <Link href={CONFIG_PATH} className="underline underline-offset-4">
-            Config page
+          <Link href={CURRENCIES_PATH} className="underline underline-offset-4">
+            Currencies page
           </Link>{" "}
           under{" "}
-          <span className="font-mono text-xs">ads.price_per_thousand_kobo</span>
-          .
+          <span className="font-mono text-xs">ads.price_per_thousand</span>.
         </>
       }
       empty="No campuses match that."

@@ -84,13 +84,15 @@ export function WalletHome({
             description="Send to anyone on Snacc by username, ask a friend to settle up, or move it to your bank."
             className="py-0"
           />
-          <Button
-            size="lg"
-            className="h-14 w-full text-base"
-            onClick={activity.onTopUp}
-          >
-            Add money to get started
-          </Button>
+          {activity.onTopUp ? (
+            <Button
+              size="lg"
+              className="h-14 w-full text-base"
+              onClick={activity.onTopUp}
+            >
+              Add money to get started
+            </Button>
+          ) : null}
         </div>
       ) : activity.rows.length === 0 ? (
         <EmptyState

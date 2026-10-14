@@ -13,11 +13,12 @@ import type {
 import {
   bankTarget,
   canTarget,
-  isAccountNumber,
   recipientsFor,
   targetFromRecipient,
   userNamed,
 } from "../../utils/recipients"
+import { isBankAccount } from "../../utils/banking"
+import { useWalletOverview } from "../account/use-wallet-overview"
 import { useBankAccountName } from "./use-bank-account-name"
 import { useBankChoice } from "./use-bank-choice"
 import { useRecipients } from "./use-recipients"
@@ -32,14 +33,20 @@ export function usePayRecipient(
 ) {
   const recipients = useRecipients({ enabled: mode !== "topup" })
   const bankChoice = useBankChoice()
+  const banking = useWalletOverview().data?.banking ?? null
 
   const [query, setQuery] = useState(prefill.to ?? "")
   const [picked, setPicked] = useState<Payee | null>(null)
   const [chosen, setChosen] = useState<WalletRecipient | null>(null)
 
   const trimmed = query.trim()
-  const bankMode = mode === "send" && isAccountNumber(trimmed)
-  const resolved = useBankAccountName(bankChoice.bank, trimmed, bankMode)
+  const bankMode = mode === "send" && isBankAccount(trimmed, banking)
+  const resolved = useBankAccountName(
+    bankChoice.bank,
+    trimmed,
+    banking?.account_number_length ?? 0,
+    bankMode
+  )
 
   const debounced = useDebouncedValue(trimmed.replace(/^@/, ""), 300)
   const searchActive = searching && !bankMode && !picked && debounced.length > 1
@@ -88,7 +95,7 @@ export function usePayRecipient(
     setQuery(next)
     setPicked(null)
     setChosen(null)
-    if (!isAccountNumber(next)) bankChoice.clear()
+    if (!isBankAccount(next, banking)) bankChoice.clear()
   }
 
   function pickUser(user: Payee) {

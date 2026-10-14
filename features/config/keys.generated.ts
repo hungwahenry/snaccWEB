@@ -114,7 +114,6 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   readonly "referral.claim_window_days": number
   readonly "referral.monthly_cap": number
   readonly "wallet.request.expiry_days": number
-  readonly "wallet.dva.requires_identity": boolean
   readonly "premium.rc_ios_key": string
   readonly "premium.rc_android_key": string
   readonly "premium.offering_id": string
@@ -195,7 +194,6 @@ export const PUBLIC_CONFIG_DEFAULTS: {
   "referral.claim_window_days": 7,
   "referral.monthly_cap": 20,
   "wallet.request.expiry_days": 7,
-  "wallet.dva.requires_identity": true,
   "premium.rc_ios_key": "",
   "premium.rc_android_key": "",
   "premium.offering_id": "",

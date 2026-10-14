@@ -36,12 +36,14 @@ export function BalanceCard({
   footer: AccountFooterView | null
   onSend: () => void
   onRequest: () => void
-  onTopUp: () => void
+  onTopUp: (() => void) | null
   onReceive: () => void
   onPayLink: () => void
 }) {
   const actions: { icon: LucideIcon; label: string; onPress: () => void }[] = [
-    { icon: BanknoteArrowDownIcon, label: "Add money", onPress: onTopUp },
+    ...(onTopUp
+      ? [{ icon: BanknoteArrowDownIcon, label: "Add money", onPress: onTopUp }]
+      : []),
     ...(showAccount
       ? [{ icon: LandmarkIcon, label: "Account", onPress: onReceive }]
       : []),

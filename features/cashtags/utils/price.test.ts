@@ -2,9 +2,10 @@ import { describe, expect, it } from "vitest"
 import {
   changeTone,
   formatChange,
-  formatNgnPrice,
+  formatPrice,
   formatUsd,
   formatUsdCompact,
+  localPrice,
 } from "./price"
 
 describe("formatUsdCompact", () => {
@@ -26,12 +27,22 @@ describe("formatUsd", () => {
   })
 })
 
-describe("formatNgnPrice", () => {
-  it("compacts the huge naira prices coins carry", () => {
-    expect(formatNgnPrice(98_400_000)).toBe("₦98.4M")
-    expect(formatNgnPrice(1_250_000_000)).toBe("₦1.3B")
-    expect(formatNgnPrice(240_000)).toBe("₦240,000")
-    expect(formatNgnPrice(12.5)).toBe("₦12.50")
+describe("formatPrice", () => {
+  it("compacts the huge local prices coins carry, in that currency", () => {
+    expect(formatPrice(98_400_000, "EUR")).toBe("€98.4M")
+    expect(formatPrice(1_250_000_000, "EUR")).toBe("€1.3B")
+    expect(formatPrice(240_000, "EUR")).toBe("€240,000")
+    expect(formatPrice(12.5, "EUR")).toBe("€12.50")
+    expect(formatPrice(12.5, "JPY")).toBe("¥13")
+  })
+})
+
+describe("localPrice", () => {
+  it("shows the viewer's own currency only where the coin is quoted in it", () => {
+    const coin = { prices: [{ currency: "EUR", price: 59_000 }] }
+    expect(localPrice(coin, "EUR")).toBe("€59,000")
+    expect(localPrice(coin, "GBP")).toBeNull()
+    expect(localPrice(coin, null)).toBeNull()
   })
 })
 

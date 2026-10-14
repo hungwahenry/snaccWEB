@@ -13,6 +13,7 @@ import {
 import { EmptyNote } from "@/features/admin/shell/components/detail"
 import { StatusBadge } from "@/features/admin/shell/components/status-badge"
 import { TableFrame } from "@/features/admin/shell/components/table-frame"
+import { formatTotals } from "@/lib/money"
 import type {
   AdminEngagementKind,
   EngagementDraft,
@@ -79,8 +80,8 @@ export function EngagementTables({
         id: "earns",
         header: "Earns",
         align: "end",
-        className: NUMBER_CLASS,
-        cell: (kind) => weightLabel(kind.earn_amount),
+        className: "max-w-40 whitespace-normal tabular-nums",
+        cell: (kind) => formatTotals(kind.earn_amounts),
       },
       {
         id: "actions",

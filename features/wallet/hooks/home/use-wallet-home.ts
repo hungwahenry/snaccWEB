@@ -8,6 +8,7 @@ import { usePendingVariables } from "@/hooks/use-pending-variables"
 import { copyLink } from "@/lib/share-links"
 import { PAY_LINK_PATH, payPath, RECEIVE_PATH } from "../../routes"
 import type { PayMode, WalletRecipient } from "../../types"
+import { offers } from "../../utils/banking"
 import { balanceText, groupAccountNumber } from "../../utils/format"
 import { toHistoryRows } from "../../utils/history"
 import { walletMutationKeys } from "../../utils/keys"
@@ -64,10 +65,14 @@ export function useWalletHome() {
     (accountNumberEnabled && virtualAccount.isLoading)
   const listLoading = transactions.loading || transactions.stale
   const pay = (mode: PayMode) => router.push(payPath({ mode }))
+  const banking = data?.banking ?? null
+  const showAccount =
+    accountNumberEnabled && offers(banking, "dedicated_account")
+  const onTopUp = offers(banking, "bank_transfer") ? () => pay("topup") : null
 
   const accountNumber = activeAccountNumber(virtualAccount.data)
   const footer: AccountFooterView | null =
-    !accountNumberEnabled || virtualAccount.isPending || virtualAccount.isError
+    !showAccount || virtualAccount.isPending || virtualAccount.isError
       ? null
       : accountNumber
         ? {
@@ -92,11 +97,11 @@ export function useWalletHome() {
           hidden: privacy.hidden,
           onToggleHidden: privacy.toggle,
           frozen: data.frozen,
-          showAccount: accountNumberEnabled,
+          showAccount,
           footer,
           onSend: () => pay("send"),
           onRequest: () => pay("request"),
-          onTopUp: () => pay("topup"),
+          onTopUp,
           onReceive: () => router.push(RECEIVE_PATH),
           onPayLink: () => router.push(PAY_LINK_PATH),
         }
@@ -124,7 +129,7 @@ export function useWalletHome() {
       more: transactions.hasMore || transactions.items.length > RECENT,
       firstRun: rows.length === 0 && !listLoading && data?.balance.amount === 0,
       onOpen: transactionSheet.open,
-      onTopUp: () => pay("topup"),
+      onTopUp,
     },
     transactionSheet: transactionSheet.sheet,
     requestSheet: { ...requestSheet.sheet, box: "incoming" as const },

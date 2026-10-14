@@ -15,7 +15,6 @@ import type {
 export const ENGAGEMENT_LIMITS = {
   scoreWeight: { min: -1_000, max: 1_000 },
   feedWeight: { min: -9_999.99, max: 9_999.99 },
-  earnAmount: { min: 0, max: 1_000_000 },
 } as const
 
 export const OFF_STATUS: StatusMeta = { label: "Off", variant: "secondary" }
@@ -45,11 +44,9 @@ const MESSAGES: Record<EngagementWeight, string> = {
   scoreWeight: "Use a whole number from -1,000 to 1,000.",
   feedWeight:
     "Use a number from -9,999.99 to 9,999.99, with at most 2 decimals.",
-  earnAmount:
-    "Use a whole number from 0 to 1,000,000, in the smallest unit of the currency.",
 }
 
-/** One price as typed. A blank field is null, which earns nothing (or, for the feed, is ignored). */
+/** One weight as typed. A blank field is null, which scores nothing (or, for the feed, is ignored). */
 export function parseWeight(field: EngagementWeight, raw: string): WeightParse {
   const text = raw.trim()
   if (text === "") return { ok: true, value: null }
@@ -74,7 +71,6 @@ export function draftFrom(kind: AdminEngagementKind): EngagementDraft {
   return {
     scoreWeight: asText(kind.score_weight),
     feedWeight: asText(kind.feed_weight),
-    earnAmount: asText(kind.earn_amount),
   }
 }
 
@@ -90,7 +86,6 @@ export function draftErrors(
   return {
     scoreWeight: error("scoreWeight"),
     feedWeight: error("feedWeight"),
-    earnAmount: error("earnAmount"),
   }
 }
 
@@ -108,7 +103,6 @@ export function toUpdateInput(draft: EngagementDraft): UpdateEngagementInput {
   return {
     scoreWeight: value("scoreWeight"),
     feedWeight: value("feedWeight"),
-    earnAmount: value("earnAmount"),
   }
 }
 
@@ -127,12 +121,7 @@ export function shippedSummary(kind: AdminEngagementKind): string {
     kind.default_feed_weight === null
       ? "no feed weight"
       : `a feed weight of ${formatNumber(kind.default_feed_weight)}`
-  const earns =
-    kind.default_earn_amount === null
-      ? "no earnings"
-      : `${formatNumber(kind.default_earn_amount)} in earnings`
-
-  return `${score}, ${feed} and ${earns}`
+  return `${score} and ${feed}`
 }
 
 /** Acts recorded by Snacc first, then the ones the app reports, leaving out a side with none. */

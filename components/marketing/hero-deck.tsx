@@ -23,7 +23,7 @@ const CHIPS: {
   {
     icon: BanknoteIcon,
     color: FEATURE_COLORS.money,
-    text: "₦2,000 received",
+    text: "@ada_l sent you money",
     className: "top-[46%] right-0",
   },
   {

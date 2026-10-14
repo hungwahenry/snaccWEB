@@ -3,7 +3,6 @@ import { join, relative } from "node:path"
 import { describe, expect, it } from "vitest"
 
 const ROOT = join(__dirname, "..")
-const KNOWN_FILE = join(__dirname, "country-literals.known.json")
 const SOURCE_DIRS = [
   "app",
   "components",
@@ -43,18 +42,9 @@ function namesAPlace(file: string): boolean {
 }
 
 const scanned = SOURCE_DIRS.flatMap((dir) => sources(join(ROOT, dir)))
-const known = JSON.parse(readFileSync(KNOWN_FILE, "utf8")) as string[]
 
 describe("countries are data, never code", () => {
-  it("names no country, currency or time zone outside the files still being moved to data", () => {
-    const naming = scanned.filter(namesAPlace)
-
-    expect(naming.filter((file) => !known.includes(file))).toEqual([])
-  })
-
-  it("lists only files that still name one, so the list shrinks as they are fixed", () => {
-    expect(
-      known.filter((file) => !scanned.includes(file) || !namesAPlace(file))
-    ).toEqual([])
+  it("names no country, currency or time zone", () => {
+    expect(scanned.filter(namesAPlace)).toEqual([])
   })
 })

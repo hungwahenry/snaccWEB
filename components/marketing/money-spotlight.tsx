@@ -7,12 +7,12 @@ const GREEN = "#4ADE80"
 
 const CHIPS = [
   {
-    text: "₦500 for suya 🍢",
+    text: "Suya on me 🍢",
     who: "from @ada_l",
     className: "-top-5 -left-3 rotate-[-6deg] sm:-left-10",
   },
   {
-    text: "₦1,200 ride to town 🚕",
+    text: "Ride to town 🚕",
     who: "to @zee",
     className: "-right-3 -bottom-5 rotate-[4deg] sm:-right-8",
   },
@@ -67,15 +67,12 @@ function Receipt() {
         <CheckIcon className="size-7" strokeWidth={3} />
       </span>
 
-      <div className="flex flex-col gap-1">
-        <span className="text-sm font-semibold text-white/60">You sent</span>
-        <span
-          className="text-6xl font-black tracking-tighter sm:text-7xl"
-          style={{ color: GREEN }}
-        >
-          ₦2,000
-        </span>
-      </div>
+      <span
+        className="text-6xl font-black tracking-tighter sm:text-7xl"
+        style={{ color: GREEN }}
+      >
+        Sent
+      </span>
 
       <div className="flex items-center gap-2.5 rounded-full bg-white/10 py-1.5 pr-4 pl-1.5">
         <img

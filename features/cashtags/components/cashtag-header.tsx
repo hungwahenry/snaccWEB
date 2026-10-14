@@ -3,9 +3,9 @@ import { timeAgo } from "@/lib/format"
 import type { Cashtag } from "../types"
 import {
   changeTone,
-  formatNgnPrice,
   formatUsd,
   formatUsdCompact,
+  localPrice,
 } from "../utils/price"
 import { CashtagChange } from "./cashtag-change"
 import { Sparkline } from "./sparkline"
@@ -21,8 +21,15 @@ function Stat({ label, value }: { label: string; value: string }) {
   )
 }
 
-export function CashtagHeader({ cashtag }: { cashtag: Cashtag }) {
+export function CashtagHeader({
+  cashtag,
+  currency,
+}: {
+  cashtag: Cashtag
+  currency: string | null
+}) {
   const weekTone = changeTone(cashtag.change_7d_pct ?? cashtag.change_24h_pct)
+  const local = localPrice(cashtag, currency)
 
   return (
     <section className="border-b border-border pb-4">
@@ -55,9 +62,9 @@ export function CashtagHeader({ cashtag }: { cashtag: Cashtag }) {
         <p className="text-3xl font-extrabold text-foreground tabular-nums">
           {formatUsd(cashtag.price_usd)}
         </p>
-        <p className="text-sm text-muted-foreground tabular-nums">
-          {formatNgnPrice(cashtag.price_ngn)}
-        </p>
+        {local ? (
+          <p className="text-sm text-muted-foreground tabular-nums">{local}</p>
+        ) : null}
         <div className="flex flex-wrap items-center gap-x-4 pt-1">
           <CashtagChange
             label="24h"

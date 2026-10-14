@@ -129,9 +129,9 @@ export type AmountFix =
 /** The one-tap way out of a problem, when there is one. */
 export function amountFix(
   check: AmountCheck,
-  minTopUp: Money
+  minTopUp: Money | null
 ): AmountFix | null {
-  if (check.problem === "insufficient") {
+  if (check.problem === "insufficient" && minTopUp) {
     const amount = topUpFor(check.shortfall, minTopUp)
     return {
       kind: "topup",

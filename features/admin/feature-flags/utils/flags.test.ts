@@ -25,6 +25,7 @@ const flag = (overrides: Partial<AdminFeatureFlag> = {}): AdminFeatureFlag => ({
   category: "social",
   description: "",
   is_public: true,
+  money: false,
   audience: "everyone",
   member_count: 0,
   min_version: null,

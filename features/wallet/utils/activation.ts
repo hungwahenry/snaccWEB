@@ -1,7 +1,4 @@
-import type { ActivateVirtualAccountInput, Bank } from "../types"
-
-export const BVN_LENGTH = 11
-export const ACCOUNT_NUMBER_LENGTH = 10
+import type { ActivateVirtualAccountInput, Bank, Banking } from "../types"
 
 const PHONE = /^\+?\d{10,15}$/
 
@@ -9,16 +6,22 @@ export interface ActivationFields {
   firstName: string
   lastName: string
   phone: string
-  bvn: string
+  idNumber: string
   accountNumber: string
   bank: Bank | null
+}
+
+export interface ActivationRules {
+  id: Banking["id"]
+  accountNumberLength: number
+  resolved: boolean
 }
 
 export const EMPTY_ACTIVATION: ActivationFields = {
   firstName: "",
   lastName: "",
   phone: "",
-  bvn: "",
+  idNumber: "",
   accountNumber: "",
   bank: null,
 }
@@ -35,23 +38,19 @@ function nameOk(name: string): boolean {
   return name.trim().length > 1
 }
 
-/**
- * The first thing the form still needs, in the order it is asked for, or null when it is ready.
- * With identity checks on, the account must also have resolved to a name.
- */
 export function activationMissing(
   fields: ActivationFields,
-  identity: { required: boolean; resolved: boolean }
+  rules: ActivationRules
 ): string | null {
   if (!nameOk(fields.firstName)) return "first name"
   if (!nameOk(fields.lastName)) return "last name"
   if (!PHONE.test(cleanPhone(fields.phone))) return "phone number"
-  if (!identity.required) return null
-  if (fields.bvn.length !== BVN_LENGTH) return "BVN"
-  if (fields.accountNumber.length !== ACCOUNT_NUMBER_LENGTH)
+  if (!rules.id) return null
+  if (fields.idNumber.length !== rules.id.length) return rules.id.name
+  if (fields.accountNumber.length !== rules.accountNumberLength)
     return "an account you own"
   if (!fields.bank) return "its bank"
-  if (!identity.resolved) return "a valid account"
+  if (!rules.resolved) return "a valid account"
   return null
 }
 
@@ -67,7 +66,7 @@ export function activationInput(
   if (!identityRequired) return input
   return {
     ...input,
-    bvn: fields.bvn,
+    idNumber: fields.idNumber,
     accountNumber: fields.accountNumber,
     bankCode: fields.bank?.code,
   }

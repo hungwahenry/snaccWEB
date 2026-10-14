@@ -12,6 +12,7 @@ import { markRequest, mutesChanged, walletChanged } from "../../cache"
 import { payPath } from "../../routes"
 import type { MoneyRequest } from "../../types"
 import { walletMutationKeys } from "../../utils/keys"
+import { offers } from "../../utils/banking"
 import { requestShortfall, topUpFor } from "../../utils/pay"
 import {
   cancelTitle,
@@ -64,13 +65,18 @@ export function useRequestActions(options: { enabled?: boolean } = {}) {
         : null
       if (wallet && shortfall !== null) {
         const topUp = topUpFor(shortfall, wallet.rules.deposit_minimum)
-        showErrorMessage(cannotCoverMessage(request.amount, wallet.balance), {
-          label: "Add money",
-          onClick: () =>
-            router.push(
-              payPath({ mode: "topup", amount: moneyToInput(topUp) })
-            ),
-        })
+        showErrorMessage(
+          cannotCoverMessage(request.amount, wallet.balance),
+          offers(wallet.banking, "bank_transfer")
+            ? {
+                label: "Add money",
+                onClick: () =>
+                  router.push(
+                    payPath({ mode: "topup", amount: moneyToInput(topUp) })
+                  ),
+              }
+            : undefined
+        )
         return null
       }
       return moneyConfirm.run(

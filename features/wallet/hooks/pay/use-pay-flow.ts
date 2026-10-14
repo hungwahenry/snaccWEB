@@ -13,6 +13,7 @@ import {
 import { payPath, WALLET_LIMITS_PATH, WALLET_PATH } from "../../routes"
 import type { PayPrefill, PayStep, WalletRecipient } from "../../types"
 import { keypadCap, typeAmount } from "../../utils/amount"
+import { offers } from "../../utils/banking"
 import {
   amountFix,
   amountHint,
@@ -51,7 +52,9 @@ export function usePayFlow(prefill: PayPrefill, currency: string) {
   const limits = useLimits({ enabled: mode !== "request" })
   const wallet = overview.data?.rules
   const nothing = money(0, currency)
-  const depositMin = wallet?.deposit_minimum ?? nothing
+  const depositMin = offers(overview.data?.banking ?? null, "bank_transfer")
+    ? (wallet?.deposit_minimum ?? nothing)
+    : null
 
   const [amount, setAmount] = useState(prefill.amount ?? "")
   const [note, setNote] = useState("")

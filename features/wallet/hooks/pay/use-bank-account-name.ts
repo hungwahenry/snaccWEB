@@ -5,15 +5,16 @@ import { getErrorMessage } from "@/lib/api/errors"
 import { resolveBankAccount } from "../../api"
 import type { Bank } from "../../types"
 import { walletKeys } from "../../utils/keys"
-import { isAccountNumber } from "../../utils/recipients"
+import { isAccountNumber } from "../../utils/banking"
 
 export function useBankAccountName(
   bank: Bank | null,
   accountNumber: string,
+  length: number,
   enabled = true
 ) {
   const number = accountNumber.trim()
-  const ready = enabled && bank !== null && isAccountNumber(number)
+  const ready = enabled && bank !== null && isAccountNumber(number, length)
 
   const resolved = useQuery({
     queryKey: walletKeys.bankAccount(bank?.code ?? "", number),

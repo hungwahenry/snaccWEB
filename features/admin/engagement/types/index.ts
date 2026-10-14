@@ -1,3 +1,5 @@
+import type { Money } from "@/lib/money"
+
 export type EngagementSource = "server" | "client"
 
 export interface AdminEngagementKind {
@@ -7,10 +9,9 @@ export interface AdminEngagementKind {
   source: EngagementSource
   score_weight: number | null
   feed_weight: number | null
-  earn_amount: number | null
+  earn_amounts: Money[]
   default_score_weight: number | null
   default_feed_weight: number | null
-  default_earn_amount: number | null
   is_default: boolean
   enabled: boolean
   position: number
@@ -19,11 +20,10 @@ export interface AdminEngagementKind {
 export interface UpdateEngagementInput {
   scoreWeight?: number | null
   feedWeight?: number | null
-  earnAmount?: number | null
   enabled?: boolean
 }
 
-export type EngagementWeight = "scoreWeight" | "feedWeight" | "earnAmount"
+export type EngagementWeight = "scoreWeight" | "feedWeight"
 
 export type EngagementDraft = Record<EngagementWeight, string>
 

@@ -2,12 +2,19 @@ import Link from "next/link"
 import { LazyImage } from "@/components/ui/lazy-image"
 import { cashtagPath } from "../routes"
 import type { Cashtag } from "../types"
-import { changeTone, formatNgnPrice, formatUsd } from "../utils/price"
+import { changeTone, formatUsd, localPrice } from "../utils/price"
 import { CashtagChange } from "./cashtag-change"
 import { Sparkline } from "./sparkline"
 
-export function CashtagCard({ cashtag }: { cashtag: Cashtag }) {
+export function CashtagCard({
+  cashtag,
+  currency,
+}: {
+  cashtag: Cashtag
+  currency: string | null
+}) {
   const weekTone = changeTone(cashtag.change_7d_pct ?? cashtag.change_24h_pct)
+  const local = localPrice(cashtag, currency)
 
   return (
     <Link
@@ -41,10 +48,12 @@ export function CashtagCard({ cashtag }: { cashtag: Cashtag }) {
           <span className="font-extrabold tabular-nums">
             {formatUsd(cashtag.price_usd)}
           </span>
-          <span className="text-xs text-muted-foreground tabular-nums">
-            {"  "}
-            {formatNgnPrice(cashtag.price_ngn)}
-          </span>
+          {local ? (
+            <span className="text-xs text-muted-foreground tabular-nums">
+              {"  "}
+              {local}
+            </span>
+          ) : null}
         </p>
         <div className="flex flex-wrap items-center gap-x-3">
           <CashtagChange label="24h" pct={cashtag.change_24h_pct} />
