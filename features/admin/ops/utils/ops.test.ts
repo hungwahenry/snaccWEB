@@ -110,7 +110,7 @@ describe("messages", () => {
       deposits: { checked: 0, credited: 0 },
     }
     expect(reconcileMessage(none)).toBe(
-      "Nothing to settle. Paystack agrees with us."
+      "Nothing to settle. The providers agree with us."
     )
     expect(
       reconcileMessage({
@@ -118,13 +118,15 @@ describe("messages", () => {
         deposits: { checked: 1, credited: 1 },
       })
     ).toBe(
-      "Paid out 2 withdrawals, refunded 1 failed withdrawal and credited 1 top-up. 1 withdrawal still waiting on Paystack."
+      "Paid out 2 withdrawals, refunded 1 failed withdrawal and credited 1 top-up. 1 withdrawal still waiting on their provider."
     )
     expect(
       reconcileMessage({
         ...none,
         withdrawals: { ...none.withdrawals, waiting: 2 },
       })
-    ).toBe("Nothing settled yet. 2 withdrawals still waiting on Paystack.")
+    ).toBe(
+      "Nothing settled yet. 2 withdrawals still waiting on their provider."
+    )
   })
 })

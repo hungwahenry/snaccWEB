@@ -1,9 +1,8 @@
-export type WebhookProvider = "revenuecat" | "paystack" | "cloudflare_stream"
 export type WebhookStatus = "received" | "applied" | "ignored" | "failed"
 
 export interface WebhookEvent {
   id: string
-  provider: WebhookProvider
+  provider: string
   event_id: string
   type: string
   status: WebhookStatus
@@ -29,7 +28,7 @@ export interface WebhookStats {
 export type WebhookListQuery = {
   page: number
   perPage: number
-  provider?: WebhookProvider
+  provider?: string
   status?: WebhookStatus
   type?: string
   q?: string

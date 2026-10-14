@@ -14,7 +14,7 @@ export function WithdrawalsSummary({
   return (
     <StatGrid columns={2}>
       <Stat
-        label="Still with Paystack"
+        label="Still sending"
         value={formatTotals(summary.pending.totals)}
         hint={waitingNote(summary.pending)}
       />

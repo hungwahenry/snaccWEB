@@ -42,10 +42,10 @@ export function WithdrawalDetail({
           canRetry(withdrawal) ? (
             <CanAct permission="withdrawals.process">
               <ConfirmAction
-                trigger={<Button size="sm">Send to Paystack again</Button>}
+                trigger={<Button size="sm">Send again</Button>}
                 tone="default"
                 title="Try this transfer again?"
-                description="Paystack is asked to move the money again. If the first try actually went through, this could pay twice, so check the timeline before you confirm."
+                description="The payment provider is asked to move the money again. If the first try actually went through, this could pay twice, so check the timeline before you confirm."
                 confirmLabel="Send again"
                 onConfirm={() => onRetry()}
               />
@@ -89,7 +89,7 @@ export function WithdrawalDetail({
 
         <Section
           title="Timeline"
-          description="What their balance was before and after, and each step Paystack reported."
+          description="What their balance was before and after, and each step the payment provider reported."
         >
           <Facts>
             <Fact

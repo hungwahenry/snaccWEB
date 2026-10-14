@@ -24,7 +24,7 @@ export function runTask(task: OpsTask) {
   return api.post<OpsRepairResult>(`/admin/ops/run/${task}`)
 }
 
-export function reconcilePaystack() {
+export function reconcilePayments() {
   return api.post<OpsReconcile>("/admin/ops/reconcile")
 }
 

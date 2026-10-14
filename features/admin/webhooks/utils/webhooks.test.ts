@@ -3,8 +3,8 @@ import { formatDate } from "@/lib/format"
 import {
   deliveryFacts,
   deliveryLine,
-  PROVIDER_OPTIONS,
   providerLabel,
+  providerOptions,
   STATUS_OPTIONS,
   statusLabel,
 } from "./webhooks"
@@ -25,12 +25,21 @@ describe("labels", () => {
 })
 
 describe("options", () => {
-  it("offers each provider and outcome in plain words", () => {
-    expect(PROVIDER_OPTIONS).toEqual([
-      { value: "revenuecat", label: "RevenueCat" },
+  it("offers each provider that has sent something, and each outcome", () => {
+    expect(
+      providerOptions({
+        failed: 0,
+        by_provider: [
+          { provider: "paystack", status: "applied", count: 3 },
+          { provider: "paystack", status: "failed", count: 1 },
+          { provider: "stripe", status: "applied", count: 1 },
+        ],
+      })
+    ).toEqual([
       { value: "paystack", label: "Paystack" },
-      { value: "cloudflare_stream", label: "Cloudflare Stream" },
+      { value: "stripe", label: "stripe" },
     ])
+    expect(providerOptions(undefined)).toEqual([])
     expect(STATUS_OPTIONS.map((option) => option.label)).toEqual([
       "Applied",
       "Ignored",

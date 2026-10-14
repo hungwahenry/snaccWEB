@@ -18,8 +18,10 @@ import type { AdminPaymentMarket, UpsertMarketInput } from "../types"
 import {
   DEPOSIT_METHODS,
   draftFrom,
+  neededSettings,
   parseDraft,
   PAYOUT_METHODS,
+  settingsHint,
   toggled,
 } from "../utils/markets"
 
@@ -34,6 +36,9 @@ function MarketForm({
 }) {
   const { draft, set, text } = useDraft(() => draftFrom(market))
   const parsed = parseDraft(draft)
+  const provider = choices.providerList.find(
+    (each) => each.key === draft.provider
+  )
 
   return (
     <DialogForm
@@ -115,7 +120,7 @@ function MarketForm({
         mono
         hint={
           parsed.ok || parsed.message === null ? (
-            "The provider's own names for things here, read only by its code."
+            settingsHint(provider, neededSettings(provider, draft))
           ) : (
             <span className="text-destructive">{parsed.message}</span>
           )

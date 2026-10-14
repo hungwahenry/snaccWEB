@@ -144,7 +144,7 @@ export function reconcileMessage({
 }: OpsReconcile): string {
   const waiting =
     withdrawals.waiting > 0
-      ? `${plural(withdrawals.waiting, "withdrawal")} still waiting on Paystack.`
+      ? `${plural(withdrawals.waiting, "withdrawal")} still waiting on their provider.`
       : null
   const moved = [
     withdrawals.settled > 0 &&
@@ -157,7 +157,7 @@ export function reconcileMessage({
   if (moved.length === 0) {
     return waiting
       ? `Nothing settled yet. ${waiting}`
-      : "Nothing to settle. Paystack agrees with us."
+      : "Nothing to settle. The providers agree with us."
   }
 
   return waiting ? `${sentence(moved)} ${waiting}` : sentence(moved)

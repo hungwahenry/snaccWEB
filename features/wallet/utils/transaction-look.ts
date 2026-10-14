@@ -92,7 +92,7 @@ export function transactionStatus(status: string): StatusLook {
 
 const CHANNELS: Record<string, string> = {
   bank_transfer: "Bank transfer",
-  dedicated_nuban: "Your account number",
+  dedicated_account: "Your account number",
 }
 
 export interface DetailRow {

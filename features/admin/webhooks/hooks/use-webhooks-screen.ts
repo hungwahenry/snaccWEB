@@ -4,12 +4,12 @@ import { parseAsString, parseAsStringLiteral } from "nuqs"
 import { useCallback, useState } from "react"
 import { useListParams } from "@/features/admin/shell/hooks/use-list-params"
 import { PAGE_SIZE } from "@/features/admin/shell/utils/list-params"
-import { WEBHOOK_PROVIDERS, WEBHOOK_STATUSES } from "../utils/webhooks"
+import { providerOptions, WEBHOOK_STATUSES } from "../utils/webhooks"
 import { useWebhook, useWebhookStats, useWebhooks } from "./use-webhooks"
 
 const FILTERS = {
   q: parseAsString.withDefault(""),
-  provider: parseAsStringLiteral(WEBHOOK_PROVIDERS),
+  provider: parseAsString,
   status: parseAsStringLiteral(WEBHOOK_STATUSES),
 }
 
@@ -32,10 +32,13 @@ export function useWebhooksScreen() {
   }, [])
   const close = useCallback(() => setOpen(false), [])
 
+  const stats = useWebhookStats()
+
   return {
     list,
     events,
-    stats: useWebhookStats(),
+    stats,
+    providers: providerOptions(stats.data),
     payload: { query: useWebhook(selected), open, show, close },
   }
 }

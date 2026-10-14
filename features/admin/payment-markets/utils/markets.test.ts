@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest"
 import type { AdminPaymentMarket } from "../types"
-import { draftFrom, idLine, methodsLine, parseDraft, toggled } from "./markets"
+import {
+  draftFrom,
+  idLine,
+  methodsLine,
+  neededSettings,
+  parseDraft,
+  settingsHint,
+  toggled,
+} from "./markets"
 
 const market: AdminPaymentMarket = {
   country_code: "XT",
@@ -77,5 +85,44 @@ describe("toggled", () => {
     expect(toggled(["a"], "a", true)).toEqual(["a"])
     expect(toggled(["a"], "b", true)).toEqual(["a", "b"])
     expect(toggled(["a", "b"], "a", false)).toEqual(["b"])
+  })
+})
+
+describe("neededSettings", () => {
+  const provider = {
+    key: "test",
+    name: "Testpay",
+    settings: [
+      {
+        key: "country",
+        label: "Country",
+        hint: "Its country name.",
+        only_for: null,
+      },
+      {
+        key: "bank",
+        label: "Bank",
+        hint: "Who issues account numbers.",
+        only_for: "dedicated_account" as const,
+      },
+    ],
+  }
+
+  it("asks only for what the ticked methods need", () => {
+    const needed = neededSettings(provider, {
+      deposits: ["bank_transfer"],
+      payouts: [],
+    })
+    expect(needed.map((setting) => setting.key)).toEqual(["country"])
+    expect(settingsHint(provider, needed)).toBe(
+      'Testpay needs "country": Its country name.'
+    )
+  })
+
+  it("says so when nothing is needed or no provider is picked", () => {
+    expect(settingsHint(provider, [])).toBe(
+      "Testpay needs no settings for this."
+    )
+    expect(neededSettings(undefined, { deposits: [], payouts: [] })).toEqual([])
   })
 })

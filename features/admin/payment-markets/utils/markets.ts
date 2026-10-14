@@ -4,6 +4,8 @@ import type { DepositMethod, PayoutMethod } from "@/features/wallet/types"
 import type {
   AdminPaymentMarket,
   MarketDraft,
+  PaymentProviderOption,
+  ProviderSetting,
   UpsertMarketInput,
 } from "../types"
 
@@ -103,4 +105,26 @@ export function idLine(market: AdminPaymentMarket): string {
   return market.id_name && market.id_length
     ? `${market.id_name}, ${market.id_length} digits`
     : "None asked"
+}
+
+export function neededSettings(
+  provider: PaymentProviderOption | undefined,
+  draft: Pick<MarketDraft, "deposits" | "payouts">
+): ProviderSetting[] {
+  const methods: string[] = [...draft.deposits, ...draft.payouts]
+  return (provider?.settings ?? []).filter(
+    (setting) => setting.only_for === null || methods.includes(setting.only_for)
+  )
+}
+
+export function settingsHint(
+  provider: PaymentProviderOption | undefined,
+  needed: ProviderSetting[]
+): string {
+  if (!provider)
+    return "The provider's own names for things here, read only by its code."
+  if (needed.length === 0) return `${provider.name} needs no settings for this.`
+  return `${provider.name} needs ${needed
+    .map((setting) => `"${setting.key}": ${setting.hint}`)
+    .join(" ")}`
 }

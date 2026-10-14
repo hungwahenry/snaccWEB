@@ -9,7 +9,7 @@ export const WITHDRAWAL_STATUSES = [
 ] as const satisfies readonly WithdrawalStatus[]
 
 export const WITHDRAWAL_STATUS: Record<WithdrawalStatus, StatusMeta> = {
-  pending: { label: "With Paystack", variant: "secondary" },
+  pending: { label: "Sending", variant: "secondary" },
   success: { label: "Paid", variant: "default" },
   failed: { label: "Failed", variant: "destructive" },
   reversed: { label: "Sent back", variant: "outline" },

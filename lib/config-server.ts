@@ -21,8 +21,6 @@ async function read<T>(
       Accept: "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    // `/config` and `/flags` vary by who is asking, so a signed-in read is never shared. Signed
-    // out, every request is the same one, so a minute-old copy spares the backend a call per page.
     ...(token ? { cache: "no-store" } : { next: { revalidate: 60 } }),
   }).catch(() => null)
   if (!res?.ok) return null

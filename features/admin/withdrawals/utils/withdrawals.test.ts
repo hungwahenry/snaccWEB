@@ -67,7 +67,7 @@ describe("accountLine", () => {
 })
 
 describe("canRetry", () => {
-  it("only offers a retry while Paystack still has it", () => {
+  it("only offers a retry while the withdrawal is still sending", () => {
     expect(canRetry(withdrawal())).toBe(true)
     expect(canRetry(withdrawal({ status: "success" }))).toBe(false)
   })
@@ -75,7 +75,7 @@ describe("canRetry", () => {
 
 describe("statuses", () => {
   it("names every status in plain words", () => {
-    expect(WITHDRAWAL_STATUS.pending.label).toBe("With Paystack")
+    expect(WITHDRAWAL_STATUS.pending.label).toBe("Sending")
     expect(STATUS_OPTIONS.map((option) => option.value)).toEqual([
       "pending",
       "success",

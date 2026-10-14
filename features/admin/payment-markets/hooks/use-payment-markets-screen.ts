@@ -24,7 +24,11 @@ export function usePaymentMarketsScreen() {
   return {
     query: usePaymentMarkets(),
     actions: usePaymentMarketActions(),
-    choices: { countries: countries.options, providers: providerOptions },
+    choices: {
+      countries: countries.options,
+      providers: providerOptions,
+      providerList: providers.data ?? [],
+    },
   }
 }
 

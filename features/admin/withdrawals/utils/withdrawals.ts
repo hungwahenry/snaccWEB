@@ -20,7 +20,6 @@ export function accountLine(withdrawal: AdminWithdrawal): string {
   return withdrawal.account_number ?? `•••• ${withdrawal.account_last4}`
 }
 
-/** Only a withdrawal still with Paystack can be sent again. */
 export function canRetry(withdrawal: AdminWithdrawal): boolean {
   return withdrawal.status === "pending"
 }

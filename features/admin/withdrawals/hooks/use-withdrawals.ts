@@ -37,7 +37,7 @@ export function useWithdrawal(id: string) {
 export function useWithdrawalActions(id: string) {
   const { run: retry } = useAdminMutation({
     mutationFn: () => retryWithdrawal(id),
-    success: "Sent to Paystack again.",
+    success: "Sent again.",
     invalidates: [adminWithdrawalKeys.all()],
   })
 

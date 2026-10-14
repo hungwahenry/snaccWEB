@@ -12,17 +12,17 @@ export function SettlementPanel({
 }) {
   return (
     <Section
-      title="Paystack settlement"
+      title="Payment settlement"
       action={
         <CanAct permission="ops.run">
           <ConfirmAction
             trigger={
               <Button variant="outline" size="sm">
-                Check with Paystack now
+                Check with the providers now
               </Button>
             }
             tone="default"
-            title="Ask Paystack about everything unsettled?"
+            title="Ask the providers about everything unsettled?"
             description="Withdrawals and top-ups still in flight are checked one by one, and any that have settled are applied. This moves money, so run it when you actually suspect a missed webhook."
             confirmLabel="Check now"
             onConfirm={() => onReconcile()}
@@ -31,10 +31,10 @@ export function SettlementPanel({
       }
     >
       <p className="text-sm text-pretty text-muted-foreground">
-        Withdrawals and top-ups normally settle the moment Paystack calls us
-        back. Every ten minutes Snacc also asks Paystack directly about anything
-        still unsettled, so money lands even when that call never arrives. This
-        brings that check forward.
+        Withdrawals and top-ups normally settle the moment their payment
+        provider calls us back. Every ten minutes Snacc also asks each provider
+        directly about anything still unsettled, so money lands even when that
+        call never arrives. This brings that check forward.
       </p>
     </Section>
   )

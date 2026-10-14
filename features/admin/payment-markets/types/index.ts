@@ -15,9 +15,17 @@ export interface AdminPaymentMarket {
   updated_at: string
 }
 
+export interface ProviderSetting {
+  key: string
+  label: string
+  hint: string
+  only_for: DepositMethod | PayoutMethod | null
+}
+
 export interface PaymentProviderOption {
   key: string
   name: string
+  settings: ProviderSetting[]
 }
 
 export interface MarketDraft {

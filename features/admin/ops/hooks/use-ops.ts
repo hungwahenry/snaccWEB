@@ -7,7 +7,7 @@ import {
   getDrift,
   getHealth,
   getQueues,
-  reconcilePaystack,
+  reconcilePayments,
   retryQueue,
   runTask,
 } from "../api"
@@ -52,7 +52,7 @@ export function useOpsActions() {
     invalidates: [adminOpsKeys.drift()],
   })
   const { run: reconcile } = useAdminMutation({
-    mutationFn: () => reconcilePaystack(),
+    mutationFn: () => reconcilePayments(),
     success: reconcileMessage,
     invalidates: [adminOpsKeys.all()],
   })

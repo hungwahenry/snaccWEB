@@ -8,16 +8,16 @@ import { DeliveriesPanel } from "../components/deliveries-panel"
 import { WebhookPayloadDialog } from "../components/webhook-payload-dialog"
 import { WebhooksTable } from "../components/webhooks-table"
 import { useWebhooksScreen } from "../hooks/use-webhooks-screen"
-import { PROVIDER_OPTIONS, STATUS_OPTIONS } from "../utils/webhooks"
+import { STATUS_OPTIONS } from "../utils/webhooks"
 
 export function WebhooksScreen() {
-  const { list, events, stats, payload } = useWebhooksScreen()
+  const { list, events, stats, providers, payload } = useWebhooksScreen()
 
   return (
     <>
       <PageHeader
         title="Webhooks"
-        description="Everything Paystack and RevenueCat have sent us. Deliveries are recorded before they are acted on, so a purchase or a payout that did not land can be traced to the event that carried it."
+        description="Everything payment providers, RevenueCat and video hosting have sent us. Deliveries are recorded before they are acted on, so a purchase or a payout that did not land can be traced to the event that carried it."
       />
       <div className="flex flex-col gap-6">
         <DeliveriesPanel query={stats} />
@@ -37,7 +37,7 @@ export function WebhooksScreen() {
                 allLabel="All providers"
                 value={list.values.provider}
                 onChange={(provider) => list.setFilter({ provider })}
-                options={PROVIDER_OPTIONS}
+                options={providers}
               />
               <OptionSelect
                 label="Outcome"
