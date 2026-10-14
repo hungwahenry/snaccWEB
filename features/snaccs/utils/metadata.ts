@@ -54,7 +54,7 @@ export function snaccPictures(snacc: Snacc): string[] {
 }
 
 export function snaccMetadata(snacc: Snacc | null): Metadata {
-  if (!snacc) return { title: "Snacc not found" }
+  if (!snacc) return { title: "Snacc" }
 
   const { title, description } = describe(snacc)
   const media = snaccPictures(snacc)[0]

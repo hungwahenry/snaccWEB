@@ -1,5 +1,6 @@
 "use client"
 
+import type { PlaceNames } from "../types"
 import type { UseQueryResult } from "@tanstack/react-query"
 import Link from "next/link"
 import { useMemo, type ReactNode } from "react"
@@ -15,13 +16,13 @@ import { AnnouncementBadges } from "./announcement-badges"
 
 export function AnnouncementsTable({
   query,
-  acronyms,
+  names,
   filtered,
   toolbar,
   onPageChange,
 }: {
   query: UseQueryResult<Paginated<AdminAnnouncement>>
-  acronyms: ReadonlyMap<string, string>
+  names: PlaceNames
   filtered: boolean
   toolbar: ReactNode
   onPageChange: (page: number) => void
@@ -53,8 +54,7 @@ export function AnnouncementsTable({
         id: "who",
         header: "Who",
         className: "max-w-56 text-xs whitespace-normal",
-        cell: (announcement) =>
-          audienceSummary(announcement.audience, acronyms),
+        cell: (announcement) => audienceSummary(announcement.audience, names),
       },
       {
         id: "when",
@@ -84,7 +84,7 @@ export function AnnouncementsTable({
           announcement.created_by ? userHandle(announcement.created_by) : "—",
       },
     ],
-    [acronyms]
+    [names]
   )
 
   return (

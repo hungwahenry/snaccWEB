@@ -7,13 +7,19 @@ import { AnnouncementEditor } from "../components/announcement-editor"
 import { useAnnouncementEditorScreen } from "../hooks/use-announcement-editor-screen"
 
 export function AnnouncementEditorScreen({ id }: { id: string }) {
-  const { query, editor, campuses } = useAnnouncementEditorScreen(id)
+  const { query, editor, campuses, countries } = useAnnouncementEditorScreen(id)
 
   return (
     <>
       <BackLink href={ANNOUNCEMENTS_PATH} label="Back to announcements" />
       <QueryView query={query} what="this announcement">
-        {() => <AnnouncementEditor editor={editor} campuses={campuses} />}
+        {() => (
+          <AnnouncementEditor
+            editor={editor}
+            campuses={campuses}
+            countries={countries}
+          />
+        )}
       </QueryView>
     </>
   )

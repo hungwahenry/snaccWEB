@@ -17,7 +17,7 @@ export function PublicCampus({
 }) {
   return (
     <LandingShell cta={CAMPUS_CTA} next={campusPath(campus.slug)}>
-      <CampusHeader campus={campus} />
+      <CampusHeader campus={campus} heading="h1" />
       {snaccs.map((snacc) => (
         <PublicSnaccCard
           key={snacc.id}

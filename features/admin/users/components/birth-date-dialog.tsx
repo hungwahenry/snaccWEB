@@ -9,16 +9,11 @@ import {
 import { SelectField } from "@/features/admin/shell/components/form-fields"
 import type { Option } from "@/features/admin/shell/types"
 import {
-  BIRTH_MONTHS,
   birthDays,
+  birthMonths,
   birthYears,
 } from "@/features/birthdays/utils/birth-date"
 import type { BirthDateInput } from "../types"
-
-const MONTHS: Option[] = BIRTH_MONTHS.map((month) => ({
-  value: String(month.value),
-  label: month.label,
-}))
 
 function numberOptions(values: number[]): Option[] {
   return values.map((value) => ({ value: String(value), label: String(value) }))
@@ -60,19 +55,27 @@ function BirthDateForm({
           label="Day"
           value={day}
           onChange={setDay}
-          options={numberOptions(birthDays(month ? Number(month) : null))}
+          options={numberOptions(
+            birthDays(
+              month ? Number(month) : null,
+              year ? Number(year) : null,
+              new Date()
+            )
+          )}
         />
         <SelectField
           label="Month"
           value={month}
           onChange={setMonth}
-          options={MONTHS}
+          options={birthMonths(year ? Number(year) : null, new Date()).map(
+            (each) => ({ value: String(each.value), label: each.label })
+          )}
         />
         <SelectField
           label="Year"
           value={year}
           onChange={setYear}
-          options={numberOptions(birthYears(new Date().getFullYear()))}
+          options={numberOptions(birthYears(new Date()))}
         />
       </div>
       <FormNote>

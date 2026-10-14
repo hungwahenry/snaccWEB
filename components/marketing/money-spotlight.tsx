@@ -29,7 +29,8 @@ export function MoneySpotlight() {
           </h2>
           <p className="max-w-md text-lg leading-relaxed text-pretty text-white/70">
             No account number, no bank app. Pay anyone on your campus in
-            seconds, or share your link and get paid. Instant and free.
+            seconds, or share your link and get paid. Instant and free,
+            wherever the wallet is live.
           </p>
         </div>
 

@@ -5,21 +5,26 @@ describe("denialReason", () => {
   it("is null when the admin holds the permission or full access", () => {
     expect(
       denialReason(
-        { all: false, keys: ["users.read"], campuses: [] },
+        { all: false, keys: ["users.read"], limited_to: {} },
         "users.read"
       )
     ).toBeNull()
     expect(
-      denialReason({ all: true, keys: [], campuses: [] }, "users.delete")
+      denialReason({ all: true, keys: [], limited_to: {} }, "users.delete")
     ).toBeNull()
   })
 
-  it("names the missing permission otherwise", () => {
+  it("names the missing permission in words otherwise", () => {
     expect(
-      denialReason({ all: false, keys: [], campuses: [] }, "users.delete")
-    ).toBe('You need the "users.delete" permission.')
+      denialReason(
+        { all: false, keys: [], limited_to: {} },
+        "users.revoke_sessions"
+      )
+    ).toBe(
+      "Your role doesn't include “Revoke sessions · Users”. Ask an owner if you need it."
+    )
     expect(denialReason(undefined, "users.read")).toBe(
-      'You need the "users.read" permission.'
+      "Your role doesn't include “Read · Users”. Ask an owner if you need it."
     )
   })
 })

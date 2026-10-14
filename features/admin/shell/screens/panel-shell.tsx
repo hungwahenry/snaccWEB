@@ -8,6 +8,7 @@ import { NoAccess } from "../components/no-access"
 import { PanelFrame } from "../components/panel-frame"
 import { PanelSidebar } from "../components/panel-sidebar"
 import { LoadingBlock } from "../components/query-view"
+import { useRememberLists } from "../hooks/use-list-return"
 import { usePanelNav } from "../hooks/use-panel-nav"
 import { ADMIN_PROFILE_PATH } from "../routes"
 
@@ -15,6 +16,7 @@ export function PanelShell({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   const access = usePanelAccess(pathname)
   const nav = usePanelNav(pathname)
+  useRememberLists(pathname)
 
   return (
     <PanelFrame

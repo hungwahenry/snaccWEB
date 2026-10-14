@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation"
 import { parseAsStringLiteral, useQueryState } from "nuqs"
 import { useCallback, useMemo } from "react"
+import { usePremiumGrants } from "@/features/admin/premium/hooks/use-premium"
 import { useRoles } from "@/features/admin/roles/hooks/use-roles"
 import {
   useRoleGrantActions,
@@ -11,7 +12,6 @@ import {
 import { grantableRoles } from "@/features/admin/roles/utils/roles"
 import { USERS_PATH } from "@/features/admin/shell/routes"
 import { useSuspensionChoices } from "@/features/admin/suspension-reasons/hooks/use-suspension-reasons"
-import { useCampuses } from "@/features/admin/universities/hooks/use-universities"
 import { USER_TABS } from "../utils/users"
 import { useUser, useUserActions } from "./use-users"
 
@@ -35,14 +35,13 @@ export function useUserDetailScreen(id: string) {
     () => grantableRoles(roles.data ?? [], grants.data ?? []),
     [roles.data, grants.data]
   )
-
   return {
     query,
     tab,
     setTab,
     actions,
-    campuses: useCampuses().options,
     suspension: useSuspensionChoices(),
+    premium: usePremiumGrants(),
     roles: {
       grants,
       grantable,

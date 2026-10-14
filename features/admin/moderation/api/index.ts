@@ -40,6 +40,10 @@ export function updateRule(id: string, changes: RuleChanges) {
   return api.patch<ModerationRule>(`/admin/moderation/rules/${id}`, changes)
 }
 
+export function deleteRule(id: string) {
+  return api.del<null>(`/admin/moderation/rules/${id}`)
+}
+
 export function listCategories() {
   return api.get<CategoryUsage[]>("/admin/moderation/categories")
 }

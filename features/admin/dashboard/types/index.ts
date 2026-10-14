@@ -14,6 +14,7 @@ export type DashboardTab =
 export type DashboardParams = {
   days: number
   campusId?: string
+  country?: string
 }
 
 export interface DashboardSeriesPoint {
@@ -274,6 +275,7 @@ export interface CampusRow {
   id: string
   name: string
   acronym: string
+  country_code: string
   members: number
   joined: number
   weekly_active: number

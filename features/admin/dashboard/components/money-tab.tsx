@@ -10,18 +10,19 @@ import {
 
 export function MoneyTab({
   money,
-  campusPicked,
+  narrowed,
 }: {
   money: MoneyMetrics
-  campusPicked: boolean
+  narrowed: boolean
 }) {
   const several = money.currencies.length > 1
 
   return (
     <div className="flex flex-col gap-6">
-      {campusPicked ? (
+      {narrowed ? (
         <p className="text-sm text-pretty text-muted-foreground">
-          Money always covers the whole platform, whichever campus is picked.
+          Money always covers the whole platform, whichever country or campus is
+          picked. Each currency has its own section.
         </p>
       ) : null}
       {money.currencies.map((section) => (

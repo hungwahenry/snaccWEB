@@ -59,7 +59,7 @@ describe("rule drafts", () => {
     expect(isDraftReady({ ...draft, threshold: "" })).toBe(false)
   })
 
-  it("trims what was typed and drops a blank note", () => {
+  it("trims what was typed and sends a blank note as empty so it clears", () => {
     expect(
       toRuleInput({
         ...draftFrom(rule()),
@@ -72,7 +72,7 @@ describe("rule drafts", () => {
       category: "sexual",
       threshold: 0.9,
       action: "hold",
-      note: undefined,
+      note: "",
     })
   })
 

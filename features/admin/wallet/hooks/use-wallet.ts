@@ -8,10 +8,16 @@ import {
   freezeWallet,
   getWallet,
   getWalletSummary,
+  getWalletTransaction,
   listWalletAccounts,
+  listWalletTransactions,
   unfreezeWallet,
 } from "../api"
-import type { AdjustWalletInput, WalletAccountListQuery } from "../types"
+import type {
+  AdjustWalletInput,
+  WalletAccountListQuery,
+  WalletTransactionListQuery,
+} from "../types"
 import { adminWalletKeys } from "../utils/keys"
 
 export function useWalletSummary() {
@@ -26,6 +32,21 @@ export function useWalletAccounts(query: WalletAccountListQuery) {
     queryKey: adminWalletKeys.accounts(query),
     queryFn: () => listWalletAccounts(query),
     placeholderData: keepPreviousData,
+  })
+}
+
+export function useWalletTransactions(query: WalletTransactionListQuery) {
+  return useQuery({
+    queryKey: adminWalletKeys.transactions(query),
+    queryFn: () => listWalletTransactions(query),
+    placeholderData: keepPreviousData,
+  })
+}
+
+export function useWalletTransaction(id: string) {
+  return useQuery({
+    queryKey: adminWalletKeys.transaction(id),
+    queryFn: () => getWalletTransaction(id),
   })
 }
 

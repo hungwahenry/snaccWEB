@@ -13,7 +13,7 @@ export function isCompleteInviteCode(code: string): boolean {
 }
 
 export function inviteMessage(code: string): string {
-  return `Join me on Snacc 🍿 Sign up with my invite code ${code} and we both get paid.`
+  return `Join me on Snacc 🍿 Sign up with my invite code ${code}.`
 }
 
 export function qualifySpan(days: number): string {
@@ -24,11 +24,15 @@ export function rewardBlurb(
   reward: ReferralReward,
   qualifyDays: number
 ): string {
-  const yours =
-    reward.score > 0
-      ? `${formatMoney(reward.referrer)} and ${reward.score} Snacc Score`
-      : formatMoney(reward.referrer)
-  return `Every friend who joins with your code and uses Snacc for ${qualifySpan(qualifyDays)} gets you ${yours}. They get ${formatMoney(reward.referee)} too.`
+  const yours = [
+    reward.referrer.amount > 0 ? formatMoney(reward.referrer) : null,
+    reward.score > 0 ? `${reward.score} Snacc Score` : null,
+  ].filter(Boolean)
+  if (yours.length === 0) return "Bring your friends to Snacc."
+
+  const welcome =
+    reward.referee.amount > 0 ? " They can get a welcome reward too." : ""
+  return `Every friend who joins with your code and uses Snacc for ${qualifySpan(qualifyDays)} gets you ${yours.join(" and ")}.${welcome}`
 }
 
 export type InviteCodeStatus =

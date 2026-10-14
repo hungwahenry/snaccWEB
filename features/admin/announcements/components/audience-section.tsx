@@ -20,7 +20,7 @@ import {
   PLATFORMS,
   PREMIUM_OPTIONS,
 } from "../utils/audience"
-import { CampusPicker } from "./campus-picker"
+import { PlacesPicker } from "./campus-picker"
 
 function problem(message: string | null, fallback?: string): ReactNode {
   return message ? (
@@ -61,9 +61,11 @@ function ReachNote({ reach }: { reach: AnnouncementEditorState["reach"] }) {
 export function AudienceSection({
   editor,
   campuses,
+  countries,
 }: {
   editor: AnnouncementEditorState
   campuses: { options: Option[]; acronyms: ReadonlyMap<string, string> }
+  countries: { options: Option[]; names: ReadonlyMap<string, string> }
 }) {
   const id = useId()
   const { announcement, draft, errors } = editor
@@ -73,7 +75,10 @@ export function AudienceSection({
     return (
       <Section title="Who gets it">
         <p className="rounded-lg border px-4 py-3 text-sm text-pretty">
-          {audienceSummary(announcement.audience, campuses.acronyms)}
+          {audienceSummary(announcement.audience, {
+            campuses: campuses.acronyms,
+            countries: countries.names,
+          })}
         </p>
       </Section>
     )
@@ -82,18 +87,36 @@ export function AudienceSection({
   return (
     <Section
       title="Who gets it"
-      description="Leave everything empty to reach everyone."
+      description="Leave everything empty to reach everyone Snacc is open to. People still waiting for their campus never get it."
       action={<ReachNote reach={editor.reach} />}
     >
       <div className="flex min-w-0 flex-col gap-4 rounded-lg border p-4">
         <Field>
+          <FieldLabel htmlFor={`${id}-countries`}>Countries</FieldLabel>
+          <PlacesPicker
+            id={`${id}-countries`}
+            options={countries.options}
+            chips={countries.names}
+            value={audience.countryCodes}
+            onChange={(countryCodes) => editor.setAudience({ countryCodes })}
+            everywhere="Every open country"
+            empty="No country by that name."
+          />
+          <FieldDescription>
+            Where their campus is. Leave it empty for every open country.
+          </FieldDescription>
+        </Field>
+
+        <Field>
           <FieldLabel htmlFor={`${id}-campuses`}>Campuses</FieldLabel>
-          <CampusPicker
+          <PlacesPicker
             id={`${id}-campuses`}
             options={campuses.options}
-            acronyms={campuses.acronyms}
+            chips={campuses.acronyms}
             value={audience.campusIds}
             onChange={(campusIds) => editor.setAudience({ campusIds })}
+            everywhere="Every campus"
+            empty="No campus by that name."
           />
           <FieldDescription>Leave it empty for every campus.</FieldDescription>
         </Field>

@@ -72,7 +72,7 @@ describe("drafts", () => {
     expect(toCreateInput(draft)).toEqual({
       slug: "spam",
       label: "Spam",
-      hint: undefined,
+      hint: "",
       appliesTo: null,
       requiresDetail: false,
       position: 3,

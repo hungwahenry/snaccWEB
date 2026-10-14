@@ -6,7 +6,7 @@ import { useCountryChoices } from "@/features/admin/countries/hooks/use-country-
 import { useDraft } from "@/features/admin/shell/hooks/use-draft"
 import { LEGAL_PATH } from "@/features/admin/shell/routes"
 import type { AdminLegalDocument, LegalDraft } from "../types"
-import { draftFrom, isDraftReady } from "../utils/legal"
+import { draftFrom, isDraftReady, isPublishable } from "../utils/legal"
 import { useLegalActions, useLegalDocument } from "./use-legal"
 
 const BLANK: LegalDraft = { title: "", content: null, html: "" }
@@ -33,6 +33,7 @@ export function useLegalEditorScreen(id: string) {
     draft,
     text,
     ready: isDraftReady(draft),
+    publishable: isPublishable(draft),
     setBody: (content: unknown, html: string) =>
       replace((current) => ({ ...current, content, html })),
     save: () => actions.save(id, draft),

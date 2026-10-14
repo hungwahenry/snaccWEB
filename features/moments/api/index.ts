@@ -27,8 +27,8 @@ export const unlikeMoment = (momentId: string) =>
   api.del<void>(`/moments/${momentId}/likes`)
 
 export interface MomentReplyResult {
-  conversationId: string
-  messageId: string
+  conversation_id: string
+  message_id: string
 }
 
 export const replyToMoment = (momentId: string, body: string) =>

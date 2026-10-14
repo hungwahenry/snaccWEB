@@ -5,4 +5,5 @@ export const adminUniversityKeys = {
   list: (query: UniversityListQuery) =>
     ["admin", "universities", "list", query] as const,
   everything: () => ["admin", "universities", "everything"] as const,
+  one: (id: string) => ["admin", "universities", "one", id] as const,
 }

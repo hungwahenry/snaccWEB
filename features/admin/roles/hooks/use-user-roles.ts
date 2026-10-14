@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
 import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
 import { grantRole, listUserRoles, revokeRole } from "../api"
+import type { GrantInput } from "../types"
 import { adminAdminKeys } from "@/features/admin/admins/utils/keys"
 import { adminRoleKeys } from "../utils/keys"
 
@@ -19,12 +20,12 @@ export function useRoleGrantActions(userId: string) {
   const invalidates = [adminRoleKeys.grants(userId), adminAdminKeys.all()]
 
   const { run: grant } = useAdminMutation({
-    mutationFn: (roleId: string) => grantRole(userId, roleId),
+    mutationFn: (input: GrantInput) => grantRole(userId, input),
     success: "Role granted.",
     invalidates,
   })
   const { run: revoke } = useAdminMutation({
-    mutationFn: (roleId: string) => revokeRole(userId, roleId),
+    mutationFn: (grantId: string) => revokeRole(userId, grantId),
     success: "Role taken away.",
     invalidates,
   })

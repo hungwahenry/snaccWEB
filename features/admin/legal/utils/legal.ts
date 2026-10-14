@@ -45,3 +45,11 @@ export function draftFrom(doc: AdminLegalDocument): LegalDraft {
 export function isDraftReady(draft: LegalDraft): boolean {
   return draft.title.trim().length > 0
 }
+
+export function isPublishable(draft: LegalDraft): boolean {
+  const words = draft.html
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .trim()
+  return isDraftReady(draft) && words.length > 0
+}

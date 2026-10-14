@@ -47,14 +47,17 @@ function NewVersionForm({
 
 export function NewVersionDialog({
   whereOptions,
+  disabled,
   onStart,
 }: {
   whereOptions: Option[]
+  disabled?: boolean
   onStart: (kind: LegalKind, where: string) => Promise<unknown>
 }) {
   return (
     <FormDialog
       trigger={<Button size="sm">New version</Button>}
+      disabled={disabled}
       title="New version"
       description="Publishing it later asks everyone it applies to to agree again."
     >

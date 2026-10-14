@@ -16,7 +16,7 @@ export function WalletsScreen() {
     <>
       <PageHeader
         title="Wallets"
-        description="Spendable balances, and every posting that produced them."
+        description="Spendable balances, wallet by wallet. Every posting behind them is on the Ledger."
       />
       <div className="flex flex-col gap-6">
         <WalletsSummary summary={summary.data} pending={summary.isPending} />

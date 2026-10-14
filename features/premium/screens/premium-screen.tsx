@@ -8,6 +8,7 @@ import { Eyebrow } from "@/components/ui/eyebrow"
 import { useFlagWhenKnown } from "@/features/config/hooks/use-flag"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { useWalletOverview } from "@/features/wallet/hooks/account/use-wallet-overview"
+import { offers } from "@/features/wallet/utils/banking"
 import { useBack } from "@/hooks/use-back"
 import { formatMoney } from "@/lib/money"
 import { useLegalLinks } from "@/features/legal/hooks/use-legal-links"
@@ -33,6 +34,7 @@ export function PremiumScreen() {
   const premium = query.data
   const plans = premium?.lifetime ? null : premium?.wallet_plans
   const balance = wallet.data?.balance
+  const canTopUp = offers(wallet.data?.banking ?? null, "bank_transfer")
 
   return (
     <div className="premium-sky min-h-dvh">
@@ -91,6 +93,7 @@ export function PremiumScreen() {
                   affordable={
                     balance !== undefined && balance.amount >= plan.price.amount
                   }
+                  canTopUp={canTopUp}
                   busy={buying !== null}
                   loading={buying === plan.plan}
                   onBuy={() => buy(plan)}

@@ -1,4 +1,5 @@
 import { ShieldOff } from "lucide-react"
+import { denialReason } from "@/features/admin/auth/utils/permission"
 import {
   Empty,
   EmptyDescription,
@@ -13,10 +14,7 @@ export function NoAccess({ permission }: { permission: string }) {
         <ShieldOff />
       </EmptyMedia>
       <EmptyTitle>Not your area</EmptyTitle>
-      <EmptyDescription>
-        This page needs the <code>{permission}</code> permission. Ask an owner
-        if you think you should have it.
-      </EmptyDescription>
+      <EmptyDescription>{denialReason(undefined, permission)}</EmptyDescription>
     </Empty>
   )
 }

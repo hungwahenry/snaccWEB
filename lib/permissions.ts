@@ -1,7 +1,7 @@
 export interface AdminPermissions {
   all: boolean
   keys: string[]
-  campuses: string[]
+  limited_to: Record<string, string[]>
 }
 
 export function hasAdminAccess(
@@ -17,13 +17,12 @@ export function can(
   return !!permissions && (permissions.all || permissions.keys.includes(key))
 }
 
-export function canForCampus(
+export function campusesFor(
   permissions: AdminPermissions | undefined,
-  key: string,
-  campusId: string | null
-): boolean {
-  if (!can(permissions, key)) return false
-  if (!permissions?.campuses.length) return true
+  key: string
+): string[] | null {
+  if (!can(permissions, key)) return []
+  if (permissions?.all) return null
 
-  return campusId !== null && permissions.campuses.includes(campusId)
+  return permissions?.limited_to[key] ?? null
 }

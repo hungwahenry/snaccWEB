@@ -2,11 +2,11 @@ import type { ReactNode } from "react"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import type { BirthDateDraft } from "../types"
 import {
-  BIRTH_MONTHS,
   birthDays,
   birthdayLabel,
+  birthMonths,
   birthYears,
-  withMonth,
+  fittedDate,
 } from "../utils/birth-date"
 
 function Part({
@@ -47,13 +47,15 @@ export function BirthDateFields({
   onChange: (next: BirthDateDraft) => void
   known?: { day: number; month: number } | null
 }) {
+  const today = new Date()
+  const change = (next: BirthDateDraft) => onChange(fittedDate(next, today))
   const year = (
     <Part
       label="Year"
       value={value.year}
-      onChange={(next) => onChange({ ...value, year: next })}
+      onChange={(next) => change({ ...value, year: next })}
     >
-      {birthYears(new Date().getFullYear()).map((each) => (
+      {birthYears(today, known).map((each) => (
         <NativeSelectOption key={each} value={each}>
           {each}
         </NativeSelectOption>
@@ -77,9 +79,9 @@ export function BirthDateFields({
       <Part
         label="Day"
         value={value.day}
-        onChange={(next) => onChange({ ...value, day: next })}
+        onChange={(next) => change({ ...value, day: next })}
       >
-        {birthDays(value.month).map((each) => (
+        {birthDays(value.month, value.year, today).map((each) => (
           <NativeSelectOption key={each} value={each}>
             {each}
           </NativeSelectOption>
@@ -88,9 +90,9 @@ export function BirthDateFields({
       <Part
         label="Month"
         value={value.month}
-        onChange={(next) => onChange(withMonth(value, next))}
+        onChange={(next) => change({ ...value, month: next })}
       >
-        {BIRTH_MONTHS.map((each) => (
+        {birthMonths(value.year, today).map((each) => (
           <NativeSelectOption key={each.value} value={each.value}>
             {each.label}
           </NativeSelectOption>

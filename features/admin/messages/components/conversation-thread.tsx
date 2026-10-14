@@ -62,7 +62,7 @@ function MessageRow({
           ) : null}
           {removed ? (
             <Badge variant="secondary" className="text-[10px]">
-              removed
+              {message.deleted_by === "sender" ? "withdrawn" : "removed"}
             </Badge>
           ) : null}
         </div>
@@ -71,7 +71,7 @@ function MessageRow({
           <p className="border-l-2 border-border pl-2 text-xs text-muted-foreground italic">
             {message.reply_to.removed
               ? "Removed message"
-              : message.reply_to.body}
+              : (message.reply_to.body ?? "Attachment")}
           </p>
         ) : null}
 
@@ -87,11 +87,12 @@ function MessageRow({
           images={message.images}
           gif={message.gif}
           sticker={message.sticker}
+          voice={message.voice}
         />
       </div>
 
       <div className="shrink-0">
-        {removed ? (
+        {message.deleted_by === "sender" ? null : removed ? (
           <CanAct permission="messages.restore">
             <ConfirmAction
               trigger={

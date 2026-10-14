@@ -1,8 +1,14 @@
+"use client"
+
 import { UsersIcon } from "lucide-react"
+import { useNow } from "@/hooks/use-now"
+import { MINUTE_MS } from "@/lib/duration"
 import type { SnaccHangout } from "../../types"
-import { goingLine, whenLineFor } from "../../utils/hangouts"
+import { goingLine, stateAt, whenLineFor } from "../../utils/hangouts"
 
 export function PublicHangout({ hangout }: { hangout: SnaccHangout }) {
+  const now = useNow(MINUTE_MS)
+
   return (
     <div className="flex flex-col gap-2 rounded-2xl border border-border p-3.5">
       <div className="flex items-center gap-3">
@@ -17,7 +23,7 @@ export function PublicHangout({ hangout }: { hangout: SnaccHangout }) {
             {hangout.title}
           </span>
           <span className="text-sm text-muted-foreground">
-            {whenLineFor(hangout.state, hangout, undefined)}
+            {whenLineFor(stateAt(hangout, now), hangout, undefined)}
           </span>
         </span>
       </div>

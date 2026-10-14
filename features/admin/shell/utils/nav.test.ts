@@ -11,12 +11,12 @@ import {
 const holding = (...keys: string[]): AdminPermissions => ({
   all: false,
   keys,
-  campuses: [],
+  limited_to: {},
 })
 
 describe("visibleNav", () => {
   it("shows everything to someone with full access", () => {
-    const all = visibleNav({ all: true, keys: [], campuses: [] })
+    const all = visibleNav({ all: true, keys: [], limited_to: {} })
     expect(all).toHaveLength(NAV.length)
   })
 

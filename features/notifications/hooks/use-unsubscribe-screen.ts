@@ -11,7 +11,10 @@ export function useUnsubscribeScreen(token: string) {
     enabled: token.length > 0,
     retry: false,
   })
-  const stop = useMutation({ mutationFn: () => unsubscribe(token) })
+  const stop = useMutation({
+    mutationFn: () => unsubscribe(token),
+    meta: { silent: true },
+  })
 
   return {
     loading: subject.isLoading,

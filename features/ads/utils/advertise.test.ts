@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest"
 import { money } from "@/lib/money"
 import type { AdsInfo } from "../types"
-import { advertisePricing, advertiseQuestions } from "./advertise"
+import {
+  advertisePricing,
+  advertiseQuestions,
+  isAdvertisable,
+} from "./advertise"
 
 const naira = (amount: number) => money(amount, "NGN")
 
@@ -16,6 +20,14 @@ const info: AdsInfo = {
   campuses: 429,
   prohibited: ["Alcohol", "Weapons"],
 }
+
+describe("isAdvertisable", () => {
+  it("needs at least one price", () => {
+    expect(isAdvertisable(info)).toBe(true)
+    expect(isAdvertisable({ ...info, prices: [] })).toBe(false)
+    expect(isAdvertisable(null)).toBe(false)
+  })
+})
 
 describe("advertisePricing", () => {
   it("leads with the smallest budget and what it buys", () => {

@@ -7,7 +7,7 @@ import type { ReactNode } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { CanAct } from "@/features/admin/auth/containers/can-act"
-import type { AdminGrant } from "@/features/admin/roles/types"
+import type { AdminGrant, GrantInput } from "@/features/admin/roles/types"
 import { ActionButton } from "@/features/admin/shell/components/action-button"
 import { ConfirmAction } from "@/features/admin/shell/components/confirm-action"
 import { Section } from "@/features/admin/shell/components/detail"
@@ -60,19 +60,17 @@ function Group({
 export function UserManageTab({
   user,
   actions,
-  campuses,
   suspension,
   roles,
 }: {
   user: AdminUserDetail
   actions: UserActions
-  campuses: Option[]
   suspension: { reasons: SuspensionReason[]; durations: Option[] }
   roles: {
     grants: UseQueryResult<AdminGrant[]>
     grantable: Option[]
-    grant: (roleId: string) => Promise<unknown>
-    revoke: (roleId: string) => Promise<unknown>
+    grant: (input: GrantInput) => Promise<unknown>
+    revoke: (grantId: string) => Promise<unknown>
   }
 }) {
   return (
@@ -137,7 +135,9 @@ export function UserManageTab({
         <SettingRow
           label="Panel roles"
           state={
-            user.role === "admin" ? <Badge>Owner account</Badge> : undefined
+            user.roles.length > 0 ? (
+              <Badge>{user.roles.join(", ")}</Badge>
+            ) : undefined
           }
           description="What they can reach and do in this panel."
           action={
@@ -163,12 +163,11 @@ export function UserManageTab({
               {user.university?.acronym ?? "None"}
             </Badge>
           }
-          description="Which university the account belongs to."
+          description="Which campus the account belongs to."
           action={
             <CanAct permission="users.set_university">
               <CampusDialog
                 currentId={user.university?.id ?? null}
-                campuses={campuses}
                 trigger={
                   <Button variant="outline" size="sm">
                     Change

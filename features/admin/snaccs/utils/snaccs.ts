@@ -8,18 +8,36 @@ import type {
   AdminSnacc,
   HangoutState,
   SnaccContent,
+  SnaccListQuery,
   SnaccState,
 } from "../types"
 
 export const SNACC_STATES = [
   "live",
+  "held",
   "deleted",
 ] as const satisfies readonly SnaccState[]
 
 export const STATE_OPTIONS: Option<SnaccState>[] = [
   { value: "live", label: "Live" },
+  { value: "held", label: "Held" },
   { value: "deleted", label: "Removed" },
 ]
+
+export function stateFilter(
+  state: SnaccState | null
+): Pick<SnaccListQuery, "deleted" | "held"> {
+  switch (state) {
+    case null:
+      return {}
+    case "live":
+      return { deleted: false }
+    case "held":
+      return { deleted: false, held: true }
+    case "deleted":
+      return { deleted: true }
+  }
+}
 
 /** The text a snaccs row links with: its body, else what is attached. */
 export function snaccPreview(
@@ -39,9 +57,10 @@ export function snaccPreview(
 }
 
 export function snaccStatus(
-  snacc: Pick<AdminSnacc, "deleted_at" | "pinned">
+  snacc: Pick<AdminSnacc, "deleted_at" | "pinned" | "held_at">
 ): StatusMeta {
   if (snacc.deleted_at) return { label: "Removed", variant: "destructive" }
+  if (snacc.held_at) return { label: "Held", variant: "secondary" }
   if (snacc.pinned) return { label: "Pinned", variant: "secondary" }
   return { label: "Live", variant: "outline" }
 }

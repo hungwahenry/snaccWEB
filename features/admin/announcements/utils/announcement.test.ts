@@ -35,6 +35,7 @@ const announcement = (
   important: false,
   banner_until: null,
   audience: {
+    country_codes: [],
     campus_ids: [],
     platforms: [],
     min_version: null,

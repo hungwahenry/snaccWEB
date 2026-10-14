@@ -1,12 +1,16 @@
 "use client"
 
 import { useFlag } from "@/features/config/hooks/use-flag"
+import { offers } from "../../utils/banking"
+import { useWalletOverview } from "./use-wallet-overview"
 import { railLines, tierCopy } from "../../utils/limits"
 import { useLimits } from "./use-limits"
 
 export function useLimitsScreen() {
   const limits = useLimits()
-  const accountNumberEnabled = useFlag("wallet_dva")
+  const banking = useWalletOverview().data?.banking ?? null
+  const accountNumberEnabled =
+    useFlag("wallet_dva") && offers(banking, "dedicated_account")
   const data = limits.data
 
   return {

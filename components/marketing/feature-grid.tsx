@@ -23,7 +23,7 @@ const FEATURES: Feature[] = [
   {
     icon: NewspaperIcon,
     name: "Campus feed",
-    line: "Your campus, every campus, and the people you follow. Text, pics, GIFs, polls, voice notes, whatever's on your mind.",
+    line: "Your campus, every campus in your country, and the people you follow. Text, pics, GIFs, polls, voice notes, whatever's on your mind.",
     color: FEATURE_COLORS.feed,
     wide: true,
   },

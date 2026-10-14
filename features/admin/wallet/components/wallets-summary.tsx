@@ -11,7 +11,7 @@ export function WalletsSummary({
   summary,
   pending,
 }: {
-  summary: WalletSummary | undefined
+  summary: WalletSummary[] | undefined
   pending: boolean
 }) {
   if (pending) {
@@ -24,22 +24,32 @@ export function WalletsSummary({
     )
   }
   if (!summary) return null
+  const several = summary.length > 1
 
   return (
-    <StatGrid columns={3}>
-      <Stat
-        label="Held by users"
-        value={formatMoney(summary.users.balance)}
-        hint={holdersNote(summary.users)}
-      />
-      {summary.system.map((pool) => (
-        <Stat
-          key={pool.slug}
-          label={humanize(pool.slug)}
-          value={formatMoney(pool.balance)}
-          hint={poolNote(pool.slug)}
-        />
+    <div className="flex flex-col gap-6">
+      {summary.map((section) => (
+        <div key={section.currency} className="flex flex-col gap-3">
+          {several ? (
+            <h3 className="text-lg font-bold">{section.currency}</h3>
+          ) : null}
+          <StatGrid columns={3}>
+            <Stat
+              label="Held by users"
+              value={formatMoney(section.users.balance)}
+              hint={holdersNote(section.users)}
+            />
+            {section.system.map((pool) => (
+              <Stat
+                key={pool.slug}
+                label={humanize(pool.slug)}
+                value={formatMoney(pool.balance)}
+                hint={poolNote(pool.slug)}
+              />
+            ))}
+          </StatGrid>
+        </div>
       ))}
-    </StatGrid>
+    </div>
   )
 }

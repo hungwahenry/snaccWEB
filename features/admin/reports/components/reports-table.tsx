@@ -1,5 +1,6 @@
 "use client"
 
+import type { AdminPermissions } from "@/lib/permissions"
 import type { UseQueryResult } from "@tanstack/react-query"
 import { useMemo, type ReactNode } from "react"
 import { Button } from "@/components/ui/button"
@@ -28,12 +29,14 @@ export function ReportsTable({
   toolbar,
   onPageChange,
   suspension,
+  permissions,
   onResolve,
 }: {
   query: UseQueryResult<Paginated<AdminReport>>
   toolbar: ReactNode
   onPageChange: (page: number) => void
   suspension: SuspensionChoices
+  permissions: AdminPermissions | undefined
   onResolve: (target: ReportTarget, draft: ResolveDraft) => Promise<unknown>
 }) {
   const columns = useMemo<Column<AdminReport>[]>(
@@ -46,11 +49,13 @@ export function ReportsTable({
       },
       {
         id: "reason",
+        hideBelow: "sm",
         header: "Reason",
         cell: (report) => report.reason.label,
       },
       {
         id: "reporter",
+        hideBelow: "md",
         header: "Reporter",
         className: "text-muted-foreground",
         cell: (report) => reporterName(report),
@@ -62,6 +67,7 @@ export function ReportsTable({
       },
       {
         id: "reported",
+        hideBelow: "md",
         header: "Reported",
         className: "text-muted-foreground",
         cell: (report) => formatDate(report.created_at),
@@ -76,6 +82,7 @@ export function ReportsTable({
               <ResolveDialog
                 report={report}
                 suspension={suspension}
+                permissions={permissions}
                 trigger={
                   <Button variant="outline" size="sm">
                     Resolve
@@ -91,7 +98,7 @@ export function ReportsTable({
           ),
       },
     ],
-    [suspension, onResolve]
+    [suspension, permissions, onResolve]
   )
 
   return (

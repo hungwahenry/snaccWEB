@@ -9,6 +9,7 @@ export function PlanCard({
   terms,
   featured,
   affordable,
+  canTopUp,
   busy,
   loading,
   onBuy,
@@ -16,6 +17,7 @@ export function PlanCard({
   terms: PlanTerms
   featured: boolean
   affordable: boolean
+  canTopUp: boolean
   busy: boolean
   loading: boolean
   onBuy: () => void
@@ -57,13 +59,17 @@ export function PlanCard({
         >
           {loading ? <Spinner /> : "Buy"}
         </Button>
-      ) : (
+      ) : canTopUp ? (
         <Button
           size="lg"
           variant="outline"
           render={<Link href={payPath({ mode: "topup" })} />}
         >
           Top up to buy
+        </Button>
+      ) : (
+        <Button size="lg" variant="outline" disabled>
+          Not enough in your wallet
         </Button>
       )}
     </div>

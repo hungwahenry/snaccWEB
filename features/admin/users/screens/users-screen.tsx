@@ -1,15 +1,16 @@
 "use client"
 
+import { CampusSearchField } from "@/features/admin/universities/containers/campus-search-field"
 import { OptionSelect } from "@/features/admin/shell/components/option-select"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
 import { SearchField } from "@/features/admin/shell/components/search-field"
 import { TableToolbar } from "@/features/admin/shell/components/table-toolbar"
 import { UsersTable } from "../components/users-table"
 import { useUsersScreen } from "../hooks/use-users-screen"
-import { ROLE_OPTIONS, STATE_OPTIONS } from "../utils/users"
+import { KIND_OPTIONS, STATE_OPTIONS } from "../utils/users"
 
 export function UsersScreen() {
-  const { list, query, campuses } = useUsersScreen()
+  const { list, query } = useUsersScreen()
 
   return (
     <>
@@ -37,18 +38,18 @@ export function UsersScreen() {
             <OptionSelect
               label="Account type"
               allLabel="Any account"
-              value={list.values.role}
-              onChange={(role) => list.setFilter({ role })}
-              options={ROLE_OPTIONS}
+              value={list.values.kind}
+              onChange={(kind) => list.setFilter({ kind })}
+              options={KIND_OPTIONS}
             />
-            <OptionSelect
-              label="Campus"
-              allLabel="Every campus"
-              value={list.values.campus}
-              onChange={(campus) => list.setFilter({ campus })}
-              options={campuses.options}
-              className="w-56"
-            />
+            <div className="w-64">
+              <CampusSearchField
+                label="Campus"
+                value={list.values.campus}
+                onChange={(campus) => list.setFilter({ campus })}
+                anyLabel="Every campus"
+              />
+            </div>
           </TableToolbar>
         }
       />

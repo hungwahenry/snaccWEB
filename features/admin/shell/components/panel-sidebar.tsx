@@ -14,6 +14,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import { Spinner } from "@/components/ui/spinner"
 import type { NavItem, NavSection } from "../utils/nav"
@@ -33,6 +34,8 @@ export function PanelSidebar({
   loggingOut: boolean
   onLogout: () => void
 }) {
+  const { setOpenMobile } = useSidebar()
+
   return (
     <Sidebar>
       <SidebarHeader className="px-3 py-4">
@@ -50,6 +53,7 @@ export function PanelSidebar({
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton
                       isActive={item.active}
+                      onClick={() => setOpenMobile(false)}
                       render={
                         <Link
                           href={item.href}

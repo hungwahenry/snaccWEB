@@ -5,7 +5,7 @@ import { AdminsTable } from "../components/admins-table"
 import { useAdminsScreen } from "../hooks/use-admins-screen"
 
 export function AdminsScreen() {
-  const { query, campuses } = useAdminsScreen()
+  const { query } = useAdminsScreen()
 
   return (
     <>
@@ -13,7 +13,7 @@ export function AdminsScreen() {
         title="Admins"
         description="Everyone who can reach this panel, and what they hold."
       />
-      <AdminsTable query={query} acronyms={campuses.acronyms} />
+      <AdminsTable query={query} />
     </>
   )
 }

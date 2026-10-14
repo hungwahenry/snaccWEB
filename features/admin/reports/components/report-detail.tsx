@@ -1,5 +1,6 @@
 "use client"
 
+import type { AdminPermissions } from "@/lib/permissions"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { CanAct } from "@/features/admin/auth/containers/can-act"
@@ -62,10 +63,12 @@ function Filing({ report }: { report: AdminReport }) {
 export function ReportDetail({
   report,
   suspension,
+  permissions,
   onResolve,
 }: {
   report: AdminReportDetail
   suspension: SuspensionChoices
+  permissions: AdminPermissions | undefined
   onResolve: (target: ReportTarget, draft: ResolveDraft) => Promise<unknown>
 }) {
   const filings = [report, ...report.siblings]
@@ -93,6 +96,7 @@ export function ReportDetail({
               <ResolveDialog
                 report={report}
                 suspension={suspension}
+                permissions={permissions}
                 trigger={
                   <Button variant="outline" size="sm">
                     Resolve
@@ -105,7 +109,7 @@ export function ReportDetail({
         }
       />
 
-      <ReportedContent report={report} />
+      <ReportedContent report={report} permissions={permissions} />
 
       {report.scan ? <ScanPanel scan={report.scan} /> : null}
 

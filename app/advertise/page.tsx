@@ -14,6 +14,7 @@ import { ADVERTISE_PATH } from "@/features/ads/routes"
 import {
   advertisePricing,
   advertiseQuestions,
+  isAdvertisable,
 } from "@/features/ads/utils/advertise"
 
 export const metadata: Metadata = {
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
 
 export default async function AdvertisePage() {
   const info = await getAdsInfo()
-  if (!info || info.prices.length === 0) notFound()
+  if (!isAdvertisable(info)) notFound()
 
   const pricing = advertisePricing(info)
 

@@ -6,6 +6,7 @@ import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutation"
 import {
   createSuspensionReason,
+  listSuspensionChoices,
   listSuspensionReasons,
   updateSuspensionReason,
 } from "../api"
@@ -26,9 +27,12 @@ export function useSuspensionReasons() {
   })
 }
 
-/** What a moderator can choose from when suspending someone. */
 export function useSuspensionChoices() {
-  const reasons = useSuspensionReasons().data
+  const reasons = useQuery({
+    queryKey: adminSuspensionReasonKeys.choices(),
+    queryFn: listSuspensionChoices,
+    select: sortReasons,
+  }).data
   const days = useConfigValue("moderation.suspension.durations_days")
 
   return useMemo(

@@ -28,6 +28,7 @@ const saved = (patch: Partial<AdminAnnouncement> = {}): AdminAnnouncement => ({
   important: false,
   banner_until: "2026-10-09T00:00:00.000Z",
   audience: {
+    country_codes: [],
     campus_ids: ["c1"],
     platforms: ["android"],
     min_version: "1.4.0",
@@ -131,6 +132,7 @@ describe("toCreateInput", () => {
       bannerUntil: "2026-10-09T00:00:00.000Z",
       push: false,
       audience: {
+        countryCodes: [],
         campusIds: ["c1"],
         platforms: ["android"],
         minVersion: "1.4.0",

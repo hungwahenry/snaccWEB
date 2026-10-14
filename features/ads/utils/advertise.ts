@@ -33,6 +33,10 @@ function ratesLine(info: AdsInfo): string {
     .join("; ")
 }
 
+export function isAdvertisable(info: AdsInfo | null): info is AdsInfo {
+  return info !== null && info.prices.length > 0
+}
+
 export function advertisePricing(info: AdsInfo): AdvertisePricing {
   const [only, ...others] = info.prices
   return {

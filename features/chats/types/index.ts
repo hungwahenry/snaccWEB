@@ -24,6 +24,7 @@ export interface ChatRoomHangout {
   emoji: string
   starts_at: string
   wraps_at: string
+  time_zone: string
   cancelled: boolean
 }
 

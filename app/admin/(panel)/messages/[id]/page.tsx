@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { ConversationScreen } from "@/features/admin/messages/screens/conversation-screen"
 
-export const metadata: Metadata = { title: "Conversation" }
+export const metadata: Metadata = { title: "Ghost thread" }
 
 export default async function Page({
   params,

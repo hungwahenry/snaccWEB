@@ -5,16 +5,13 @@ import {
   DialogForm,
   FormDialog,
 } from "@/features/admin/shell/components/form-dialog"
-import { SelectField } from "@/features/admin/shell/components/form-fields"
-import type { Option } from "@/features/admin/shell/types"
+import { CampusSearchField } from "@/features/admin/universities/containers/campus-search-field"
 
 function CampusForm({
   currentId,
-  campuses,
   onSubmit,
 }: {
   currentId: string | null
-  campuses: Option[]
   onSubmit: (universityId: string) => Promise<unknown>
 }) {
   const [chosen, setChosen] = useState<string | null>(currentId)
@@ -25,12 +22,10 @@ function CampusForm({
       canSubmit={chosen !== null && chosen !== currentId}
       onSubmit={() => (chosen ? onSubmit(chosen) : undefined)}
     >
-      <SelectField
-        label="University"
+      <CampusSearchField
+        label="Campus"
         value={chosen}
         onChange={setChosen}
-        options={campuses}
-        placeholder={campuses.length ? "Pick a campus" : "Loading campuses…"}
       />
     </DialogForm>
   )
@@ -38,13 +33,11 @@ function CampusForm({
 
 export function CampusDialog({
   currentId,
-  campuses,
   trigger,
   disabled,
   onSubmit,
 }: {
   currentId: string | null
-  campuses: Option[]
   trigger: ReactElement
   disabled?: boolean
   onSubmit: (universityId: string) => Promise<unknown>
@@ -56,11 +49,7 @@ export function CampusDialog({
       title="Change campus"
       description="Moves this account to another university. Snaccs they already posted stay on the campus they were posted from."
     >
-      <CampusForm
-        currentId={currentId}
-        campuses={campuses}
-        onSubmit={onSubmit}
-      />
+      <CampusForm currentId={currentId} onSubmit={onSubmit} />
     </FormDialog>
   )
 }

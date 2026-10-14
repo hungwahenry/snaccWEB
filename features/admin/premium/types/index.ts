@@ -54,3 +54,14 @@ export interface BenefitDraft {
   label: string
   description: string
 }
+
+export interface GrantPremiumInput {
+  days: number
+  reason: string
+}
+
+export interface UserPremium {
+  active: boolean
+  until: string | null
+  lifetime: boolean
+}

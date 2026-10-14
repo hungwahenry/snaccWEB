@@ -27,10 +27,13 @@ describe("the waiting notice", () => {
     )
   })
 
-  it("still reads well without a campus", () => {
-    expect(waitingLine({ ...waiting, campus: null })).toBe(
-      "Snacc isn't open at your campus yet. We'll email ama@example.com the moment it is."
+  it("asks for a campus when theirs went away", () => {
+    const lost = { ...waiting, campus: null }
+    expect(waitingTitle(lost)).toBe("Pick your campus")
+    expect(waitingLine(lost)).toBe(
+      "Your campus is no longer on Snacc. Pick it again from the list to carry on."
     )
+    expect(mustPickAgain(lost)).toBe(true)
   })
 
   it("says a campus someone added is being checked", () => {

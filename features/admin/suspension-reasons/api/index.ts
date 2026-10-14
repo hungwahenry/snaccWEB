@@ -9,6 +9,10 @@ export function listSuspensionReasons() {
   return api.get<SuspensionReason[]>("/admin/suspension-reasons")
 }
 
+export function listSuspensionChoices() {
+  return api.get<SuspensionReason[]>("/admin/suspension-reasons/choices")
+}
+
 export function createSuspensionReason(input: CreateSuspensionReasonInput) {
   return api.post<SuspensionReason>("/admin/suspension-reasons", input)
 }

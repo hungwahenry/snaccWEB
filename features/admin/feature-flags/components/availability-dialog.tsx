@@ -59,25 +59,19 @@ function AvailabilityForm({
       canSubmit={isDraftReady(draft)}
       onSubmit={() => onSubmit(draft)}
     >
-      {flag.is_public ? (
-        <SelectField
-          label="Who it is for"
-          value={draft.audience}
-          onChange={(audience) => set("audience", audience)}
-          options={AUDIENCE_OPTIONS}
-          hint={
-            draft.audience === "listed"
-              ? "Only the people under People get it. Everyone else sees nothing."
-              : draft.audience === "premium"
-                ? "Early access: subscribers get it before everyone else."
-                : undefined
-          }
-        />
-      ) : (
-        <FormNote>
-          Only the server reads this switch, so it is on for everyone or no one.
-        </FormNote>
-      )}
+      <SelectField
+        label="Who it is for"
+        value={draft.audience}
+        onChange={(audience) => set("audience", audience)}
+        options={AUDIENCE_OPTIONS}
+        hint={
+          draft.audience === "listed"
+            ? "Only the people under People get it. Everyone else sees nothing."
+            : draft.audience === "premium"
+              ? "Early access: subscribers get it before everyone else."
+              : undefined
+        }
+      />
 
       <div className="grid grid-cols-2 gap-3">
         <TextField

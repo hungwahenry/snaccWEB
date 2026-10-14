@@ -6,7 +6,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { CanAct } from "@/features/admin/auth/containers/can-act"
 import { ActionButton } from "@/features/admin/shell/components/action-button"
-import { ConfirmAction } from "@/features/admin/shell/components/confirm-action"
+import { InlineConfirm } from "@/features/admin/shell/components/inline-confirm"
 import { EmptyNote } from "@/features/admin/shell/components/detail"
 import { TextField } from "@/features/admin/shell/components/form-fields"
 import { QueryView } from "@/features/admin/shell/components/query-view"
@@ -66,20 +66,20 @@ export function MembersList({
                     note={`Added ${formatDate(member.added_at)}`}
                   />
                   <CanAct permission="flags.write">
-                    <ConfirmAction
-                      trigger={
+                    <InlineConfirm
+                      question="Take them off? They lose it within a few minutes."
+                      confirmLabel="Take off"
+                      onConfirm={() => onRemove(member.user.id)}
+                      trigger={(ask) => (
                         <Button
                           variant="ghost"
                           size="icon-sm"
                           aria-label={`Take @${member.user.username ?? "them"} off the list`}
+                          onClick={ask}
                         >
                           <X />
                         </Button>
-                      }
-                      title="Take them off the list?"
-                      description="They lose the feature the next time their app checks, within a few minutes."
-                      confirmLabel="Take off"
-                      onConfirm={() => onRemove(member.user.id)}
+                      )}
                     />
                   </CanAct>
                 </li>

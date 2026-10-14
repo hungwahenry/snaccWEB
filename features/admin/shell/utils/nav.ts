@@ -18,8 +18,10 @@ import {
   Megaphone,
   MessageSquare,
   MessageSquareHeart,
+  MessagesSquare,
   MousePointerClick,
   Palette,
+  Receipt,
   Rocket,
   Scale,
   ScanEye,
@@ -65,6 +67,7 @@ import {
   MODERATION_PATH,
   MOMENTS_PATH,
   NOTIFICATION_TYPES_PATH,
+  ROOMS_PATH,
   OPS_PATH,
   PAGES_PATH,
   LEGAL_PATH,
@@ -87,6 +90,7 @@ import {
   PAYMENT_MARKETS_PATH,
   USERS_PATH,
   WALLETS_PATH,
+  LEDGER_PATH,
   WEBHOOKS_PATH,
   WITHDRAWALS_PATH,
 } from "../routes"
@@ -149,6 +153,12 @@ export const NAV: NavSection[] = [
         permission: "messages.read",
       },
       {
+        href: ROOMS_PATH,
+        label: "Rooms",
+        icon: MessagesSquare,
+        permission: "chats.read",
+      },
+      {
         href: MODERATION_PATH,
         label: "Automatic review",
         icon: ScanEye,
@@ -185,7 +195,7 @@ export const NAV: NavSection[] = [
       },
       {
         href: UNIVERSITIES_PATH,
-        label: "Universities",
+        label: "Campuses",
         icon: School,
         permission: "universities.read",
       },
@@ -226,7 +236,7 @@ export const NAV: NavSection[] = [
       },
       {
         href: SCORE_TIERS_PATH,
-        label: "Score tiers",
+        label: "Snacc Score tiers",
         icon: Medal,
         permission: "score_tiers.read",
       },
@@ -245,6 +255,12 @@ export const NAV: NavSection[] = [
         href: WALLETS_PATH,
         label: "Wallets",
         icon: Wallet,
+        permission: "wallet.read",
+      },
+      {
+        href: LEDGER_PATH,
+        label: "Ledger",
+        icon: Receipt,
         permission: "wallet.read",
       },
       {
@@ -343,7 +359,7 @@ export const NAV: NavSection[] = [
       },
       {
         href: NOTIFICATION_TYPES_PATH,
-        label: "Notifications",
+        label: "Notification types",
         icon: Bell,
         permission: "notification_types.read",
       },
@@ -407,7 +423,7 @@ export const NAV: NavSection[] = [
       },
       {
         href: OPS_PATH,
-        label: "Health & drift",
+        label: "Health and drift",
         icon: Wrench,
         permission: "ops.read",
       },

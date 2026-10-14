@@ -50,7 +50,7 @@ export function toRuleLine(draft: RuleDraft): RuleLine {
     category: draft.category.trim(),
     threshold: parseThreshold(draft.threshold) ?? 0,
     action: draft.action,
-    note: draft.note.trim() || undefined,
+    note: draft.note.trim(),
   }
 }
 

@@ -78,6 +78,16 @@ export function groupKeys(keys: string[]): [string, string[]][] {
   return [...groups]
 }
 
+export function lacksRead(
+  group: PermissionGroup,
+  keys: ReadonlySet<string>
+): boolean {
+  const read = group.permissions.find((each) => each.action === "read")
+  if (!read || keys.has(read.key)) return false
+
+  return group.permissions.some((each) => keys.has(each.key))
+}
+
 export function toggleKey(keys: ReadonlySet<string>, key: string): Set<string> {
   const next = new Set(keys)
   if (next.has(key)) next.delete(key)
@@ -86,21 +96,10 @@ export function toggleKey(keys: ReadonlySet<string>, key: string): Set<string> {
   return next
 }
 
-const CAMPUS_SCOPE = "university"
-
-/** The role's name, and the campus it is limited to when it is limited to one. */
-export function grantLabel(
-  grant: AdminGrant,
-  acronyms: ReadonlyMap<string, string> = new Map()
-): string {
-  if (grant.scope_type === null && grant.scope_id === null) {
-    return grant.role.name
-  }
-  if (grant.scope_type === CAMPUS_SCOPE && grant.scope_id !== null) {
-    return `${grant.role.name} · ${acronyms.get(grant.scope_id) ?? "one campus"}`
-  }
-
-  return `${grant.role.name} · limited`
+export function grantLabel(grant: AdminGrant): string {
+  return grant.campus
+    ? `${grant.role.name} · ${grant.campus.acronym}`
+    : grant.role.name
 }
 
 /** A role that can do everything stands out from one that can do a few things. */
@@ -108,12 +107,15 @@ export function grantVariant(grant: AdminGrant): BadgeVariant {
   return grant.role.allow_all ? "default" : "outline"
 }
 
-/** Roles someone does not hold yet, as choices. */
 export function grantableRoles(
   roles: AdminRole[],
   grants: AdminGrant[]
 ): Option[] {
-  const held = new Set(grants.map((grant) => grant.role.id))
+  const held = new Set(
+    grants
+      .filter((grant) => grant.campus === null)
+      .map((grant) => grant.role.id)
+  )
 
   return roles
     .filter((role) => !held.has(role.id))

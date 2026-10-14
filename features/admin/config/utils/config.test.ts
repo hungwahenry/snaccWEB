@@ -21,6 +21,8 @@ const setting = (
   key: "feed.page_size",
   value,
   default_value: value,
+  premium_value: null,
+  premium_default: null,
   is_default: true,
   is_public: false,
   category: "feed",
@@ -132,6 +134,7 @@ describe("drafts", () => {
     expect(draftFrom(setting(true, { is_public: true }))).toEqual({
       text: "",
       on: true,
+      premium: "",
       isPublic: true,
     })
     expect(draftFrom(setting(20)).text).toBe("20")
@@ -153,8 +156,25 @@ describe("drafts", () => {
     expect(defaultDraft(tuned, draft)).toEqual({
       text: "20",
       on: false,
+      premium: "",
       isPublic: true,
     })
+  })
+
+  it("edits what Premium gets beside what everyone gets", () => {
+    const length = setting(500, {
+      premium_value: 1200,
+      premium_default: 1500,
+      is_default: false,
+    })
+    const draft = draftFrom(length)
+    expect(draft.premium).toBe("1200")
+    expect(defaultDraft(length, draft).premium).toBe("1500")
+    expect(toUpdateInput(length, { ...draft, premium: "2000" })).toEqual({
+      premiumValue: 2000,
+    })
+    expect(isDraftReady(length, { ...draft, premium: "2.5" })).toBe(false)
+    expect(isDraftReady(length, draft)).toBe(false)
   })
 
   it("sends only what changed", () => {

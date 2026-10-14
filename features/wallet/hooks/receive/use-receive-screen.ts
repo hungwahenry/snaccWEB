@@ -5,10 +5,12 @@ import { shareOrCopy } from "@/lib/share-links"
 import { accountShareText } from "../../utils/format"
 import { receiveView } from "../../utils/virtual-account"
 import { useCopyFeedback } from "@/hooks/use-copy-feedback"
+import { useWalletOverview } from "../account/use-wallet-overview"
 import { useVirtualAccount } from "./use-virtual-account"
 
 export function useReceiveScreen() {
   const account = useVirtualAccount()
+  const overview = useWalletOverview()
   const data = account.data ?? null
   const [checking, setChecking] = useState(false)
   const { copied, copy } = useCopyFeedback(data?.account_number ?? "")
@@ -22,11 +24,14 @@ export function useReceiveScreen() {
 
   return {
     view: receiveView({
-      loading: account.isPending,
-      failed: account.isError,
+      loading: account.isPending || overview.isPending,
+      failed: account.isError || overview.isError,
       account: data,
     }),
-    retry: () => void account.refetch(),
+    retry: () => {
+      void account.refetch()
+      void overview.refetch()
+    },
     account: data,
     copied,
     onCopy: copy,

@@ -4,7 +4,7 @@ import { useMemo } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { CanAct } from "@/features/admin/auth/containers/can-act"
-import { ActionSwitch } from "@/features/admin/shell/components/action-switch"
+import { ConfirmAction } from "@/features/admin/shell/components/confirm-action"
 import {
   DataTable,
   HiddenHeader,
@@ -146,12 +146,17 @@ export function FlagsTables({
       {
         id: "reach",
         header: "Reaches",
-        cell: (flag) => (
-          <div className="flex flex-col gap-2">
-            <Reach flag={flag} />
-            <CountryReach flag={flag} countries={countries} />
-          </div>
-        ),
+        cell: (flag) =>
+          flag.is_public ? (
+            <div className="flex flex-col gap-2">
+              <Reach flag={flag} />
+              <CountryReach flag={flag} countries={countries} />
+            </div>
+          ) : (
+            <span className="text-xs text-muted-foreground">
+              Everyone at once
+            </span>
+          ),
       },
       {
         id: "actions",
@@ -170,23 +175,42 @@ export function FlagsTables({
                 }
               />
             ) : null}
+            {flag.is_public ? (
+              <CanAct permission="flags.write">
+                <AvailabilityDialog
+                  flag={flag}
+                  countries={countries}
+                  trigger={
+                    <Button variant="outline" size="sm">
+                      Who gets it
+                    </Button>
+                  }
+                  onSubmit={(draft) => onSaveAvailability(flag.key, draft)}
+                />
+              </CanAct>
+            ) : null}
             <CanAct permission="flags.write">
-              <AvailabilityDialog
-                flag={flag}
-                countries={countries}
+              <ConfirmAction
                 trigger={
                   <Button variant="outline" size="sm">
-                    Who gets it
+                    {flag.enabled ? "Turn off" : "Turn on"}
                   </Button>
                 }
-                onSubmit={(draft) => onSaveAvailability(flag.key, draft)}
-              />
-            </CanAct>
-            <CanAct permission="flags.write">
-              <ActionSwitch
-                checked={flag.enabled}
-                label={`Turn ${flag.key} on or off`}
-                onChange={(enabled) => onSetEnabled(flag.key, enabled)}
+                tone={flag.enabled ? "destructive" : "default"}
+                title={
+                  flag.enabled
+                    ? `Turn ${humanize(flag.key)} off?`
+                    : `Turn ${humanize(flag.key)} on?`
+                }
+                description={
+                  flag.enabled
+                    ? flag.countries.some((rule) => rule.enabled)
+                      ? "Within a few minutes it goes away everywhere except the countries whose own rule keeps it on."
+                      : "It goes away for everyone within a few minutes."
+                    : "It reaches whoever its rules allow, within a few minutes."
+                }
+                confirmLabel={flag.enabled ? "Turn it off" : "Turn it on"}
+                onConfirm={() => onSetEnabled(flag.key, !flag.enabled)}
               />
             </CanAct>
           </div>

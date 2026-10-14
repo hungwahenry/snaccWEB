@@ -21,12 +21,14 @@ const COLUMNS: Column<AdminUserRow>[] = [
   },
   {
     id: "campus",
+    hideBelow: "sm",
     header: "Campus",
     className: "text-muted-foreground",
     cell: (user) => user.university?.acronym ?? "—",
   },
   {
     id: "earnings",
+    hideBelow: "md",
     header: "Unclaimed",
     align: "end",
     className: "tabular-nums",
@@ -38,13 +40,16 @@ const COLUMNS: Column<AdminUserRow>[] = [
     cell: (user) => (
       <span className="flex gap-1.5">
         <StatusBadge status={accountStatus(user)} />
-        {user.role === "admin" ? <Badge>Owner</Badge> : null}
+        {user.roles.map((role) => (
+          <Badge key={role}>{role}</Badge>
+        ))}
         {user.is_private ? <Badge variant="outline">Private</Badge> : null}
       </span>
     ),
   },
   {
     id: "joined",
+    hideBelow: "md",
     header: "Joined",
     className: "text-muted-foreground",
     cell: (user) => formatDate(user.created_at),

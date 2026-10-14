@@ -12,6 +12,7 @@ import {
   isReady,
   newDraft,
   placementChoices,
+  promotableCountries,
   reachProblem,
   reviewRows,
   scheduleBounds,
@@ -276,6 +277,20 @@ describe("reachProblem", () => {
     expect(reachProblem(new ApiError(500, "Oops"), undefined, 100)).toBeNull()
   })
 
+  it("stops at the audience when the place can't be paid for in this currency", () => {
+    expect(
+      reachProblem(
+        new ApiError(
+          422,
+          "Promotions can only reach places that use your wallet's currency.",
+          "not_promotable"
+        ),
+        undefined,
+        100
+      )
+    ).toBe("Promotions can only reach places that use your wallet's currency.")
+  })
+
   it("asks for a wider audience below the smallest allowed", () => {
     expect(reachProblem(null, 40, 100)).toBe(
       "Aim it at at least 100 people. Widen who it reaches."
@@ -390,5 +405,20 @@ describe("draftFromCampaign", () => {
     expect(copy.budget).toBe("5000")
     expect(copy.startsAt).toBeNull()
     expect(Date.parse(copy.endsAt)).toBeGreaterThanOrEqual(NOW + 3 * DAY_MS)
+  })
+})
+
+describe("promotableCountries", () => {
+  it("offers open countries that use the wallet's currency", () => {
+    expect(
+      promotableCountries(
+        [
+          { code: "NG", name: "Nigeria", currency: "NGN", open: true },
+          { code: "GH", name: "Ghana", currency: "GHS", open: true },
+          { code: "BJ", name: "Benin", currency: "NGN", open: false },
+        ],
+        "NGN"
+      )
+    ).toEqual([{ value: "NG", label: "Nigeria" }])
   })
 })

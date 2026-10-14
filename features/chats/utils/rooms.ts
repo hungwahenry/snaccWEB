@@ -7,7 +7,9 @@ import type {
 import { handleOf } from "@/features/users/utils/names"
 import type { VoiceSource } from "@/features/voice/types"
 import { voiceSource } from "@/features/voice/utils/source"
-import { dateAtTime, editWindowClosesAt } from "@/lib/format"
+import { campusTime } from "@/features/hangouts/utils/hangouts"
+import { deviceTimeZone } from "@/lib/device"
+import { editWindowClosesAt } from "@/lib/format"
 import type {
   ChatMessage,
   ChatReplyPreview,
@@ -27,7 +29,7 @@ function hangoutLine(hangout: ChatRoomHangout | null, now: number): string {
   if (!hangout) return "Hangout"
   if (hangout.cancelled) return "Called off"
   if (hangoutOver(hangout, now)) return "Over"
-  return dateAtTime(hangout.starts_at)
+  return campusTime(hangout, deviceTimeZone())
 }
 
 export function roomSubtitle(room: ChatRoom | null, now = Date.now()): string {

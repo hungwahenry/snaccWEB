@@ -30,7 +30,10 @@ export function canPostFrom(
   return hangout.join_state === "going" && stateAt(hangout, now) !== "cancelled"
 }
 
-function campusTime(hangout: Placed, viewerZone: string | undefined): string {
+export function campusTime(
+  hangout: Placed,
+  viewerZone: string | undefined
+): string {
   const there = dateAtTime(hangout.starts_at, hangout.time_zone)
   const here = viewerZone && dateAtTime(hangout.starts_at, viewerZone)
   return there === here ? there : `${there} campus time`

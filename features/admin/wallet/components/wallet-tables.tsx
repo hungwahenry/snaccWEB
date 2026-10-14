@@ -1,10 +1,12 @@
+import Link from "next/link"
 import {
   DataTable,
   type Column,
 } from "@/features/admin/shell/components/data-table"
 import { StatusBadge } from "@/features/admin/shell/components/status-badge"
 import { TableFrame } from "@/features/admin/shell/components/table-frame"
-import { humanize, signedMoney } from "@/features/admin/shell/utils/format"
+import { postingPath } from "@/features/admin/shell/routes"
+import { signedMoney } from "@/features/admin/shell/utils/format"
 import { formatDate } from "@/lib/format"
 import { formatMoney } from "@/lib/money"
 import type {
@@ -16,6 +18,7 @@ import type {
 import {
   DEPOSIT_STATUS,
   personalAccountLine,
+  TRANSACTION_LABELS,
   destinationAccount,
 } from "../utils/wallet"
 
@@ -28,14 +31,19 @@ const ENTRIES: Column<WalletEntryRow>[] = [
   {
     id: "kind",
     header: "Kind",
-    cell: (entry) => humanize(entry.transaction.type),
+    cell: (entry) => TRANSACTION_LABELS[entry.transaction.type],
   },
   {
     id: "reference",
     header: "Reference",
     className: "text-muted-foreground",
     cell: (entry) => (
-      <span className="font-mono text-xs">{entry.transaction.reference}</span>
+      <Link
+        href={postingPath(entry.transaction.id)}
+        className="font-mono text-xs hover:underline"
+      >
+        {entry.transaction.reference}
+      </Link>
     ),
   },
   {

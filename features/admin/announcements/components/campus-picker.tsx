@@ -15,18 +15,22 @@ import {
 } from "@/components/ui/combobox"
 import type { Option } from "@/features/admin/shell/types"
 
-export function CampusPicker({
+export function PlacesPicker({
   id,
   options,
-  acronyms,
+  chips,
   value,
   onChange,
+  everywhere,
+  empty,
 }: {
   id: string
   options: Option[]
-  acronyms: ReadonlyMap<string, string>
+  chips: ReadonlyMap<string, string>
   value: string[]
-  onChange: (campusIds: string[]) => void
+  onChange: (values: string[]) => void
+  everywhere: string
+  empty: string
 }) {
   const anchor = useComboboxAnchor()
   const labels = useMemo(
@@ -50,19 +54,19 @@ export function CampusPicker({
             <>
               {picked.map((campusId) => (
                 <ComboboxChip key={campusId}>
-                  {acronyms.get(campusId) ?? "Campus"}
+                  {chips.get(campusId) ?? campusId}
                 </ComboboxChip>
               ))}
               <ComboboxChipsInput
                 id={id}
-                placeholder={picked.length === 0 ? "Every campus" : undefined}
+                placeholder={picked.length === 0 ? everywhere : undefined}
               />
             </>
           )}
         </ComboboxValue>
       </ComboboxChips>
       <ComboboxContent anchor={anchor}>
-        <ComboboxEmpty>No campus by that name.</ComboboxEmpty>
+        <ComboboxEmpty>{empty}</ComboboxEmpty>
         <ComboboxList>
           {(campusId: string) => (
             <ComboboxItem key={campusId} value={campusId}>

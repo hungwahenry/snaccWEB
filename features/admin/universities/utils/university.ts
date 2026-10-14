@@ -1,6 +1,7 @@
 import type { Option } from "@/features/admin/shell/types"
 import type { Country, CountryPlaces } from "@/features/places/types"
 import { regionPath } from "@/features/places/utils/regions"
+import type { CampusChoice } from "@/features/universities/types"
 import type {
   AdminUniversity,
   CreateUniversityInput,
@@ -45,9 +46,18 @@ export function placeOf(choice: string): string | null {
   return choice === UNSET.value ? null : choice
 }
 
-export const TIME_ZONE_OPTIONS: Option[] = Intl.supportedValuesOf(
-  "timeZone"
-).map((zone) => ({ value: zone, label: zone.replaceAll("_", " ") }))
+const zoneOption = (zone: string): Option => ({
+  value: zone,
+  label: zone.replaceAll("_", " "),
+})
+
+const TIME_ZONES: Option[] = Intl.supportedValuesOf("timeZone").map(zoneOption)
+
+export function timeZoneOptions(current: string): Option[] {
+  return !current || TIME_ZONES.some((option) => option.value === current)
+    ? TIME_ZONES
+    : [zoneOption(current), ...TIME_ZONES]
+}
 
 export function countryOptions(countries: Country[]): Option[] {
   return countries.map((country) => ({
@@ -167,4 +177,25 @@ export function toCreateInput(draft: UniversityDraft): CreateUniversityInput {
     logoUrl: draft.logoUrl.trim() || undefined,
     ...placeInput(draft),
   }
+}
+
+export const ANY_CAMPUS = "any"
+
+export function campusSearchOptions(
+  universities: readonly CampusChoice[],
+  anyLabel?: string
+): Option[] {
+  const seen = new Set<string>()
+  const found = universities.flatMap((university) => {
+    if (seen.has(university.id)) return []
+    seen.add(university.id)
+    return [
+      {
+        value: university.id,
+        label: `${university.name} (${university.acronym}) · ${university.country_code}${university.open ? "" : " · not open yet"}`,
+      },
+    ]
+  })
+
+  return anyLabel ? [{ value: ANY_CAMPUS, label: anyLabel }, ...found] : found
 }

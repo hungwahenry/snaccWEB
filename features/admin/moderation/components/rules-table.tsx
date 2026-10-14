@@ -43,6 +43,7 @@ export function RulesTable({
   onTune,
   onSave,
   onSetRetired,
+  onDelete,
 }: {
   query: UseQueryResult<ModerationRule[]>
   surface: ModerationSurface | null
@@ -54,6 +55,7 @@ export function RulesTable({
   onTune: (rule: ModerationRule) => void
   onSave: (draft: RuleDraft, id?: string) => Promise<unknown>
   onSetRetired: (id: string, retired: boolean) => Promise<unknown>
+  onDelete: (id: string) => Promise<unknown>
 }) {
   const columns = useMemo<Column<ModerationRule>[]>(() => {
     const columns: Column<ModerationRule>[] = [
@@ -137,6 +139,22 @@ export function RulesTable({
                 onConfirm={() => onSetRetired(rule.id, !rule.retired)}
               />
             </CanAct>
+            {rule.retired ? (
+              <CanAct permission="moderation.write">
+                <ConfirmAction
+                  trigger={
+                    <Button variant="ghost" size="sm">
+                      Delete
+                    </Button>
+                  }
+                  tone="destructive"
+                  title={`Delete ${rule.category}?`}
+                  description="It is gone for good, which frees its place for a new rule. Scans that cite it keep their record."
+                  confirmLabel="Delete it"
+                  onConfirm={() => onDelete(rule.id)}
+                />
+              </CanAct>
+            ) : null}
           </div>
         ),
       },
@@ -151,6 +169,7 @@ export function RulesTable({
     onTune,
     onSave,
     onSetRetired,
+    onDelete,
   ])
 
   return (

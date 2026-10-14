@@ -19,10 +19,8 @@ import { adminRef, adminSince } from "../utils/admins"
 
 export function AdminsTable({
   query,
-  acronyms,
 }: {
   query: UseQueryResult<AdminAccount[]>
-  acronyms: ReadonlyMap<string, string>
 }) {
   const columns = useMemo<Column<AdminAccount>[]>(
     () => [
@@ -43,10 +41,9 @@ export function AdminsTable({
         className: "whitespace-normal",
         cell: (admin) => (
           <div className="flex flex-wrap gap-1">
-            {admin.is_owner_account ? <Badge>Owner</Badge> : null}
             {admin.grants.map((grant) => (
               <Badge key={grant.id} variant={grantVariant(grant)}>
-                {grantLabel(grant, acronyms)}
+                {grantLabel(grant)}
               </Badge>
             ))}
           </div>
@@ -73,7 +70,7 @@ export function AdminsTable({
         ),
       },
     ],
-    [acronyms]
+    []
   )
 
   return (

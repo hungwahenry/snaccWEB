@@ -166,15 +166,18 @@ function ThemeForm({
 export function ThemeDialog({
   theme,
   trigger,
+  disabled,
   onSubmit,
 }: {
   theme?: AdminChatTheme
   trigger: ReactElement
+  disabled?: boolean
   onSubmit: (draft: ChatThemeDraft) => Promise<unknown>
 }) {
   return (
     <FormDialog
       trigger={trigger}
+      disabled={disabled}
       wide
       title={theme ? `Edit ${theme.label}` : "Add a chat theme"}
       description={

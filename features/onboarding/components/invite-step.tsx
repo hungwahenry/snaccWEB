@@ -14,8 +14,7 @@ export function InviteStep({ form }: { form: OnboardingInvite }) {
             Got an invite code?
           </h1>
           <p className="text-base leading-6 text-muted-foreground">
-            If a friend sent you one, put it in. You both get paid once
-            you&rsquo;ve really used Snacc.
+            If a friend sent you one, put it in.
           </p>
         </div>
 
@@ -33,7 +32,7 @@ export function InviteStep({ form }: { form: OnboardingInvite }) {
             <Skeleton className="h-9 w-44 rounded-xl" />
           )}
           <p className="text-sm leading-5 text-muted-foreground">
-            {form.own?.blurb ?? "Bring your friends and you both get paid."}
+            {form.own?.blurb ?? "Bring your friends to Snacc."}
           </p>
         </div>
 

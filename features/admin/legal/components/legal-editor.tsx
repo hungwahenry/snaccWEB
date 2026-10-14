@@ -20,6 +20,7 @@ export function LegalEditor({
   draft,
   title,
   canSave,
+  canPublish,
   onBodyChange,
   onSave,
   onPublish,
@@ -29,6 +30,7 @@ export function LegalEditor({
   draft: LegalDraft
   title: TextBinding
   canSave: boolean
+  canPublish: boolean
   onBodyChange: (content: unknown, html: string) => void
   onSave: () => Promise<unknown>
   onPublish: () => Promise<unknown>
@@ -54,7 +56,7 @@ export function LegalEditor({
           <CanAct permission="legal.publish">
             <ConfirmAction
               trigger={
-                <Button variant="outline" size="sm" disabled={!canSave}>
+                <Button variant="outline" size="sm" disabled={!canPublish}>
                   Publish
                 </Button>
               }

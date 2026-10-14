@@ -1,4 +1,4 @@
-import type { CountryPlaces } from "@/features/places/types"
+import type { Country, CountryPlaces } from "@/features/places/types"
 import { namedRegions } from "@/features/places/utils/regions"
 import { isApiError } from "@/lib/api/errors"
 import { roundUpToStep } from "@/lib/calendar"
@@ -356,12 +356,23 @@ export function submitProblem(
   return { field, message: error.message }
 }
 
+const AUDIENCE_REFUSALS = new Set(["unknown_hashtag", "not_promotable"])
+
+export function promotableCountries(
+  countries: Country[],
+  currency: string
+): { value: string; label: string }[] {
+  return countries
+    .filter((country) => country.open && country.currency === currency)
+    .map((country) => ({ value: country.code, label: country.name }))
+}
+
 export function reachProblem(
   error: unknown,
   people: number | undefined,
   minAudience: number
 ): string | null {
-  if (isApiError(error) && error.code === "unknown_hashtag")
+  if (isApiError(error) && error.code && AUDIENCE_REFUSALS.has(error.code))
     return error.message
   if (people !== undefined && people < minAudience)
     return `Aim it at at least ${formatNumber(minAudience)} people. Widen who it reaches.`

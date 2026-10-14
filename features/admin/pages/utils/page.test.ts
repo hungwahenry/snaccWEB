@@ -62,7 +62,7 @@ describe("isDraftReady", () => {
 })
 
 describe("toPageInput", () => {
-  it("trims and leaves out blank optional fields", () => {
+  it("trims, and sends a blank optional field as empty so it clears", () => {
     expect(
       toPageInput({
         ...draftFrom(page()),
@@ -75,9 +75,9 @@ describe("toPageInput", () => {
       slug: "terms",
       content: { type: "doc" },
       html: "<p>Hello</p>",
-      excerpt: undefined,
+      excerpt: "",
       seoTitle: "Terms of use",
-      seoDescription: undefined,
+      seoDescription: "",
     })
   })
 })

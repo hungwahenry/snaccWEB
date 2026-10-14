@@ -38,8 +38,8 @@ const clip = {
 }
 
 describe("snaccMetadata", () => {
-  it("says so when there is no such snacc", () => {
-    expect(snaccMetadata(null)).toEqual({ title: "Snacc not found" })
+  it("stays neutral when the public can't see it, since a follower still might", () => {
+    expect(snaccMetadata(null)).toEqual({ title: "Snacc" })
   })
 
   it("titles the page by who posted, and points at the snacc itself", () => {

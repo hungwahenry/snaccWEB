@@ -55,6 +55,7 @@ export function TextField({
   inputMode?: "text" | "numeric" | "decimal"
   type?: "text" | "url" | "email"
   autoComplete?: string
+  readOnly?: boolean
 }) {
   const id = useId()
   const hintId = hint ? `${id}-hint` : undefined
@@ -135,6 +136,7 @@ export function SearchSelectField<V extends string>({
   placeholder,
   empty,
   hint,
+  onSearch,
 }: {
   label: string
   value: V | null
@@ -143,6 +145,7 @@ export function SearchSelectField<V extends string>({
   placeholder?: string
   empty: string
   hint?: ReactNode
+  onSearch?: (term: string) => void
 }) {
   const id = useId()
   const labels = useMemo(
@@ -162,6 +165,12 @@ export function SearchSelectField<V extends string>({
           if (next !== null) onChange(next)
         }}
         itemToStringLabel={(item: V) => labels.get(item) ?? ""}
+        {...(onSearch
+          ? {
+              filter: null,
+              onInputValueChange: (term: string) => onSearch(term),
+            }
+          : {})}
       >
         <ComboboxInput id={id} placeholder={placeholder} className="w-full" />
         <ComboboxContent>

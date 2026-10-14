@@ -178,13 +178,6 @@ export function shortDay(isoDate: string): string {
   })
 }
 
-/** Turns an hour the server counted in UTC into the same moment in this browser. */
-export function utcHourToLocal(hour: number): number {
-  const offset = Math.round(-new Date().getTimezoneOffset() / 60)
-
-  return (((hour + offset) % 24) + 24) % 24
-}
-
 /** A bare hour of the day, written the way this browser writes times. */
 export function hourLabel(hour: number): string {
   const at = new Date()

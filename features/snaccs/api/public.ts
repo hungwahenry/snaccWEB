@@ -13,7 +13,7 @@ async function firstPage<T>(path: string): Promise<T[]> {
   const page = await serverGet<Paginated<T>>(
     `${path}?perPage=${PREVIEW_COUNT}`,
     [SNACCS_TAG]
-  )
+  ).catch(() => null)
   return page?.items ?? []
 }
 

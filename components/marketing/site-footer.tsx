@@ -3,6 +3,7 @@ import Link from "next/link"
 import { Eyebrow } from "@/components/ui/eyebrow"
 import { getAdsInfo } from "@/features/ads/api/public"
 import { ADVERTISE_PATH } from "@/features/ads/routes"
+import { isAdvertisable } from "@/features/ads/utils/advertise"
 import { loginPath } from "@/features/auth/routes"
 import { legalPath } from "@/features/legal/routes"
 import { getPublicPages } from "@/lib/pages"
@@ -29,7 +30,10 @@ const STORES: FooterLink[] = [
 ]
 
 export async function SiteFooter() {
-  const [pages, ads] = await Promise.all([getPublicPages(), getAdsInfo()])
+  const [pages, ads] = await Promise.all([
+    getPublicPages(),
+    getAdsInfo().catch(() => null),
+  ])
   const legal = [
     ...LEGAL,
     ...pages.map((page) => ({
@@ -53,7 +57,7 @@ export async function SiteFooter() {
             <FooterColumn
               title="Product"
               links={
-                ads
+                isAdvertisable(ads)
                   ? [...PRODUCT, { href: ADVERTISE_PATH, label: "Advertise" }]
                   : PRODUCT
               }

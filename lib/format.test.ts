@@ -10,7 +10,6 @@ import {
   relativeAge,
   shortDate,
   timeAgo,
-  utcHourToLocal,
   weekdayDate,
   weekdayDay,
 } from "./format"
@@ -104,16 +103,6 @@ describe("dayLabel", () => {
     expect(dayLabel(new Date(2026, 8, 11, 9).toISOString())).toBe("Today")
     expect(dayLabel(new Date(2026, 8, 10, 23).toISOString())).toBe("Yesterday")
     vi.useRealTimers()
-  })
-})
-
-describe("utcHourToLocal", () => {
-  it("stays within the day", () => {
-    for (const hour of [0, 12, 23]) {
-      const local = utcHourToLocal(hour)
-      expect(local).toBeGreaterThanOrEqual(0)
-      expect(local).toBeLessThan(24)
-    }
   })
 })
 

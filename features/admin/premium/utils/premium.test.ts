@@ -6,10 +6,12 @@ import {
   benefitDraft,
   benefitMessage,
   premiumFacts,
+  premiumLine,
   subscriberStore,
   storeLabel,
   subscriberStanding,
   toBenefitInput,
+  toGrantInput,
   untilLabel,
 } from "./premium"
 
@@ -146,5 +148,40 @@ describe("benefitMessage", () => {
     expect(benefitMessage({ enabled: true })).toBe("Shown on the paywall.")
     expect(benefitMessage({ enabled: false })).toBe("Hidden from the paywall.")
     expect(benefitMessage({ label: "No ads" })).toBe("Paywall line saved.")
+  })
+})
+
+describe("toGrantInput", () => {
+  it("takes whole days in range and a reason", () => {
+    expect(toGrantInput(" 30 ", " Won the quiz ")).toEqual({
+      days: 30,
+      reason: "Won the quiz",
+    })
+    expect(toGrantInput("0", "Won the quiz")).toBeNull()
+    expect(toGrantInput("3651", "Won the quiz")).toBeNull()
+    expect(toGrantInput("2.5", "Won the quiz")).toBeNull()
+    expect(toGrantInput("30", "ok")).toBeNull()
+  })
+})
+
+describe("premiumLine", () => {
+  it("says whether they have Premium and for how long", () => {
+    expect(premiumLine({ active: true, until: null, lifetime: true })).toBe(
+      "Premium for life."
+    )
+    expect(
+      premiumLine({
+        active: false,
+        until: "2026-01-01T00:00:00Z",
+        lifetime: false,
+      })
+    ).toBe("No Premium.")
+    expect(
+      premiumLine({
+        active: true,
+        until: "2027-01-01T12:00:00Z",
+        lifetime: false,
+      })
+    ).toMatch(/^Premium until /)
   })
 })

@@ -61,9 +61,10 @@ export type SnaccListQuery = {
   perPage: number
   q?: string
   deleted?: boolean
+  held?: boolean
 }
 
-export type SnaccState = "live" | "deleted"
+export type SnaccState = "live" | "held" | "deleted"
 
 /** Everything an admin can do to one snacc. Each resolves once the page shows the result. */
 export interface SnaccActions {

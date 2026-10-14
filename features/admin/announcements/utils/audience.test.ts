@@ -10,6 +10,7 @@ import {
 } from "./audience"
 
 const everyone: AnnouncementAudience = {
+  country_codes: [],
   campus_ids: [],
   platforms: [],
   min_version: null,
@@ -19,20 +20,30 @@ const everyone: AnnouncementAudience = {
   quiet_for_days: null,
 }
 
-const acronyms = new Map([
-  ["c1", "UNILAG"],
-  ["c2", "LASU"],
-])
+const acronyms = {
+  campuses: new Map([
+    ["c1", "UNILAG"],
+    ["c2", "LASU"],
+  ]),
+  countries: new Map([["NG", "Nigeria"]]),
+}
 
 describe("audienceSummary", () => {
   it("says everyone when nothing narrows it", () => {
     expect(audienceSummary(everyone, acronyms)).toBe("Everyone")
   })
 
+  it("names the countries it is aimed at", () => {
+    expect(
+      audienceSummary({ ...everyone, country_codes: ["NG", "GH"] }, acronyms)
+    ).toBe("Nigeria, GH")
+  })
+
   it("reads every filter in plain words", () => {
     expect(
       audienceSummary(
         {
+          country_codes: [],
           campus_ids: ["c1", "c2"],
           platforms: ["ios"],
           min_version: "1.4.0",
@@ -96,6 +107,7 @@ describe("audience drafts", () => {
 
   it("starts from everyone, or from what is saved", () => {
     expect(audienceDraftFrom()).toEqual({
+      countryCodes: [],
       campusIds: [],
       platforms: [],
       minVersion: "",
@@ -139,6 +151,7 @@ describe("audience drafts", () => {
         })
       )
     ).toEqual({
+      countryCodes: [],
       campusIds: ["c1"],
       platforms: ["ios", "web"],
       minVersion: "1.4.0",

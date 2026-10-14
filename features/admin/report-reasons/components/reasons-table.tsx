@@ -83,13 +83,15 @@ export function ReasonsTable({
               />
             </CanAct>
             {reason.retired_at ? (
-              <ActionButton
-                variant="ghost"
-                size="sm"
-                onClick={() => onRestore(reason.id)}
-              >
-                Restore
-              </ActionButton>
+              <CanAct permission="report_reasons.retire">
+                <ActionButton
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onRestore(reason.id)}
+                >
+                  Restore
+                </ActionButton>
+              </CanAct>
             ) : (
               <CanAct permission="report_reasons.retire">
                 <ConfirmAction

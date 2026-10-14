@@ -32,6 +32,7 @@ const REASONS: Record<string, string> = {
   suspended: "One side is suspended",
   reported: "One side had a report actioned",
   inactive: "Never really used Snacc",
+  inviter_new: "Inviter’s account still too new or quiet",
 }
 
 export function reasonLabel(reason: string | null): string | null {

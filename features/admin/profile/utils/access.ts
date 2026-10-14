@@ -1,25 +1,22 @@
-import type { AdminGrant, AdminPermission } from "@/features/admin/roles/types"
+import type { AdminGrant } from "@/features/admin/roles/types"
 import { plural } from "@/features/admin/shell/utils/format"
-import type { AdminPermissions } from "@/lib/permissions"
+import type { OwnAccess } from "../types"
 
-/** Full access shows the whole catalogue, including keys added later; otherwise exactly what was granted. */
-export function visibleKeys(
-  permissions: AdminPermissions,
-  catalog: AdminPermission[]
-): string[] {
-  return permissions.all
-    ? catalog.map((permission) => permission.key)
-    : permissions.keys
+export function permissionsSummary(access: OwnAccess): string {
+  if (access.all) {
+    return "Full access. Every permission below, including any added later."
+  }
+
+  return `${plural(access.permissions.length, "permission")}, and only these.`
 }
 
-export function permissionsSummary(permissions: AdminPermissions): string {
-  return permissions.all
-    ? "Full access. Every permission below, including any added later."
-    : `${plural(permissions.keys.length, "permission")}, and only these.`
-}
+export function campusNote(grants: AdminGrant[]): string | null {
+  const campuses = grants.flatMap((grant) =>
+    grant.campus ? [grant.campus.acronym] : []
+  )
+  if (campuses.length === 0 || grants.some((grant) => !grant.campus)) {
+    return null
+  }
 
-export function grantText(grant: AdminGrant): string {
-  return grant.scope_type
-    ? `${grant.role.name} · ${grant.scope_type}`
-    : grant.role.name
+  return `Your roles cover ${[...new Set(campuses)].join(", ")} only, so you see and act on their people and posts.`
 }

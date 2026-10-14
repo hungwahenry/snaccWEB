@@ -1,5 +1,6 @@
 "use client"
 
+import { can, type AdminPermissions } from "@/lib/permissions"
 import Link from "next/link"
 import type { ReactElement } from "react"
 import {
@@ -28,15 +29,20 @@ import { OUTCOME_OPTIONS } from "../utils/status"
 function ResolveForm({
   report,
   suspension,
+  permissions,
   onSubmit,
 }: {
   report: AdminReport
   suspension: SuspensionChoices
+  permissions: AdminPermissions | undefined
   onSubmit: (draft: ResolveDraft) => Promise<unknown>
 }) {
   const { draft, set, text } = useDraft<ResolveDraft>(EMPTY_RESOLVE)
-  const choices = actChoices(report.target)
-  const thread = messageThreadId(report.target)
+  const choices =
+    draft.status === "actioned" ? actChoices(report.target, permissions) : []
+  const thread = can(permissions, "messages.read")
+    ? messageThreadId(report.target)
+    : null
 
   return (
     <DialogForm submitLabel="Resolve" onSubmit={() => onSubmit(draft)}>
@@ -72,7 +78,7 @@ function ResolveForm({
           ))}
         </fieldset>
       ) : null}
-      {suspends(draft.acts) ? (
+      {draft.status === "actioned" && suspends(draft.acts) ? (
         <SuspensionFields
           value={draft.suspension}
           onChange={(next) => set("suspension", next)}
@@ -95,12 +101,14 @@ function ResolveForm({
 export function ResolveDialog({
   report,
   suspension,
+  permissions,
   trigger,
   disabled,
   onSubmit,
 }: {
   report: AdminReport
   suspension: SuspensionChoices
+  permissions: AdminPermissions | undefined
   trigger: ReactElement
   disabled?: boolean
   onSubmit: (draft: ResolveDraft) => Promise<unknown>
@@ -115,6 +123,7 @@ export function ResolveDialog({
       <ResolveForm
         report={report}
         suspension={suspension}
+        permissions={permissions}
         onSubmit={onSubmit}
       />
     </FormDialog>

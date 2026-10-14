@@ -120,10 +120,17 @@ export function parseConfigValue(
   return { ok: true, value: parsed.value }
 }
 
+export function hasPremium(setting: AdminConfigSetting): boolean {
+  return (
+    setting.premium_value !== null && valueKind(setting.value) !== "boolean"
+  )
+}
+
 export function draftFrom(setting: AdminConfigSetting): ConfigDraft {
   return {
     text: editableText(setting.value),
     on: setting.value === true,
+    premium: hasPremium(setting) ? editableText(setting.premium_value) : "",
     isPublic: setting.is_public,
   }
 }
@@ -137,6 +144,10 @@ export function defaultDraft(
     ...draft,
     text: editableText(setting.default_value),
     on: setting.default_value === true,
+    premium:
+      hasPremium(setting) && setting.premium_default !== null
+        ? editableText(setting.premium_default)
+        : draft.premium,
   }
 }
 
@@ -150,16 +161,28 @@ export function checkDraft(
   )
 }
 
-/** Only what changed, so saving the visibility alone never re-sends the value. */
+export function checkPremium(
+  setting: AdminConfigSetting,
+  draft: ConfigDraft
+): ConfigValueParse | null {
+  return hasPremium(setting) ? parseConfigValue(setting, draft.premium) : null
+}
+
 export function toUpdateInput(
   setting: AdminConfigSetting,
   draft: ConfigDraft
 ): UpdateConfigInput {
   const parsed = checkDraft(setting, draft)
   if (!parsed.ok) throw new Error(parsed.message)
+  const premium = checkPremium(setting, draft)
+  if (premium && !premium.ok) throw new Error(premium.message)
 
   return {
     ...(!sameValue(parsed.value, setting.value) && { value: parsed.value }),
+    ...(premium?.ok &&
+      !sameValue(premium.value, setting.premium_value) && {
+        premiumValue: premium.value,
+      }),
     ...(draft.isPublic !== setting.is_public && { isPublic: draft.isPublic }),
   }
 }
@@ -169,6 +192,7 @@ export function isDraftReady(
   draft: ConfigDraft
 ): boolean {
   if (!checkDraft(setting, draft).ok) return false
+  if (checkPremium(setting, draft)?.ok === false) return false
 
   return Object.keys(toUpdateInput(setting, draft)).length > 0
 }

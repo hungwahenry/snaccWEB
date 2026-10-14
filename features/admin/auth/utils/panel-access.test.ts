@@ -5,7 +5,7 @@ import { panelAccess } from "./panel-access"
 const holding = (...keys: string[]): AdminPermissions => ({
   all: false,
   keys,
-  campuses: [],
+  limited_to: {},
 })
 
 describe("panelAccess", () => {

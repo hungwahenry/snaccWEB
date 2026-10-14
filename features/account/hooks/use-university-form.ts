@@ -1,6 +1,7 @@
 "use client"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { confirm } from "@/components/ui/confirm"
 import { useCampusPicker } from "@/features/universities/hooks/use-campus-picker"
 import type { Profile } from "@/features/users/types"
 import { useBack } from "@/hooks/use-back"
@@ -19,8 +20,7 @@ export function useUniversityForm(profile: Profile) {
     onSuccess: (user) => {
       queryClient.setQueryData(authKeys.me(), user)
       void queryClient.invalidateQueries({
-        predicate: (query) =>
-          query.queryKey[0] === "users" && query.queryKey[1] === "profile",
+        predicate: (query) => query.queryKey[0] !== authKeys.me()[0],
       })
       showSuccess("Campus updated.")
       back()
@@ -36,7 +36,25 @@ export function useUniversityForm(profile: Profile) {
     valid,
     submitting: change.isPending,
     onSubmit: () => {
-      if (valid && selected && !change.isPending) change.mutate(selected.id)
+      if (!valid || !selected || change.isPending) return
+      if (selected.open) {
+        change.mutate(selected.id)
+        return
+      }
+
+      confirm({
+        title: `${selected.name} isn't on Snacc yet`,
+        message:
+          "You'll wait until it opens, and this uses your one campus change. Until then your feed, messages and wallet will be out of reach. We'll email you when it opens.",
+        cancelLabel: "Keep my campus",
+        actions: [
+          {
+            label: "Move anyway",
+            destructive: true,
+            onPress: () => change.mutate(selected.id),
+          },
+        ],
+      })
     },
   }
 }

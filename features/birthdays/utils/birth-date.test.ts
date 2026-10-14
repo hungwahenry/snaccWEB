@@ -3,25 +3,40 @@ import {
   ageOn,
   birthDateCheck,
   birthDays,
+  birthMonths,
   birthYears,
+  fittedDate,
   isWholeDate,
-  withMonth,
 } from "./birth-date"
 
 describe("birth date choices", () => {
+  const today = new Date(2026, 9, 13)
+
   it("counts back a hundred years, and offers the days the month has", () => {
-    const years = birthYears(2026)
+    const years = birthYears(today)
     expect(years[0]).toBe(2026)
     expect(years[years.length - 1]).toBe(1926)
-    expect(birthDays(4)).toHaveLength(30)
+    expect(birthDays(4, 2004, today)).toHaveLength(30)
   })
 
   it("drops a day the new month does not have", () => {
-    expect(withMonth({ day: 31, month: 1, year: 2004 }, 4)).toEqual({
+    expect(fittedDate({ day: 31, month: 4, year: 2004 }, today)).toEqual({
       day: null,
       month: 4,
       year: 2004,
     })
+  })
+
+  it("only offers 29 February in leap years", () => {
+    expect(birthDays(2, 2004, today)).toHaveLength(29)
+    expect(birthDays(2, 2005, today)).toHaveLength(28)
+    expect(birthYears(today, { day: 29, month: 2 })).not.toContain(2025)
+  })
+
+  it("never offers a date after today", () => {
+    expect(birthMonths(2026, today)).toHaveLength(10)
+    expect(birthDays(10, 2026, today)).toHaveLength(13)
+    expect(birthYears(today, { day: 25, month: 12 })[0]).toBe(2025)
   })
 
   it("needs all three parts", () => {

@@ -63,12 +63,12 @@ export function useUniversityActions() {
         ? updateUniversity(id, toUpdateInput(draft))
         : createUniversity(toCreateInput(draft)),
     success: (_university, { id }) =>
-      id ? "University saved." : "University added.",
+      id ? "Campus saved." : "Campus added.",
     invalidates,
   })
   const { run: remove } = useAdminMutation({
     mutationFn: (id: string) => deleteUniversity(id),
-    success: "University deleted.",
+    success: "Campus deleted.",
     invalidates,
   })
   const { run: verify } = useAdminMutation({

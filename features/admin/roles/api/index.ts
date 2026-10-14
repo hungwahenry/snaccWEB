@@ -4,6 +4,7 @@ import type {
   AdminPermission,
   AdminRole,
   CreateRoleInput,
+  GrantInput,
   UpdateRoleInput,
 } from "../types"
 
@@ -35,10 +36,10 @@ export function listUserRoles(userId: string) {
   return api.get<AdminGrant[]>(`/admin/users/${userId}/roles`)
 }
 
-export function grantRole(userId: string, roleId: string) {
-  return api.post<AdminGrant>(`/admin/users/${userId}/roles`, { roleId })
+export function grantRole(userId: string, input: GrantInput) {
+  return api.post<AdminGrant>(`/admin/users/${userId}/roles`, input)
 }
 
-export function revokeRole(userId: string, roleId: string) {
-  return api.del<null>(`/admin/users/${userId}/roles/${roleId}`)
+export function revokeRole(userId: string, grantId: string) {
+  return api.del<null>(`/admin/users/${userId}/roles/${grantId}`)
 }

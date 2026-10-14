@@ -14,7 +14,7 @@ import { useAnnouncementsScreen } from "../hooks/use-announcements-screen"
 import { STATUS_OPTIONS } from "../utils/announcement"
 
 export function AnnouncementsScreen() {
-  const { list, query, campuses } = useAnnouncementsScreen()
+  const { list, query, campuses, countries } = useAnnouncementsScreen()
 
   return (
     <>
@@ -32,7 +32,7 @@ export function AnnouncementsScreen() {
       />
       <AnnouncementsTable
         query={query}
-        acronyms={campuses.acronyms}
+        names={{ campuses: campuses.acronyms, countries: countries.names }}
         filtered={list.filtered}
         onPageChange={list.setPage}
         toolbar={

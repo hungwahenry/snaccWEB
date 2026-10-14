@@ -71,7 +71,7 @@ export function isDraftReady(draft: ReasonDraft, editing: boolean): boolean {
 export function toUpdateInput(draft: ReasonDraft): UpdateReasonInput {
   return {
     label: draft.label.trim(),
-    hint: draft.hint.trim() || undefined,
+    hint: draft.hint.trim(),
     appliesTo: appliesToOf(draft.appliesTo),
     requiresDetail: draft.requiresDetail,
     position: position(draft) ?? 0,
@@ -82,7 +82,7 @@ export function toCreateInput(draft: ReasonDraft): CreateReasonInput {
   return {
     slug: draft.slug.trim(),
     label: draft.label.trim(),
-    hint: draft.hint.trim() || undefined,
+    hint: draft.hint.trim(),
     appliesTo: appliesToOf(draft.appliesTo),
     requiresDetail: draft.requiresDetail,
     position: position(draft) ?? 0,

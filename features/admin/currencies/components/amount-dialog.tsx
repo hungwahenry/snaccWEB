@@ -57,6 +57,7 @@ export function AmountDialog({
   currency,
   optional = false,
   trigger,
+  disabled,
   onSubmit,
 }: {
   title: ReactNode
@@ -65,10 +66,16 @@ export function AmountDialog({
   currency: string
   optional?: boolean
   trigger: ReactElement
+  disabled?: boolean
   onSubmit: (amount: number | null) => Promise<unknown> | void
 }) {
   return (
-    <FormDialog trigger={trigger} title={title} description={description}>
+    <FormDialog
+      trigger={trigger}
+      disabled={disabled}
+      title={title}
+      description={description}
+    >
       <AmountForm
         amount={amount}
         currency={currency}

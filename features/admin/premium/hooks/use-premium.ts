@@ -11,14 +11,14 @@ import {
   revokePremium,
   updateBenefit,
 } from "../api"
-import type { SubscriberListQuery, UpdateBenefitInput } from "../types"
+import { adminUserKeys } from "@/features/admin/users/utils/keys"
+import type {
+  GrantPremiumInput,
+  SubscriberListQuery,
+  UpdateBenefitInput,
+} from "../types"
 import { adminPremiumKeys } from "../utils/keys"
-import {
-  benefitMessage,
-  GRANT_DAYS,
-  GRANT_REASON,
-  REVOKE_REASON,
-} from "../utils/premium"
+import { benefitMessage, DEFAULT_GRANT, REVOKE_REASON } from "../utils/premium"
 
 export function useSubscribers(query: SubscriberListQuery) {
   return useQuery({
@@ -42,18 +42,38 @@ export function useBenefits() {
   })
 }
 
-export function usePremiumActions() {
+export function usePremiumGrants() {
+  const invalidates = [adminPremiumKeys.all(), adminUserKeys.all()]
+
   const { run: grant } = useAdminMutation({
-    mutationFn: (userId: string) =>
-      grantPremium(userId, GRANT_DAYS, GRANT_REASON),
+    mutationFn: ({
+      userId,
+      input,
+    }: {
+      userId: string
+      input: GrantPremiumInput
+    }) => grantPremium(userId, input.days, input.reason),
     success: "Premium granted.",
-    invalidates: [adminPremiumKeys.all()],
+    invalidates,
   })
   const { run: revoke } = useAdminMutation({
     mutationFn: (userId: string) => revokePremium(userId, REVOKE_REASON),
     success: "Premium ended.",
-    invalidates: [adminPremiumKeys.all()],
+    invalidates,
   })
+
+  return useMemo(
+    () => ({
+      grant: (userId: string, input: GrantPremiumInput = DEFAULT_GRANT) =>
+        grant({ userId, input }),
+      revoke,
+    }),
+    [grant, revoke]
+  )
+}
+
+export function usePremiumActions() {
+  const { grant, revoke } = usePremiumGrants()
   const { run: saveBenefit } = useAdminMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateBenefitInput }) =>
       updateBenefit(id, input),

@@ -6,12 +6,16 @@ import { AnnouncementEditor } from "../components/announcement-editor"
 import { useNewAnnouncementScreen } from "../hooks/use-new-announcement-screen"
 
 export function NewAnnouncementScreen() {
-  const { editor, campuses } = useNewAnnouncementScreen()
+  const { editor, campuses, countries } = useNewAnnouncementScreen()
 
   return (
     <>
       <BackLink href={ANNOUNCEMENTS_PATH} label="Back to announcements" />
-      <AnnouncementEditor editor={editor} campuses={campuses} />
+      <AnnouncementEditor
+        editor={editor}
+        campuses={campuses}
+        countries={countries}
+      />
     </>
   )
 }

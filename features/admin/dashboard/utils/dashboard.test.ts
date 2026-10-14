@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+import type { Country } from "@/features/places/types"
 import type { AdminPermissions } from "@/lib/permissions"
 import {
   dashboardTabs,
@@ -7,8 +8,8 @@ import {
   mostActiveCampuses,
   PERIOD_OPTIONS,
   platformRows,
-  reachableCampuses,
   retentionRows,
+  dashboardCountries,
   scopeNote,
   seesMoney,
   share,
@@ -121,35 +122,27 @@ describe("funnelSteps", () => {
   })
 })
 
-describe("reachableCampuses", () => {
-  const options = [
-    { value: "a", label: "Alpha" },
-    { value: "b", label: "Beta" },
-  ]
-  const permissions = (campuses: string[]): AdminPermissions => ({
-    all: false,
-    keys: ["dashboard.read"],
-    campuses,
-  })
-
-  it("offers every campus to a platform-wide admin", () => {
-    expect(reachableCampuses(options, permissions([]))).toEqual(options)
-  })
-
-  it("offers a confined admin only their own campuses", () => {
-    expect(reachableCampuses(options, permissions(["b"]))).toEqual([
-      { value: "b", label: "Beta" },
-    ])
-  })
-
-  it("offers nothing until permissions load", () => {
-    expect(reachableCampuses(options, undefined)).toEqual([])
-  })
-})
-
 describe("scopeNote", () => {
   it("names the chosen campus", () => {
     expect(scopeNote(false, "UNILAG")).toBe("These numbers cover UNILAG only.")
+  })
+
+  it("names the chosen country when no campus is picked", () => {
+    expect(scopeNote(false, undefined, "Ghana")).toBe(
+      "These numbers cover campuses in Ghana only."
+    )
+    expect(scopeNote(false, "UNILAG", "Nigeria")).toBe(
+      "These numbers cover UNILAG only."
+    )
+  })
+
+  it("offers only open countries to narrow to", () => {
+    expect(
+      dashboardCountries([
+        { code: "NG", name: "Nigeria", open: true },
+        { code: "GH", name: "Ghana", open: false },
+      ] as Country[])
+    ).toEqual([{ value: "NG", label: "Nigeria" }])
   })
 
   it("explains a confined view", () => {
@@ -167,7 +160,7 @@ describe("money tab", () => {
   const permissions = (campuses: string[]): AdminPermissions => ({
     all: false,
     keys: ["dashboard.read"],
-    campuses,
+    limited_to: campuses.length > 0 ? { "dashboard.read": campuses } : {},
   })
 
   it("is only for admins who see the whole platform", () => {
@@ -213,6 +206,7 @@ describe("mostActiveCampuses", () => {
     id,
     name: id,
     acronym: id,
+    country_code: "NG",
     members: 10,
     joined: 0,
     weekly_active,

@@ -10,6 +10,7 @@ import {
   snaccPreview,
   snaccStatus,
   STATE_OPTIONS,
+  stateFilter,
 } from "./snaccs"
 
 const content = (patch: Partial<SnaccContent> = {}): SnaccContent => ({
@@ -105,12 +106,29 @@ describe("hangouts", () => {
 })
 
 describe("snaccStatus", () => {
-  it("puts removed before pinned", () => {
+  const snacc = (
+    patch: Partial<{
+      deleted_at: string | null
+      pinned: boolean
+      held_at: string | null
+    }>
+  ) => ({ deleted_at: null, pinned: false, held_at: null, ...patch })
+
+  it("puts removed before held, and held before pinned", () => {
     expect(
-      snaccStatus({ deleted_at: "2026-09-01T00:00:00Z", pinned: true }).label
+      snaccStatus(
+        snacc({
+          deleted_at: "2026-09-01T00:00:00Z",
+          held_at: "2026-09-01T00:00:00Z",
+        })
+      ).label
     ).toBe("Removed")
-    expect(snaccStatus({ deleted_at: null, pinned: true }).label).toBe("Pinned")
-    expect(snaccStatus({ deleted_at: null, pinned: false })).toEqual({
+    expect(
+      snaccStatus(snacc({ held_at: "2026-09-01T00:00:00Z", pinned: true }))
+        .label
+    ).toBe("Held")
+    expect(snaccStatus(snacc({ pinned: true })).label).toBe("Pinned")
+    expect(snaccStatus(snacc({}))).toEqual({
       label: "Live",
       variant: "outline",
     })
@@ -162,7 +180,17 @@ describe("STATE_OPTIONS", () => {
   it("calls deleted snaccs removed", () => {
     expect(STATE_OPTIONS).toEqual([
       { value: "live", label: "Live" },
+      { value: "held", label: "Held" },
       { value: "deleted", label: "Removed" },
     ])
+  })
+})
+
+describe("stateFilter", () => {
+  it("asks for held snaccs that are still up", () => {
+    expect(stateFilter(null)).toEqual({})
+    expect(stateFilter("live")).toEqual({ deleted: false })
+    expect(stateFilter("held")).toEqual({ deleted: false, held: true })
+    expect(stateFilter("deleted")).toEqual({ deleted: true })
   })
 })

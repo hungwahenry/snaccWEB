@@ -2,14 +2,20 @@ import type { UniversityDetail } from "../types"
 import { campusStats } from "../utils/labels"
 import { CampusBadge } from "./campus-badge"
 
-export function CampusHeader({ campus }: { campus: UniversityDetail }) {
+export function CampusHeader({
+  campus,
+  heading: Heading = "h2",
+}: {
+  campus: UniversityDetail
+  heading?: "h1" | "h2"
+}) {
   return (
     <div className="flex items-center gap-4 border-b border-border px-4 py-4">
       <CampusBadge campus={campus} className="size-14 text-lg" />
       <div className="min-w-0 flex-1">
-        <h2 className="truncate text-xl font-extrabold tracking-tight text-foreground">
+        <Heading className="truncate text-xl font-extrabold tracking-tight text-foreground">
           {campus.name}
-        </h2>
+        </Heading>
         {campus.motto ? (
           <p className="truncate text-sm text-muted-foreground">
             {campus.motto}

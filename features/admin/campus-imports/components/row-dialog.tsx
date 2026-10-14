@@ -14,7 +14,7 @@ import {
 import { useDraft } from "@/features/admin/shell/hooks/use-draft"
 import type { Option } from "@/features/admin/shell/types"
 import {
-  TIME_ZONE_OPTIONS,
+  timeZoneOptions,
   UNIVERSITY_LIMITS,
 } from "@/features/admin/universities/utils/university"
 import type {
@@ -100,7 +100,7 @@ function RowForm({
         label="Time zone"
         value={draft.timeZone || null}
         onChange={(zone) => set("timeZone", zone)}
-        options={TIME_ZONE_OPTIONS}
+        options={timeZoneOptions(draft.timeZone)}
         placeholder="Search time zones"
         empty="No time zone by that name."
       />

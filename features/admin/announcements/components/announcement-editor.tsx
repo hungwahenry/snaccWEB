@@ -17,9 +17,11 @@ import { TimePickerDialog } from "./time-picker-dialog"
 export function AnnouncementEditor({
   editor,
   campuses,
+  countries,
 }: {
   editor: AnnouncementEditorState
   campuses: { options: Option[]; acronyms: ReadonlyMap<string, string> }
+  countries: { options: Option[]; names: ReadonlyMap<string, string> }
 }) {
   const { announcement, draft } = editor
 
@@ -51,7 +53,11 @@ export function AnnouncementEditor({
             <AnnouncementResults stats={editor.results} />
           ) : null}
           <ContentSection editor={editor} />
-          <AudienceSection editor={editor} campuses={campuses} />
+          <AudienceSection
+            editor={editor}
+            campuses={campuses}
+            countries={countries}
+          />
           <DeliverySection editor={editor} />
         </div>
         <div className="min-w-0 lg:sticky lg:top-6">

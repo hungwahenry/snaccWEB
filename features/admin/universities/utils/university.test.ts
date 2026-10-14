@@ -12,6 +12,9 @@ import {
   toUpdateInput,
   universityPlace,
   withCountry,
+  timeZoneOptions,
+  ANY_CAMPUS,
+  campusSearchOptions,
 } from "./university"
 
 const campus = (
@@ -183,5 +186,52 @@ describe("place", () => {
         open: false,
       })
     ).toBe("Ghana · Not open")
+  })
+})
+
+describe("timeZoneOptions", () => {
+  it("keeps a stored zone the browser does not list, so it still shows", () => {
+    expect(timeZoneOptions("Mars/Olympus")[0]).toEqual({
+      value: "Mars/Olympus",
+      label: "Mars/Olympus",
+    })
+    expect(
+      timeZoneOptions("Africa/Lagos").filter(
+        (option) => option.value === "Africa/Lagos"
+      )
+    ).toHaveLength(1)
+  })
+})
+
+describe("campusSearchOptions", () => {
+  const campus = (id: string, acronym: string, country: string, open = true) =>
+    ({
+      id,
+      name: `${acronym} University`,
+      acronym,
+      slug: id,
+      country_code: country,
+      status: "verified",
+      open,
+      motto: null,
+      website: null,
+      logo_url: null,
+    }) as const
+
+  it("names the country, drops repeats and can lead with an any choice", () => {
+    expect(
+      campusSearchOptions(
+        [
+          campus("a", "UI", "NG"),
+          campus("b", "UI", "ID", false),
+          campus("a", "UI", "NG"),
+        ],
+        "Every campus"
+      )
+    ).toEqual([
+      { value: ANY_CAMPUS, label: "Every campus" },
+      { value: "a", label: "UI University (UI) · NG" },
+      { value: "b", label: "UI University (UI) · ID · not open yet" },
+    ])
   })
 })

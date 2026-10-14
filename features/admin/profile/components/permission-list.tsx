@@ -1,18 +1,25 @@
 import { Badge } from "@/components/ui/badge"
+import type { PermissionGroup } from "@/features/admin/roles/types"
+import { humanize } from "@/features/admin/shell/utils/format"
 
-export function PermissionList({ groups }: { groups: [string, string[]][] }) {
+export function PermissionList({ groups }: { groups: PermissionGroup[] }) {
   return (
     <div className="flex flex-col gap-3">
-      {groups.map(([resource, actions]) => (
-        <div key={resource} className="flex flex-wrap items-center gap-2">
-          <span className="w-44 shrink-0 font-mono text-xs text-muted-foreground">
-            {resource}
+      {groups.map((group) => (
+        <div
+          key={group.resource}
+          className="flex flex-col gap-2 sm:flex-row sm:items-center"
+        >
+          <span className="shrink-0 text-sm font-medium sm:w-44">
+            {humanize(group.resource)}
           </span>
-          {actions.map((action) => (
-            <Badge key={action} variant="outline" className="font-mono text-xs">
-              {action}
-            </Badge>
-          ))}
+          <div className="flex flex-wrap gap-2">
+            {group.permissions.map((permission) => (
+              <Badge key={permission.key} variant="outline">
+                {humanize(permission.action)}
+              </Badge>
+            ))}
+          </div>
         </div>
       ))}
     </div>

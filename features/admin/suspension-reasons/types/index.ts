@@ -17,8 +17,9 @@ export interface CreateSuspensionReasonInput {
   position?: number
 }
 
-export type UpdateSuspensionReasonInput =
-  Partial<CreateSuspensionReasonInput> & { retired?: boolean }
+export type UpdateSuspensionReasonInput = Partial<
+  Omit<CreateSuspensionReasonInput, "slug">
+> & { retired?: boolean }
 
 export interface SuspensionReasonDraft {
   slug: string

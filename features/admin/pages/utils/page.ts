@@ -71,8 +71,8 @@ export function toPageInput(draft: PageDraft): CreatePageInput {
     slug: draft.slug.trim(),
     content: draft.content,
     html: draft.html,
-    excerpt: draft.excerpt.trim() || undefined,
-    seoTitle: draft.seoTitle.trim() || undefined,
-    seoDescription: draft.seoDescription.trim() || undefined,
+    excerpt: draft.excerpt.trim(),
+    seoTitle: draft.seoTitle.trim(),
+    seoDescription: draft.seoDescription.trim(),
   }
 }

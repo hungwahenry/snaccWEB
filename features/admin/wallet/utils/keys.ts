@@ -10,5 +10,6 @@ export const adminWalletKeys = {
     ["admin", "wallet", "accounts", query] as const,
   transactions: (query: WalletTransactionListQuery) =>
     ["admin", "wallet", "transactions", query] as const,
+  transaction: (id: string) => ["admin", "wallet", "transaction", id] as const,
   detail: (userId: string) => ["admin", "wallet", "detail", userId] as const,
 }

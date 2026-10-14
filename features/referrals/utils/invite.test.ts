@@ -74,14 +74,14 @@ describe("rewardBlurb", () => {
         7
       )
     ).toBe(
-      "Every friend who joins with your code and uses Snacc for a week gets you ₦100 and 10 Snacc Score. They get ₦50 too."
+      "Every friend who joins with your code and uses Snacc for a week gets you ₦100 and 10 Snacc Score. They can get a welcome reward too."
     )
   })
 
   it("leaves the score out when there is none", () => {
     expect(
       rewardBlurb({ referrer: naira(10000), referee: naira(5000), score: 0 }, 7)
-    ).toContain("gets you ₦100. They get")
+    ).toContain("gets you ₦100. They can")
   })
 
   it("follows the qualifying period the server sets", () => {

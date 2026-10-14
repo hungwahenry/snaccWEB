@@ -57,7 +57,7 @@ export const MATCH: Record<CampusImportMatch, StatusMeta> = {
 export const DECISION_LABEL: Record<CampusImportDecision, string> = {
   undecided: "Not decided",
   create: "Add as new",
-  update: "Update ours",
+  update: "Fill in what ours is missing",
   merge: "Merge",
   skip: "Leave out",
 }

@@ -1,5 +1,6 @@
+import type { Country } from "@/features/places/types"
 import type { Option } from "@/features/admin/shell/types"
-import type { AdminPermissions } from "@/lib/permissions"
+import { campusesFor, type AdminPermissions } from "@/lib/permissions"
 import type {
   AudiencePlatform,
   CampusRow,
@@ -95,23 +96,22 @@ export function funnelSteps(growth: GrowthMetrics): FunnelStep[] {
   }))
 }
 
-export function reachableCampuses(
-  options: Option[],
-  permissions: AdminPermissions | undefined
-): Option[] {
-  if (!permissions) return []
-  if (permissions.campuses.length === 0) return options
-
-  return options.filter((option) => permissions.campuses.includes(option.value))
-}
-
 export function scopeNote(
   platform: boolean,
-  campusLabel: string | undefined
+  campusLabel: string | undefined,
+  countryLabel?: string
 ): string | null {
   if (campusLabel) return `These numbers cover ${campusLabel} only.`
+  if (countryLabel)
+    return `These numbers cover campuses in ${countryLabel} only.`
   if (!platform) return "These numbers cover your campuses only."
   return null
+}
+
+export function dashboardCountries(countries: Country[]): Option[] {
+  return countries
+    .filter((country) => country.open)
+    .map((country) => ({ value: country.code, label: country.name }))
 }
 
 export const DASHBOARD_TABS = [
@@ -135,7 +135,7 @@ const TAB_LABELS: Record<DashboardTab, string> = {
 }
 
 export function seesMoney(permissions: AdminPermissions | undefined): boolean {
-  return !!permissions && permissions.campuses.length === 0
+  return !!permissions && campusesFor(permissions, "dashboard.read") === null
 }
 
 export function dashboardTabs(canSeeMoney: boolean): Option<DashboardTab>[] {

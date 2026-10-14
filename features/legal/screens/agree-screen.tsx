@@ -61,7 +61,7 @@ export function AgreeScreen() {
         <Button
           size="lg"
           className="h-12"
-          disabled={screen.loading || screen.agreeing}
+          disabled={!screen.canAgree || screen.agreeing}
           onClick={screen.agree}
         >
           {screen.agreeing ? <Spinner /> : "Agree and continue"}

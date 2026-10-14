@@ -69,8 +69,8 @@ export function PublicSnaccCard({
           </div>
 
           {snacc.body ? (
-            <p className="text-[15px] leading-snug whitespace-pre-wrap text-foreground">
-              {richText(snacc.body)}
+            <p className="text-[15px] leading-snug wrap-break-word whitespace-pre-wrap text-foreground">
+              {href ? snacc.body : richText(snacc.body)}
             </p>
           ) : null}
 
@@ -207,7 +207,7 @@ function QuotedSnacc({ snacc }: { snacc: EmbeddedSnacc }) {
       </div>
 
       {snacc.body ? (
-        <p className="line-clamp-3 text-sm leading-snug whitespace-pre-wrap text-foreground">
+        <p className="line-clamp-3 text-sm leading-snug wrap-break-word whitespace-pre-wrap text-foreground">
           {snacc.body}
         </p>
       ) : null}

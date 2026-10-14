@@ -17,7 +17,7 @@ const user = (patch: Partial<AdminUserRow> = {}): AdminUserRow => ({
   avatar_url: "",
   university: null,
   email: "bola@x.ng",
-  role: "user",
+  roles: [],
   email_verified_at: null,
   suspended_at: null,
   suspended_until: null,
@@ -61,7 +61,7 @@ describe("userBadges", () => {
     expect(
       userBadges(
         user({
-          role: "admin",
+          roles: ["Owner"],
           posts_globally: true,
           is_private: true,
           payouts_blocked_at: "2026-01-02T00:00:00Z",

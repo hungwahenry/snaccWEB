@@ -17,7 +17,13 @@ export interface Column<T> {
   cell: (row: T) => ReactNode
   align?: "start" | "end"
   className?: string
+  hideBelow?: "sm" | "md"
 }
+
+const HIDDEN_BELOW = {
+  sm: "hidden sm:table-cell",
+  md: "hidden md:table-cell",
+} as const
 
 /** A header the eye skips but a screen reader still announces. */
 export function HiddenHeader({ children }: { children: ReactNode }) {
@@ -45,6 +51,7 @@ function RowView<T>({
           className={cn(
             topAligned && "align-top",
             alignClass(column.align),
+            column.hideBelow && HIDDEN_BELOW[column.hideBelow],
             column.className
           )}
         >
@@ -84,7 +91,11 @@ export function DataTable<T>({
             {columns.map((column) => (
               <TableHead
                 key={column.id}
-                className={cn(alignClass(column.align), column.className)}
+                className={cn(
+                  alignClass(column.align),
+                  column.hideBelow && HIDDEN_BELOW[column.hideBelow],
+                  column.className
+                )}
               >
                 {column.header}
               </TableHead>

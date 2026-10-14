@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const name = nameOf(inviter)
   const title = `${name} invited you to Snacc`
-  const description = `Join Snacc with ${name}’s code ${code} and you both get paid.`
+  const description = `Join Snacc with ${name}’s code ${code}.`
 
   return {
     title,

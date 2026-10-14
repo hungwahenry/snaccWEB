@@ -9,6 +9,7 @@ import {
   reporterName,
   resolvedLine,
   reviewerName,
+  roomWords,
   scoredCategories,
   suspends,
   targetNoun,
@@ -37,10 +38,12 @@ const roomMessage: ReportTarget = {
     id: "c1",
     body: "hello room",
     deleted_at: null,
+    held: false,
     created_at: "2026-09-01T00:00:00Z",
     ...nothing,
+    voice: null,
     sender: person("bola"),
-    room: { id: "r1", name: "UNILAG", campus: null },
+    room: { id: "r1", kind: "campus", name: "UNILAG", campus: null },
   },
 }
 
@@ -94,6 +97,7 @@ const ghostMessage: ReportTarget = {
     deleted_at: null,
     created_at: "2026-09-01T00:00:00Z",
     ...nothing,
+    voice: null,
     sender: person("ghost"),
     conversation: {
       id: "t1",
@@ -182,6 +186,20 @@ describe("targetThumb", () => {
   })
 })
 
+describe("roomWords", () => {
+  it("says who a room is open to", () => {
+    expect(roomWords({ kind: "country", campus: null })).toBe(
+      "Posted in the country room, open to everyone at a campus there."
+    )
+    expect(roomWords({ kind: "campus", campus: { name: "Unilag" } })).toBe(
+      "Posted in the Unilag room."
+    )
+    expect(roomWords({ kind: "hangout", campus: null })).toBe(
+      "Posted in a hangout chat, open to the people going."
+    )
+  })
+})
+
 describe("names", () => {
   it("credits the automatic check to Snacc", () => {
     expect(reporterName({ reporter: null })).toBe("Snacc")
@@ -219,27 +237,40 @@ describe("names", () => {
   })
 })
 
+const EVERYTHING = { all: true, keys: [], limited_to: {} }
+
 describe("acts", () => {
+  it("offers only what the moderator may do", () => {
+    const resolver = {
+      all: false,
+      keys: ["reports.resolve", "chats.delete"],
+      limited_to: {},
+    }
+    expect(
+      actChoices(roomMessage, resolver).map((choice) => choice.value)
+    ).toEqual(["delete_chat_message"])
+  })
+
   it("offers what fits the target", () => {
-    expect(actChoices(roomMessage).map((choice) => choice.value)).toEqual([
-      "delete_chat_message",
-      "suspend_sender",
-    ])
-    expect(actChoices(null)).toEqual([])
+    expect(
+      actChoices(roomMessage, EVERYTHING).map((choice) => choice.value)
+    ).toEqual(["delete_chat_message", "suspend_sender"])
+    expect(actChoices(null, EVERYTHING)).toEqual([])
   })
 
   it("offers the sticker acts for stickers and packs", () => {
-    expect(actChoices(sticker()).map((choice) => choice.value)).toEqual([
-      "remove_sticker",
-      "suspend_sticker_owner",
-    ])
     expect(
-      actChoices(stickerPack(person("ada"))).map((choice) => choice.value)
+      actChoices(sticker(), EVERYTHING).map((choice) => choice.value)
+    ).toEqual(["remove_sticker", "suspend_sticker_owner"])
+    expect(
+      actChoices(stickerPack(person("ada")), EVERYTHING).map(
+        (choice) => choice.value
+      )
     ).toEqual(["take_down_sticker_pack", "suspend_pack_owner"])
   })
 
   it("offers nothing but dismissing on a pack Snacc made", () => {
-    expect(actChoices(stickerPack(null))).toEqual([])
+    expect(actChoices(stickerPack(null), EVERYTHING)).toEqual([])
   })
 
   it("knows which acts suspend someone", () => {
@@ -304,6 +335,20 @@ describe("toResolveInput", () => {
     expect(
       toResolveInput(stickerPack(person("ada")), EMPTY_RESOLVE, now)
     ).toEqual({ stickerPackId: "p1", status: "actioned" })
+  })
+
+  it("sends no acts with a dismissal", () => {
+    expect(
+      toResolveInput(
+        roomMessage,
+        {
+          ...EMPTY_RESOLVE,
+          status: "dismissed",
+          acts: ["delete_chat_message"],
+        },
+        now
+      ).acts
+    ).toBeUndefined()
   })
 
   it("leaves the suspension out unless an act suspends", () => {

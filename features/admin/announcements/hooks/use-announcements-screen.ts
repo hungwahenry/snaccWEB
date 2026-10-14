@@ -1,5 +1,6 @@
 "use client"
 
+import { useCountryChoices } from "@/features/admin/countries/hooks/use-country-choices"
 import { parseAsString, parseAsStringLiteral } from "nuqs"
 import { useListParams } from "@/features/admin/shell/hooks/use-list-params"
 import { PAGE_SIZE } from "@/features/admin/shell/utils/list-params"
@@ -21,5 +22,10 @@ export function useAnnouncementsScreen() {
     status: list.query.status ?? undefined,
   })
 
-  return { list, query, campuses: useCampuses() }
+  return {
+    list,
+    query,
+    campuses: useCampuses(),
+    countries: useCountryChoices(),
+  }
 }

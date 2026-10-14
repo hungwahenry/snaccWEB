@@ -46,7 +46,7 @@ export function UniversitiesTable({
     () => [
       {
         id: "university",
-        header: "University",
+        header: "Campus",
         cell: (university) => (
           <div className="min-w-0">
             <div className="flex items-center gap-2">
@@ -68,12 +68,14 @@ export function UniversitiesTable({
       },
       {
         id: "place",
+        hideBelow: "sm",
         header: "Place",
         className: "text-muted-foreground",
         cell: (university) => universityPlace(university),
       },
       {
         id: "members",
+        hideBelow: "md",
         header: "Members",
         align: "end",
         className: "tabular-nums",
@@ -81,6 +83,7 @@ export function UniversitiesTable({
       },
       {
         id: "snaccs",
+        hideBelow: "md",
         header: "Snaccs",
         align: "end",
         className: "tabular-nums",
@@ -88,6 +91,7 @@ export function UniversitiesTable({
       },
       {
         id: "fund",
+        hideBelow: "md",
         header: "Fund",
         cell: (university) =>
           university.fund ? (
@@ -161,8 +165,8 @@ export function UniversitiesTable({
                   </Button>
                 }
                 title={`Delete ${university.name}?`}
-                description="This only works for a campus nobody has posted from. Anyone who belongs to it loses their campus, and its fund, room and announcements go with it."
-                confirmLabel="Delete university"
+                description="This only works for a campus nobody belongs to or has posted from. Its fund, room and announcements go with it. To fold one campus into another, merge it instead."
+                confirmLabel="Delete campus"
                 onConfirm={() => onDelete(university.id)}
               />
             </CanAct>
@@ -176,10 +180,10 @@ export function UniversitiesTable({
   return (
     <QueryTable
       query={query}
-      what="universities"
+      what="campuses"
       columns={columns}
       rowKey={(university) => university.id}
-      empty="No universities match that."
+      empty="No campuses match that."
       toolbar={toolbar}
       onPageChange={onPageChange}
     />

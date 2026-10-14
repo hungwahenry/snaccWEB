@@ -21,9 +21,9 @@ async function read<T>(
       Accept: "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    // Never shared: `/config` and `/flags` both vary by who is asking, and Next keys its fetch
-    // cache on the URL rather than the headers, so a cached copy would be somebody else's.
-    cache: "no-store",
+    // `/config` and `/flags` vary by who is asking, so a signed-in read is never shared. Signed
+    // out, every request is the same one, so a minute-old copy spares the backend a call per page.
+    ...(token ? { cache: "no-store" } : { next: { revalidate: 60 } }),
   }).catch(() => null)
   if (!res?.ok) return null
 

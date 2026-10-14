@@ -19,7 +19,7 @@ const COLUMNS: Column<CampusRow>[] = [
       <>
         <span className="font-medium">{campus.acronym}</span>
         <span className="ml-2 text-xs text-muted-foreground">
-          {campus.name}
+          {campus.name} · {campus.country_code}
         </span>
         {campus.funded ? (
           <Badge variant="secondary" className="ml-2">

@@ -35,6 +35,8 @@ function SuspensionReasonForm({
           label="Slug"
           placeholder="harassment"
           maxLength={SUSPENSION_REASON_LIMITS.slug}
+          readOnly={reason !== undefined}
+          hint={reason ? "Fixed once made." : undefined}
           {...text("slug")}
         />
         <TextField

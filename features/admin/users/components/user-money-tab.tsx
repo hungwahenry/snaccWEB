@@ -2,6 +2,10 @@ import { ExternalLink } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { CanAct } from "@/features/admin/auth/containers/can-act"
+import { GrantPremiumDialog } from "@/features/admin/premium/components/grant-premium-dialog"
+import type { GrantPremiumInput } from "@/features/admin/premium/types"
+import { premiumLine } from "@/features/admin/premium/utils/premium"
+import { ConfirmAction } from "@/features/admin/shell/components/confirm-action"
 import {
   DataTable,
   type Column,
@@ -98,7 +102,15 @@ const WITHDRAWALS: Column<Withdrawal>[] = [
   },
 ]
 
-export function UserMoneyTab({ user }: { user: AdminUserDetail }) {
+export function UserMoneyTab({
+  user,
+  onGivePremium,
+  onEndPremium,
+}: {
+  user: AdminUserDetail
+  onGivePremium: (input: GrantPremiumInput) => Promise<unknown>
+  onEndPremium: () => Promise<unknown>
+}) {
   return (
     <div className="flex flex-col gap-6">
       <Section
@@ -134,7 +146,40 @@ export function UserMoneyTab({ user }: { user: AdminUserDetail }) {
         </TableFrame>
       ) : null}
 
-      <div className="rounded-lg border">
+      <div className="divide-y rounded-lg border">
+        <SettingRow
+          label="Premium"
+          description={premiumLine(user.premium)}
+          action={
+            <div className="flex flex-wrap justify-end gap-2">
+              <CanAct permission="premium.write">
+                <GrantPremiumDialog
+                  trigger={
+                    <Button variant="outline" size="sm">
+                      Give Premium
+                    </Button>
+                  }
+                  onSubmit={onGivePremium}
+                />
+              </CanAct>
+              {user.premium.active ? (
+                <CanAct permission="premium.write">
+                  <ConfirmAction
+                    trigger={
+                      <Button variant="ghost" size="sm">
+                        End it
+                      </Button>
+                    }
+                    title="End their Premium now?"
+                    description="Access stops straight away. A store subscription is not refunded by this; do that in the store's own console."
+                    confirmLabel="End Premium"
+                    onConfirm={onEndPremium}
+                  />
+                </CanAct>
+              ) : null}
+            </div>
+          }
+        />
         <SettingRow
           label="Wallet"
           description="Spendable money. Every movement in it has two sides and can be traced."

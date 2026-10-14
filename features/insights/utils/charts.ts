@@ -1,4 +1,4 @@
-import { hourLabel, shortDay, utcHourToLocal } from "@/lib/format"
+import { hourLabel, shortDay } from "@/lib/format"
 import type { Bar } from "../components/bar-chart"
 import type { InsightsHour } from "../types"
 
@@ -18,7 +18,7 @@ export function dailyBars<T extends { day: string }>(
 
 export function hourlyBars(hours: InsightsHour[]): Bar[] {
   const local = new Array<number>(24).fill(0)
-  for (const hour of hours) local[utcHourToLocal(hour.hour)] += hour.views
+  for (const hour of hours) local[hour.hour] += hour.views
 
   return local.map((views, hour) => ({
     key: String(hour),

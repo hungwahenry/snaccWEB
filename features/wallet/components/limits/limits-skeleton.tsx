@@ -1,6 +1,10 @@
 import { Eyebrow } from "@/components/ui/eyebrow"
 import { Skeleton } from "@/components/ui/skeleton"
-import { LIMITS_HEADING, LIMITS_ROLLOVER, RAIL_LABELS } from "../../utils/limits"
+import {
+  LIMITS_HEADING,
+  LIMITS_ROLLOVER,
+  RAIL_LABELS,
+} from "../../utils/limits"
 
 const RAILS = Object.values(RAIL_LABELS)
 

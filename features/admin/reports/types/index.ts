@@ -5,8 +5,10 @@ import type {
   MediaGif,
   MediaImage,
   MediaSticker,
+  MediaVoice,
   Option,
 } from "@/features/admin/shell/types"
+import type { RoomKind } from "@/features/admin/rooms/types"
 import type { AdminSnacc } from "@/features/admin/snaccs/types"
 import type {
   AdminSticker,
@@ -64,6 +66,7 @@ export type ReportTarget =
         deleted_at: string | null
         created_at: string
         images: MediaImage[]
+        voice: MediaVoice | null
         sticker: MediaSticker | null
         gif: MediaGif | null
         sender: ReportAuthor
@@ -82,13 +85,16 @@ export type ReportTarget =
         id: string
         body: string | null
         deleted_at: string | null
+        held: boolean
         created_at: string
         images: MediaImage[]
+        voice: MediaVoice | null
         sticker: MediaSticker | null
         gif: MediaGif | null
         sender: ReportAuthor
         room: {
           id: string
+          kind: RoomKind
           name: string
           campus: { id: string; name: string; acronym: string } | null
         }
@@ -153,6 +159,7 @@ export interface AdminReportDetail extends AdminReport {
 export type ReportListQuery = {
   page: number
   perPage: number
+  q?: string
   status?: ReportStatus
   targetType?: ReportTargetType
 }

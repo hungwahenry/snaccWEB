@@ -65,27 +65,31 @@ function RowActions({
           onConfirm={() => actions.hold(snacc.id)}
         />
       </CanAct>
-      <ActionButton
-        variant="ghost"
-        size="sm"
-        onClick={() =>
-          snacc.pinned ? actions.unpin(snacc.id) : actions.pin(snacc.id)
-        }
-      >
-        {snacc.pinned ? "Unpin" : "Pin"}
-      </ActionButton>
-      <ConfirmAction
-        trigger={
-          <Button variant="outline" size="sm">
-            Remove
-          </Button>
-        }
-        title="Remove snacc"
-        description="This is permanent. Replies go with it, the author's counts unwind, and what it earned is retracted. To take it out of sight reversibly, hold it instead."
-        confirmLabel="Remove"
-        reason={{ label: "Reason" }}
-        onConfirm={(reason) => actions.remove(snacc.id, reason)}
-      />
+      <CanAct permission="snaccs.pin">
+        <ActionButton
+          variant="ghost"
+          size="sm"
+          onClick={() =>
+            snacc.pinned ? actions.unpin(snacc.id) : actions.pin(snacc.id)
+          }
+        >
+          {snacc.pinned ? "Unpin" : "Pin"}
+        </ActionButton>
+      </CanAct>
+      <CanAct permission="snaccs.delete">
+        <ConfirmAction
+          trigger={
+            <Button variant="outline" size="sm">
+              Remove
+            </Button>
+          }
+          title="Remove snacc"
+          description="This is permanent. Replies go with it, the author's counts unwind, and what it earned is retracted. To take it out of sight reversibly, hold it instead."
+          confirmLabel="Remove"
+          reason={{ label: "Reason" }}
+          onConfirm={(reason) => actions.remove(snacc.id, reason)}
+        />
+      </CanAct>
     </div>
   )
 }

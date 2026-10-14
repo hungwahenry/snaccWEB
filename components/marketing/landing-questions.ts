@@ -23,7 +23,7 @@ export const LANDING_QUESTIONS: FaqQuestion[] = [
   },
   {
     q: "Who sees what I post?",
-    a: "Your campus feed and the global feed, where students from every campus scroll. If you'd rather keep it close, make your account private and only people you approve can follow you.",
+    a: "Your campus feed and the Global feed, where students from every campus in your country scroll. If you'd rather keep it close, make your account private and only people you approve can follow you.",
   },
   {
     q: "Can I use it on my laptop?",

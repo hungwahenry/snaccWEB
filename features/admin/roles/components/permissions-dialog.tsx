@@ -4,12 +4,13 @@ import { useState, type ReactElement } from "react"
 import {
   DialogForm,
   FormDialog,
+  FormNote,
 } from "@/features/admin/shell/components/form-dialog"
 import { EmptyNote } from "@/features/admin/shell/components/detail"
 import { CheckboxField } from "@/features/admin/shell/components/form-fields"
-import { plural } from "@/features/admin/shell/utils/format"
+import { humanize, plural } from "@/features/admin/shell/utils/format"
 import type { AdminRole, PermissionGroup } from "../types"
-import { toggleKey } from "../utils/roles"
+import { lacksRead, toggleKey } from "../utils/roles"
 
 function PermissionsForm({
   role,
@@ -38,9 +39,15 @@ function PermissionsForm({
       ) : null}
       {groups.map((group) => (
         <fieldset key={group.resource} className="flex flex-col gap-2">
-          <legend className="mb-1 font-mono text-xs font-semibold text-muted-foreground">
-            {group.resource}
+          <legend className="mb-1 text-sm font-semibold">
+            {humanize(group.resource)}
           </legend>
+          {lacksRead(group, checked) ? (
+            <FormNote>
+              Read isn’t ticked, so this page stays hidden from them. What’s
+              ticked here only works where another page offers it.
+            </FormNote>
+          ) : null}
           {group.permissions.map((permission) => (
             <CheckboxField
               key={permission.key}
@@ -48,10 +55,12 @@ function PermissionsForm({
               onChange={() =>
                 setChecked((current) => toggleKey(current, permission.key))
               }
-              label={
-                <span className="font-mono text-xs">{permission.action}</span>
+              label={humanize(permission.action)}
+              hint={
+                permission.per_campus
+                  ? "Also works when the role is given for one campus."
+                  : "Only works when the role is given for every campus."
               }
-              hint={permission.description}
             />
           ))}
         </fieldset>

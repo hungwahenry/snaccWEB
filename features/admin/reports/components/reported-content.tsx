@@ -7,6 +7,7 @@ import { StatusBadge } from "@/features/admin/shell/components/status-badge"
 import { StickerImage } from "@/features/admin/shell/components/sticker-image"
 import { UserCell } from "@/features/admin/shell/components/user-cell"
 import {
+  roomPath,
   snaccPath,
   stickerPackPath,
   threadPath,
@@ -16,9 +17,10 @@ import { sharedSnaccLabel } from "@/features/admin/moments/utils/moments"
 import { SnaccView } from "@/features/admin/snaccs/components/snacc-view"
 import { PACK_STATUS } from "@/features/admin/stickers/utils/packs"
 import type { UserRef } from "@/lib/api/types"
+import { can, type AdminPermissions } from "@/lib/permissions"
 import { formatDate, handleOf } from "@/lib/format"
 import type { AdminReportDetail, ReportTarget } from "../types"
-import { reportedStickerSrc } from "../utils/reports"
+import { reportedStickerSrc, roomWords } from "../utils/reports"
 
 type TargetOf<K extends NonNullable<ReportTarget>["type"]> = Extract<
   NonNullable<ReportTarget>,
@@ -74,8 +76,10 @@ function Framed({
 
 function ReportedMessage({
   message,
+  canOpen,
 }: {
   message: TargetOf<"message">["message"]
+  canOpen: boolean
 }) {
   return (
     <Framed
@@ -93,10 +97,14 @@ function ReportedMessage({
           ) : null}
         </>
       }
-      link={{
-        href: threadPath(message.conversation.id),
-        label: "Read the whole thread",
-      }}
+      link={
+        canOpen
+          ? {
+              href: threadPath(message.conversation.id),
+              label: "Read the whole thread",
+            }
+          : undefined
+      }
     >
       {message.body ? (
         <p className="text-sm whitespace-pre-wrap">{message.body}</p>
@@ -105,6 +113,7 @@ function ReportedMessage({
         images={message.images}
         gif={message.gif}
         sticker={message.sticker}
+        voice={message.voice}
       />
       <p className="text-xs text-muted-foreground">
         Sent to {handleOf(message.conversation.target)}.
@@ -115,15 +124,26 @@ function ReportedMessage({
 
 function ReportedChatMessage({
   message,
+  canOpen,
 }: {
   message: TargetOf<"chat_message">["chat_message"]
+  canOpen: boolean
 }) {
   return (
     <Framed
       author={message.sender}
       note={`In ${message.room.name} · ${formatDate(message.created_at)}`}
       badges={
-        message.deleted_at ? <Badge variant="destructive">Removed</Badge> : null
+        message.deleted_at ? (
+          <Badge variant="destructive">Removed</Badge>
+        ) : message.held ? (
+          <Badge variant="outline">Held</Badge>
+        ) : null
+      }
+      link={
+        canOpen
+          ? { href: roomPath(message.room.id), label: "Open the room" }
+          : undefined
       }
     >
       {message.body ? (
@@ -133,12 +153,9 @@ function ReportedChatMessage({
         images={message.images}
         gif={message.gif}
         sticker={message.sticker}
+        voice={message.voice}
       />
-      <p className="text-xs text-muted-foreground">
-        {message.room.campus
-          ? `Posted in the ${message.room.campus.name} room.`
-          : "Posted in the room everyone shares."}
-      </p>
+      <p className="text-xs text-muted-foreground">{roomWords(message.room)}</p>
     </Framed>
   )
 }
@@ -256,7 +273,13 @@ function ReportedStickerPack({
   )
 }
 
-export function ReportedContent({ report }: { report: AdminReportDetail }) {
+export function ReportedContent({
+  report,
+  permissions,
+}: {
+  report: AdminReportDetail
+  permissions: AdminPermissions | undefined
+}) {
   const target = report.target
 
   return (
@@ -271,11 +294,17 @@ export function ReportedContent({ report }: { report: AdminReportDetail }) {
       ) : target.type === "snacc" ? (
         <Gone what="snacc" />
       ) : target.type === "message" ? (
-        <ReportedMessage message={target.message} />
+        <ReportedMessage
+          message={target.message}
+          canOpen={can(permissions, "messages.read")}
+        />
       ) : target.type === "moment" ? (
         <ReportedMoment moment={target.moment} />
       ) : target.type === "chat_message" ? (
-        <ReportedChatMessage message={target.chat_message} />
+        <ReportedChatMessage
+          message={target.chat_message}
+          canOpen={can(permissions, "chats.read")}
+        />
       ) : target.type === "sticker" ? (
         <ReportedSticker sticker={target.sticker} />
       ) : target.type === "sticker_pack" ? (

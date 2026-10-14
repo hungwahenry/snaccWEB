@@ -18,7 +18,7 @@ import type { AdminUniversity, UniversityDraft } from "../types"
 import {
   draftFrom,
   isDraftReady,
-  TIME_ZONE_OPTIONS,
+  timeZoneOptions,
   UNIVERSITY_LIMITS,
   withCountry,
 } from "../utils/university"
@@ -38,7 +38,7 @@ function UniversityForm({
 
   return (
     <DialogForm
-      submitLabel={reviewing ? "Verify" : editing ? "Save" : "Add university"}
+      submitLabel={reviewing ? "Verify" : editing ? "Save" : "Add campus"}
       canSubmit={isDraftReady(draft, editing)}
       onSubmit={() => onSubmit(draft)}
     >
@@ -65,19 +65,35 @@ function UniversityForm({
         />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <SearchSelectField
-          label="Country"
-          value={draft.countryCode || null}
-          onChange={(code) => replace((current) => withCountry(current, code))}
-          options={places.countries}
-          placeholder="Search countries"
-          empty="No country by that name."
-        />
+        {university && university.status !== "pending" ? (
+          <TextField
+            label="Country"
+            value={
+              places.countries.find(
+                (country) => country.value === draft.countryCode
+              )?.label ?? draft.countryCode
+            }
+            onChange={() => undefined}
+            readOnly
+            hint="A reviewed campus stays in its country. If it's in the wrong one, merge it into the right campus."
+          />
+        ) : (
+          <SearchSelectField
+            label="Country"
+            value={draft.countryCode || null}
+            onChange={(code) =>
+              replace((current) => withCountry(current, code))
+            }
+            options={places.countries}
+            placeholder="Search countries"
+            empty="No country by that name."
+          />
+        )}
         <SearchSelectField
           label="Time zone"
           value={draft.timeZone || null}
           onChange={(zone) => set("timeZone", zone)}
-          options={TIME_ZONE_OPTIONS}
+          options={timeZoneOptions(draft.timeZone)}
           placeholder="Search time zones"
           empty="No time zone by that name."
         />
@@ -154,7 +170,7 @@ export function UniversityDialog({
       title={
         university
           ? `${reviewing ? "Review" : "Edit"} ${university.name}`
-          : "Add a university"
+          : "Add a campus"
       }
       description={
         reviewing

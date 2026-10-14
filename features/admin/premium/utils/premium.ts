@@ -1,17 +1,43 @@
 import type { StatusMeta } from "@/features/admin/shell/types"
+import { parseWholeNumber } from "@/features/admin/shell/utils/number"
 import { formatNumber, longDate } from "@/lib/format"
 import type {
   AdminBenefit,
   AdminSubscriber,
   BenefitDraft,
+  GrantPremiumInput,
+  UserPremium,
   PremiumStats,
   PremiumStore,
   UpdateBenefitInput,
 } from "../types"
 
 export const GRANT_DAYS = 30
+export const GRANT_DAYS_MAX = 3650
 export const GRANT_REASON = "Granted from the admin panel."
 export const REVOKE_REASON = "Ended from the admin panel."
+export const DEFAULT_GRANT: GrantPremiumInput = {
+  days: GRANT_DAYS,
+  reason: GRANT_REASON,
+}
+
+export function toGrantInput(
+  days: string,
+  reason: string
+): GrantPremiumInput | null {
+  const count = parseWholeNumber(days, { min: 1, max: GRANT_DAYS_MAX })
+  const why = reason.trim()
+
+  return count === null || why.length < 3 ? null : { days: count, reason: why }
+}
+
+export function premiumLine(premium: UserPremium): string {
+  if (premium.lifetime) return "Premium for life."
+  if (premium.active && premium.until) {
+    return `Premium until ${longDate(premium.until)}.`
+  }
+  return "No Premium."
+}
 
 const STORES: Record<string, string> = {
   app_store: "App Store",

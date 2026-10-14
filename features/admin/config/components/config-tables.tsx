@@ -15,6 +15,7 @@ import { humanize } from "@/features/admin/shell/utils/format"
 import type { AdminConfigSetting, ConfigDraft, ConfigGroup } from "../types"
 import {
   CHANGED_STATUS,
+  hasPremium,
   PRIVATE_STATUS,
   previewValue,
   PUBLIC_STATUS,
@@ -56,7 +57,29 @@ export function ConfigTables({
         id: "value",
         header: "Value",
         className: "max-w-xs whitespace-normal",
-        cell: (setting) => <ValuePreview value={setting.value} />,
+        cell: (setting) =>
+          hasPremium(setting) ? (
+            <dl className="flex flex-col gap-1">
+              <div className="flex items-baseline gap-2">
+                <dt className="w-16 shrink-0 text-xs text-muted-foreground">
+                  Everyone
+                </dt>
+                <dd className="min-w-0">
+                  <ValuePreview value={setting.value} />
+                </dd>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <dt className="w-16 shrink-0 text-xs text-muted-foreground">
+                  Premium
+                </dt>
+                <dd className="min-w-0">
+                  <ValuePreview value={setting.premium_value} />
+                </dd>
+              </div>
+            </dl>
+          ) : (
+            <ValuePreview value={setting.value} />
+          ),
       },
       {
         id: "state",

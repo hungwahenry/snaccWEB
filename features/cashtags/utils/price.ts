@@ -35,6 +35,7 @@ export function localPrice(
   cashtag: Pick<Cashtag, "prices">,
   currency: string | null | undefined
 ): string | null {
+  if (currency === "USD") return null
   const quote = cashtag.prices.find((each) => each.currency === currency)
   return quote ? formatPrice(quote.price, quote.currency) : null
 }

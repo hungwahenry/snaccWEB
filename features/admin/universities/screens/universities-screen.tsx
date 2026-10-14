@@ -20,7 +20,7 @@ export function UniversitiesScreen() {
   return (
     <>
       <PageHeader
-        title="Universities"
+        title="Campuses"
         description="Every campus on Snacc, who belongs to it, and whether it pays. Campuses people add wait here until someone reviews them."
         action={
           <div className="flex flex-wrap gap-2">
@@ -34,7 +34,7 @@ export function UniversitiesScreen() {
                 trigger={
                   <Button size="sm">
                     <Plus />
-                    Add university
+                    Add campus
                   </Button>
                 }
                 onSubmit={(draft) => actions.save(draft)}

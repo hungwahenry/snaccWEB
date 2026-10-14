@@ -12,7 +12,7 @@ export function NotificationTypesScreen() {
   return (
     <>
       <PageHeader
-        title="Notifications"
+        title="Notification types"
         description="What every notification says, and how it reaches people."
       />
       <NotificationTypesTable

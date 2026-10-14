@@ -13,7 +13,7 @@ export function CountriesScreen() {
     <>
       <PageHeader
         title="Countries"
-        description="Where Snacc is open. Anyone can sign up from anywhere, but only people at campuses in open countries get in; everyone else waits, and gets an email the moment their country opens."
+        description="Where Snacc is open. Anyone can sign up from anywhere, but only people at campuses in open countries get in; everyone else waits, and gets an email the moment their country opens. Open a country to set its regions and campus types."
       />
       <CountriesTable
         query={query}

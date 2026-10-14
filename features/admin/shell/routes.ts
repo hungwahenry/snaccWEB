@@ -6,6 +6,7 @@ export const SNACCS_PATH = "/admin/snaccs"
 export const MOMENTS_PATH = "/admin/moments"
 export const HELD_STICKERS_PATH = "/admin/held-stickers"
 export const MESSAGES_PATH = "/admin/messages"
+export const ROOMS_PATH = "/admin/rooms"
 export const MODERATION_PATH = "/admin/moderation"
 export const REPORT_REASONS_PATH = "/admin/report-reasons"
 export const SUSPENSION_REASONS_PATH = "/admin/suspension-reasons"
@@ -18,6 +19,7 @@ export const RESERVED_USERNAMES_PATH = "/admin/reserved-usernames"
 export const REFERRALS_PATH = "/admin/referrals"
 
 export const WALLETS_PATH = "/admin/wallet"
+export const LEDGER_PATH = "/admin/ledger"
 export const WITHDRAWALS_PATH = "/admin/withdrawals"
 export const EARNINGS_PATH = "/admin/earnings"
 export const PREMIUM_PATH = "/admin/premium"
@@ -55,8 +57,10 @@ export const AUDIT_PATH = "/admin/audit"
 export const reportPath = (id: string) => `${REPORTS_PATH}/${id}`
 export const snaccPath = (id: string) => `${SNACCS_PATH}/${id}`
 export const threadPath = (id: string) => `${MESSAGES_PATH}/${id}`
+export const roomPath = (id: string) => `${ROOMS_PATH}/${id}`
 export const userPath = (id: string) => `${USERS_PATH}/${id}`
 export const walletPath = (userId: string) => `${WALLETS_PATH}/${userId}`
+export const postingPath = (id: string) => `${LEDGER_PATH}/${id}`
 export const withdrawalPath = (id: string) => `${WITHDRAWALS_PATH}/${id}`
 export const pagePath = (id: string) => `${PAGES_PATH}/${id}`
 export const legalDocumentPath = (id: string) => `${LEGAL_PATH}/${id}`
@@ -65,3 +69,4 @@ export const stickerPackPath = (id: string) => `${STICKER_PACKS_PATH}/${id}`
 export const adPath = (id: string) => `${ADS_PATH}/${id}`
 export const campusImportPath = (id: string) => `${CAMPUS_IMPORTS_PATH}/${id}`
 export const currencyPath = (code: string) => `${CURRENCIES_PATH}/${code}`
+export const countryPath = (code: string) => `${COUNTRIES_PATH}/${code}`

@@ -15,25 +15,76 @@ export function isWholeDate(
   return draft.day !== null && draft.month !== null && draft.year !== null
 }
 
-export function birthYears(thisYear: number): number[] {
-  return Array.from({ length: OLDEST + 1 }, (_, back) => thisYear - back)
+function isLeap(year: number): boolean {
+  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
 }
 
-export function birthDays(month: number | null): number[] {
-  return Array.from({ length: daysIn(month) }, (_, index) => index + 1)
+function lastMonth(year: number | null, today: Date): number {
+  return year === today.getFullYear() ? today.getMonth() + 1 : 12
 }
 
-export const BIRTH_MONTHS = MONTH_SHORT.map((label, index) => ({
+function lastDay(
+  month: number | null,
+  year: number | null,
+  today: Date
+): number {
+  const days =
+    month === 2 && year !== null && !isLeap(year) ? 28 : daysIn(month)
+  const thisMonth =
+    year === today.getFullYear() && month === today.getMonth() + 1
+  return thisMonth ? Math.min(days, today.getDate()) : days
+}
+
+export function birthYears(
+  today: Date,
+  known: { day: number; month: number } | null = null
+): number[] {
+  const years = Array.from(
+    { length: OLDEST + 1 },
+    (_, back) => today.getFullYear() - back
+  )
+  if (!known) return years
+
+  return years.filter(
+    (year) =>
+      known.month <= lastMonth(year, today) &&
+      known.day <= lastDay(known.month, year, today)
+  )
+}
+
+export function birthDays(
+  month: number | null,
+  year: number | null,
+  today: Date
+): number[] {
+  return Array.from(
+    { length: lastDay(month, year, today) },
+    (_, index) => index + 1
+  )
+}
+
+const MONTHS = MONTH_SHORT.map((label, index) => ({
   value: index + 1,
   label,
 }))
 
-export function withMonth(
-  draft: BirthDateDraft,
-  month: number
-): BirthDateDraft {
-  const fits = draft.day === null || draft.day <= daysIn(month)
-  return { ...draft, month, day: fits ? draft.day : null }
+export function birthMonths(
+  year: number | null,
+  today: Date
+): { value: number; label: string }[] {
+  return MONTHS.slice(0, lastMonth(year, today))
+}
+
+export function fittedDate(draft: BirthDateDraft, today: Date): BirthDateDraft {
+  const month =
+    draft.month !== null && draft.month > lastMonth(draft.year, today)
+      ? null
+      : draft.month
+  const day =
+    draft.day !== null && draft.day > lastDay(month, draft.year, today)
+      ? null
+      : draft.day
+  return { ...draft, month, day }
 }
 
 export function birthdayLabel(birthday: {

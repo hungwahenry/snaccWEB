@@ -12,6 +12,7 @@ import type {
   AudienceDraft,
   AudienceErrors,
   AudienceInput,
+  PlaceNames,
 } from "../types"
 
 const DAYS_MAX = 365
@@ -56,6 +57,7 @@ export function audienceDraftFrom(
   audience?: AnnouncementAudience
 ): AudienceDraft {
   return {
+    countryCodes: audience?.country_codes ?? [],
     campusIds: audience?.campus_ids ?? [],
     platforms: pickPlatforms(audience?.platforms ?? []),
     minVersion: audience?.min_version ?? "",
@@ -85,6 +87,7 @@ export function isAudienceValid(audience: AudienceDraft): boolean {
 
 export function toAudienceInput(audience: AudienceDraft): AudienceInput {
   return {
+    countryCodes: audience.countryCodes,
     campusIds: audience.campusIds,
     platforms: pickPlatforms(audience.platforms),
     minVersion: audience.minVersion.trim() || null,
@@ -125,6 +128,15 @@ function campusesPart(
   )
 }
 
+function countriesPart(
+  codes: string[],
+  names: ReadonlyMap<string, string>
+): Part | null {
+  if (codes.length === 0) return null
+
+  return named(codes.map((code) => names.get(code) ?? code).join(", "))
+}
+
 function platformsPart(platforms: AnnouncementPlatform[]): Part | null {
   const picked = pickPlatforms(platforms)
 
@@ -161,10 +173,11 @@ function quietPart(days: number | null): Part | null {
 
 export function audienceSummary(
   audience: AnnouncementAudience,
-  acronyms: ReadonlyMap<string, string>
+  names: PlaceNames
 ): string {
   const parts = [
-    campusesPart(audience.campus_ids, acronyms),
+    countriesPart(audience.country_codes, names.countries),
+    campusesPart(audience.campus_ids, names.campuses),
     platformsPart(audience.platforms),
     windowPart(audience),
     premiumPart(audience.premium),

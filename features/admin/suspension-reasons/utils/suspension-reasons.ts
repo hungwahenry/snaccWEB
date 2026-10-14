@@ -43,11 +43,10 @@ export function isDraftReady(draft: SuspensionReasonDraft): boolean {
   )
 }
 
-export function toCreateInput(
+function wording(
   draft: SuspensionReasonDraft
-): CreateSuspensionReasonInput {
+): Omit<CreateSuspensionReasonInput, "slug"> {
   return {
-    slug: draft.slug.trim(),
     label: draft.label.trim(),
     title: draft.title.trim(),
     description: draft.description.trim(),
@@ -55,10 +54,16 @@ export function toCreateInput(
   }
 }
 
+export function toCreateInput(
+  draft: SuspensionReasonDraft
+): CreateSuspensionReasonInput {
+  return { slug: draft.slug.trim(), ...wording(draft) }
+}
+
 export function toUpdateInput(
   draft: SuspensionReasonDraft
 ): UpdateSuspensionReasonInput {
-  return toCreateInput(draft)
+  return wording(draft)
 }
 
 /** By position, then name, with retired reasons after the ones in use. */

@@ -28,11 +28,15 @@ describe("limitKeyOf", () => {
 
 describe("offersPremium", () => {
   it("offers it when Premium is on sale and would raise this limit", () => {
-    expect(offersPremium(limit, config(true, { [KEY]: 1000 }), false)).toBe(true)
+    expect(offersPremium(limit, config(true, { [KEY]: 1000 }), false)).toBe(
+      true
+    )
   })
 
   it("never offers it to someone who already has it", () => {
-    expect(offersPremium(limit, config(true, { [KEY]: 1000 }), true)).toBe(false)
+    expect(offersPremium(limit, config(true, { [KEY]: 1000 }), true)).toBe(
+      false
+    )
   })
 
   it("stays quiet when Premium is off, or changes nothing here", () => {

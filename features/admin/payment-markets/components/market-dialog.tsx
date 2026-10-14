@@ -130,16 +130,19 @@ export function MarketDialog({
   market,
   choices,
   trigger,
+  disabled,
   onSubmit,
 }: {
   market?: AdminPaymentMarket
   choices: MarketChoices
   trigger: ReactElement
+  disabled?: boolean
   onSubmit: (country: string, input: UpsertMarketInput) => Promise<unknown>
 }) {
   return (
     <FormDialog
       trigger={trigger}
+      disabled={disabled}
       title={market ? `${market.country} market` : "New payment market"}
       description="How money reaches a bank in one country, through one provider, in that country's currency."
       wide

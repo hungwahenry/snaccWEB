@@ -34,8 +34,8 @@ export function TargetingSpotlight() {
             Reach exactly who you want.
           </h2>
           <p className="max-w-md text-lg leading-relaxed text-pretty text-white/70">
-            Pick campuses or whole states, and federal, state or private
-            schools. Then narrow it down: students or graduates, class year,
+            Pick campuses, whole regions or kinds of school. Then narrow it
+            down: students or graduates, class year,
             gender, iPhone or Android, and what they&apos;re into.
           </p>
         </div>

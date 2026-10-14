@@ -45,7 +45,6 @@ export interface Profile {
 export interface User {
   id: string
   email: string
-  role: "user" | "admin"
   permissions: AdminPermissions
   currency: string | null
   email_verified_at: string | null

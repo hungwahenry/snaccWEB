@@ -1,7 +1,9 @@
 import type { Availability } from "../types"
 
 export function waitingTitle(availability: Availability): string {
-  switch (availability.campus?.status) {
+  if (!availability.campus) return "Pick your campus"
+
+  switch (availability.campus.status) {
     case "pending":
       return "We're adding your campus"
     case "rejected":
@@ -12,9 +14,12 @@ export function waitingTitle(availability: Availability): string {
 }
 
 export function waitingLine(availability: Availability): string {
-  const place = availability.campus?.name ?? "your campus"
+  if (!availability.campus) {
+    return "Your campus is no longer on Snacc. Pick it again from the list to carry on."
+  }
+  const place = availability.campus.name
 
-  switch (availability.campus?.status) {
+  switch (availability.campus.status) {
     case "pending":
       return `We're checking ${place} now. We'll email ${availability.email} the moment you're in.`
     case "rejected":
@@ -25,5 +30,7 @@ export function waitingLine(availability: Availability): string {
 }
 
 export function mustPickAgain(availability: Availability): boolean {
-  return availability.campus?.status === "rejected"
+  return (
+    availability.campus === null || availability.campus.status === "rejected"
+  )
 }

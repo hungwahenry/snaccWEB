@@ -16,6 +16,7 @@ export interface AnnouncementImage {
 }
 
 export interface AnnouncementAudience {
+  country_codes: string[]
   campus_ids: string[]
   platforms: AnnouncementPlatform[]
   min_version: string | null
@@ -59,6 +60,7 @@ export type AnnouncementListQuery = {
 }
 
 export interface AudienceInput {
+  countryCodes: string[]
   campusIds: string[]
   platforms: AnnouncementPlatform[]
   minVersion: string | null
@@ -108,6 +110,7 @@ export interface ButtonDraft {
 }
 
 export interface AudienceDraft {
+  countryCodes: string[]
   campusIds: string[]
   platforms: AnnouncementPlatform[]
   minVersion: string
@@ -149,4 +152,9 @@ export interface ResultStat {
   label: string
   value: string
   hint?: string
+}
+
+export interface PlaceNames {
+  campuses: ReadonlyMap<string, string>
+  countries: ReadonlyMap<string, string>
 }

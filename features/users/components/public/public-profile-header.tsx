@@ -46,7 +46,7 @@ export function PublicProfileHeader({
           </div>
 
           {profile.bio ? (
-            <p className="text-base leading-5 whitespace-pre-wrap text-foreground">
+            <p className="text-base leading-5 wrap-break-word whitespace-pre-wrap text-foreground">
               {richText(profile.bio)}
             </p>
           ) : null}

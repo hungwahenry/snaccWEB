@@ -43,6 +43,9 @@ describe("localPrice", () => {
     expect(localPrice(coin, "EUR")).toBe("€59,000")
     expect(localPrice(coin, "GBP")).toBeNull()
     expect(localPrice(coin, null)).toBeNull()
+    expect(
+      localPrice({ prices: [{ currency: "USD", price: 67_012 }] }, "USD")
+    ).toBeNull()
   })
 })
 

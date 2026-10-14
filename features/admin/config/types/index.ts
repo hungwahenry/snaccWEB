@@ -2,6 +2,8 @@ export interface AdminConfigSetting {
   key: string
   value: unknown
   default_value: unknown
+  premium_value: unknown
+  premium_default: unknown
   is_default: boolean
   is_public: boolean
   category: string
@@ -11,6 +13,7 @@ export interface AdminConfigSetting {
 
 export interface UpdateConfigInput {
   value?: unknown
+  premiumValue?: unknown
   isPublic?: boolean
 }
 
@@ -20,6 +23,7 @@ export type ConfigValueKind = "boolean" | "number" | "text" | "json"
 export interface ConfigDraft {
   text: string
   on: boolean
+  premium: string
   isPublic: boolean
 }
 

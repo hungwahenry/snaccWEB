@@ -11,8 +11,8 @@ export function ConversationScreen({ id }: { id: string }) {
 
   return (
     <>
-      <BackLink href={MESSAGES_PATH} label="Back to messages" />
-      <QueryView query={query} what="this thread">
+      <BackLink href={MESSAGES_PATH} label="Back to ghost threads" />
+      <QueryView query={query} what="this ghost thread">
         {(conversation) => (
           <ConversationThread
             conversation={conversation}

@@ -7,6 +7,7 @@ export const SURFACES: readonly ModerationSurface[] = [
   "moment",
   "message",
   "anon_message",
+  "chat_message",
   "profile",
   "sticker",
 ]
@@ -17,6 +18,7 @@ export const SURFACE_LABELS: Record<ModerationSurface, string> = {
   moment: "Moments",
   message: "Ghost messages",
   anon_message: "Anonymous messages",
+  chat_message: "Room messages",
   profile: "Profiles",
   sticker: "Stickers",
 }
@@ -25,7 +27,6 @@ export const SURFACE_OPTIONS: Option<ModerationSurface>[] = SURFACES.map(
   (surface) => ({ value: surface, label: SURFACE_LABELS[surface] })
 )
 
-/** The rule dialog names a surface by its key, the way rules are stored. */
 export const SURFACE_KEY_OPTIONS: Option<ModerationSurface>[] = SURFACES.map(
   (surface) => ({ value: surface, label: surface.replace("_", " ") })
 )

@@ -9,6 +9,7 @@ import {
   groupPermissions,
   isDraftReady,
   isSlugValid,
+  lacksRead,
   toCreateInput,
   toggleKey,
   toUpdateInput,
@@ -26,7 +27,7 @@ const role = (patch: Partial<AdminRole> = {}): AdminRole => ({
   ...patch,
 })
 
-const grant = (roleId: string, scope: string | null = null): AdminGrant => ({
+const grant = (roleId: string, acronym: string | null = null): AdminGrant => ({
   id: `g-${roleId}`,
   role: {
     id: roleId,
@@ -35,14 +36,13 @@ const grant = (roleId: string, scope: string | null = null): AdminGrant => ({
     allow_all: false,
     is_system: false,
   },
-  scope_type: scope,
-  scope_id: scope ? "s1" : null,
+  campus: acronym ? { id: "s1", name: acronym, acronym } : null,
   created_at: "2026-01-01T00:00:00Z",
 })
 
 const permission = (key: string): AdminPermission => {
   const [resource, action] = key.split(".")
-  return { key, resource, action, description: "" }
+  return { key, resource, action, description: "", per_campus: false }
 }
 
 describe("role drafts", () => {
@@ -116,6 +116,26 @@ describe("groupKeys", () => {
   })
 })
 
+describe("lacksRead", () => {
+  const [users] = groupPermissions([
+    permission("users.read"),
+    permission("users.suspend"),
+  ])
+  const [ops] = groupPermissions([permission("ops.run")])
+
+  it("flags an action ticked without its read", () => {
+    expect(lacksRead(users, new Set(["users.suspend"]))).toBe(true)
+  })
+
+  it("is quiet once read is ticked, when nothing is, or when there is no read", () => {
+    expect(lacksRead(users, new Set(["users.read", "users.suspend"]))).toBe(
+      false
+    )
+    expect(lacksRead(users, new Set())).toBe(false)
+    expect(lacksRead(ops, new Set(["ops.run"]))).toBe(false)
+  })
+})
+
 describe("toggleKey", () => {
   it("adds a missing key and removes a present one without mutating", () => {
     const start = new Set(["a"])
@@ -126,20 +146,16 @@ describe("toggleKey", () => {
 })
 
 describe("grants", () => {
-  it("labels a scoped grant with the campus it covers", () => {
+  it("labels a campus grant with the campus it covers", () => {
     expect(grantLabel(grant("ops"))).toBe("OPS")
-    expect(grantLabel(grant("mod", "university"))).toBe("MOD · one campus")
-    expect(
-      grantLabel(grant("mod", "university"), new Map([["s1", "UNILAG"]]))
-    ).toBe("MOD · UNILAG")
-    expect(grantLabel(grant("mod", "region"))).toBe("MOD · limited")
+    expect(grantLabel(grant("mod", "UNILAG"))).toBe("MOD · UNILAG")
   })
 
-  it("offers only roles not already held", () => {
+  it("offers roles not already held everywhere, so a campus grant can be widened", () => {
     expect(
       grantableRoles(
         [role({ id: "ops", name: "Ops" }), role({ id: "mod", name: "Mod" })],
-        [grant("ops")]
+        [grant("ops"), grant("mod", "UNILAG")]
       )
     ).toEqual([{ value: "mod", label: "Mod" }])
   })

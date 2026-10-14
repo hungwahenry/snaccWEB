@@ -1,6 +1,6 @@
 import { api } from "@/lib/api/client"
 import type { Paginated } from "@/lib/api/types"
-import type { University } from "@/features/universities/types"
+import type { CampusChoice } from "@/features/universities/types"
 
 export interface ListUniversitiesParams {
   search?: string
@@ -8,6 +8,7 @@ export interface ListUniversitiesParams {
   page?: number
   perPage?: number
   verified?: boolean
+  id?: string
 }
 
 export interface NewCampus {
@@ -18,10 +19,10 @@ export interface NewCampus {
 
 export function listUniversities(
   params: ListUniversitiesParams = {}
-): Promise<Paginated<University>> {
-  return api.get<Paginated<University>>("/universities", { ...params })
+): Promise<Paginated<CampusChoice>> {
+  return api.get<Paginated<CampusChoice>>("/universities", { ...params })
 }
 
-export function addCampus(campus: NewCampus): Promise<University> {
-  return api.post<University>("/universities", campus)
+export function addCampus(campus: NewCampus): Promise<CampusChoice> {
+  return api.post<CampusChoice>("/universities", campus)
 }

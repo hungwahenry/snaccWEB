@@ -41,7 +41,7 @@ export function HeadlineStats({ metrics }: { metrics: DashboardMetrics }) {
         <Stat label="Likes" value={formatNumber(metrics.engagement.likes)} />
         <Stat label="Views" value={formatNumber(metrics.engagement.views)} />
         <Stat
-          label="Campuses"
+          label="Open campuses"
           value={formatNumber(metrics.campuses.total)}
           hint={`${formatNumber(metrics.campuses.funded)} funded`}
         />

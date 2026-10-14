@@ -11,7 +11,7 @@ import type {
 } from "../types"
 
 export function getWalletSummary() {
-  return api.get<WalletSummary>("/admin/wallet/summary")
+  return api.get<WalletSummary[]>("/admin/wallet/summary")
 }
 
 export function listWalletAccounts(query: WalletAccountListQuery) {
@@ -27,6 +27,10 @@ export function listWalletTransactions(query: WalletTransactionListQuery) {
     "/admin/wallet/transactions",
     query
   )
+}
+
+export function getWalletTransaction(id: string) {
+  return api.get<WalletTransactionRow>(`/admin/wallet/transactions/${id}`)
 }
 
 export function freezeWallet(userId: string, reason?: string) {

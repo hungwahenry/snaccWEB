@@ -53,6 +53,7 @@ export function ModerationScreen() {
                 onTune={tuning.open}
                 onSave={actions.saveRule}
                 onSetRetired={actions.setRuleRetired}
+                onDelete={actions.deleteRule}
                 toolbar={
                   <TableToolbar
                     onReset={

@@ -3,6 +3,7 @@ import type {
   MediaGif,
   MediaImage,
   MediaSticker,
+  MediaVoice,
 } from "@/features/admin/shell/types"
 
 export type MessageAuthor = UserRefWithCampus
@@ -21,15 +22,17 @@ export interface AdminConversationRow {
 
 export interface AdminThreadMessage {
   id: string
-  body: string
+  body: string | null
   deleted_at: string | null
+  deleted_by: "sender" | "moderator" | null
   edited_at: string | null
   created_at: string
   images: MediaImage[]
+  voice: MediaVoice | null
   sticker: MediaSticker | null
   gif: MediaGif | null
   sender: MessageAuthor
-  reply_to: { id: string; body: string; removed: boolean } | null
+  reply_to: { id: string; body: string | null; removed: boolean } | null
 }
 
 export interface AdminConversationDetail {
@@ -46,4 +49,5 @@ export interface AdminConversationDetail {
 export type ConversationListQuery = {
   page: number
   perPage: number
+  q?: string
 }

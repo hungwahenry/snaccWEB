@@ -1,7 +1,7 @@
 import type { Option, StatusMeta } from "@/features/admin/shell/types"
 import { birthdayLabel } from "@/features/birthdays/utils/birth-date"
 import { formatDate } from "@/lib/format"
-import type { AccountRole, AdminUserRow } from "../types"
+import type { AdminUserRow } from "../types"
 
 export type UserTab = "overview" | "manage" | "money" | "activity"
 export const USER_TABS = ["overview", "manage", "money", "activity"] as const
@@ -9,9 +9,12 @@ export const USER_TABS = ["overview", "manage", "money", "activity"] as const
 export type AccountState = "active" | "suspended"
 export const ACCOUNT_STATES = ["active", "suspended"] as const
 
-export const ROLE_OPTIONS: Option<AccountRole>[] = [
-  { value: "admin", label: "Owner accounts" },
-  { value: "user", label: "Everyone else" },
+export type AccountKind = "staff" | "members"
+export const ACCOUNT_KINDS = ["staff", "members"] as const
+
+export const KIND_OPTIONS: Option<AccountKind>[] = [
+  { value: "staff", label: "Panel staff" },
+  { value: "members", label: "Everyone else" },
 ]
 
 export const STATE_OPTIONS: Option<AccountState>[] = [
@@ -40,7 +43,7 @@ export function accountStatus(
 /** Everything unusual about an account, for the header of its page. */
 export function userBadges(user: AdminUserRow): StatusMeta[] {
   return [
-    user.role === "admin" && { label: "Owner", variant: "default" as const },
+    ...user.roles.map((role) => ({ label: role, variant: "default" as const })),
     user.suspended_at && {
       label: "Suspended",
       variant: "destructive" as const,

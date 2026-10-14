@@ -1,7 +1,7 @@
 import { GraduationCapIcon, SearchXIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
-import type { University } from "../types"
+import type { CampusChoice } from "../types"
 import { CampusResultRow } from "./campus-result-row"
 
 export function CampusResults({
@@ -13,8 +13,8 @@ export function CampusResults({
 }: {
   search: string
   searching: boolean
-  results: University[]
-  onSelect: (university: University) => void
+  results: CampusChoice[]
+  onSelect: (university: CampusChoice) => void
   onAdd: (() => void) | null
 }) {
   if (search.trim().length === 0) {

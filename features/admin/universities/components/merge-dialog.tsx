@@ -54,15 +54,21 @@ export function MergeDialog({
   campus,
   campuses,
   trigger,
+  disabled,
   onMerge,
 }: {
   campus: AdminUniversity
   campuses: AdminUniversity[]
   trigger: ReactElement
+  disabled?: boolean
   onMerge: (intoId: string) => Promise<unknown>
 }) {
   return (
-    <FormDialog trigger={trigger} title={`Merge ${campus.name} into…`}>
+    <FormDialog
+      trigger={trigger}
+      disabled={disabled}
+      title={`Merge ${campus.name} into…`}
+    >
       <MergeForm campus={campus} campuses={campuses} onMerge={onMerge} />
     </FormDialog>
   )

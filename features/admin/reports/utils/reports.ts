@@ -1,3 +1,5 @@
+import { can, type AdminPermissions } from "@/lib/permissions"
+import type { RoomKind } from "@/features/admin/rooms/types"
 import type {
   MediaGif,
   MediaImage,
@@ -143,6 +145,20 @@ export function targetThumb(target: ReportTarget): string | null {
 }
 
 /** Who filed it: their handle, or Snacc itself for the automatic check. */
+export function roomWords(room: {
+  kind: RoomKind
+  campus: { name: string } | null
+}): string {
+  switch (room.kind) {
+    case "country":
+      return "Posted in the country room, open to everyone at a campus there."
+    case "campus":
+      return `Posted in the ${room.campus?.name ?? "campus"} room.`
+    case "hangout":
+      return "Posted in a hangout chat, open to the people going."
+  }
+}
+
 export function reporterName(report: Pick<AdminReport, "reporter">): string {
   return report.reporter ? handleOf(report.reporter) : "Snacc"
 }
@@ -214,12 +230,32 @@ function hasOwner(target: NonNullable<ReportTarget>): boolean {
   return true
 }
 
-export function actChoices(target: ReportTarget): Option<ReportAct>[] {
+const ACT_PERMISSIONS: Record<ReportAct, string> = {
+  delete_snacc: "snaccs.delete",
+  delete_message: "messages.delete",
+  delete_chat_message: "chats.delete",
+  delete_moment: "moments.delete",
+  remove_sticker: "stickers.moderate",
+  take_down_sticker_pack: "stickers.moderate",
+  suspend_author: "users.suspend",
+  suspend_user: "users.suspend",
+  suspend_sender: "users.suspend",
+  suspend_moment_author: "users.suspend",
+  suspend_sticker_owner: "users.suspend",
+  suspend_pack_owner: "users.suspend",
+}
+
+export function actChoices(
+  target: ReportTarget,
+  permissions: AdminPermissions | undefined
+): Option<ReportAct>[] {
   if (!target) return []
 
   const owned = hasOwner(target)
   return ACT_CHOICES[target.type].filter(
-    (choice) => owned || !OWNER_ACTS.has(choice.value)
+    (choice) =>
+      (owned || !OWNER_ACTS.has(choice.value)) &&
+      can(permissions, ACT_PERMISSIONS[choice.value])
   )
 }
 
@@ -278,12 +314,14 @@ export function toResolveInput(
   draft: ResolveDraft,
   now = Date.now()
 ): ResolveReportInput {
+  const acts = draft.status === "actioned" ? draft.acts : []
+
   return {
     ...targetIds(target),
     status: draft.status,
     note: draft.note.trim() || undefined,
-    acts: draft.acts.length > 0 ? draft.acts : undefined,
-    suspension: suspends(draft.acts)
+    acts: acts.length > 0 ? acts : undefined,
+    suspension: suspends(acts)
       ? toSuspendInput(draft.suspension, "", now)
       : undefined,
   }

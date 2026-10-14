@@ -1,25 +1,18 @@
 "use client"
 
 import { useMemo } from "react"
-import { usePermissionCatalog } from "@/features/admin/roles/hooks/use-roles"
-import { useUserRoles } from "@/features/admin/roles/hooks/use-user-roles"
-import { groupKeys } from "@/features/admin/roles/utils/roles"
+import { groupPermissions } from "@/features/admin/roles/utils/roles"
 import { useMe } from "@/features/auth/hooks/use-me"
-import { visibleKeys } from "../utils/access"
+import { useOwnAccess } from "./use-own-access"
 
 export function useProfileScreen() {
   const me = useMe()
-  const grants = useUserRoles(me.data?.id)
-  const catalog = usePermissionCatalog()
-  const permissions = me.data?.permissions
+  const access = useOwnAccess()
 
   const groups = useMemo(
-    () =>
-      permissions
-        ? groupKeys(visibleKeys(permissions, catalog.data ?? []))
-        : [],
-    [permissions, catalog.data]
+    () => groupPermissions(access.data?.permissions ?? []),
+    [access.data]
   )
 
-  return { me, grants: grants.data ?? [], groups }
+  return { me, access, groups }
 }

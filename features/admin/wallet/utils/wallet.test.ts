@@ -7,10 +7,14 @@ import {
   FROZEN_OPTIONS,
   FUNDED_OPTIONS,
   holdersNote,
+  lineAccount,
   personalAccountLine,
   poolNote,
   destinationAccount,
   toAdjustInput,
+  TRANSACTION_LABELS,
+  TRANSACTION_OPTIONS,
+  TRANSACTION_TYPES,
   WALLET_TAB_LABELS,
   WALLET_TABS,
   walletState,
@@ -160,5 +164,22 @@ describe("toAdjustInput", () => {
     expect(
       toAdjustInput(previewAdjustment(naira(0), "abc"), "Refund")
     ).toBeNull()
+  })
+})
+
+describe("lineAccount", () => {
+  it("names each side of a posting in words", () => {
+    expect(lineAccount({ kind: "system", slug: "payouts" })).toBe(
+      "Payouts pool"
+    )
+    expect(lineAccount({ kind: "earnings", user: null })).toBe(
+      "Earnings balance"
+    )
+    expect(lineAccount({ kind: "user", user: null })).toBe("Wallet")
+  })
+
+  it("labels every kind of posting", () => {
+    expect(TRANSACTION_OPTIONS).toHaveLength(TRANSACTION_TYPES.length)
+    expect(TRANSACTION_LABELS.withdrawal_reversal).toBe("Withdrawal returned")
   })
 })

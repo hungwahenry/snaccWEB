@@ -1,6 +1,7 @@
 import type { UseQueryResult } from "@tanstack/react-query"
 import { ArrowRight } from "lucide-react"
 import Link from "next/link"
+import type { ReactNode } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { Column } from "@/features/admin/shell/components/data-table"
@@ -70,18 +71,21 @@ const COLUMNS: Column<AdminConversationRow>[] = [
 
 export function ConversationsTable({
   query,
+  toolbar,
   onPageChange,
 }: {
   query: UseQueryResult<Paginated<AdminConversationRow>>
+  toolbar: ReactNode
   onPageChange: (page: number) => void
 }) {
   return (
     <QueryTable
       query={query}
-      what="conversations"
+      what="ghost threads"
+      toolbar={toolbar}
       columns={COLUMNS}
       rowKey={(conversation) => conversation.id}
-      empty="No conversations yet."
+      empty="No ghost threads match that."
       onPageChange={onPageChange}
     />
   )

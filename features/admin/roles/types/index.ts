@@ -3,6 +3,7 @@ export interface AdminPermission {
   resource: string
   action: string
   description: string
+  per_campus: boolean
 }
 
 export interface AdminRole {
@@ -25,9 +26,13 @@ export interface AdminGrant {
     allow_all: boolean
     is_system: boolean
   }
-  scope_type: string | null
-  scope_id: string | null
+  campus: { id: string; name: string; acronym: string } | null
   created_at: string
+}
+
+export interface GrantInput {
+  roleId: string
+  campusId?: string
 }
 
 export interface CreateRoleInput {

@@ -6,7 +6,6 @@ export interface AdminAccount {
   username: string | null
   display_name: string | null
   avatar_url: string
-  is_owner_account: boolean
   grants: AdminGrant[]
   created_at: string
 }

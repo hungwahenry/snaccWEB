@@ -4,6 +4,7 @@ export type ModerationSurface =
   | "moment"
   | "message"
   | "anon_message"
+  | "chat_message"
   | "profile"
   | "sticker"
 

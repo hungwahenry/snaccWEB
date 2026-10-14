@@ -1,6 +1,9 @@
 "use client"
 
+import { WalletIcon } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 import { useMe } from "@/features/auth/hooks/use-me"
+import { useFlagWhenKnown } from "@/features/config/hooks/use-flag"
 import { BackHeader } from "@/features/navigation/components/back-header"
 import { AmountStep } from "../components/pay/amount-step"
 import { RecipientStep } from "../components/pay/recipient-step"
@@ -20,8 +23,20 @@ export function PayScreen({ prefill }: { prefill: PayPrefill }) {
 }
 
 function Flow({ prefill }: { prefill: PayPrefill }) {
+  const walletOn = useFlagWhenKnown("wallet")
   const currency = useMe().data?.currency
-  return currency ? <Steps prefill={prefill} currency={currency} /> : null
+  if (walletOn === false) {
+    return (
+      <EmptyState
+        icon={WalletIcon}
+        title="Money isn't available for you yet"
+        description="Sending and receiving money isn't open where you live yet."
+      />
+    )
+  }
+  return walletOn && currency ? (
+    <Steps prefill={prefill} currency={currency} />
+  ) : null
 }
 
 function Steps({

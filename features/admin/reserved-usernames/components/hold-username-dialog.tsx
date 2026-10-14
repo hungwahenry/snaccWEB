@@ -27,11 +27,13 @@ function HoldUsernameForm({
         label="Username"
         placeholder="snacchq"
         autoComplete="off"
+        maxLength={30}
         {...text("name")}
       />
       <TextField
         label="Why"
         placeholder="Could be mistaken for Snacc itself"
+        maxLength={120}
         {...text("reason")}
       />
     </DialogForm>

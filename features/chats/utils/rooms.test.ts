@@ -53,6 +53,7 @@ const hangoutRoom = (patch: Partial<NonNullable<ChatRoom["hangout"]>> = {}) =>
       emoji: "⚽",
       starts_at: "2026-10-03T18:00:00.000Z",
       wraps_at: "2026-10-04T18:00:00.000Z",
+      time_zone: "Africa/Lagos",
       cancelled: false,
       ...patch,
     },

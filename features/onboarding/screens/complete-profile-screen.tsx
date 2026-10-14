@@ -2,6 +2,7 @@
 
 import { useConfigValue } from "@/features/config/hooks/use-config-value"
 import { useFlag } from "@/features/config/hooks/use-flag"
+import { AgeRefused } from "../components/age-refused"
 import { BirthdayStep } from "../components/birthday-step"
 import { InviteStep } from "../components/invite-step"
 import { OnboardingFooter } from "../components/onboarding-footer"
@@ -17,6 +18,10 @@ export function CompleteProfileScreen() {
   const canUploadPhoto = useFlag("profile_photo_upload")
 
   const showFooter = !(form.step === 2 && !form.campus.selected)
+
+  if (form.refused) {
+    return <AgeRefused onLogout={form.logout} loggingOut={form.loggingOut} />
+  }
 
   return (
     <main className="flex min-h-dvh flex-col bg-background">

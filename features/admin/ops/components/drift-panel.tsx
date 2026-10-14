@@ -41,7 +41,7 @@ export function DriftPanel({
   return (
     <Section
       title="Drift"
-      description="A check at 04:00 WAT each night reads these and raises an alarm if any is above zero. Nothing repairs them on a schedule, because a number that heals itself overnight hides the bug that moved it. Repair by hand once you know what did."
+      description="A check at 03:00 UTC each night reads these and raises an alarm if any is above zero. Nothing repairs them on a schedule, because a number that heals itself overnight hides the bug that moved it. Repair by hand once you know what did."
       action={
         <CanAct permission="ops.run">
           <ConfirmAction

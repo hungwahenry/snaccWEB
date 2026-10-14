@@ -1,6 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import { useFlag } from "@/features/config/hooks/use-flag"
 import { isApiError } from "@/lib/api/errors"
 import { showError } from "@/lib/feedback"
 import { usePinPrompt } from "@/providers/pin-prompt-provider"
@@ -17,7 +18,8 @@ export function useMoneyConfirm() {
   const router = useRouter()
   const stepUp = useStepUp()
   const promptPin = usePinPrompt()
-  const thresholds = useWalletOverview().data?.rules.step_up_above
+  const thresholds = useWalletOverview({ enabled: useFlag("wallet") }).data
+    ?.rules.step_up_above
 
   function needsStepUp(move: MoneyMove): boolean {
     return thresholds

@@ -7,7 +7,7 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { getErrorMessage } from "@/lib/api/errors"
 import { deviceTimeZone } from "@/lib/device"
 import { addCampus } from "../api"
-import type { University } from "../types"
+import type { CampusChoice } from "../types"
 import { campusNameReady } from "../utils/campus-add"
 import { useUniversities } from "./use-universities"
 
@@ -17,7 +17,7 @@ export interface CampusDraft {
 }
 
 export function useCampusSheet(
-  onPick: (university: University) => void,
+  onPick: (university: CampusChoice) => void,
   {
     country = null,
     exclude = [],
@@ -47,7 +47,7 @@ export function useCampusSheet(
     setDraft(null)
     add.reset()
   }
-  const select = (university: University) => {
+  const select = (university: CampusChoice) => {
     onOpenChange(false)
     onPick(university)
   }

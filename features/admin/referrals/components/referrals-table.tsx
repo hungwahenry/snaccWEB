@@ -123,7 +123,7 @@ export function ReferralsTable({
                       : "It will never pay. The record stays here."
                   }
                   confirmLabel="Void it"
-                  reason={{ label: "Why", required: true }}
+                  reason={{ label: "Why", required: true, maxLength: 60 }}
                   onConfirm={(reason) => onVoid(row.id, reason ?? "")}
                 />
               </CanAct>

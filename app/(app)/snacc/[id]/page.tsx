@@ -6,6 +6,7 @@ import { getPublicSnacc } from "@/features/snaccs/api/public"
 import { PublicSnaccCard } from "@/features/snaccs/components/public/public-snacc-card"
 import { SnaccDetailScreen } from "@/features/snaccs/screens/snacc-detail-screen"
 import { snaccJsonLd, snaccMetadata } from "@/features/snaccs/utils/metadata"
+import { nameOf } from "@/features/users/utils/names"
 import { hasSession } from "@/lib/auth-server"
 
 type Props = { params: Promise<{ id: string }> }
@@ -26,6 +27,7 @@ export default async function SnaccPage({ params }: Props) {
   return (
     <LandingShell cta="Join the conversation" next={`/snacc/${id}`}>
       <JsonLd data={snaccJsonLd(snacc)} />
+      <h1 className="sr-only">{nameOf(snacc.author)} on Snacc</h1>
       <PublicSnaccCard snacc={snacc} />
     </LandingShell>
   )

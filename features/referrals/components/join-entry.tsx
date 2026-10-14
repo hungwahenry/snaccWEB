@@ -21,8 +21,7 @@ export function JoinEntry({
             {name} invited you to Snacc 🍿
           </h1>
           <p className="text-base text-muted-foreground">
-            The social app for your campus. Join with {name}’s code, stick
-            around, and you both get paid.
+            The social app for your campus. Join with {name}’s code.
           </p>
         </div>
       </div>

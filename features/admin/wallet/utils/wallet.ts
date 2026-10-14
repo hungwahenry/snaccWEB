@@ -1,12 +1,14 @@
 import type { Option, StatusMeta } from "@/features/admin/shell/types"
-import { plural } from "@/features/admin/shell/utils/format"
+import { humanize, plural } from "@/features/admin/shell/utils/format"
 import type { BalanceChange } from "@/features/admin/shell/utils/money"
 import { formatNumber } from "@/lib/format"
 import { formatMoney, type Money } from "@/lib/money"
 import type {
   AdjustWalletInput,
   DepositStatus,
+  TransactionType,
   WalletDetail,
+  WalletLine,
   PayoutDestination,
   WalletSummary,
 } from "../types"
@@ -36,6 +38,45 @@ export const FUNDED_OPTIONS: Option<FundedState>[] = [
 ]
 
 export const ADJUST_REASON_MAX = 200
+
+export const TRANSACTION_TYPES = [
+  "earning",
+  "earnings_claim",
+  "transfer",
+  "withdrawal",
+  "withdrawal_reversal",
+  "deposit",
+  "adjustment",
+  "premium",
+  "ad_budget",
+  "ad_refund",
+  "ad_spend",
+] as const satisfies readonly TransactionType[]
+
+export const TRANSACTION_LABELS: Record<TransactionType, string> = {
+  earning: "Earning",
+  earnings_claim: "Earnings claimed",
+  transfer: "Transfer",
+  withdrawal: "Withdrawal",
+  withdrawal_reversal: "Withdrawal returned",
+  deposit: "Deposit",
+  adjustment: "Adjustment by hand",
+  premium: "Premium",
+  ad_budget: "Promotion budget",
+  ad_refund: "Promotion refund",
+  ad_spend: "Promotion spend",
+}
+
+export const TRANSACTION_OPTIONS: Option<TransactionType>[] =
+  TRANSACTION_TYPES.map((type) => ({
+    value: type,
+    label: TRANSACTION_LABELS[type],
+  }))
+
+export function lineAccount(account: WalletLine["account"]): string {
+  if (account.kind === "system") return `${humanize(account.slug)} pool`
+  return account.kind === "earnings" ? "Earnings balance" : "Wallet"
+}
 
 const POOLS: Record<string, string> = {
   earnings: "Owed as unclaimed earnings",

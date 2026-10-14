@@ -32,6 +32,7 @@ export function useAgreeScreen() {
   const accept = useMutation({
     mutationFn: () => acceptDocuments(documents.map((doc) => doc.id)),
     onSettled: () => void pending.refetch(),
+    meta: { silent: true },
   })
 
   return {
@@ -40,6 +41,7 @@ export function useAgreeScreen() {
     retry: () => void pending.refetch(),
     country: pending.data?.country_code ?? null,
     documents,
+    canAgree: documents.length > 0,
     agreeing: accept.isPending,
     agree: () => accept.mutate(),
     error: accept.isError ? getErrorMessage(accept.error) : null,

@@ -9,12 +9,15 @@ describe("campusNameReady", () => {
 })
 
 describe("campusDetail", () => {
-  it("reads short name and country, and says when a campus is still being added", () => {
-    expect(campusDetail({ acronym: "UG", status: "verified" }, "Ghana")).toBe(
-      "UG · Ghana"
-    )
-    expect(campusDetail({ acronym: "UCC", status: "pending" }, null)).toBe(
-      "UCC · Being added"
-    )
+  it("reads short name and country, and says when a campus is not open", () => {
+    expect(
+      campusDetail({ acronym: "UG", status: "verified", open: true }, "Ghana")
+    ).toBe("UG · Ghana")
+    expect(
+      campusDetail({ acronym: "UCC", status: "pending", open: false }, null)
+    ).toBe("UCC · Being added")
+    expect(
+      campusDetail({ acronym: "UCL", status: "verified", open: false }, "UK")
+    ).toBe("UCL · UK · Not open yet")
   })
 })

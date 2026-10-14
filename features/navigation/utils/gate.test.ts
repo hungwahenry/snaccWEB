@@ -4,7 +4,7 @@ import { COMPLETE_PROFILE_PATH } from "@/features/onboarding/routes"
 import { SUSPENDED_PATH } from "@/features/suspensions/routes"
 import type { User } from "@/features/users/types"
 import { ApiError } from "@/lib/api/errors"
-import { gatePath } from "./gate"
+import { gatePath, holdPath } from "./gate"
 
 const failed = (error: Error, data?: User) => ({ isError: true, error, data })
 
@@ -40,5 +40,14 @@ describe("gatePath", () => {
     )
     expect(gatePath(loaded("2026-10-13T00:00:00.000Z"), "/")).toBeNull()
     expect(gatePath(failed(new Error("offline")), "/")).toBeNull()
+  })
+})
+
+describe("holdPath", () => {
+  it("sends each hold to its screen, and anything else nowhere", () => {
+    expect(holdPath("legal_agreement_required")).toBe(AGREE_PATH)
+    expect(holdPath("account_suspended")).toBe(SUSPENDED_PATH)
+    expect(holdPath("feature_disabled")).toBeNull()
+    expect(holdPath(undefined)).toBeNull()
   })
 })

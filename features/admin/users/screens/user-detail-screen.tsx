@@ -28,12 +28,17 @@ export function UserDetailScreen({ id }: { id: string }) {
                 <UserManageTab
                   user={user}
                   actions={screen.actions}
-                  campuses={screen.campuses}
                   suspension={screen.suspension}
                   roles={screen.roles}
                 />
               ),
-              money: <UserMoneyTab user={user} />,
+              money: (
+                <UserMoneyTab
+                  user={user}
+                  onGivePremium={(input) => screen.premium.grant(id, input)}
+                  onEndPremium={() => screen.premium.revoke(id)}
+                />
+              ),
               activity: <UserActivityTab user={user} />,
             }}
           />

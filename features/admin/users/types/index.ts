@@ -1,13 +1,12 @@
+import type { UserPremium } from "@/features/admin/premium/types"
 import type { UserRefWithCampus } from "@/lib/api/types"
 import type { SuspensionDraft } from "@/features/admin/suspension-reasons/types"
 import type { WithdrawalStatus } from "@/features/admin/withdrawals/types"
 import type { Money } from "@/lib/money"
 
-export type AccountRole = "user" | "admin"
-
 export interface AdminUserRow extends UserRefWithCampus {
   email: string
-  role: AccountRole
+  roles: string[]
   email_verified_at: string | null
   suspended_at: string | null
   suspended_until: string | null
@@ -76,6 +75,7 @@ export interface BankRecipient {
 export interface AdminUserDetail extends AdminUserRow {
   birth_date: { day: number; month: number; year: number | null } | null
   legal_country: string | null
+  premium: UserPremium
   engagement: {
     score: number
     tier: string | null
@@ -129,7 +129,7 @@ export type UserListQuery = {
   page: number
   perPage: number
   q?: string
-  role?: AccountRole
+  staff?: boolean
   suspended?: boolean
   universityId?: string
 }

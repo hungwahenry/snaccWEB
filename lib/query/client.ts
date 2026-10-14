@@ -1,7 +1,9 @@
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query"
+import { authKeys } from "@/features/auth/utils/keys"
 import { configKeys } from "@/features/config/utils/keys"
+import { holdPath } from "@/features/navigation/utils/gate"
 import { MINUTE_MS } from "@/lib/duration"
-import { isApiError } from "../api/errors"
+import { isApiError, isUnauthenticated } from "../api/errors"
 import { showError } from "../feedback"
 
 declare module "@tanstack/react-query" {
@@ -20,15 +22,29 @@ function refetchFlagsWhenOff(client: QueryClient, error: unknown): void {
   )
 }
 
+function recheckSession(client: QueryClient, error: unknown): void {
+  if (!isApiError(error)) return
+  if (!isUnauthenticated(error) && !holdPath(error.code)) return
+
+  void client.invalidateQueries(
+    { queryKey: authKeys.me() },
+    { cancelRefetch: false }
+  )
+}
+
 export function makeQueryClient() {
   const client: QueryClient = new QueryClient({
     queryCache: new QueryCache({
-      onError: (error) => refetchFlagsWhenOff(client, error),
+      onError: (error) => {
+        refetchFlagsWhenOff(client, error)
+        recheckSession(client, error)
+      },
     }),
     mutationCache: new MutationCache({
       // A mutation with its own onError owns its feedback, so it is left to say it once.
       onError: (error, _variables, _context, mutation) => {
         refetchFlagsWhenOff(client, error)
+        recheckSession(client, error)
         if (mutation.meta?.silent || mutation.options.onError) return
         showError(error)
       },

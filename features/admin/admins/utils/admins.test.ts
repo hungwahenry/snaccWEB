@@ -13,8 +13,7 @@ const grant = (overrides: Partial<AdminGrant> = {}): AdminGrant => ({
     allow_all: false,
     is_system: false,
   },
-  scope_type: null,
-  scope_id: null,
+  campus: null,
   created_at: "2026-05-01T10:00:00.000Z",
   ...overrides,
 })
@@ -25,7 +24,6 @@ const admin = (grants: AdminGrant[]): AdminAccount => ({
   username: "ada",
   display_name: "Ada",
   avatar_url: "https://cdn/a.png",
-  is_owner_account: false,
   grants,
   created_at: "2025-01-01T00:00:00.000Z",
 })
@@ -51,25 +49,16 @@ describe("grantVariant", () => {
 })
 
 describe("grantLabel", () => {
-  const acronyms = new Map([["c1", "UNILAG"]])
-
   it("names a global role plainly", () => {
-    expect(grantLabel(grant(), acronyms)).toBe("Moderator")
+    expect(grantLabel(grant())).toBe("Moderator")
   })
 
   it("adds the campus a role is limited to", () => {
     expect(
-      grantLabel(grant({ scope_type: "university", scope_id: "c1" }), acronyms)
+      grantLabel(
+        grant({ campus: { id: "c1", name: "Lagos", acronym: "UNILAG" } })
+      )
     ).toBe("Moderator · UNILAG")
-    expect(
-      grantLabel(grant({ scope_type: "university", scope_id: "c9" }), acronyms)
-    ).toBe("Moderator · one campus")
-  })
-
-  it("still says a role is limited when the scope is unfamiliar", () => {
-    expect(
-      grantLabel(grant({ scope_type: "region", scope_id: "x" }), acronyms)
-    ).toBe("Moderator · limited")
   })
 })
 

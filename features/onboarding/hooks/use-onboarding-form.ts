@@ -27,7 +27,9 @@ import { pickImage, type PickedImage } from "@/lib/media"
 import { copyLink, shareOrCopy } from "@/lib/share-links"
 import { useCompleteProfile } from "./use-complete-profile"
 import { useUsernameField } from "./use-username-field"
-import { showErrorMessage } from "@/lib/feedback"
+import { isApiError } from "@/lib/api/errors"
+import { showError, showErrorMessage } from "@/lib/feedback"
+import { useAgeRefusal } from "./use-age-refusal"
 import { HOME_PATH } from "@/features/feed/routes"
 
 const BIRTHDAY_STEP = 1
@@ -37,6 +39,7 @@ export function useOnboardingForm() {
   const me = useMe()
   const complete = useCompleteProfile()
   const logout = useLogout()
+  const age = useAgeRefusal()
 
   const [step, setStep] = useState(0)
   const [avatar, setAvatar] = useState<PickedImage | null>(null)
@@ -130,6 +133,13 @@ export function useOnboardingForm() {
           router.replace(HOME_PATH)
           if (invitesOn && invite.value) claimInvite.mutate(invite.value)
         },
+        onError: (error) => {
+          if (isApiError(error) && error.code === "under_minimum_age") {
+            age.refuse()
+            return
+          }
+          showError(error)
+        },
       }
     )
   }
@@ -142,6 +152,7 @@ export function useOnboardingForm() {
     isLast,
     stepValid,
     submitting: complete.isPending,
+    refused: age.refused,
     back,
     next,
     logout: () => logout.mutate(),

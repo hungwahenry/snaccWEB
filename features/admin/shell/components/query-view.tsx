@@ -1,9 +1,9 @@
 import type { UseQueryResult } from "@tanstack/react-query"
-import { CloudOff } from "lucide-react"
+import { CloudOff, ShieldOff } from "lucide-react"
 import type { ReactNode } from "react"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
-import { getErrorMessage } from "@/lib/api/errors"
+import { getErrorMessage, isApiError } from "@/lib/api/errors"
 import { cn } from "@/lib/utils"
 
 export function LoadingBlock({ className }: { className?: string }) {
@@ -23,6 +23,22 @@ export function LoadError({
   error: unknown
   onRetry: () => void
 }) {
+  if (isApiError(error) && error.status === 403) {
+    return (
+      <div
+        role="alert"
+        className="flex flex-col items-center gap-2 px-6 py-12 text-center"
+      >
+        <ShieldOff className="size-8 text-muted-foreground/50" aria-hidden />
+        <p className="font-medium">Not your area</p>
+        <p className="max-w-sm text-sm text-pretty text-muted-foreground">
+          Your role doesn&apos;t cover {what}, or it&apos;s outside your
+          campuses. Ask an owner if you need it.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div
       role="alert"
@@ -40,7 +56,6 @@ export function LoadError({
   )
 }
 
-/** Loading, failed with a retry, or the data: the three states every admin read goes through. */
 export function QueryView<T>({
   query,
   what,

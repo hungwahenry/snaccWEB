@@ -25,6 +25,7 @@ import {
   draftProblems,
   isReady,
   placementChoices,
+  promotableCountries,
   reachProblem,
   reviewRows,
   wholeUnitsOf,
@@ -63,7 +64,9 @@ export function useNewPromotion(
     setStep(next)
     window.scrollTo({ top: 0 })
   }
-  const homeCountry = useMe().data?.profile?.university?.country_code ?? ""
+  const profile = useMe().data?.profile
+  const homeCountry =
+    profile?.country_code ?? profile?.university?.country_code ?? ""
   const form = useCampaignDraft(
     snacc.clip !== null,
     maxDays,
@@ -148,9 +151,7 @@ export function useNewPromotion(
     problems,
     country: {
       ...form.country,
-      options: (countries.data ?? [])
-        .filter((country) => country.open)
-        .map((country) => ({ value: country.code, label: country.name })),
+      options: promotableCountries(countries.data ?? [], currency),
     },
     campuses: {
       picked: form.campuses.picked,

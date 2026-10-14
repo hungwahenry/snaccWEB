@@ -22,6 +22,7 @@ export interface ReasonField {
   label: string
   placeholder?: string
   required?: boolean
+  maxLength?: number
 }
 
 /**
@@ -94,7 +95,7 @@ export function ConfirmAction({
               onChange={(event) => setNote(event.target.value)}
               placeholder={reason.placeholder}
               rows={3}
-              maxLength={500}
+              maxLength={reason.maxLength ?? 500}
             />
           </Field>
         ) : null}

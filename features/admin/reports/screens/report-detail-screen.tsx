@@ -7,7 +7,7 @@ import { ReportDetail } from "../components/report-detail"
 import { useReportDetailScreen } from "../hooks/use-report-detail-screen"
 
 export function ReportDetailScreen({ id }: { id: string }) {
-  const { query, actions, suspension } = useReportDetailScreen(id)
+  const { query, actions, suspension, permissions } = useReportDetailScreen(id)
 
   return (
     <>
@@ -17,6 +17,7 @@ export function ReportDetailScreen({ id }: { id: string }) {
           <ReportDetail
             report={report}
             suspension={suspension}
+            permissions={permissions}
             onResolve={actions.resolve}
           />
         )}

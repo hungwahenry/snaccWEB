@@ -40,6 +40,7 @@ export function LegalEditorScreen({ id }: { id: string }) {
                 draft={screen.draft}
                 title={screen.text("title")}
                 canSave={screen.ready}
+                canPublish={screen.publishable}
                 onBodyChange={screen.setBody}
                 onSave={screen.save}
                 onPublish={screen.publish}

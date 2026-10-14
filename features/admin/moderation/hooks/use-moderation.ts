@@ -6,6 +6,7 @@ import { useAdminMutation } from "@/features/admin/shell/hooks/use-admin-mutatio
 import { MINUTE_MS } from "@/lib/duration"
 import {
   createRule,
+  deleteRule,
   getInsight,
   getSummary,
   listCategories,
@@ -112,6 +113,11 @@ export function useModerationActions() {
     success: "Rule updated.",
     invalidates,
   })
+  const { run: remove } = useAdminMutation({
+    mutationFn: deleteRule,
+    success: "Rule deleted.",
+    invalidates,
+  })
 
   return useMemo(
     () => ({
@@ -122,7 +128,8 @@ export function useModerationActions() {
       saveRule: (draft: RuleDraft, id?: string) => save({ draft, id }),
       setRuleRetired: (id: string, retired: boolean) =>
         setRetired({ id, retired }),
+      deleteRule: (id: string) => remove(id),
     }),
-    [changeSurface, save, setRetired]
+    [changeSurface, save, setRetired, remove]
   )
 }

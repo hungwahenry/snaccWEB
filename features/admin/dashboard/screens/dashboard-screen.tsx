@@ -1,5 +1,6 @@
 "use client"
 
+import { CampusSearchField } from "@/features/admin/universities/containers/campus-search-field"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { OptionSelect } from "@/features/admin/shell/components/option-select"
 import { PageHeader } from "@/features/admin/shell/components/page-header"
@@ -25,15 +26,27 @@ export function DashboardScreen() {
         description="Your platform at a glance. Days run midnight to midnight UTC."
         action={
           <div className="flex flex-wrap items-center gap-2">
-            {campuses.length > 1 ? (
+            {campuses === null && screen.countryOptions.length > 0 ? (
               <OptionSelect
-                label="Campus"
-                allLabel="All campuses"
-                value={list.values.campus}
-                onChange={(campus) => list.setFilter({ campus })}
-                options={campuses}
-                className="w-56"
+                label="Country"
+                allLabel="All countries"
+                value={list.values.country}
+                onChange={(country) => list.setFilter({ country })}
+                options={screen.countryOptions}
               />
+            ) : null}
+            {campuses === null || campuses.length > 1 ? (
+              <div className="w-64">
+                <CampusSearchField
+                  label="Campus"
+                  value={list.values.campus}
+                  onChange={(campus) => list.setFilter({ campus })}
+                  anyLabel={
+                    campuses === null ? "All campuses" : "Your campuses"
+                  }
+                  within={campuses}
+                />
+              </div>
             ) : null}
             <OptionSelect
               label="Period"
@@ -87,7 +100,10 @@ export function DashboardScreen() {
                   {(money) => (
                     <MoneyTab
                       money={money}
-                      campusPicked={list.values.campus !== null}
+                      narrowed={
+                        list.values.campus !== null ||
+                        list.values.country !== null
+                      }
                     />
                   )}
                 </QueryView>

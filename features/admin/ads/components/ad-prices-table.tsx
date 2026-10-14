@@ -84,7 +84,7 @@ export function AdPricesTable({
                   }
                   tone="default"
                   title={`Put ${price.university.acronym} back on the default?`}
-                  description="Its views go back to costing the default per 1,000, the price set on the Config page."
+                  description="Its views go back to costing the default per 1,000 set on its currency’s page."
                   confirmLabel="Use default"
                   onConfirm={() => onReset(price.university.id)}
                 />
