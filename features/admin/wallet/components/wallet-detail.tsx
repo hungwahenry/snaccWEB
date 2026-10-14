@@ -22,7 +22,7 @@ import { WalletStateBadge } from "./wallet-state-badge"
 import {
   WalletDepositsTable,
   WalletEntriesTable,
-  WalletRecipientsTable,
+  PayoutDestinationsTable,
 } from "./wallet-tables"
 
 export function WalletDetail({
@@ -106,8 +106,8 @@ export function WalletDetail({
         <Stat label="Movements" value={formatNumber(wallet.entries_count)} />
         <Stat label="Deposits" value={formatNumber(wallet.deposits.length)} />
         <Stat
-          label="Payout recipients"
-          value={formatNumber(wallet.recipients.length)}
+          label="Payout accounts"
+          value={formatNumber(wallet.destinations.length)}
         />
       </StatGrid>
 
@@ -133,8 +133,8 @@ export function WalletDetail({
             account={wallet.virtual_account}
           />
         </TabsContent>
-        <TabsContent value="recipients">
-          <WalletRecipientsTable recipients={wallet.recipients} />
+        <TabsContent value="destinations">
+          <PayoutDestinationsTable destinations={wallet.destinations} />
         </TabsContent>
       </Tabs>
     </div>

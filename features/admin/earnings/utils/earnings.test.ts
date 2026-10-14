@@ -26,14 +26,11 @@ const party = (patch: Partial<EarningParty> = {}): EarningParty => ({
 
 const earning = (patch: Partial<AdminEarning> = {}): AdminEarning => ({
   id: "e1",
-  movement: "credit",
   type: "like",
   amount: naira(500),
-  note: null,
   snacc_id: "s1",
   beneficiary: party(),
   actor: party({ id: "u2", username: "tunde" }),
-  admin: null,
   created_at: "2026-09-01T00:00:00Z",
   ...patch,
 })
@@ -56,39 +53,16 @@ describe("partyHandle", () => {
 })
 
 describe("earningCause", () => {
-  it("names the actor behind a credit", () => {
+  it("names who caused it, with a dash once their account is gone", () => {
     expect(earningCause(earning())).toBe("@tunde")
-  })
-
-  it("says what a claim or an adjustment was", () => {
-    expect(earningCause(earning({ movement: "claim", actor: null }))).toBe(
-      "Claimed"
-    )
-    expect(
-      earningCause(
-        earning({
-          movement: "adjustment",
-          actor: null,
-          admin: party({ username: "ada" }),
-        })
-      )
-    ).toBe("Adjusted by @ada")
-    expect(earningCause(earning({ movement: "adjustment", actor: null }))).toBe(
-      "Adjusted"
-    )
-  })
-
-  it("falls back to a dash for a credit whose actor is gone", () => {
     expect(earningCause(earning({ actor: null }))).toBe("—")
   })
 })
 
 describe("earningLabel", () => {
-  it("names a credit by its type and the rest by their movement", () => {
+  it("names an earning by the act that paid it, even once that act is retired", () => {
     expect(earningLabel(earning())).toBe("like")
-    expect(earningLabel(earning({ movement: "claim", type: null }))).toBe(
-      "claim"
-    )
+    expect(earningLabel(earning({ type: null }))).toBe("retired")
   })
 })
 

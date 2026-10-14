@@ -7,17 +7,17 @@ import type {
   AdjustWalletInput,
   DepositStatus,
   WalletDetail,
-  WalletRecipient,
+  PayoutDestination,
   WalletSummary,
 } from "../types"
 
-export const WALLET_TABS = ["entries", "deposits", "recipients"] as const
+export const WALLET_TABS = ["entries", "deposits", "destinations"] as const
 export type WalletTab = (typeof WALLET_TABS)[number]
 
 export const WALLET_TAB_LABELS: Record<WalletTab, string> = {
   entries: "Movements",
   deposits: "Deposits",
-  recipients: "Recipients",
+  destinations: "Payout accounts",
 }
 
 export const FROZEN_STATES = ["frozen", "active"] as const
@@ -77,20 +77,12 @@ export function personalAccountLine(
   return `Personal account ${account.account_number ?? "—"} · ${account.bank_name ?? "—"} (${account.status})`
 }
 
-export function recipientAccount(recipient: WalletRecipient): string {
-  const last4 = recipient.account_last4 ? ` ····${recipient.account_last4}` : ""
+export function destinationAccount(destination: PayoutDestination): string {
+  const last4 = destination.account_last4
+    ? ` ····${destination.account_last4}`
+    : ""
 
-  return `${recipient.account_name ?? "—"}${last4}`
-}
-
-export function recipientKey(recipient: WalletRecipient): string {
-  return [
-    recipient.kind,
-    recipient.bank_name,
-    recipient.account_name,
-    recipient.account_last4,
-    recipient.last_used_at,
-  ].join("|")
+  return `${destination.account_name || "—"}${last4}`
 }
 
 /** The line under the amount: what the balance becomes, or why it can't be posted. */

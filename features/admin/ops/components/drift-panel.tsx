@@ -20,14 +20,7 @@ const COLUMNS: Column<DriftRow>[] = [
   {
     id: "counter",
     header: "Number",
-    cell: (row) => (
-      <span className="flex flex-wrap items-center gap-2">
-        {row.label}
-        {row.repairable ? null : (
-          <Badge variant="outline">Repair does not touch this</Badge>
-        )}
-      </span>
-    ),
+    cell: (row) => row.label,
   },
   {
     id: "off",

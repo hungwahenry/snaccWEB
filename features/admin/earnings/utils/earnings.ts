@@ -18,24 +18,12 @@ export function partyHandle(party: EarningParty | null): string | null {
   return party.username ? `@${party.username}` : party.display_name || "—"
 }
 
-/**
- * Who caused the money to move. Only a credit has an actor; a claim is the beneficiary taking their
- * own balance, and an adjustment is an admin. Saying so beats a dash that looks like missing data.
- */
 export function earningCause(event: AdminEarning): string {
-  if (event.actor) return partyHandle(event.actor) ?? "—"
-  if (event.movement === "adjustment") {
-    const by = partyHandle(event.admin)
-    return by ? `Adjusted by ${by}` : "Adjusted"
-  }
-  if (event.movement === "claim") return "Claimed"
-
-  return "—"
+  return partyHandle(event.actor) ?? "—"
 }
 
-/** A credit is named by what earned it; the other movements are named by themselves. */
 export function earningLabel(event: AdminEarning): string {
-  return event.type ?? event.movement
+  return event.type ?? "retired"
 }
 
 /**

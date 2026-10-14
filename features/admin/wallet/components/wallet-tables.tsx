@@ -11,13 +11,12 @@ import type {
   WalletDeposit,
   WalletDetail,
   WalletEntryRow,
-  WalletRecipient,
+  PayoutDestination,
 } from "../types"
 import {
   DEPOSIT_STATUS,
   personalAccountLine,
-  recipientAccount,
-  recipientKey,
+  destinationAccount,
 } from "../utils/wallet"
 
 const ENTRIES: Column<WalletEntryRow>[] = [
@@ -86,26 +85,26 @@ const DEPOSITS: Column<WalletDeposit>[] = [
   },
 ]
 
-const RECIPIENTS: Column<WalletRecipient>[] = [
+const DESTINATIONS: Column<PayoutDestination>[] = [
   {
-    id: "kind",
-    header: "Kind",
-    cell: (recipient) => humanize(recipient.kind),
+    id: "provider",
+    header: "Provider",
+    cell: (destination) => destination.provider,
   },
   {
     id: "bank",
     header: "Bank",
-    cell: (recipient) => recipient.bank_name ?? "—",
+    cell: (destination) => destination.bank_name || "—",
   },
   {
     id: "account",
     header: "Account",
-    cell: recipientAccount,
+    cell: destinationAccount,
   },
   {
     id: "used",
     header: "Last used",
-    cell: (recipient) => formatDate(recipient.last_used_at),
+    cell: (destination) => formatDate(destination.last_used_at),
   },
 ]
 
@@ -141,18 +140,18 @@ export function WalletDepositsTable({
   )
 }
 
-export function WalletRecipientsTable({
-  recipients,
+export function PayoutDestinationsTable({
+  destinations,
 }: {
-  recipients: WalletRecipient[]
+  destinations: PayoutDestination[]
 }) {
   return (
     <TableFrame>
       <DataTable
-        columns={RECIPIENTS}
-        rows={recipients}
-        rowKey={recipientKey}
-        empty="No recipients yet."
+        columns={DESTINATIONS}
+        rows={destinations}
+        rowKey={(destination) => destination.id}
+        empty="No payout accounts yet."
       />
     </TableFrame>
   )

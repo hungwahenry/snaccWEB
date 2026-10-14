@@ -54,15 +54,11 @@ export interface OpsDrift {
   snaccs: SnaccCounterDrift
   scores: { score: number; tier: number }
   wallets: { accounts: number }
-  earnings: { profiles: number }
   premium: { profiles: number }
 }
 
 export type OpsTask =
-  | "repair-counters"
-  | "repair-scores"
-  | "repair-wallets"
-  | "repair-premium"
+  "repair-counters" | "repair-scores" | "repair-wallets" | "repair-premium"
 
 /** Rows each repair rewrote, keyed by what it rewrote. */
 export type OpsRepairResult = Record<string, number>
@@ -81,5 +77,4 @@ export interface DriftRow {
   key: string
   label: string
   off: number
-  repairable: boolean
 }

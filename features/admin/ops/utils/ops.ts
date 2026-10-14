@@ -92,18 +92,7 @@ const DRIFT_LABELS: Record<string, string> = {
   "scores.score": "Snacc Score vs ledger",
   "scores.tier": "Tier vs ladder",
   "wallets.accounts": "Wallet balances vs ledger",
-  "earnings.profiles": "Earnings balances vs ledger",
   "premium.profiles": "Premium status vs subscription",
-}
-
-/** Earnings are kept by a database trigger; "Repair now" never touches them. */
-const REPAIRED: Record<keyof OpsDrift, boolean> = {
-  profiles: true,
-  snaccs: true,
-  scores: true,
-  wallets: true,
-  earnings: false,
-  premium: true,
 }
 
 /** Every number that disagrees with its source, one row each. */
@@ -118,7 +107,6 @@ export function driftRows(drift: OpsDrift): DriftRow[] {
           key,
           label: DRIFT_LABELS[key] ?? `${humanize(group)}: ${humanize(name)}`,
           off,
-          repairable: REPAIRED[group] ?? false,
         }
       })
   )

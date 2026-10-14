@@ -34,7 +34,6 @@ const clean: OpsDrift = {
   },
   scores: { score: 0, tier: 0 },
   wallets: { accounts: 0 },
-  earnings: { profiles: 0 },
   premium: { profiles: 0 },
 }
 
@@ -43,31 +42,18 @@ describe("driftRows", () => {
     expect(driftRows(clean)).toEqual([])
   })
 
-  it("lists each number that is off, and whether Repair fixes it", () => {
+  it("lists each number that is off", () => {
     const rows = driftRows({
       ...clean,
       profiles: { ...clean.profiles, followers_count: 3 },
-      earnings: { profiles: 1 },
       premium: { profiles: 2 },
     })
     expect(rows).toEqual([
-      {
-        key: "profiles.followers_count",
-        label: "Followers",
-        off: 3,
-        repairable: true,
-      },
-      {
-        key: "earnings.profiles",
-        label: "Earnings balances vs ledger",
-        off: 1,
-        repairable: false,
-      },
+      { key: "profiles.followers_count", label: "Followers", off: 3 },
       {
         key: "premium.profiles",
         label: "Premium status vs subscription",
         off: 2,
-        repairable: true,
       },
     ])
   })

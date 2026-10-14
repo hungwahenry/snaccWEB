@@ -1,7 +1,9 @@
+import type { PayoutMethod } from "@/features/wallet/types"
 import type { UserRefWithCampus } from "@/lib/api/types"
 import type { Money } from "@/lib/money"
 
 export type TransactionType =
+  | "earning"
   | "earnings_claim"
   | "transfer"
   | "withdrawal"
@@ -47,7 +49,7 @@ export interface WalletLine {
   balance_after: Money
   account:
     | { kind: "system"; slug: string }
-    | { kind: "user"; user: UserRefWithCampus | null }
+    | { kind: "user" | "earnings"; user: UserRefWithCampus | null }
 }
 
 export interface WalletTransactionRow {
@@ -72,11 +74,13 @@ export interface WalletDeposit {
   created_at: string
 }
 
-export interface WalletRecipient {
-  kind: "user" | "bank"
-  bank_name: string | null
-  account_last4: string | null
-  account_name: string | null
+export interface PayoutDestination {
+  id: string
+  provider: string
+  method: PayoutMethod
+  bank_name: string
+  account_last4: string
+  account_name: string
   last_used_at: string
 }
 
@@ -90,7 +94,7 @@ export interface WalletDetail extends WalletAccountRow {
     bank_name: string | null
     failure_reason: string | null
   } | null
-  recipients: WalletRecipient[]
+  destinations: PayoutDestination[]
 }
 
 export interface WalletSummary {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { previewAdjustment } from "@/features/admin/shell/utils/money"
-import type { WalletRecipient } from "../types"
+import type { PayoutDestination } from "../types"
 import {
   adjustHint,
   DEPOSIT_STATUS,
@@ -9,8 +9,7 @@ import {
   holdersNote,
   personalAccountLine,
   poolNote,
-  recipientAccount,
-  recipientKey,
+  destinationAccount,
   toAdjustInput,
   WALLET_TAB_LABELS,
   WALLET_TABS,
@@ -20,9 +19,13 @@ import { money } from "@/lib/money"
 
 const naira = (amount: number) => money(amount, "NGN")
 
-const recipient = (patch: Partial<WalletRecipient> = {}): WalletRecipient => ({
-  kind: "bank",
-  bank_name: "GTBank",
+const destination = (
+  patch: Partial<PayoutDestination> = {}
+): PayoutDestination => ({
+  id: "d1",
+  provider: "Paystack",
+  method: "bank_account",
+  bank_name: "First Test Bank",
   account_last4: "1234",
   account_name: "Bola A",
   last_used_at: "2026-09-01T00:00:00Z",
@@ -46,7 +49,7 @@ describe("tabs", () => {
     expect(WALLET_TABS.map((tab) => WALLET_TAB_LABELS[tab])).toEqual([
       "Movements",
       "Deposits",
-      "Recipients",
+      "Payout accounts",
     ])
   })
 })
@@ -121,20 +124,12 @@ describe("personalAccountLine", () => {
   })
 })
 
-describe("recipientAccount", () => {
+describe("destinationAccount", () => {
   it("shows the name and the last four digits", () => {
-    expect(recipientAccount(recipient())).toBe("Bola A ····1234")
+    expect(destinationAccount(destination())).toBe("Bola A ····1234")
     expect(
-      recipientAccount(recipient({ account_name: null, account_last4: null }))
+      destinationAccount(destination({ account_name: "", account_last4: "" }))
     ).toBe("—")
-  })
-})
-
-describe("recipientKey", () => {
-  it("tells two recipients apart", () => {
-    expect(recipientKey(recipient())).not.toBe(
-      recipientKey(recipient({ account_last4: "9999" }))
-    )
   })
 })
 
