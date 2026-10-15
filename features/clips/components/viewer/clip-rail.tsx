@@ -1,6 +1,7 @@
 "use client"
 
 import {
+  BookmarkIcon,
   EllipsisIcon,
   MessageCircleIcon,
   Repeat1Icon,
@@ -10,6 +11,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { UserAvatar } from "@/components/ui/user-avatar"
+import { saveLabel } from "@/features/bookmarks/utils/labels"
 import { LikeIcon } from "@/features/likes/components/like-icon"
 import { profilePath } from "@/features/users/routes"
 import { compactCount } from "@/lib/format"
@@ -24,6 +26,8 @@ export type ClipRailProps = {
   onComment: () => void
   onResnacc?: () => void
   onShare: () => void
+  saved: boolean
+  onToggleSave?: () => void
   onMore: () => void
 }
 
@@ -44,12 +48,14 @@ function RailButton({
   label,
   count,
   tinted,
+  pressed,
   onPress,
 }: {
   icon: LucideIcon
   label: string
   count?: number
   tinted?: boolean
+  pressed?: boolean
   onPress: () => void
 }) {
   return (
@@ -57,6 +63,7 @@ function RailButton({
       <button
         type="button"
         aria-label={label}
+        aria-pressed={pressed}
         title={label}
         onClick={onPress}
         className="flex size-11 cursor-pointer items-center justify-center rounded-full transition active:scale-90"
@@ -65,7 +72,8 @@ function RailButton({
           className={cn(
             "size-7",
             SHADOW,
-            tinted ? "text-primary" : "text-white"
+            tinted ? "text-primary" : "text-white",
+            pressed && "fill-current"
           )}
         />
       </button>
@@ -82,6 +90,8 @@ export function ClipRail({
   onComment,
   onResnacc,
   onShare,
+  saved,
+  onToggleSave,
   onMore,
 }: ClipRailProps) {
   const username = snacc.author.username
@@ -135,6 +145,14 @@ export function ClipRail({
       )}
 
       <RailButton icon={SendIcon} label="Share" onPress={onShare} />
+      {onToggleSave ? (
+        <RailButton
+          icon={BookmarkIcon}
+          label={saveLabel(saved)}
+          pressed={saved}
+          onPress={onToggleSave}
+        />
+      ) : null}
       <RailButton icon={EllipsisIcon} label="More" onPress={onMore} />
     </div>
   )

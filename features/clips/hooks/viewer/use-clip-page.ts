@@ -84,6 +84,7 @@ export function useClipPage(
     },
   })
   const resnacc = handlers.onResnacc
+  const toggleSave = handlers.onToggleSave
   const promotionLink = snacc?.promoted?.button ?? null
 
   return {
@@ -147,6 +148,8 @@ export function useClipPage(
           onComment: () => handlers.onComment(snacc),
           onResnacc: resnacc ? () => resnacc(snacc) : undefined,
           onShare: () => handlers.onShare(snacc),
+          saved: snacc.saved,
+          onToggleSave: toggleSave ? () => toggleSave(snacc) : undefined,
           onMore: () => handlers.onMore(snacc),
         }
       : null,

@@ -188,6 +188,7 @@ export function useClipViewer(startId: string, startRevealed: boolean) {
       onComment: actions.onComment,
       onResnacc: actions.onResnacc,
       onShare: actions.onShare,
+      onToggleSave: actions.onToggleSave,
       onMore: actions.onOpenActions,
       onOpenPromotionLink: promotions.openLink,
     }),
