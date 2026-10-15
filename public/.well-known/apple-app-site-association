@@ -9,7 +9,13 @@
           { "/": "/@*", "comment": "Profiles" },
           { "/": "/pay/*", "comment": "Pay links" },
           { "/": "/join/*", "comment": "Invite links" },
-          { "/": "/stickers/*", "comment": "Sticker packs" }
+          { "/": "/stickers/*", "comment": "Sticker packs" },
+          { "/": "/clips/*", "comment": "Clips" },
+          { "/": "/hashtag/*", "comment": "Hashtag pages" },
+          { "/": "/cashtag/*", "comment": "Cashtag pages" },
+          { "/": "/match/*", "comment": "Matches" },
+          { "/": "/hangouts", "comment": "Hangouts" },
+          { "/": "/hangouts/*", "comment": "Hangouts" }
         ]
       }
     ]
