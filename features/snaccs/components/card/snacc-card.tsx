@@ -35,6 +35,7 @@ export type SnaccActionHandlers = {
   onComment: (snacc: Snacc) => void
   onResnacc?: (snacc: Snacc) => void
   onShare: (snacc: Snacc) => void
+  onToggleSave?: (snacc: Snacc) => void
   onOpenActions: (snacc: Snacc) => void
   onOpenImages: (snacc: Snacc | EmbeddedSnacc, index: number) => void
   onVote: (snacc: Snacc, optionId: string) => void
@@ -67,6 +68,7 @@ function SnaccCardComponent(props: SnaccCardProps) {
     onComment,
     onResnacc,
     onShare,
+    onToggleSave,
     onOpenActions,
     onOpenImages,
     onVote,
@@ -152,6 +154,8 @@ function SnaccCardComponent(props: SnaccCardProps) {
       onComment={() => onComment(snacc)}
       onResnacc={onResnacc ? () => onResnacc(snacc) : undefined}
       onShare={() => onShare(snacc)}
+      saved={snacc.saved}
+      onToggleSave={onToggleSave ? () => onToggleSave(snacc) : undefined}
     />
   )
 

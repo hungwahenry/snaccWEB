@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { createElement, useEffect, useMemo, useRef } from "react"
+import { useSaveToggle } from "@/features/bookmarks/hooks/use-save-toggle"
 import { useFlag } from "@/features/config/hooks/use-flag"
 import { signal } from "@/features/signals/utils/queue"
 import { useConfirmKeepSticker } from "@/features/stickers/hooks/use-keep-sticker"
@@ -27,6 +28,8 @@ type Overrides = {
 export function useSnaccActions(overrides: Overrides = {}) {
   const router = useRouter()
   const canResnacc = useFlag("resnacc")
+  const canSave = useFlag("bookmarks")
+  const toggleSave = useSaveToggle()
   const setLike = useLikeSnacc()
   const likers = useLikersSheet()
   const resnacc = useResnaccSheet()
@@ -38,6 +41,7 @@ export function useSnaccActions(overrides: Overrides = {}) {
 
   const latest = useRef({
     setLike,
+    toggleSave,
     likers,
     resnacc,
     menu,
@@ -52,6 +56,7 @@ export function useSnaccActions(overrides: Overrides = {}) {
   useEffect(() => {
     latest.current = {
       setLike,
+      toggleSave,
       likers,
       resnacc,
       menu,
@@ -83,6 +88,9 @@ export function useSnaccActions(overrides: Overrides = {}) {
       onResnacc: canResnacc ? openResnacc : undefined,
       onOpenActions: (snacc) => latest.current.menu.onOpen(snacc),
       onShare: (snacc) => latest.current.menu.onShare(snacc),
+      onToggleSave: canSave
+        ? (snacc) => latest.current.toggleSave(snacc)
+        : undefined,
       onComment,
       onPress: (snacc) => {
         const { onPress } = latest.current.overrides
@@ -146,7 +154,7 @@ export function useSnaccActions(overrides: Overrides = {}) {
       onKeepSticker: (snacc) =>
         latest.current.keepSticker?.({ snaccId: snacc.id }),
     }
-  }, [canResnacc])
+  }, [canResnacc, canSave])
 
   return {
     handlers,

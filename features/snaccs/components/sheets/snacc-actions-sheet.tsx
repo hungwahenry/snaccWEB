@@ -1,7 +1,5 @@
 import {
   BanIcon,
-  BookmarkCheckIcon,
-  BookmarkIcon,
   CopyIcon,
   EyeOffIcon,
   FlagIcon,
@@ -22,8 +20,6 @@ export type SnaccActionsSheetProps = {
   onEdit: () => void
   onShare: () => void
   onCopyLink: () => void
-  onBookmark?: () => void
-  saved: boolean
   onPin?: () => void
   pinned: boolean
   onPromote?: () => void
@@ -44,8 +40,6 @@ export function SnaccActionsSheet({
   onEdit,
   onShare,
   onCopyLink,
-  onBookmark,
-  saved,
   onPin,
   pinned,
   onPromote,
@@ -79,14 +73,6 @@ export function SnaccActionsSheet({
         hint="Paste it anywhere"
         onPress={onCopyLink}
       />
-      {onBookmark ? (
-        <ActionSheetChoice
-          icon={saved ? BookmarkCheckIcon : BookmarkIcon}
-          label={saved ? "Saved" : "Save"}
-          hint={saved ? "Remove from saved" : "Keep it for later"}
-          onPress={onBookmark}
-        />
-      ) : null}
 
       {mine ? (
         <>

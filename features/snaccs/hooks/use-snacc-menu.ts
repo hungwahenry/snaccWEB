@@ -14,17 +14,14 @@ import { hideSnacc, unhideSnacc } from "@/features/hides/api"
 import { useReportSheet } from "@/features/reports/hooks/use-report-sheet"
 import { useShare } from "@/features/share/hooks/use-share"
 import { signal } from "@/features/signals/utils/queue"
-import { saveSnacc, unsaveSnacc } from "@/features/bookmarks/api"
 import { showSuccess } from "@/lib/feedback"
 import { copyLink, shareLink } from "@/lib/share-links"
 import { commitWithUndo } from "@/lib/undoable"
 import { pinSnacc, unpinSnacc } from "../api"
 import {
-  patchSnacc,
   removePromotion,
   removeSnacc,
   restoreSnaccs,
-  savedChanged,
   setPinned,
   snapshotSnaccs,
 } from "../cache"
@@ -40,13 +37,6 @@ export function useSnaccMenu() {
   const queryClient = useQueryClient()
   const remove = useDeleteSnacc()
   const block = useConfirmBlock()
-  const save = useMutation({
-    mutationFn: (input: { id: string; saved: boolean }) =>
-      input.saved ? saveSnacc(input.id) : unsaveSnacc(input.id),
-    onError: (_error, { id, saved }) =>
-      patchSnacc(id, (snacc) => ({ ...snacc, saved: !saved })),
-    onSettled: savedChanged,
-  })
   const pin = useMutation({
     mutationFn: (input: { id: string; pinned: boolean }) =>
       input.pinned ? pinSnacc(input.id) : unpinSnacc(input.id),
@@ -57,7 +47,6 @@ export function useSnaccMenu() {
   const [acting, setActing] = useState<Snacc | null>(null)
   const [open, setOpen] = useState(false)
   const editingEnabled = useFlag("post_editing")
-  const canSave = useFlag("bookmarks")
   const canPin = useFlag("post_pinning")
   const canHide = useFlag("hides")
   const canPromote = useFlag("ads_manager")
@@ -112,12 +101,6 @@ export function useSnaccMenu() {
     })
   })
 
-  const toggleSave = withActing(({ id, saved }) => {
-    patchSnacc(id, (snacc) => ({ ...snacc, saved: !saved }))
-    showSuccess(saved ? "Removed from saved." : "Saved.")
-    save.mutate({ id, saved: !saved })
-  })
-
   const togglePin = withActing(({ id, pinned, author }) => {
     const snapshot = snapshotSnaccs()
     setPinned(author.id, pinned ? null : id)
@@ -157,8 +140,6 @@ export function useSnaccMenu() {
       onEdit: withActing((snacc) => router.push(editSnaccPath(snacc.id))),
       onShare: withActing((snacc) => share.open({ kind: "snacc", snacc })),
       onCopyLink: withActing(copySnaccLink),
-      onBookmark: canSave ? toggleSave : undefined,
-      saved: acting?.saved ?? false,
       onPin: canPin ? togglePin : undefined,
       pinned: acting?.pinned ?? false,
       onPromote:
